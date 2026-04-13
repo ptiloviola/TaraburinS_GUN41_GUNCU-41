@@ -17,6 +17,8 @@ namespace Netologia.Homework
         [SerializeField]
         private float _delay;
         
+        // Вопрос: я использовал Vector3.Lerp т.к. в лекциях показывали этот метод для лучшей реализации перемещений. 
+        // Но мне кажется, использование Vector3.MoveTowards было бы проще. Как на практике реализуют перемещение для подобной задачи?
         private IEnumerator Start()
         {
             Rigidbody rb = GetComponent<Rigidbody>();
@@ -41,19 +43,32 @@ namespace Netologia.Homework
             }
         }
 
-        [ContextMenu("1. Записать текущую позицию как _start")]
+        [ContextMenu("1. Set current position as _start")]
         private void SetStartToCurrent()
         {
             _start = transform.position;
-            Debug.Log("Стартовая точка обновлена!");
+            Debug.Log("Start position updated");
         }
-        [ContextMenu("2. Записать текущую позицию как _end")]
+        
+        [ContextMenu("2. Set current position as _end")]
         private void SetEndToCurrent()
         {
             _end = transform.position;
-            Debug.Log("Конечная точка обновлена!");
+            Debug.Log("End position updated");
         }
 
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(_start, 0.3f);
+            
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(_end, 0.3f);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(_start, _end);
+        }
+        
     }
 }
 
