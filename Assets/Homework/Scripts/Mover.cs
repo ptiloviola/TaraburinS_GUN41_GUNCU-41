@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Netologia.Homework
 {
+    [RequireComponent(typeof(Rigidbody))]
     public class Mover : MonoBehaviour
     {
 
@@ -16,6 +17,9 @@ namespace Netologia.Homework
         private float _speed;
         [SerializeField]
         private float _delay;
+
+        private WaitForFixedUpdate _waitForFixedUpdate = new WaitForFixedUpdate();
+        private WaitForSeconds _waitForSeconds;
         
         // Вопрос: я использовал Vector3.Lerp т.к. в лекциях показывали этот метод для лучшей реализации перемещений. 
         // Но мне кажется, использование Vector3.MoveTowards было бы проще. Как на практике реализуют перемещение для подобной задачи?
@@ -25,6 +29,7 @@ namespace Netologia.Homework
             rb.position = _start;
             float distance = Vector3.Distance(_start, _end);
             var progress = 0f;
+            _waitForSeconds = new WaitForSeconds(_delay);
             while(true)
             {
                 if (progress < 1f)
@@ -35,11 +40,11 @@ namespace Netologia.Homework
                 }
                 else
                 {
-                    yield return new WaitForSeconds(_delay);
+                    yield return _waitForSeconds;
                     (_start, _end) = (_end, _start);
                     progress = 0f;
                 }
-                yield return new WaitForFixedUpdate();
+                yield return _waitForFixedUpdate;
             }
         }
 

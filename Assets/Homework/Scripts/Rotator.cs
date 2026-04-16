@@ -4,10 +4,13 @@ using UnityEngine;
 
 namespace Netologia.Homework
 {
+    [RequireComponent(typeof(Rigidbody))]
     public class Rotator : MonoBehaviour
     {
         [SerializeField]
         private Vector3 _rotate;
+
+        private WaitForFixedUpdate _waitForFixedUpdate = new WaitForFixedUpdate();
 
         private IEnumerator Start()
         {
@@ -16,7 +19,7 @@ namespace Netologia.Homework
             {
                 Quaternion deltaRotation = Quaternion.Euler(_rotate * Time.deltaTime);
                 rb.MoveRotation(rb.rotation * deltaRotation);
-                yield return new WaitForFixedUpdate();
+                yield return _waitForFixedUpdate;
             }
         }
     }

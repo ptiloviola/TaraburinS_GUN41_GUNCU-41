@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Netologia.Homework
 {
+	[RequireComponent(typeof(Rigidbody))]
 	public class Player : MonoBehaviour
 	{
 		private bool _ready;
