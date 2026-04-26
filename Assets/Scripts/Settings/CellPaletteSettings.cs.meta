@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bb4b1a8abd31cba449bd2cc6ba791071
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - <SelectCell>k__BackingField: {fileID: 2100000, guid: 972a2f58f6408d0478ddd1e7656c7642, type: 2}
+  - <MoveCell>k__BackingField: {instanceID: 0}
+  - <AttackCell>k__BackingField: {instanceID: 0}
+  - <MoveAndAttackCell>k__BackingField: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
