@@ -7,6 +7,8 @@ public class GameInstaller : MonoInstaller
     private CellManager _cellManager;
     [SerializeField, Space(15f)]
     private CellPaletteSettings _cellPaletteSettings;
+
+
     public override void InstallBindings()
     {
 
@@ -14,6 +16,11 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(_cellPaletteSettings).AsSingle();
 
         _cellManager.OnCellClicked += CellManagerOnCellClicked;
+
+        Controls controls = new Controls();
+        controls.Enable(); // Обязательно включаем!
+        Container.Bind<Controls>().FromInstance(controls).AsSingle();
+        Container.Bind<SceneController>().AsSingle();
         
     }
 
