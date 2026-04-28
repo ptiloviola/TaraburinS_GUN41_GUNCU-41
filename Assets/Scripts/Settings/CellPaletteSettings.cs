@@ -1,6 +1,5 @@
 
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CellPaletteSettings", menuName = "Settings/CellPaletteSettings")]
