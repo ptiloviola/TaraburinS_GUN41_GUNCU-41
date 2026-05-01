@@ -1786,7 +1786,7 @@ GameObject:
   - component: {fileID: 722771896}
   - component: {fileID: 722771895}
   m_Layer: 0
-  m_Name: GameInstaller
+  m_Name: SceneInstaller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1837,8 +1837,7 @@ MonoBehaviour:
       m_Calls: []
   _parentNewObjectsUnderSceneContext: 0
   _contractNames: []
-  _parentContractNames:
-  - Main
+  _parentContractNames: []
 --- !u!4 &722771897
 Transform:
   m_ObjectHideFlags: 0

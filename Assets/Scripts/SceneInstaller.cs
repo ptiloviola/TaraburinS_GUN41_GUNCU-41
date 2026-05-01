@@ -1,10 +1,10 @@
 using UnityEngine;
 using Zenject;
 
-public class GameInstaller : MonoInstaller
+public class SceneInstaller : MonoInstaller
 {
     [SerializeField]
-    private CellManager _cellManager;
+    private Battlefield _cellManager;
     [SerializeField, Space(15f)]
     private CellPaletteSettings _cellPaletteSettings;
 

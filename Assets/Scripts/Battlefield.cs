@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class CellManager : MonoBehaviour
+public class Battlefield : MonoBehaviour
 {
     private Cell[] _cells;
     public event Action<Cell> OnCellClicked;
@@ -14,7 +14,7 @@ public class CellManager : MonoBehaviour
         InitializeBoard();
         LinkUnitsToCells();
 
-        Debug.Log($"<color=cyan>CellManager initialized! Cells found: {_cells.Length}</color>");
+        Debug.Log($"<color=cyan>Battlefield initialized! Cells found: {_cells.Length}</color>");
     }
 
 
@@ -69,7 +69,7 @@ public class CellManager : MonoBehaviour
     private void LinkUnitsToCells()
     {
         Unit[] allUnits = FindObjectsOfType<Unit>();
-        Debug.Log($"<color=cyan>[CellManager] Units found on scene: {allUnits.Length}</color>");
+        Debug.Log($"<color=cyan>[Battlefield] Units found on scene: {allUnits.Length}</color>");
         foreach(var unit in allUnits)
         {
             Cell nearestCell = null;
@@ -87,7 +87,7 @@ public class CellManager : MonoBehaviour
                 }
             }
 
-            Debug.Log($"<color=white>[CellManager] Unit {unit} is closest to {nearestCell}. Distance: {minDistance}</color>");
+            Debug.Log($"<color=white>[Battlefield] Unit {unit} is closest to {nearestCell}. Distance: {minDistance}</color>");
             if (nearestCell != null && minDistance < 2.0f)
             {
                 unit.CurrentCell = nearestCell;
@@ -95,11 +95,11 @@ public class CellManager : MonoBehaviour
                 Vector3 snapPosition = nearestCell.transform.position;
                 snapPosition.y = unit.transform.position.y;
                 unit.transform.position = snapPosition;
-                Debug.Log($"<color=green>[CellManager] Connection Established: {unit} <-> {nearestCell}</color>");
+                Debug.Log($"<color=green>[Battlefield] Connection Established: {unit} <-> {nearestCell}</color>");
             }
             else
             {
-                Debug.Log($"<color=red>[CellManager] CONNECTION ERROR: {unit} is too far from {nearestCell}, or the cell was not found!</color>");
+                Debug.Log($"<color=red>[Battlefield] CONNECTION ERROR: {unit} is too far from {nearestCell}, or the cell was not found!</color>");
             }
         }
     }
