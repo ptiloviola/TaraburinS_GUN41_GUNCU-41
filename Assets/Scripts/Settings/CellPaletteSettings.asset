@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: CellPaletteSettings
   m_EditorClassIdentifier: 
   <SelectCell>k__BackingField: {fileID: 2100000, guid: 972a2f58f6408d0478ddd1e7656c7642, type: 2}
-  <MoveCell>k__BackingField: {fileID: 0}
+  <MoveCell>k__BackingField: {fileID: 2100000, guid: 84108288788299c4cb6450f3772676ca, type: 2}
   <AttackCell>k__BackingField: {fileID: 0}
   <MoveAndAttackCell>k__BackingField: {fileID: 0}

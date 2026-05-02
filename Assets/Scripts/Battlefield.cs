@@ -62,43 +62,43 @@ public class Battlefield : MonoBehaviour
 
     }
 
-    private void FindNeighbours(Cell targetCell)
-    {
-        Vector3 source = targetCell.transform.position;
+    // private void FindNeighbours(Cell targetCell)
+    // {
+    //     Vector3 source = targetCell.transform.position;
 
-        foreach (var otherCell in _cells)
-        {
-            if (targetCell == otherCell) continue;
+    //     foreach (var otherCell in _cells)
+    //     {
+    //         if (targetCell == otherCell) continue;
 
-            Vector3 destination = otherCell.transform.position;
+    //         Vector3 destination = otherCell.transform.position;
 
-            float distance = Vector3.Distance(source, destination);
+    //         float distance = Vector3.Distance(source, destination);
 
-            if (distance < _neighbourSearchRadius)
-            {
-                int forward = destination.z.CompareTo(source.z);
-                int right = destination.x.CompareTo(source.x);
+    //         if (distance < _neighbourSearchRadius)
+    //         {
+    //             int forward = destination.z.CompareTo(source.z);
+    //             int right = destination.x.CompareTo(source.x);
 
-                NeighbourType type = (forward, right) switch
-                {
-                    (1, 0) => NeighbourType.Forward,
-                    (-1, 0) => NeighbourType.Backward,
-                    (0, -1) => NeighbourType.Left,
-                    (0, 1) => NeighbourType.Right,
-                    (1, -1) => NeighbourType.ForwardLeft,
-                    (1, 1) => NeighbourType.ForwardRight,
-                    (-1, -1) => NeighbourType.BackwardLeft,
-                    (-1, 1) => NeighbourType.BackwardRight,
-                    _ => NeighbourType.None
-                };
-                if (type != NeighbourType.None)
-                {
-                    targetCell.AddNeighbour(type, otherCell);
-                }
-            }
+    //             NeighbourType type = (forward, right) switch
+    //             {
+    //                 (1, 0) => NeighbourType.Forward,
+    //                 (-1, 0) => NeighbourType.Backward,
+    //                 (0, -1) => NeighbourType.Left,
+    //                 (0, 1) => NeighbourType.Right,
+    //                 (1, -1) => NeighbourType.ForwardLeft,
+    //                 (1, 1) => NeighbourType.ForwardRight,
+    //                 (-1, -1) => NeighbourType.BackwardLeft,
+    //                 (-1, 1) => NeighbourType.BackwardRight,
+    //                 _ => NeighbourType.None
+    //             };
+    //             if (type != NeighbourType.None)
+    //             {
+    //                 targetCell.AddNeighbour(type, otherCell);
+    //             }
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
     private void LinkUnitsToCells()
     {

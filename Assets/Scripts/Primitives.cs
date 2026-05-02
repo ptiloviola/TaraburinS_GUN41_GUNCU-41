@@ -15,6 +15,16 @@ public enum NeighbourType
 
 public enum Team
 {
-    Player1,
-    Player2
+    White,
+    Black
+}
+
+public enum PieceType 
+{ 
+    Pawn,
+    Rook,
+    Knight,
+    Bishop,
+    Queen,
+    King
 }
