@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -18,6 +19,8 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public event Action<Cell> OnPointerClickEvent;
 
     private bool _isHovered = false;
+
+    public Vector2Int GridPosition { get; set; }
 
     public void SetSelect(Material material)
     {
@@ -40,6 +43,7 @@ public class Cell : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public void OnPointerClick(PointerEventData eventData)
     {
         OnPointerClickEvent.Invoke(this);
+        Debug.Log($"<color=green>[Cell] {this.name} GridPosition: {GridPosition}</color>");
     }
 
     public void OnPointerExit(PointerEventData eventData)
