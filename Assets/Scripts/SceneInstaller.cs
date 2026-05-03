@@ -27,16 +27,14 @@ public class SceneInstaller : MonoInstaller
         controls.Enable();
         Container.Bind<Controls>().FromInstance(controls).AsSingle();
         Container.Bind<SceneController>().AsSingle();
+
+        SignalBusInstaller.Install(Container);
+        Container.DeclareSignal<GameStatus>();
+        Container.DeclareSignal<GameEvent>();
+        Container.Bind<ISharedData>().To<SingleSharedData>().AsSingle();
+
+        Container.Bind<IGameplayCommand>().To<ChessCommand>().AsSingle();
         
     }
-
-
-
-    
-
-
-    
-
-
 
 }

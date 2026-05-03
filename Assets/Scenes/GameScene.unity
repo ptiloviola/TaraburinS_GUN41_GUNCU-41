@@ -1806,7 +1806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _battlefield: {fileID: 1934123612}
   _cellPaletteSettings: {fileID: 11400000, guid: 4391a007826ab1547acfe541725bd826, type: 2}
-  _battleController: {fileID: 0}
+  _battleController: {fileID: 1934123614}
 --- !u!114 &722771896
 MonoBehaviour:
   m_ObjectHideFlags: 0
