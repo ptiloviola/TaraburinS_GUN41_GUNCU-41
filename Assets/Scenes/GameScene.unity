@@ -1806,6 +1806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _battlefield: {fileID: 1934123612}
   _cellPaletteSettings: {fileID: 11400000, guid: 4391a007826ab1547acfe541725bd826, type: 2}
+  _battleController: {fileID: 0}
 --- !u!114 &722771896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4761,6 +4762,7 @@ GameObject:
   - component: {fileID: 1934123611}
   - component: {fileID: 1934123612}
   - component: {fileID: 1934123613}
+  - component: {fileID: 1934123614}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -4803,7 +4805,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ebdfcf6284ae5040b2120e86c26524e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _neighbourSearchRadius: 3
+  _gridSize: 2
 --- !u!114 &1934123613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4819,6 +4821,18 @@ MonoBehaviour:
   _restartUI: {fileID: 361815191}
   _restartFillImage: {fileID: 379531213}
   _timeToHold: 2
+--- !u!114 &1934123614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934123610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d147086a39500144827241ad0db7ec0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1942454852
 GameObject:
   m_ObjectHideFlags: 0

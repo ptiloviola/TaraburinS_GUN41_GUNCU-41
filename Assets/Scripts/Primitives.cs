@@ -28,3 +28,19 @@ public enum PieceType
     Queen,
     King
 }
+
+
+public enum GameStatus
+{
+    Select,
+    Move,
+    Attack,
+    Confirm,
+}
+
+public enum GameEvent
+{
+    Cancel,
+    Confirm,
+    Select,
+}

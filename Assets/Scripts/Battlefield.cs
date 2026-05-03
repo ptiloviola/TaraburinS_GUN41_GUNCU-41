@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class Battlefield : MonoBehaviour
 {
@@ -8,8 +10,8 @@ public class Battlefield : MonoBehaviour
     private Cell[,] _grid = new Cell[8, 8];
     public event Action<Cell> OnCellClicked;
 
-    [SerializeField, Header("grid settings")]
-    private float _neighbourSearchRadius = 3.0f;
+    [SerializeField, Header("grid size")]
+    private float _gridSize = 2.0f;
 
     private void Awake()
     {
@@ -19,15 +21,19 @@ public class Battlefield : MonoBehaviour
         Debug.Log($"<color=cyan>Battlefield initialized! Board 8x8 successfully mapped.</color>");
     }
 
+    private CellPaletteSettings _cellPaletteSettings;
+
+    [Inject]
+    private void Construct(CellPaletteSettings cellPaletteSettings)
+    {
+        _cellPaletteSettings = cellPaletteSettings;
+    }
+
 
     private void InitializeBoard()
     {
         _cells = FindObjectsOfType<Cell>();
-        // foreach (var cell in _cells)
-        // {
-        //     cell.OnPointerClickEvent += OnCellClicked;
-        //     FindNeighbours(cell);
-        // }
+
         float minX = float.MaxValue;
         float minZ = float.MaxValue;
         foreach (var cell in _cells)
@@ -46,8 +52,8 @@ public class Battlefield : MonoBehaviour
         {
             cell.OnPointerClickEvent += OnCellClicked;
 
-            int gridX = Mathf.RoundToInt((cell.transform.position.x - minX) / 2f);
-            int gridY = Mathf.RoundToInt((cell.transform.position.z - minZ) / 2f);
+            int gridX = Mathf.RoundToInt((cell.transform.position.x - minX) / _gridSize);
+            int gridY = Mathf.RoundToInt((cell.transform.position.z - minZ) / _gridSize);
             if ( gridX >= 0 && gridX < 8 && gridY >=0 && gridY < 8)
             {
                 _grid[gridX, gridY] = cell;
@@ -62,43 +68,7 @@ public class Battlefield : MonoBehaviour
 
     }
 
-    // private void FindNeighbours(Cell targetCell)
-    // {
-    //     Vector3 source = targetCell.transform.position;
 
-    //     foreach (var otherCell in _cells)
-    //     {
-    //         if (targetCell == otherCell) continue;
-
-    //         Vector3 destination = otherCell.transform.position;
-
-    //         float distance = Vector3.Distance(source, destination);
-
-    //         if (distance < _neighbourSearchRadius)
-    //         {
-    //             int forward = destination.z.CompareTo(source.z);
-    //             int right = destination.x.CompareTo(source.x);
-
-    //             NeighbourType type = (forward, right) switch
-    //             {
-    //                 (1, 0) => NeighbourType.Forward,
-    //                 (-1, 0) => NeighbourType.Backward,
-    //                 (0, -1) => NeighbourType.Left,
-    //                 (0, 1) => NeighbourType.Right,
-    //                 (1, -1) => NeighbourType.ForwardLeft,
-    //                 (1, 1) => NeighbourType.ForwardRight,
-    //                 (-1, -1) => NeighbourType.BackwardLeft,
-    //                 (-1, 1) => NeighbourType.BackwardRight,
-    //                 _ => NeighbourType.None
-    //             };
-    //             if (type != NeighbourType.None)
-    //             {
-    //                 targetCell.AddNeighbour(type, otherCell);
-    //             }
-    //         }
-
-    //     }
-    // }
 
     private void LinkUnitsToCells()
     {
@@ -138,6 +108,38 @@ public class Battlefield : MonoBehaviour
             }
         }
     }
+
+    public void HighlightSelectedCell(Cell cell)
+    {
+        if (cell != null)
+        {
+            cell.SetSelect(_cellPaletteSettings.SelectCell);
+        }
+    }
+
+    public void HighlightAvailableMoves(List<Cell> cells)
+    {
+        foreach (var cell in cells)
+        {
+            cell.SetSelect(_cellPaletteSettings.MoveCell);
+        }
+    }
+
+    public void ClearHighlighting(Cell selectedCell, List<Cell> availableMoves)
+    {
+        if (selectedCell != null)
+        {
+            selectedCell.ResetSelect();
+        }
+        foreach (var cell in availableMoves)
+        {
+            cell.ResetSelect();
+        }
+    }
+
+
+
+
 
     public Cell GetCell(int x, int y)
     {
