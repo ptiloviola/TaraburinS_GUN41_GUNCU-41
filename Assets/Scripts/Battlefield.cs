@@ -117,11 +117,19 @@ public class Battlefield : MonoBehaviour
         }
     }
 
-    public void HighlightAvailableMoves(List<Cell> cells)
+    public void HighlightAvailableMoves(List<Cell> cells, Unit activeUnit)
     {
         foreach (var cell in cells)
         {
-            cell.SetSelect(_cellPaletteSettings.MoveCell);
+            if (cell.Unit != null && cell.Unit.Team != activeUnit.Team)
+            {
+                cell.SetSelect(_cellPaletteSettings.AttackCell);
+            }
+            else
+            {
+                cell.SetSelect(_cellPaletteSettings.MoveCell);
+            }
+            
         }
     }
 

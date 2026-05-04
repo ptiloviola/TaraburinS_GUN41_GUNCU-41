@@ -59,7 +59,7 @@ public class ChessCommand : IGameplayCommand
 
             _data.AvailableMoves = _data.Destination.CalculateAvailableMoves(_battlefield);
 
-            _battlefield.HighlightAvailableMoves(_data.AvailableMoves);
+            _battlefield.HighlightAvailableMoves(_data.AvailableMoves, _data.Destination);
 
             Debug.Log("<color=yellow>[ChessCommand] Статус изменен на Move. Бросаю сигнал GameEvent.Select в эфир!</color>");
 
@@ -79,6 +79,13 @@ public class ChessCommand : IGameplayCommand
         if (_data.AvailableMoves.Contains(cell))
         {
             Debug.Log($"<color=yellow>[ChessCommand] Ход разрешен! Юнит перемещается на {cell.GridPosition}</color>");
+            
+            if (cell.Unit != null)
+            {
+                GameObject.Destroy(cell.Unit.gameObject);
+                Debug.Log($"<color=red>[ChessCommand] {cell.Unit.name} УНИЧТОЖЕН!</color>");
+
+            }
             _data.Destination.Move(cell);
             ClearSelectionVisuals();
             _data.Status = GameStatus.Select;

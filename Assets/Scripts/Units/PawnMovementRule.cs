@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.Rendering;
+
 
 public class PawnMovementRule : BaseMovementRule
 {
@@ -13,6 +11,17 @@ public class PawnMovementRule : BaseMovementRule
         if (IsCellEmpty(forwardCell)) 
         {
             availableCells.Add(forwardCell);
+        }
+
+        Cell attackLeft = battlefield.GetCell(currentPos.x - 1, currentPos.y + forwardDirection);
+        if (IsEnemyOnCell(unit, attackLeft))
+        {
+            availableCells.Add(attackLeft);
+        }
+        Cell attackRight = battlefield.GetCell(currentPos.x + 1, currentPos.y + forwardDirection);
+        if (IsEnemyOnCell(unit, attackRight))
+        {
+            availableCells.Add(attackRight);
         }
     }
 }
