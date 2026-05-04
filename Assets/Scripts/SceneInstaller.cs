@@ -34,6 +34,10 @@ public class SceneInstaller : MonoInstaller
         Container.Bind<ISharedData>().To<SingleSharedData>().AsSingle();
 
         Container.Bind<IGameplayCommand>().To<ChessCommand>().AsSingle();
+
+        Container.Bind<ITurn>().To<OneByOneTurn>().AsSingle().WithArguments((IReadOnlyList<Team>)new List<Team> { Team.White, Team.Black});
+
+        
         
     }
 

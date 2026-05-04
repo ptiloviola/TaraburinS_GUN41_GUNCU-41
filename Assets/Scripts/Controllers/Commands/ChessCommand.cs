@@ -9,12 +9,15 @@ public class ChessCommand : IGameplayCommand
 
     private Battlefield _battlefield;
 
+    private ITurn _turn;
+
     [Inject]
-    public void Construct(ISharedData data, SignalBus signal, Battlefield battlefield)
+    public void Construct(ISharedData data, SignalBus signal, Battlefield battlefield, ITurn turn)
     {
         _data = data;
         _signal = signal;
         _battlefield = battlefield;
+        _turn = turn;
         Debug.Log("<color=magenta>[ChessCommand] Создан и получил зависимости (Пульт и Радио)!</color>");
     }
     public void Interact(Cell cell)
@@ -38,6 +41,14 @@ public class ChessCommand : IGameplayCommand
     {
         if (cell.Unit != null)
         {
+            if (cell.Unit != null)
+            {
+                if (cell.Unit.Team != _turn.Current)
+                {
+                    Debug.Log($"<color=orange>[ChessCommand] Сейчас ход {_turn.Current}, а вы выбрали фигуру команды {cell.Unit.Team}!</color>");
+                    return;
+                }
+            }
             Debug.Log($"<color=white>[ChessCommand] На клетке найден юнит {cell.Unit.name}. Записываю в SharedData...</color>");
             _data.Destination = cell.Unit;
             _data.Target = cell;
@@ -74,6 +85,8 @@ public class ChessCommand : IGameplayCommand
             _data.Destination = null;
             _data.Target = null;
             _data.AvailableMoves.Clear();
+
+            _signal.Fire(GameStatus.Confirm);
         }
         else
         {
