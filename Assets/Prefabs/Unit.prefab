@@ -134,6 +134,8 @@ MonoBehaviour:
   _selectionRing: {fileID: 3818623143967979223}
   _team: 0
   _pieceType: 0
+  _modelRenderer: {fileID: 1693922292484702782}
+  _meshFilter: {fileID: 3487741113097942772}
 --- !u!65 &5882854483585262516
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -203,6 +205,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 59263dbe9d5dbb449abd480b25bbe382, type: 2}
+    - target: {fileID: -5754084199372789682, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 934055058611665189, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
     - target: {fileID: 919132149155446097, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
       propertyPath: m_Name
       value: Mesh
@@ -215,5 +225,15 @@ PrefabInstance:
 --- !u!4 &561025279870728529 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
+  m_PrefabInstance: {fileID: 19018220313255610}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1693922292484702782 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
+  m_PrefabInstance: {fileID: 19018220313255610}
+  m_PrefabAsset: {fileID: 0}
+--- !u!33 &3487741113097942772 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: -5754084199372789682, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
   m_PrefabInstance: {fileID: 19018220313255610}
   m_PrefabAsset: {fileID: 0}

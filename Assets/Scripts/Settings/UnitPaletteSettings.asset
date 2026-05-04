@@ -12,5 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81e56856df4c68c4ba62ab440f4d88ab, type: 3}
   m_Name: UnitPaletteSettings
   m_EditorClassIdentifier: 
-  <WhiteUnitMaterial>k__BackingField: {fileID: 0}
-  <BlackUnitMaterial>k__BackingField: {fileID: 0}
+  <WhiteUnitMaterial>k__BackingField: {fileID: 2100000, guid: 59263dbe9d5dbb449abd480b25bbe382, type: 2}
+  <BlackUnitMaterial>k__BackingField: {fileID: 2100000, guid: 89501028f47021844b9ae366573b8f92, type: 2}
+  MeshMapping:
+  - Type: 0
+    Mesh: {fileID: 934055058611665189, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
+  - Type: 2
+    Mesh: {fileID: -5777942238113956774, guid: 82565d41221ab7147acf5a09aa22ba17, type: 3}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
@@ -29,37 +30,65 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     [SerializeField]
     private MeshRenderer _modelRenderer;
 
+    [SerializeField]
+    private MeshFilter _meshFilter;
+
+
+
     public Team Team => _team;
     public PieceType PieceType => _pieceType;
     
     private IMovementRule _movementRule;
-    private UnitPaletteSettings _palleteSettings;
+    private UnitPaletteSettings _paletteSettings;
 
 
     [Inject]
     public void Construct(UnitPaletteSettings paletteSettings)
     {
-        _palleteSettings = paletteSettings;
+        _paletteSettings = paletteSettings;
     }
 
     private void Start()
     {
         InitializeRule();
-        ApplyTeamMaterial();
+        ApplyVisuals();
     }
 
-    private void ApplyTeamMaterial()
+    private void OnValidate()
+    {
+        ApplyVisuals();
+    }
+
+    private void ApplyVisuals()
     {
         Debug.LogError($"<color=red>[Unit] Coloring ...</color>");
         if(_modelRenderer == null)
         {
             _modelRenderer = GetComponentInChildren<MeshRenderer>();
         }
-        if (_modelRenderer != null && _palleteSettings != null)
+        if (_meshFilter == null)
+        {
+            _meshFilter = GetComponentInChildren<MeshFilter>();
+        }
+
+        if (_paletteSettings == null)
+        {
+            _paletteSettings = Resources.FindObjectsOfTypeAll<UnitPaletteSettings>().FirstOrDefault();
+        }
+        if (_paletteSettings == null) return;
+
+        Mesh targetMesh = _paletteSettings.GetMeshForPiece(_pieceType);
+        if (_meshFilter != null && targetMesh != null)
+        {
+            _meshFilter.sharedMesh = targetMesh;
+        }
+
+
+        if (_modelRenderer != null && _paletteSettings != null)
         {
             _modelRenderer.material = (_team == Team.White) 
-            ? _palleteSettings.WhiteUnitMaterial 
-            : _palleteSettings.BlackUnitMaterial;
+            ? _paletteSettings.WhiteUnitMaterial 
+            : _paletteSettings.BlackUnitMaterial;
         }
         else
         {
