@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Zenject;
 
 public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
@@ -25,14 +26,45 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     [SerializeField]
     private PieceType _pieceType;
 
+    [SerializeField]
+    private MeshRenderer _modelRenderer;
+
     public Team Team => _team;
     public PieceType PieceType => _pieceType;
     
     private IMovementRule _movementRule;
+    private UnitPaletteSettings _palleteSettings;
+
+
+    [Inject]
+    public void Construct(UnitPaletteSettings paletteSettings)
+    {
+        _palleteSettings = paletteSettings;
+    }
 
     private void Start()
     {
         InitializeRule();
+        ApplyTeamMaterial();
+    }
+
+    private void ApplyTeamMaterial()
+    {
+        Debug.LogError($"<color=red>[Unit] Coloring ...</color>");
+        if(_modelRenderer == null)
+        {
+            _modelRenderer = GetComponentInChildren<MeshRenderer>();
+        }
+        if (_modelRenderer != null && _palleteSettings != null)
+        {
+            _modelRenderer.material = (_team == Team.White) 
+            ? _palleteSettings.WhiteUnitMaterial 
+            : _palleteSettings.BlackUnitMaterial;
+        }
+        else
+        {
+            Debug.LogError($"<color=red>[Unit] Coloring error! Check the MeshRenderer on {gameObject.name} or the palette settings.</color>");
+        }
     }
 
 
@@ -42,6 +74,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         _movementRule = _pieceType switch
         {
             PieceType.Pawn => new PawnMovementRule(),
+            PieceType.Knight => new KnightMovementRule(),
 
             _ => null
         };

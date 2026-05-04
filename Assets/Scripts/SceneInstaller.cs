@@ -15,6 +15,10 @@ public class SceneInstaller : MonoInstaller
     private Unit _selectedUnit;
     private List<Cell> _availableMoves = new List<Cell>();
 
+    [SerializeField, Space(15f)] private UnitPaletteSettings _unitPaletteSettings;
+
+
+
 
     public override void InstallBindings()
     {
@@ -36,9 +40,7 @@ public class SceneInstaller : MonoInstaller
         Container.Bind<IGameplayCommand>().To<ChessCommand>().AsSingle();
 
         Container.Bind<ITurn>().To<OneByOneTurn>().AsSingle().WithArguments((IReadOnlyList<Team>)new List<Team> { Team.White, Team.Black});
-
-        
-        
+        Container.BindInstance(_unitPaletteSettings).AsSingle();
     }
 
 }
