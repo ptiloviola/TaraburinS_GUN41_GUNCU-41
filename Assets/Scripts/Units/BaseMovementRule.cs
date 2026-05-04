@@ -28,6 +28,36 @@ public abstract class BaseMovementRule : IMovementRule
         return cell != null && cell.Unit != null && cell.Unit.Team != myUnit.Team;
     }
 
+    protected void AddMovesInDirection(Unit unit, Battlefield battlefield, Vector2Int startPos, Vector2Int direction, List<Cell> availableCells)
+    {
+
+        Vector2Int currentPos = startPos;
+        while(true)
+        {
+            Vector2Int targetPos = currentPos + direction;
+            Cell targetCell = battlefield.GetCell(targetPos.x, targetPos.y);
+            if (targetCell == null)
+            {
+                break;
+            }
+            if (IsCellEmpty(targetCell))
+            {
+                availableCells.Add(targetCell);
+                currentPos = targetPos;
+            } 
+            else if (IsEnemyOnCell(unit, targetCell))
+            {
+                availableCells.Add(targetCell);
+                break;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+    }
+
     protected void CheckDirection(Unit unit, Battlefield battlefield, Vector2Int startPos, Vector2Int direction, List<Cell> availableCells)
     {
         

@@ -19,3 +19,5 @@ MonoBehaviour:
     Mesh: {fileID: 934055058611665189, guid: f4b01c1db07ddd14884f71709eaf3b7b, type: 3}
   - Type: 2
     Mesh: {fileID: -5777942238113956774, guid: 82565d41221ab7147acf5a09aa22ba17, type: 3}
+  - Type: 3
+    Mesh: {fileID: -3046456344281901727, guid: 5c24c054c504a9948b643c552921b728, type: 3}

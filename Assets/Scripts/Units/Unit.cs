@@ -80,7 +80,10 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         Mesh targetMesh = _paletteSettings.GetMeshForPiece(_pieceType);
         if (_meshFilter != null && targetMesh != null)
         {
-            _meshFilter.sharedMesh = targetMesh;
+            if (_meshFilter.sharedMesh != targetMesh)
+            {
+                _meshFilter.sharedMesh = targetMesh;
+            }
         }
 
 
@@ -104,7 +107,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         {
             PieceType.Pawn => new PawnMovementRule(),
             PieceType.Knight => new KnightMovementRule(),
-
+            PieceType.Bishop => new BishopMovementRule(),
             _ => null
         };
     }

@@ -50,16 +50,16 @@ public class ChessCommand : IGameplayCommand
                 }
             }
             Debug.Log($"<color=white>[ChessCommand] На клетке найден юнит {cell.Unit.name}. Записываю в SharedData...</color>");
-            _data.Destination = cell.Unit;
+            _data.ActiveUnit = cell.Unit;
             _data.Target = cell;
             _data.Status = GameStatus.Move;
 
-            _data.Destination.SetHighlight(true);
+            _data.ActiveUnit.SetHighlight(true);
             _battlefield.HighlightSelectedCell(_data.Target);
 
-            _data.AvailableMoves = _data.Destination.CalculateAvailableMoves(_battlefield);
+            _data.AvailableMoves = _data.ActiveUnit.CalculateAvailableMoves(_battlefield);
 
-            _battlefield.HighlightAvailableMoves(_data.AvailableMoves, _data.Destination);
+            _battlefield.HighlightAvailableMoves(_data.AvailableMoves, _data.ActiveUnit);
 
             Debug.Log("<color=yellow>[ChessCommand] Статус изменен на Move. Бросаю сигнал GameEvent.Select в эфир!</color>");
 
@@ -86,10 +86,10 @@ public class ChessCommand : IGameplayCommand
                 Debug.Log($"<color=red>[ChessCommand] {cell.Unit.name} УНИЧТОЖЕН!</color>");
 
             }
-            _data.Destination.Move(cell);
+            _data.ActiveUnit.Move(cell);
             ClearSelectionVisuals();
             _data.Status = GameStatus.Select;
-            _data.Destination = null;
+            _data.ActiveUnit = null;
             _data.Target = null;
             _data.AvailableMoves.Clear();
 
@@ -100,7 +100,7 @@ public class ChessCommand : IGameplayCommand
             Debug.Log("<color=red>[ChessCommand] Клик мимо хода. Сброс выделения.</color>");
             ClearSelectionVisuals();
             _data.Status = GameStatus.Select;
-            _data.Destination = null;
+            _data.ActiveUnit = null;
             _data.Target = null;
             _data.AvailableMoves.Clear();
 
@@ -110,9 +110,9 @@ public class ChessCommand : IGameplayCommand
 
     private void ClearSelectionVisuals()
     {
-        if (_data.Destination != null)
+        if (_data.ActiveUnit != null)
         {
-            _data.Destination.SetHighlight(false);
+            _data.ActiveUnit.SetHighlight(false);
         }
         _battlefield.ClearHighlighting(_data.Target, _data.AvailableMoves);
     }

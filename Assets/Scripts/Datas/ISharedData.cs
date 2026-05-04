@@ -5,7 +5,7 @@ public interface ISharedData
     GameEvent Event { get; set; }
     GameStatus Status { get; set; }
 
-    Unit Destination { get; set; }
+    Unit ActiveUnit { get; set; }
 
     Cell Target {get; set; }
 
