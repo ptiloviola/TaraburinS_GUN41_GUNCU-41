@@ -33,18 +33,18 @@ public enum PieceType
 public enum GameStatus
 {
     Error = 0,
-    Lock = 1,     // Инпут заблокирован (например, идет анимация хода)
-    Unlock = 2,   // Инпут разрешен
-    Select = 3,   // Игрок выбирает свою фигуру
-    Move = 4,     // Игрок выбрал фигуру и кликает, куда пойти
-    Attack = 5,   // Игрок выбирает, кого атаковать
-    Confirm = 6   // Подтверждение действия (если игра требует нажатия Space)
+    Lock = 1,
+    Unlock = 2,
+    Select = 3,
+    Move = 4, 
+    Attack = 5, 
+    Confirm = 6
 }
 
 public enum GameEvent
 {
     Empty = 0,
-    Select = 1,   // Произошел выбор
-    Cancel = 2,   // Игрок нажал отмену (ESC)
-    Confirm = 3   // Игрок подтвердил действие
+    Select = 1,   
+    Cancel = 2,   
+    Confirm = 3   
 }

@@ -108,6 +108,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
             PieceType.Pawn => new PawnMovementRule(),
             PieceType.Knight => new KnightMovementRule(),
             PieceType.Bishop => new BishopMovementRule(),
+            PieceType.Rook => new RookMovementRule(),
             _ => null
         };
     }
