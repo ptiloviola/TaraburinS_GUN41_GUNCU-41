@@ -2,10 +2,8 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.InputSystem;
-
 using System;
 using System.Reflection;
-using UnityEngine.AI;
 
 
 public class EditorCheatWindow : EditorWindow
