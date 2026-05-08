@@ -18,7 +18,7 @@ public class ChessCommand : IGameplayCommand
         _signal = signal;
         _battlefield = battlefield;
         _turn = turn;
-        Debug.Log("<color=magenta>[ChessCommand] Создан и получил зависимости (Пульт и Радио)!</color>");
+        Debug.Log("<color=magenta>[ChessCommand] Создан и получил зависимости </color>");
     }
     public void Interact(Cell cell)
     {
@@ -34,6 +34,10 @@ public class ChessCommand : IGameplayCommand
             case GameStatus.Move:
             HandleMovement(cell);
             break;
+
+            case GameStatus.Attack:
+            HandleAttack(cell);
+            break;
         }
     }
 
@@ -45,7 +49,7 @@ public class ChessCommand : IGameplayCommand
             {
                 if (cell.Unit.Team != _turn.Current)
                 {
-                    Debug.Log($"<color=orange>[ChessCommand] Сейчас ход {_turn.Current}, а вы выбрали фигуру команды {cell.Unit.Team}!</color>");
+                    Debug.Log($"<color=orange>[ChessCommand] Сейчас ход {_turn.Current}, выбрана фигура команды {cell.Unit.Team}</color>");
                     return;
                 }
             }
@@ -105,6 +109,23 @@ public class ChessCommand : IGameplayCommand
             _data.AvailableMoves.Clear();
 
             _signal.Fire(GameEvent.Cancel);
+        }
+    }
+
+    private void HandleAttack(Cell cell)
+    {
+        Debug.Log($"<color=white>[ChessCommand] Режим Attack. Можно просто убивать {cell.GridPosition}.</color>");
+        if (cell.Unit != null)
+        {
+            GameObject.Destroy(cell.Unit.gameObject);
+            _data.Status = GameStatus.Select;
+            Debug.Log($"<color=red>[CHEAT] Цель {cell.Unit.name} уничтожена смертельным лучом </color>");
+            _data.AvailableMoves.Clear();
+        }
+        else
+        {
+            Debug.Log("<color=gray>[CHEAT] Промах. Тут нет юнита.</color>");
+            _data.Status = GameStatus.Select;
         }
     }
 
