@@ -18,4 +18,5 @@ public class BishopMovementRule : BaseMovementRule
             AddMovesInDirection(unit, battlefield, currentPos, direction, availableCells);
         }
     }
+
 }

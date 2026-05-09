@@ -28,11 +28,12 @@ public abstract class BaseMovementRule : IMovementRule
         return cell != null && cell.Unit != null && cell.Unit.Team != myUnit.Team;
     }
 
-    protected void AddMovesInDirection(Unit unit, Battlefield battlefield, Vector2Int startPos, Vector2Int direction, List<Cell> availableCells)
+    protected void AddMovesInDirection(Unit unit, Battlefield battlefield, Vector2Int startPos, Vector2Int direction, List<Cell> availableCells, int lengthMove = 8)
     {
 
         Vector2Int currentPos = startPos;
-        while(true)
+        int currentStep = 0;
+        while(currentStep < lengthMove)
         {
             Vector2Int targetPos = currentPos + direction;
             Cell targetCell = battlefield.GetCell(targetPos.x, targetPos.y);
@@ -54,13 +55,26 @@ public abstract class BaseMovementRule : IMovementRule
             {
                 break;
             }
+            currentStep += 1;
         }
 
     }
 
-    protected void CheckDirection(Unit unit, Battlefield battlefield, Vector2Int startPos, Vector2Int direction, List<Cell> availableCells)
+    public static Vector2Int[] GetAllDirection()
     {
-        
+        List<Vector2Int> queenDirection = new List<Vector2Int>();
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0)
+                {
+                    continue;
+                }
+                queenDirection.Add(new Vector2Int(x, y));
+            }
+        }
+        return queenDirection.ToArray();
     }
 
 }
