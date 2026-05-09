@@ -11,7 +11,16 @@ public class PawnMovementRule : BaseMovementRule
         if (IsCellEmpty(forwardCell)) 
         {
             availableCells.Add(forwardCell);
+            if (currentPos.y == 1 || currentPos.y == 6)
+            {
+                Cell forwardCellExtra = battlefield.GetCell(currentPos.x, currentPos.y + forwardDirection * 2);
+                if (IsCellEmpty(forwardCellExtra))
+                {
+                    availableCells.Add(forwardCellExtra);
+                }
+            }
         }
+
 
         Cell attackLeft = battlefield.GetCell(currentPos.x - 1, currentPos.y + forwardDirection);
         if (IsEnemyOnCell(unit, attackLeft))
