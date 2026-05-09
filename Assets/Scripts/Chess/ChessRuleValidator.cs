@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using UnityEngine;
 
 public class ChessRuleValidator
 {
@@ -91,6 +92,33 @@ public class ChessRuleValidator
             }  
         }
         return legalMoves;
+    }
+
+    public bool IsCheckMate(Team team)
+    {
+        if (!IsKingOnCheck(team))
+        {
+            return false;
+        }
+        for (int x = 0; x < 8; x ++)
+        {
+            for (int y = 0; y < 8; y ++)
+            {
+                Cell cell = _battlefield.GetCell(x, y);
+                if (cell != null && cell.Unit != null && cell.Unit.Team == team)
+                {
+                    List<Cell> legalMoves = GetLegalMoves(cell.Unit);
+                    if (legalMoves.Count > 0)
+                    {
+                        Debug.Log($"[Validator] Мата нет, потому что {cell.Unit.PieceType} " +
+                              $"на {cell.GridPosition} может пойти на {legalMoves[0].GridPosition}");
+                        return false;
+                    }
+                    
+                }
+            }
+        }
+        return true;
     }
 
 

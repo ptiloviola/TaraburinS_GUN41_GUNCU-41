@@ -39,7 +39,16 @@ public class GameUIController : MonoBehaviour
     private void OnCheck(CheckSignal args)
     {
         string teamName = args.TeamInCheck == Team.White ? "WHITE" : "BLACK";
-        _checkText.text = $"<color=red>CHECK TO THE {teamName} KING!</color>";
+        
+        if (args.IsCheckMate)
+        {
+            _checkText.text = $"<color=black>CHECKMATE! {teamName}, BYE! </color>\nGAME OVER";
+        }
+        else
+        {
+            _checkText.text = $"<color=red>CHECK TO THE {teamName} KING!</color>";
+        }
+
         _checkText.gameObject.SetActive(true);
     }
 

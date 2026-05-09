@@ -41,11 +41,18 @@ public class PlayerController : MonoBehaviour
 
         if (_chessRuleValidator.IsKingOnCheck(_turn.Current))
         {
-            Debug.Log($"<color=red>ОПАЧКИ! Шах команде {_turn.Current}!</color>");
-            _signal.Fire(new CheckSignal {TeamInCheck = _turn.Current});
+            if (_chessRuleValidator.IsCheckMate(_turn.Current))
+            {
+                Debug.Log($"<color=black>Досвидули, {_turn.Current}. МАТ! </color>");
+                _signal.Fire(new CheckSignal {TeamInCheck = _turn.Current, IsCheckMate = true});
+            }
+            else
+            {
+               Debug.Log($"<color=red>ОПАЧКИ! Шах команде {_turn.Current}!</color>");
+                _signal.Fire(new CheckSignal {TeamInCheck = _turn.Current, IsCheckMate = false}); 
+            }
+            
         }
-
-
 
         _data.Lock = false;
         _data.Status = GameStatus.Select;
