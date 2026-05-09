@@ -12,9 +12,6 @@ public class SceneInstaller : MonoInstaller
     [SerializeField]
     private BattleController _battleController;
 
-    private Unit _selectedUnit;
-    private List<Cell> _availableMoves = new List<Cell>();
-
     [SerializeField, Space(15f)] private UnitPaletteSettings _unitPaletteSettings;
 
 
@@ -35,12 +32,17 @@ public class SceneInstaller : MonoInstaller
         SignalBusInstaller.Install(Container);
         Container.DeclareSignal<GameStatus>();
         Container.DeclareSignal<GameEvent>();
+        Container.DeclareSignal<TurnChangedSignal>();
+        Container.DeclareSignal<CheckSignal>();
+
         Container.Bind<ISharedData>().To<SingleSharedData>().AsSingle();
 
         Container.Bind<IGameplayCommand>().To<ChessCommand>().AsSingle();
 
         Container.Bind<ITurn>().To<OneByOneTurn>().AsSingle().WithArguments((IReadOnlyList<Team>)new List<Team> { Team.White, Team.Black});
         Container.BindInstance(_unitPaletteSettings).AsSingle();
+
+        
     }
 
 }

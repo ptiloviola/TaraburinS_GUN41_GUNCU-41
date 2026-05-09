@@ -61,7 +61,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
 
     private void ApplyVisuals()
     {
-        Debug.LogError($"<color=red>[Unit] Coloring ...</color>");
+        Debug.Log($"<color=red>[Unit] Coloring ...</color>");
         if(_modelRenderer == null)
         {
             _modelRenderer = GetComponentInChildren<MeshRenderer>();
