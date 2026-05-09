@@ -11,13 +11,16 @@ public class ChessCommand : IGameplayCommand
 
     private ITurn _turn;
 
+    private ChessRuleValidator _chessRuleValidator;
+
     [Inject]
-    public void Construct(ISharedData data, SignalBus signal, Battlefield battlefield, ITurn turn)
+    public void Construct(ISharedData data, SignalBus signal, Battlefield battlefield, ITurn turn, ChessRuleValidator chessRuleValidator)
     {
         _data = data;
         _signal = signal;
         _battlefield = battlefield;
         _turn = turn;
+        _chessRuleValidator = chessRuleValidator;
         Debug.Log("<color=magenta>[ChessCommand] Создан и получил зависимости </color>");
     }
     public void Interact(Cell cell)
@@ -61,7 +64,8 @@ public class ChessCommand : IGameplayCommand
             _data.ActiveUnit.SetHighlight(true);
             _battlefield.HighlightSelectedCell(_data.Target);
 
-            _data.AvailableMoves = _data.ActiveUnit.CalculateAvailableMoves(_battlefield);
+            // _data.AvailableMoves = _data.ActiveUnit.CalculateAvailableMoves(_battlefield);
+            _data.AvailableMoves = _chessRuleValidator.GetLegalMoves(_data.ActiveUnit);
 
             _battlefield.HighlightAvailableMoves(_data.AvailableMoves, _data.ActiveUnit);
 

@@ -8,13 +8,17 @@ public class PlayerController : MonoBehaviour
     private SignalBus _signal;
     private ITurn _turn;
 
+    private ChessRuleValidator _chessRuleValidator;
+
+
     [Inject]
-    public void Construct(ISharedData data, SignalBus signal, ITurn turn)
+    public void Construct(ISharedData data, SignalBus signal, ITurn turn, ChessRuleValidator chessRuleValidator)
     {
         _data = data;
         _signal = signal;
         _turn = turn;
         _signal.Subscribe<GameStatus>(OnStatusChanged);
+        _chessRuleValidator = chessRuleValidator;
     }
 
     private void OnStatusChanged(GameStatus status)
@@ -34,6 +38,15 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
         _turn.Next();
+
+        if (_chessRuleValidator.IsKingOnCheck(_turn.Current))
+        {
+            Debug.Log($"<color=red>ОПАЧКИ! Шах команде {_turn.Current}!</color>");
+            _signal.Fire(new CheckSignal {TeamInCheck = _turn.Current});
+        }
+
+
+
         _data.Lock = false;
         _data.Status = GameStatus.Select;
 

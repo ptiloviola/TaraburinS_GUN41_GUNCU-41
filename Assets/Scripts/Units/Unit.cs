@@ -39,6 +39,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public PieceType PieceType => _pieceType;
     
     private IMovementRule _movementRule;
+    public IMovementRule MovementRule => _movementRule;
     private UnitPaletteSettings _paletteSettings;
 
 
@@ -191,4 +192,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
             _selectionRing.SetActive(isSelected);
         }
     }
+
+    
+
 }

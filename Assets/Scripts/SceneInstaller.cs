@@ -42,6 +42,8 @@ public class SceneInstaller : MonoInstaller
         Container.Bind<ITurn>().To<OneByOneTurn>().AsSingle().WithArguments((IReadOnlyList<Team>)new List<Team> { Team.White, Team.Black});
         Container.BindInstance(_unitPaletteSettings).AsSingle();
 
+        Container.Bind<ChessRuleValidator>().AsSingle();
+
         
     }
 
