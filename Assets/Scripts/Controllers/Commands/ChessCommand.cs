@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.XR;
 using Zenject;
@@ -86,6 +87,7 @@ public class ChessCommand : IGameplayCommand
         Debug.Log($"<color=white>[ChessCommand] Режим Move. Игрок хочет пойти на клетку {cell.GridPosition}.</color>");
         if (_data.AvailableMoves.Contains(cell))
         {
+            CastlingMove(cell);
             Debug.Log($"<color=yellow>[ChessCommand] Ход разрешен! Юнит перемещается на {cell.GridPosition}</color>");
             
             if (cell.Unit != null)
@@ -95,6 +97,9 @@ public class ChessCommand : IGameplayCommand
 
             }
             _data.ActiveUnit.Move(cell);
+
+            _data.ActiveUnit.HasMoved = true;
+
             if (_data.ActiveUnit.PieceType == PieceType.Pawn)
             {
                 int targetY = cell.GridPosition.y;
@@ -148,5 +153,36 @@ public class ChessCommand : IGameplayCommand
             _data.ActiveUnit.SetHighlight(false);
         }
         _battlefield.ClearHighlighting(_data.Target, _data.AvailableMoves);
+    }
+
+    private void CastlingMove(Cell cell)
+    {
+        if (_data.ActiveUnit.PieceType == PieceType.King)
+        {
+            int moveDistance = Mathf.Abs(cell.GridPosition.x - _data.ActiveUnit.CurrentCell.GridPosition.x);
+            if (moveDistance == 2)
+            {
+                bool isShortCastling = (cell.GridPosition.x == 6);
+                int rookStartX = isShortCastling ? 7 : 0;
+                int rookEndX = isShortCastling ? 5 : 3;
+                
+                Cell rookStartCell = _battlefield.GetCell(rookStartX, cell.GridPosition.y);
+                Cell rookEndCell = _battlefield.GetCell(rookEndX, cell.GridPosition.y);
+
+                if (rookStartCell.Unit != null)
+                {
+                    Unit rook = rookStartCell.Unit;
+                    rookStartCell.Unit = null;
+                    rookEndCell.Unit = rook;
+                    rook.CurrentCell = rookEndCell;
+
+                    rook.Move(rookEndCell);
+                    rook.HasMoved = true;
+                    Debug.Log($"<color=cyan>[ChessCommand] Выполнена рокировка! Ладья прыгнула на {rookEndCell.GridPosition}</color>");
+                    
+                }
+            }
+            
+        }
     }
 }

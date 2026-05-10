@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -80,13 +81,17 @@ public class ChessRuleValidator
             targetCell.Unit = unit;
             unit.CurrentCell = targetCell;
 
+            bool isPathBlockedByAttack = IsCastlingPathBlocked(unit, targetCell, startCell, victim);
+
             bool isCheck = IsKingOnCheck(unit.Team);
+
+            
 
             targetCell.Unit = victim;
             startCell.Unit = unit;
             unit.CurrentCell = startCell;
 
-            if (!isCheck)
+            if (!isCheck && !isPathBlockedByAttack)
             {
                 legalMoves.Add(targetCell);
             }  
@@ -119,6 +124,37 @@ public class ChessRuleValidator
             }
         }
         return true;
+    }
+
+    private bool IsCastlingPathBlocked(Unit unit, Cell targetCell, Cell startCell, Unit victim)
+    {
+        if (unit.PieceType == PieceType.King && MathF.Abs(targetCell.GridPosition.x - startCell.GridPosition.x) == 2)
+        {
+            unit.CurrentCell = startCell;
+            targetCell.Unit = victim;
+            startCell.Unit = unit;
+            bool isCurrentlyInCheck = IsKingOnCheck(unit.Team);
+
+            startCell.Unit = null;
+            targetCell.Unit = unit;
+            unit.CurrentCell = targetCell;
+
+            if (isCurrentlyInCheck)
+            {
+                return true;
+            }
+            else
+            {
+                int direction = (targetCell.GridPosition.x - startCell.GridPosition.x) > 0 ? 1: -1;
+                int middleX = startCell.GridPosition.x + direction;
+                Cell middleCell = _battlefield.GetCell(middleX, targetCell.GridPosition.y);
+                if (IsCellUnderAttack(middleCell, unit.Team))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 

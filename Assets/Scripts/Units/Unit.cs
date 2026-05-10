@@ -42,6 +42,8 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
     public IMovementRule MovementRule => _movementRule;
     private UnitPaletteSettings _paletteSettings;
 
+    public bool HasMoved { get; set; } = false;
+
 
     [Inject]
     public void Construct(UnitPaletteSettings paletteSettings)
