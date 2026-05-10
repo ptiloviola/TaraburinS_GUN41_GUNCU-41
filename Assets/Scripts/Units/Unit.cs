@@ -193,6 +193,14 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         }
     }
 
+    public void PromoteToQueen()
+    {
+        _pieceType = PieceType.Queen;
+        InitializeRule();
+        ApplyVisuals();
+        Debug.Log($"<color=gold>[Unit] Пешка достигла края и превратилась в Ферзя!</color>");
+    }
+
     
 
 }

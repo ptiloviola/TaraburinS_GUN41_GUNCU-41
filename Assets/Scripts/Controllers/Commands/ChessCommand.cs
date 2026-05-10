@@ -95,6 +95,14 @@ public class ChessCommand : IGameplayCommand
 
             }
             _data.ActiveUnit.Move(cell);
+            if (_data.ActiveUnit.PieceType == PieceType.Pawn)
+            {
+                int targetY = cell.GridPosition.y;
+                if (targetY == 0 || targetY == 7)
+                {
+                    _data.ActiveUnit.PromoteToQueen();
+                }
+            }
             ClearSelectionVisuals();
             _data.Status = GameStatus.Select;
             _data.ActiveUnit = null;
