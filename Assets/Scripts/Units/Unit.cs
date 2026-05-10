@@ -154,7 +154,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
         }
     }
 
-    public void Move(Cell targetCell)
+    public void Move(Cell targetCell, System.Action onComplete = null)
     {
         if (_moveCoroutine != null)
         {
@@ -172,11 +172,11 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
 
         Vector3 targetPosition = targetCell.transform.position;
         targetPosition.y = transform.position.y;
-        _moveCoroutine = StartCoroutine(MoveRoutine(targetPosition));
+        _moveCoroutine = StartCoroutine(MoveRoutine(targetPosition, onComplete));
 
     }
 
-    private IEnumerator MoveRoutine(Vector3 targetPosition)
+    private IEnumerator MoveRoutine(Vector3 targetPosition, System.Action onComplete)
     {
         while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
         {
@@ -184,7 +184,7 @@ public class Unit : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, I
             yield return null;
         }
         transform.position = targetPosition;
-        OnMoveEndCallback?.Invoke();
+        onComplete?.Invoke();
     }
 
     public void SetHighlight(bool isSelected)

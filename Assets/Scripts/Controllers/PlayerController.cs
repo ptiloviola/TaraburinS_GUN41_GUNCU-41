@@ -25,17 +25,12 @@ public class PlayerController : MonoBehaviour
     {
         if (status == GameStatus.Confirm)
         {
-            StartCoroutine(ProcessTurnEnd());  
+            ProcessTurnEnd();  
         }
     }
 
-    private IEnumerator ProcessTurnEnd()
+    private void ProcessTurnEnd()
     {
-        _data.Lock = true;
-        Debug.Log("<color=red>[PlayerController] Ввод заблокирован. Ждем завершения анимации хода...</color>");
-
-        // Ждем секунду для имитации движения (позже привяжем к реальному завершению движения)
-        yield return new WaitForSeconds(1.0f);
 
         _turn.Next();
 

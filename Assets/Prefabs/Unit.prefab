@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c8afec6692600c4797f7dab239dd656, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 5
+  _moveSpeed: 10
   _selectionRing: {fileID: 3818623143967979223}
   _team: 0
   _pieceType: 0

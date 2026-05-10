@@ -88,6 +88,8 @@ public class ChessCommand : IGameplayCommand
         if (_data.AvailableMoves.Contains(cell))
         {
             Vector2Int startPos = _data.ActiveUnit.CurrentCell.GridPosition;
+            Unit movingUnit = _data.ActiveUnit;
+            Cell targetCell = cell;
 
 
             CastlingMove(cell);
@@ -100,9 +102,9 @@ public class ChessCommand : IGameplayCommand
 
             }
 
-            else if (_data.ActiveUnit.PieceType == PieceType.Pawn && cell.GridPosition.x != startPos.x)
+            else if (movingUnit.PieceType == PieceType.Pawn && cell.GridPosition.x != startPos.x)
             {
-                int backDirection = (_data.ActiveUnit.Team == Team.White) ? -1 : 1;
+                int backDirection = (movingUnit.Team == Team.White) ? -1 : 1;
                 Cell victimCell = _battlefield.GetCell(cell.GridPosition.x, cell.GridPosition.y + backDirection);
                 if (victimCell.Unit != null)
                 {
@@ -112,8 +114,12 @@ public class ChessCommand : IGameplayCommand
                 }
             }
 
-            _data.ActiveUnit.Move(cell);
+            // _data.ActiveUnit.Move(cell);
 
+
+            movingUnit.CurrentCell.Unit = null;
+            targetCell.Unit = movingUnit;
+            movingUnit.CurrentCell = targetCell;
             _data.ActiveUnit.HasMoved = true;
 
             if (_data.ActiveUnit.PieceType == PieceType.Pawn)
@@ -133,17 +139,26 @@ public class ChessCommand : IGameplayCommand
             {
                 _battlefield.EnPassantTarget = null;
             }
+
+            
             
 
+            _data.Lock = true;
             ClearSelectionVisuals();
             _data.Status = GameStatus.Select;
             _data.ActiveUnit = null;
             _data.Target = null;
             _data.AvailableMoves.Clear();
+            
+            movingUnit.Move(targetCell, () => 
+            {
+                if (movingUnit.PieceType == PieceType.Pawn && targetCell.GridPosition.y == 7)
+                {
+                    movingUnit.PromoteToQueen();
+                }
+                _signal.Fire(GameStatus.Confirm);
+            });
 
-
-
-            _signal.Fire(GameStatus.Confirm);
         }
         else
         {
