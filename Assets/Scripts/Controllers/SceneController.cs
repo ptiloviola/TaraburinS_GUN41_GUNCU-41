@@ -9,7 +9,7 @@ public class SceneController
 
     public void OpenGameScene()
     {
-        SceneManager.LoadScene(1, LoadSceneMode.Additive);
+        SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
 
 

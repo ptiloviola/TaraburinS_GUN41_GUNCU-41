@@ -58,7 +58,6 @@ public class InputManager : MonoBehaviour
 
     private void RestartLevel()
     {
-        _sceneController.OpenMainScene();
         _sceneController.OpenGameScene();
     }
 
