@@ -77,6 +77,18 @@ public class ChessRuleValidator
         foreach(Cell targetCell in rawMoves)
         {
             Unit victim = targetCell.Unit;
+
+            Cell epVictimCell = null;
+            Unit epVictimUnit = null;
+            
+            if (unit.PieceType == PieceType.Pawn && targetCell.Unit == null && targetCell.GridPosition.x != startCell.GridPosition.x)
+            {
+                int backDir = unit.Team == Team.White ? -1 : 1;
+                epVictimCell = _battlefield.GetCell(targetCell.GridPosition.x, targetCell.GridPosition.y + backDir);
+                epVictimUnit = epVictimCell.Unit;
+                epVictimCell.Unit = null; 
+            }
+
             startCell.Unit = null;
             targetCell.Unit = unit;
             unit.CurrentCell = targetCell;
@@ -85,11 +97,14 @@ public class ChessRuleValidator
 
             bool isCheck = IsKingOnCheck(unit.Team);
 
-            
-
             targetCell.Unit = victim;
             startCell.Unit = unit;
             unit.CurrentCell = startCell;
+
+            if (epVictimCell != null)
+            {
+                epVictimCell.Unit = epVictimUnit; 
+            }
 
             if (!isCheck && !isPathBlockedByAttack)
             {

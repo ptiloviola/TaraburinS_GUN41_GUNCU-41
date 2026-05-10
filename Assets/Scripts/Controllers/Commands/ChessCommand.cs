@@ -87,6 +87,9 @@ public class ChessCommand : IGameplayCommand
         Debug.Log($"<color=white>[ChessCommand] Режим Move. Игрок хочет пойти на клетку {cell.GridPosition}.</color>");
         if (_data.AvailableMoves.Contains(cell))
         {
+            Vector2Int startPos = _data.ActiveUnit.CurrentCell.GridPosition;
+
+
             CastlingMove(cell);
             Debug.Log($"<color=yellow>[ChessCommand] Ход разрешен! Юнит перемещается на {cell.GridPosition}</color>");
             
@@ -96,6 +99,19 @@ public class ChessCommand : IGameplayCommand
                 Debug.Log($"<color=red>[ChessCommand] {cell.Unit.name} УНИЧТОЖЕН!</color>");
 
             }
+
+            else if (_data.ActiveUnit.PieceType == PieceType.Pawn && cell.GridPosition.x != startPos.x)
+            {
+                int backDirection = (_data.ActiveUnit.Team == Team.White) ? -1 : 1;
+                Cell victimCell = _battlefield.GetCell(cell.GridPosition.x, cell.GridPosition.y + backDirection);
+                if (victimCell.Unit != null)
+                {
+                    Debug.Log("<color=red>ВЗЯТИЕ НА ПРОХОДЕ! </color>");
+                    GameObject.Destroy(victimCell.Unit.gameObject);
+                    victimCell.Unit = null;
+                }
+            }
+
             _data.ActiveUnit.Move(cell);
 
             _data.ActiveUnit.HasMoved = true;
@@ -108,11 +124,24 @@ public class ChessCommand : IGameplayCommand
                     _data.ActiveUnit.PromoteToQueen();
                 }
             }
+
+            if (_data.ActiveUnit.PieceType == PieceType.Pawn && Mathf.Abs(cell.GridPosition.y - startPos.y) == 2)
+            {
+                _battlefield.EnPassantTarget = _data.ActiveUnit;
+            }
+            else
+            {
+                _battlefield.EnPassantTarget = null;
+            }
+            
+
             ClearSelectionVisuals();
             _data.Status = GameStatus.Select;
             _data.ActiveUnit = null;
             _data.Target = null;
             _data.AvailableMoves.Clear();
+
+
 
             _signal.Fire(GameStatus.Confirm);
         }

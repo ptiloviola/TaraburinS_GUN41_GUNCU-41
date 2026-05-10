@@ -32,6 +32,19 @@ public class PawnMovementRule : BaseMovementRule
         {
             availableCells.Add(attackRight);
         }
+
+        if (battlefield.EnPassantTarget != null && battlefield.EnPassantTarget.Team != unit.Team)
+        {
+            Vector2Int epPos = battlefield.EnPassantTarget.CurrentCell.GridPosition;
+            if (epPos.y == currentPos.y && Mathf.Abs(epPos.x - currentPos.x) == 1)
+            {
+                Cell epCell = battlefield.GetCell(epPos.x, epPos.y + forwardDirection);
+                if (IsCellEmpty(epCell)) 
+                {
+                    availableCells.Add(epCell);
+                }
+            }
+        }
     }
 }
     

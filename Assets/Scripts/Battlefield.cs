@@ -23,6 +23,8 @@ public class Battlefield : MonoBehaviour
 
     private CellPaletteSettings _cellPaletteSettings;
 
+    public Unit EnPassantTarget { get; set; }
+
     [Inject]
     private void Construct(CellPaletteSettings cellPaletteSettings)
     {
