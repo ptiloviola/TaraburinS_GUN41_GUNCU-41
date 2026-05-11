@@ -68,12 +68,12 @@ namespace IngameDebugConsole
 			normalColor = backgroundImage.color;
 
 			halfSize = popupTransform.sizeDelta * 0.5f;
-            normalizedPosition = SavedNormalizedPosition;
+            // normalizedPosition = SavedNormalizedPosition;
 		}
 
         protected void OnDestroy()
         {
-            SavedNormalizedPosition = normalizedPosition;
+            // SavedNormalizedPosition = normalizedPosition;
         }
 
 		public void NewLogsArrived( int newInfo, int newWarning, int newError )
@@ -197,6 +197,7 @@ namespace IngameDebugConsole
 		//                  are all positive (calculated from bottom left corner of the screen instead of the center of the screen)
 		public void UpdatePosition( bool immediately )
 		{
+			return;
 			Vector2 canvasRawSize = debugManager.canvasTR.rect.size;
 
 			// Calculate safe area bounds
