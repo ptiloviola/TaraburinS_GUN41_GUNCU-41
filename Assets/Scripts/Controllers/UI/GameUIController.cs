@@ -29,7 +29,7 @@ public class GameUIController : MonoBehaviour
 
     private void UpdateTurnUI()
     {
-        string teamName = _turn.Current == Team.White ? "<color=#FFFFFF>WHITE</color>" : "<color=#555555>BLACK</color>";
+        string teamName = _turn.Current == Team.White ? "<color=#FFFFFF>WHITE</color>" : "<color=#000000>BLACK</color>";
 
         _turnText.text = $"{teamName} moves!";
 

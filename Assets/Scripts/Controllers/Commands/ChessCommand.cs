@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.XR;
 using Zenject;
 
 public class ChessCommand : IGameplayCommand

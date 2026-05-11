@@ -1,5 +1,4 @@
 
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -12,7 +11,6 @@ public class BattleController : MonoBehaviour
     private SignalBus _signal;
     private Controls.GameActions _controls;
 
-    private List<Cell> _availableMoves = new List<Cell>();
 
     [Inject]
     private void Construct(Battlefield battlefield, IGameplayCommand command, ISharedData data, SignalBus signal, Controls controls)
