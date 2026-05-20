@@ -1,5 +1,6 @@
 using UnityEngine;
 using Zenject;
+using Unity.AI.Navigation; // Подключаем пространство имен нового пакета навигации
 
 namespace Gameplay.Grid
 {
@@ -9,6 +10,11 @@ namespace Gameplay.Grid
         [SerializeField] private GameObject cubePrefab; // Прераб серого куба
         [SerializeField] private float spacing = 1.1f;    // Расстояние между кубами
         [SerializeField] private float elevationStep = 0.5f; // Высота одного уровня рельефа
+
+        [Header("Навигация")]
+        // Ссылка на компонент, который будет запекать сетку на лету
+        [SerializeField] private NavMeshSurface navMeshSurface;
+
 
         private IGridService _gridService;
         private GridConfig _config; // Ссылка на наш конфиг из папки Settings
@@ -46,6 +52,17 @@ namespace Gameplay.Grid
 
             // 2. Строим 3D-мир на основе этих данных
             CreateVisualGrid();
+
+            // 3. КРИТИЧЕСКИЙ ШАГ: Запекаем навигацию прямо в Runtime!
+            if (navMeshSurface != null)
+            {
+                navMeshSurface.BuildNavMesh(); // Движок посмотрит на созданные кубы и построит дороги
+                Debug.Log("<color=magenta>[GridGenerator] NavMesh успешно запечен в Runtime!</color>");
+            }
+            else
+            {
+                Debug.LogError("[GridGenerator] Не назначена ссылка на NavMeshSurface!");
+            }
         }
 
         private void CreateVisualGrid()
