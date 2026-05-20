@@ -15,6 +15,10 @@ namespace Gameplay.Grid
         // Ссылка на компонент, который будет запекать сетку на лету
         [SerializeField] private NavMeshSurface navMeshSurface;
 
+        // ДОБАВИЛИ: Ссылка на конфиг только для отображения в эдиторе
+        [Header("Настройка в Редакторе (Gizmos)")]
+        [SerializeField] private GridConfig editorConfig;
+
 
         private IGridService _gridService;
         private GridConfig _config; // Ссылка на наш конфиг из папки Settings
@@ -29,9 +33,21 @@ namespace Gameplay.Grid
 
         private void Start()
         {
+
+            // В игре используем конфиг из Zenject. Если его нет, подстрахуемся эдиторским
+            GridConfig activeConfig = _config != null ? _config : editorConfig;
+
+            if (activeConfig == null)
+            {
+                Debug.LogError("[GridGenerator] Нет конфигурации сетки!");
+                return;
+            }
+
+
+
             // Переносим размеры из конфига
-            int w = _config.width;
-            int h = _config.height;
+            int w = activeConfig.width;
+            int h = activeConfig.height;
 
             int[,] elevationMap = new int[w, h];
 
@@ -86,6 +102,30 @@ namespace Gameplay.Grid
                     // Немного растянем куб по вертикали, чтобы получился сплошной рельеф, а не летающие панели
                     Vector3 currentScale = block.transform.localScale;
                     block.transform.localScale = new Vector3(currentScale.x, 0.2f + posY, currentScale.z);
+                }
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            // Рисуем гизмосы только в режиме редактирования и если назначен editorConfig
+            if (Application.isPlaying || editorConfig == null) return;
+
+            Gizmos.color = new Color(0f, 1f, 1f, 0.4f); // Полупрозрачный голубой цвет
+
+            for (int x = 0; x < editorConfig.width; x++)
+            {
+                for (int z = 0; z < editorConfig.height; z++)
+                {
+                    int elevation = editorConfig.GetElevation(x, z);
+                    float posY = elevation * elevationStep;
+                    
+                    // Вычисляем правильный центр и размер с учетом вытягивания куба вниз к нулю
+                    Vector3 center = new Vector3(x * spacing, posY / 2f, z * spacing);
+                    Vector3 size = new Vector3(0.9f, 0.2f + posY, 0.9f);
+
+                    Gizmos.DrawCube(center, size);
+                    Gizmos.DrawWireCube(center, size);
                 }
             }
         }
