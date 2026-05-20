@@ -11,38 +11,38 @@ namespace Gameplay.Grid
         [SerializeField] private float elevationStep = 0.5f; // Высота одного уровня рельефа
 
         private IGridService _gridService;
+        private GridConfig _config; // Ссылка на наш конфиг из папки Settings
 
         // Внедрение зависимости через метод-конструктор
         [Inject]
-        public void Construct(IGridService gridService)
+        public void Construct(IGridService gridService, GridConfig gridConfig)
         {
             _gridService = gridService;
+            _config = gridConfig;
         }
 
         private void Start()
         {
-            // Для MVP Спринта 1 жестко закодируем карту 5х5 с перепадами высот
-            // 0 - низина, 1 - возвышенность, 2 - гора
-            int[,] elevationMap = new int[5, 5] {
-                { 0, 0, 0, 0, 0 },
-                { 0, 1, 1, 1, 0 },
-                { 0, 1, 2, 1, 0 },
-                { 0, 1, 1, 1, 0 },
-                { 0, 0, 0, 0, 0 }
-            };
+            // Переносим размеры из конфига
+            int w = _config.width;
+            int h = _config.height;
+
+            int[,] elevationMap = new int[w, h];
 
             // Карта типов ячеек. Пока пусть вся карта будет обычной землей (Ground)
-            NodeType[,] typeMap = new NodeType[5, 5];
-            for (int x = 0; x < 5; x++)
+            NodeType[,] typeMap = new NodeType[w, h];
+            // Заполняем матрицы данными из ScriptableObject
+            for (int x = 0; x < w; x++)
             {
-                for (int z = 0; z < 5; z++)
+                for (int z = 0; z < h; z++)
                 {
-                    typeMap[x, z] = NodeType.Ground;
+                    elevationMap[x, z] = _config.GetElevation(x, z);
+                    typeMap[x, z] = NodeType.Ground; // Пока все ячейки — земля
                 }
             }
 
             // 1. Инициализируем математические данные через сервис
-            _gridService.InitializeGrid(5, 5, elevationMap, typeMap);
+            _gridService.InitializeGrid(w, h, elevationMap, typeMap);
 
             // 2. Строим 3D-мир на основе этих данных
             CreateVisualGrid();

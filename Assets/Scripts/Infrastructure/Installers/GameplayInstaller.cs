@@ -7,6 +7,11 @@ namespace Infrastructure.Installers
 {
     public class GameplayInstaller : MonoInstaller
     {
+
+        // Ссылка на наш конфиг, которую мы укажем в инспекторе SceneContext
+        [SerializeField] private GridConfig gridConfig;
+
+
         public override void InstallBindings()
         {
             // Инициализируем встроенную шину сигналов Zenject
@@ -16,13 +21,14 @@ namespace Infrastructure.Installers
             Container.DeclareSignal<SignalBaseDamaged>();
             Container.DeclareSignal<SignalEnemyDied>();
 
-            // 3. Регистрируем сервис сетки
-            // Bind<Интерфейс>().To<Реализация>().КакОдиночка()
+            // Регистрируем экземпляр нашего ScriptableObject в контейнере.
+            // Теперь любой класс может написать [Inject] private GridConfig _config;
+            Container.Bind<GridConfig>().FromInstance(gridConfig).AsSingle();
+
             Container.Bind<IGridService>().To<GridService>().AsSingle();
 
-
-
-            Debug.Log("<color=green>[Zenject] Базовая инфраструктура и SignalBus успешно настроены!</color>");
+            Debug.Log("<color=green>[Zenject] Сетка и её конфигурация успешно зарегистрированы!</color>");
+        
         }
     }
 }
