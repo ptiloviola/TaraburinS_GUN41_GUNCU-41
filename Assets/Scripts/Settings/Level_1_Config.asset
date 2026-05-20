@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd572816c8004e64ca65726d5732e3dd, type: 3}
   m_Name: Level_1_Config
   m_EditorClassIdentifier: 
-  width: 5
-  height: 5
-  rows: []
+  width: 10
+  height: 10
+  rows:
+  - columns: 00000000010000000200000001000000000000000100000002000000010000000000000001000000
