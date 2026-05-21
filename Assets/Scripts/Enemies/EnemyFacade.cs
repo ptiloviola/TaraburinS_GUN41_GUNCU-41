@@ -8,6 +8,15 @@ namespace Gameplay.Enemies
         private IMovementStrategy _movementStrategy;
         private Pool _pool;
 
+        // Перечисление типов навигации врага
+        public enum MovementType { PathOnly, FreeRoam }
+        
+        [Header("Настройки навигации")]
+        [SerializeField] private MovementType _movementType = MovementType.PathOnly;
+
+        // Геттер, чтобы стратегия движения могла прочитать этот режим
+        public MovementType EnemyMovementType => _movementType;
+
         // Магия Zenject: он сам вставит сюда ссылку на пул при инстанцировании префаба!
         [Inject]
         public void Construct(Pool pool)

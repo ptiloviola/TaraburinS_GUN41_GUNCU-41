@@ -29,8 +29,8 @@ namespace Infrastructure.Installers
             Container.DeclareSignal<SignalEnemyDied>();
 
             // Регистрируем экземпляр нашего ScriptableObject в контейнере.
-            // Теперь любой класс может написать [Inject] private GridConfig _config;
-            Container.Bind<GridConfig>().FromInstance(gridConfig).AsSingle();
+            // // Теперь любой класс может написать [Inject] private GridConfig _config;
+            // Container.Bind<GridConfig>().FromInstance(gridConfig).AsSingle();
             Container.Bind<IGridService>().To<GridService>().AsSingle();
 
             Debug.Log("<color=green>[Zenject] Сетка и её конфигурация успешно зарегистрированы!</color>");

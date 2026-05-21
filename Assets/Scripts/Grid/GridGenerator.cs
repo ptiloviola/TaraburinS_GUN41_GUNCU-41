@@ -6,6 +6,9 @@ namespace Gameplay.Grid
 {
     public class GridGenerator : MonoBehaviour
     {
+        [Header("Визуальное оформление")]
+        [SerializeField] private GridTheme theme;
+
         [Header("Настройки визуала")]
         [SerializeField] private GameObject cubePrefab; // Прераб серого куба
         [SerializeField] private float spacing = 1.1f;    // Расстояние между кубами
@@ -21,29 +24,31 @@ namespace Gameplay.Grid
 
 
         private IGridService _gridService;
-        private GridConfig _config; // Ссылка на наш конфиг из папки Settings
+
+
+        // Публичные свойства только для чтения, чтобы наш Editor-скрипт мог брать эти данные
+        public float Spacing => spacing;
+        public GridConfig EditorConfig => editorConfig;
 
         // Внедрение зависимости через метод-конструктор
         [Inject]
-        public void Construct(IGridService gridService, GridConfig gridConfig)
+        public void Construct(IGridService gridService)
         {
             _gridService = gridService;
-            _config = gridConfig;
+
         }
 
         private void Start()
         {
 
-            // В игре используем конфиг из Zenject. Если его нет, подстрахуемся эдиторским
-            GridConfig activeConfig = _config != null ? _config : editorConfig;
+            // Берем ТОЛЬКО тот конфиг, который настроен в Инспекторе
+            GridConfig activeConfig = editorConfig;
 
             if (activeConfig == null)
             {
                 Debug.LogError("[GridGenerator] Нет конфигурации сетки!");
                 return;
             }
-
-
 
             // Переносим размеры из конфига
             int w = activeConfig.width;
@@ -58,8 +63,9 @@ namespace Gameplay.Grid
             {
                 for (int z = 0; z < h; z++)
                 {
-                    elevationMap[x, z] = _config.GetElevation(x, z);
-                    typeMap[x, z] = NodeType.Ground; // Пока все ячейки — земля
+                    GridCellData cellData = activeConfig.GetCellData(x, z);
+                    elevationMap[x, z] = cellData.elevation;
+                    typeMap[x, z] = cellData.type;
                 }
             }
 
@@ -83,17 +89,30 @@ namespace Gameplay.Grid
 
         private void CreateVisualGrid()
         {
+            // Получаем индексы зон из настроек Unity по их именам
+            int pathAreaIndex = UnityEngine.AI.NavMesh.GetAreaFromName("CustomPath");
+            int groundAreaIndex = UnityEngine.AI.NavMesh.GetAreaFromName("CustomGround");
+
+            // БРОНЯ: Проверяем, нашел ли движок наши зоны
+            if (pathAreaIndex == -1 || groundAreaIndex == -1)
+            {
+                Debug.LogError("<color=red>[GridGenerator] ОШИБКА: Зоны CustomPath или CustomGround не найдены! Проверь Window -> AI -> Navigation -> Areas.</color>");
+                pathAreaIndex = 0; // Фолбэк на дефолтную зону
+                groundAreaIndex = 0;
+            }
+
             for (int x = 0; x < _gridService.Width; x++)
             {
                 for (int z = 0; z < _gridService.Height; z++)
                 {
                     // Запрашиваем данные ячейки у сервиса
                     GridNode node = _gridService.GetNode(new Vector2Int(x, z));
-
+                    
                     // Рассчитываем позицию куба в пространстве Unity.
-                    // Высота (Y) напрямую зависит от Elevation из модели данных
-                    float posY = node.Elevation * elevationStep;
-                    Vector3 spawnPosition = new Vector3(x * spacing, posY, z * spacing);
+                    // Считаем добавленную высоту
+                    float addedHeight = node.Elevation * elevationStep;
+                    // Спавним центр на половине добавленной высоты
+                    Vector3 spawnPosition = new Vector3(x * spacing, addedHeight / 2f, z * spacing);
 
                     // Спавним куб
                     GameObject block = Instantiate(cubePrefab, spawnPosition, Quaternion.identity, transform);
@@ -101,28 +120,74 @@ namespace Gameplay.Grid
                     
                     // Немного растянем куб по вертикали, чтобы получился сплошной рельеф, а не летающие панели
                     Vector3 currentScale = block.transform.localScale;
-                    block.transform.localScale = new Vector3(currentScale.x, 0.2f + posY, currentScale.z);
+                    // Растягиваем куб (базовая 0.2 + добавленная высота)
+                    block.transform.localScale = new Vector3(currentScale.x, 0.2f + addedHeight, currentScale.z);
+
+                    // --- РАБОТА С МАТЕРИАЛАМИ ---
+                    Renderer blockRenderer = block.GetComponent<Renderer>();
+
+                    // --- НАСТРОЙКА НАВИГАЦИОННЫХ ЗОН ---
+                    NavMeshModifier modifier = block.AddComponent<NavMeshModifier>();
+                    modifier.overrideArea = true;
+
+                    if (node.Type == NodeType.Path)
+                    {
+                        modifier.area = pathAreaIndex; // Назначаем зону CustomPath
+                        
+                        if (theme != null && theme.pathMaterial != null)
+                            blockRenderer.material = theme.pathMaterial;
+                    }
+                    else if (node.Type == NodeType.Obstacle)
+                    {
+                        modifier.area = 1; // 1 — это встроенная зона Not Walkable (Ходить нельзя никому)
+                        
+                        if (theme != null && theme.obstacleMaterial != null)
+                            blockRenderer.material = theme.obstacleMaterial;
+                    }
+                    else // NodeType.Ground
+                    {
+                        modifier.area = groundAreaIndex; // Назначаем зону CustomGround
+                        
+                        if (theme != null && theme.groundMaterial != null)
+                            blockRenderer.material = theme.groundMaterial;
+                    }
+
                 }
             }
         }
 
         private void OnDrawGizmos()
         {
-            // Рисуем гизмосы только в режиме редактирования и если назначен editorConfig
             if (Application.isPlaying || editorConfig == null) return;
-
-            Gizmos.color = new Color(0f, 1f, 1f, 0.4f); // Полупрозрачный голубой цвет
 
             for (int x = 0; x < editorConfig.width; x++)
             {
                 for (int z = 0; z < editorConfig.height; z++)
                 {
-                    int elevation = editorConfig.GetElevation(x, z);
-                    float posY = elevation * elevationStep;
+                    GridCellData cellData = editorConfig.GetCellData(x, z);
                     
-                    // Вычисляем правильный центр и размер с учетом вытягивания куба вниз к нулю
-                    Vector3 center = new Vector3(x * spacing, posY / 2f, z * spacing);
-                    Vector3 size = new Vector3(0.9f, 0.2f + posY, 0.9f);
+                    // 1. Цвета кисточки
+                    switch (cellData.type)
+                    {
+                        case NodeType.Path: 
+                            Gizmos.color = new Color(1f, 0.9f, 0f, 0.5f); // Желтый
+                            break; 
+                        case NodeType.Obstacle: 
+                            Gizmos.color = new Color(1f, 0f, 0f, 0.5f); // Красный
+                            break; 
+                        default: 
+                            Gizmos.color = new Color(0f, 1f, 1f, 0.4f); // Голубой
+                            break; 
+                    }
+                    
+                    // Считаем, сколько высоты мы добавили ячейке
+                    float addedHeight = cellData.elevation * elevationStep;
+                    
+                    // Центр поднимается ровно на ПОЛОВИНУ добавленной высоты
+                    Vector3 center = new Vector3(x * spacing, addedHeight / 2f, z * spacing);
+                    
+                    // Общий размер (базовая толщина 0.2 + добавленная высота)
+                    Vector3 size = new Vector3(0.9f, 0.2f + addedHeight, 0.9f);
 
                     Gizmos.DrawCube(center, size);
                     Gizmos.DrawWireCube(center, size);

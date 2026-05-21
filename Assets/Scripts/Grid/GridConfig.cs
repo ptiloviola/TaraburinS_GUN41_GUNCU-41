@@ -3,9 +3,16 @@ using UnityEngine;
 namespace Gameplay.Grid
 {
     [System.Serializable]
+    public struct GridCellData
+    {
+        public int elevation;
+        public NodeType type;
+    }
+
+    [System.Serializable]
     public struct GridRow
     {
-        public int[] columns; // Ячейки в одной строке
+        public GridCellData[] columns;
     }
 
     [CreateAssetMenu(fileName = "NewGridConfig", menuName = "TD/Grid Config", order = 51)]
@@ -15,22 +22,26 @@ namespace Gameplay.Grid
         public int width = 5;
         public int height = 5;
 
-        [Header("Карта высот (Строки x Столбцы)")]
+        [Header("Карта уровня")]
         public GridRow[] rows;
 
-        // Метод-помощник, который безопасно выдает высоту для конкретной ячейки [x, z]
-        public int GetElevation(int x, int z)
+        // Метод для безопасного ЧТЕНИЯ (уже был)
+        public GridCellData GetCellData(int x, int z)
         {
-            // Проверяем, что строка существует в конфиге
-            if (rows != null && x < rows.Length)
+            if (rows != null && x < rows.Length && rows[x].columns != null && z < rows[x].columns.Length)
             {
-                // Проверяем, что столбец существует в этой строке
-                if (rows[x].columns != null && z < rows[x].columns.Length)
-                {
-                    return rows[x].columns[z];
-                }
+                return rows[x].columns[z];
             }
-            return 0; // Возвращаем 0, если вышли за границы (защита от ошибок)
+            return new GridCellData { elevation = 0, type = NodeType.Ground };
+        }
+
+        // НОВЫЙ Метод для безопасной ЗАПИСИ (для нашей кисточки)
+        public void SetCellData(int x, int z, GridCellData data)
+        {
+            if (rows != null && x < rows.Length && rows[x].columns != null && z < rows[x].columns.Length)
+            {
+                rows[x].columns[z] = data;
+            }
         }
     }
 }

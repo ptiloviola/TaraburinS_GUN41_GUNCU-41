@@ -23,6 +23,23 @@ namespace Gameplay.Enemies
             if (_agent != null)
             {
                 _agent.enabled = true;
+
+                // Получаем индексы наших кастомных зон
+                int pathArea = UnityEngine.AI.NavMesh.GetAreaFromName("CustomPath");
+                int groundArea = UnityEngine.AI.NavMesh.GetAreaFromName("CustomGround");
+
+                // Настраиваем маску навигации с помощью битовых сдвигов (1 << индекс_зоны)
+                if (_enemy.EnemyMovementType == EnemyFacade.MovementType.PathOnly)
+                {
+                    // Агент видит ТОЛЬКО дорогу
+                    _agent.areaMask = (1 << pathArea);
+                }
+                else
+                {
+                    // Агент видит и дорогу, и обычную землю вокруг
+                    _agent.areaMask = (1 << pathArea) | (1 << groundArea);
+                }
+                
                 _agent.SetDestination(_targetPosition);
             }
             else
