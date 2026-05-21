@@ -4,6 +4,8 @@ using Infrastructure.Signals;
 using Gameplay.Grid; // Подключаем нашу сетку
 using Gameplay.Enemies; 
 using Gameplay.Spawner;
+using Gameplay.Base;
+
 
 namespace Infrastructure.Installers
 {
@@ -45,6 +47,9 @@ namespace Infrastructure.Installers
             
             // Находим спавнер на сцене и разрешаем его зависимости при старте
             Container.Bind<WaveSpawner>().FromComponentInHierarchy().AsSingle();
+
+            // Находим базу на сцене и делаем ее доступной для инъекций
+            Container.Bind<BaseCore>().FromComponentInHierarchy().AsSingle();
         
         }
     }

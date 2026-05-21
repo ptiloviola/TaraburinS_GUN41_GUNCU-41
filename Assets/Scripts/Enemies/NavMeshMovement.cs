@@ -7,6 +7,7 @@ namespace Gameplay.Enemies
     {
         private NavMeshAgent _agent;
         private Vector3 _targetPosition;
+        private EnemyFacade _enemy; // Ссылка на фасад
 
         // Передаем целевую точку через конструктор
         public NavMeshMovement(Vector3 targetPosition)
@@ -14,9 +15,10 @@ namespace Gameplay.Enemies
             _targetPosition = targetPosition;
         }
 
-        public void Initialize(Transform enemyTransform)
+        public void Initialize(EnemyFacade enemy)
         {
-            _agent = enemyTransform.GetComponent<NavMeshAgent>();
+            _enemy = enemy;
+            _agent = _enemy.GetComponent<NavMeshAgent>();
 
             if (_agent != null)
             {
@@ -25,25 +27,45 @@ namespace Gameplay.Enemies
             }
             else
             {
-                Debug.LogError($"[NavMeshMovement] На объекте {enemyTransform.name} отсутствует компонент NavMeshAgent!");
+                Debug.LogError($"[NavMeshMovement] На объекте {_enemy.name} отсутствует компонент NavMeshAgent!");
             }
         }
 
         public void Tick(float deltaTime)
         {
-            // Здесь можно обрабатывать специфичную логику, 
-            // например, проверять, дошел ли враг до финиша.
+            // // Здесь можно обрабатывать специфичную логику, 
+            // // например, проверять, дошел ли враг до финиша.
             
-            if (_agent != null && !_agent.pathPending)
-            {
-                if (_agent.remainingDistance <= _agent.stoppingDistance)
-                {
-                    if (!_agent.hasPath || _agent.velocity.sqrMagnitude == 0f)
-                    {
-                        // Враг дошел до базы! (Логику отправки сигнала сделаем чуть позже)
-                    }
-                }
-            }
+            // if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh)
+            // {
+            //     return;
+            // }
+            // if (_agent.pathPending)
+            // {
+            //     return;
+            // }
+            
+            // if (_agent.remainingDistance <= 1.0f)
+            // {
+            //     if (!_agent.hasPath || _agent.velocity.sqrMagnitude < 1f)
+            //     {
+            //         // Враг дошел до базы! 
+            //         // Отключаем агент, чтобы он не пытался двигаться в пуле
+                    
+            //         Debug.Log($"<color=green>[NavMeshMovement] Враг {_enemy.gameObject.name} успешно достиг цели!</color>");
+                    
+            //         _agent.enabled = false; 
+                    
+            //         // Возвращаем врага в пул (он исчезнет со сцены)
+            //         _enemy.Despawn();
+            //     }
+            // }
+
+            // Оставляем только базовую защиту от ошибок.
+            // Больше мы не проверяем remainingDistance!
+            if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) 
+                return;
+            
         }
     }
 }

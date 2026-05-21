@@ -3,6 +3,7 @@ using Zenject;
 using Gameplay.Enemies;
 using System.Collections;
 using UnityEngine.AI;
+using Gameplay.Base;
 
 namespace Gameplay.Spawner
 {
@@ -10,18 +11,20 @@ namespace Gameplay.Spawner
     {
         [Header("Настройки спавна")]
         [SerializeField] private Vector3 _spawnPosition = new Vector3(0, 1, 0); // Точка старта (например, край сетки)
-        [SerializeField] private Vector3 _targetPosition = new Vector3(4, 1, 4); // Точка базы (противоположный край)
+        
         [SerializeField] private float _spawnInterval = 2.0f;                  // Интервал между спавном сфер
         [SerializeField] private int _enemiesInWave = 5;                       // Сколько врагов выпустить
 
         private EnemyFacade.Pool _enemyPool;
+        private BaseCore _baseCore; // Ссылка на компонент базы
 
 
         // Внедряем пул врагов через Zenject
         [Inject]
-        public void Construct(EnemyFacade.Pool enemyPool)
+        public void Construct(EnemyFacade.Pool enemyPool, BaseCore baseCore)
         {
             _enemyPool = enemyPool;
+            _baseCore = baseCore;
         }
 
         private void Start()
@@ -41,6 +44,13 @@ namespace Gameplay.Spawner
 
             Debug.Log("<color=yellow>[WaveSpawner] Волна начинается!</color>");
 
+            // Защита: если базы почему-то нет на сцене, останавливаем спавн
+            if (_baseCore == null)
+            {
+                Debug.LogError("[WaveSpawner] Невозможно начать волну: База не найдена в контейнере Zenject!");
+                yield break;
+            }
+
             for (int i = 0; i < _enemiesInWave; i++)
             {
                 // 1. Достаем "голую" сущность из пула (передаем пока пустые параметры, если пул требует)
@@ -59,7 +69,7 @@ namespace Gameplay.Spawner
                 }
 
                 // 3. И ТОЛЬКО ТЕПЕРЬ создаем стратегию и запускаем ее!
-                IMovementStrategy movement = new NavMeshMovement(_targetPosition);
+                IMovementStrategy movement = new NavMeshMovement(_baseCore.transform.position);
                 enemy.InitializeMovement(movement); // Этот метод мы сейчас добавим в Фасад
 
                 yield return new WaitForSeconds(_spawnInterval);

@@ -9,10 +9,15 @@ namespace Gameplay.Enemies
         private IMovementStrategy _movementStrategy;
         private IMemoryPool _pool;
 
+        private bool _isActive;
+
         private void Update()
         {
-            // Обновляем логику движения
-            _movementStrategy?.Tick(Time.deltaTime);
+            // Выполняем логику ТОЛЬКО если враг активен
+            if (_isActive && _movementStrategy != null)
+            {
+                _movementStrategy.Tick(Time.deltaTime);
+            }
         }      
 
 
@@ -21,6 +26,10 @@ namespace Gameplay.Enemies
         {
             
             _pool = pool;
+            _isActive = true; // Враг ожил
+
+            // 1. ЖЕСТКО ВКЛЮЧАЕМ ОБЪЕКТ ПРИ ПОЯВЛЕНИИ ИЗ ПУЛА
+            gameObject.SetActive(true);
 
             // Если при спавне пришел movementStrategy (например, из старого кода), 
             // можем его инициализировать, но теперь мы будем делать это явно через метод ниже
@@ -35,7 +44,7 @@ namespace Gameplay.Enemies
         public void InitializeMovement(IMovementStrategy movementStrategy)
         {
             _movementStrategy = movementStrategy;
-            _movementStrategy.Initialize(transform);
+            _movementStrategy.Initialize(this);
         }
 
 
@@ -43,15 +52,41 @@ namespace Gameplay.Enemies
         // Метод для возврата врага обратно в пул
         public void Despawn()
         {
-            _pool.Despawn(this);
+            // Сигнальная ракета 1: Дошел ли сигнал сюда?
+            Debug.Log($"<color=orange>[EnemyFacade] Запрос на деспавн. _isActive: {_isActive}, _pool_exists: {_pool != null}</color>");
+
+            if (_isActive && _pool != null)
+            {
+                _isActive = false; // Блокируем повторные вызовы
+                _pool.Despawn(this); // Отдаем команду Zenject
+            }
+            else if (_pool == null)
+            {
+                // План "Б": Если пул по какой-то причине потерян (чтобы сферы не зависали)
+                Debug.LogError($"<color=red>[EnemyFacade] ОШИБКА: Пул потерян! Жестко уничтожаем объект {gameObject.name}</color>");
+                gameObject.SetActive(false); // Выключаем из сцены
+                Destroy(gameObject); // Уничтожаем насовсем, раз пул сломался
+            }
         }
 
         // Вызывается Zenject, когда враг возвращается в пул (очищаем ссылки)
         public void OnDespawned()
         {
+            // Сигнальная ракета 2: Подхватил ли Zenject команду?
+            Debug.Log($"<color=orange>[EnemyFacade] Zenject вызвал OnDespawned. Отключаем агента и объект.</color>");
+            
+            var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            if (agent != null) 
+            {
+                agent.enabled = false;
+            }
+
             _movementStrategy = null;
             _pool = null;
-            Debug.Log($"[EnemyPool] Враг {gameObject.name} вернулся в пул.");
+            _isActive = false;
+
+            // Жестко выключаем визуал и физику
+            gameObject.SetActive(false);
         }
 
         // Вложенный класс пула, который мы зарегистрируем в Zenject
