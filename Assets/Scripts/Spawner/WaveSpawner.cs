@@ -53,24 +53,18 @@ namespace Gameplay.Spawner
 
             for (int i = 0; i < _enemiesInWave; i++)
             {
-                // 1. Достаем "голую" сущность из пула (передаем пока пустые параметры, если пул требует)
-                EnemyFacade enemy = _enemyPool.Spawn(null, _enemyPool);
+                // Было: EnemyFacade enemy = _enemyPool.Spawn(null, _enemyPool);
+                // СТАЛО: Просто берем врага из пула!
+                EnemyFacade enemy = _enemyPool.Spawn();
 
-                // 2. СНАЧАЛА перемещаем физический объект в точку старта
-                // В NavMeshAgent для телепортации лучше использовать встроенный метод Warp
-                var agent = enemy.GetComponent<NavMeshAgent>();
+                var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
                 if (agent != null)
                 {
-                    agent.Warp(_spawnPosition); // Это корректно перенесет агента на сетку
-                }
-                else
-                {
-                    enemy.transform.position = _spawnPosition;
+                    agent.Warp(_spawnPosition);
                 }
 
-                // 3. И ТОЛЬКО ТЕПЕРЬ создаем стратегию и запускаем ее!
                 IMovementStrategy movement = new NavMeshMovement(_baseCore.transform.position);
-                enemy.InitializeMovement(movement); // Этот метод мы сейчас добавим в Фасад
+                enemy.InitializeMovement(movement);
 
                 yield return new WaitForSeconds(_spawnInterval);
 
