@@ -5,6 +5,7 @@ using Gameplay.Grid; // Подключаем нашу сетку
 using Gameplay.Enemies; 
 using Gameplay.Spawner;
 using Gameplay.Base;
+using Gameplay.Towers;
 
 
 namespace Infrastructure.Installers
@@ -17,6 +18,10 @@ namespace Infrastructure.Installers
 
         // Ссылка на префаб врага для пула
         [SerializeField] private GameObject enemyPrefab;
+
+        [Header("Настройки систем")]
+        // Появится в инспекторе инсталлера, сюда кидаем префаб и маску!
+        [SerializeField] private GridInteractor.Settings gridInteractorSettings;
 
 
         public override void InstallBindings()
@@ -50,6 +55,19 @@ namespace Infrastructure.Installers
 
             // Находим базу на сцене и делаем ее доступной для инъекций
             Container.Bind<BaseCore>().FromComponentInHierarchy().AsSingle();
+
+
+            Container.Bind<GridGenerator>().FromComponentInHierarchy().AsSingle();
+            // 1. Биндим настройки
+            Container.BindInstance(gridInteractorSettings).IfNotBound();
+
+            // 2. Биндим сам интерактор к двум интерфейсам: 
+            // как класс (если кто-то захочет его запросить) и как ITickable (чтобы работал Tick)
+            Container.BindInterfacesAndSelfTo<GridInteractor>().AsSingle();
+
+
+
+
         
         }
     }

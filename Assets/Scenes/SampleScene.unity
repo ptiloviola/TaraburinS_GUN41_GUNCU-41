@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -208,13 +209,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.70706815, y: -0.007392377, z: 0.007392377, w: 0.70706815}
+  m_LocalPosition: {x: 0.09, y: 9.01, z: 2.79}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -59.256, z: -58.058}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,6 +260,18 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d040f178cbe6a7847a2f8845f75699ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &381428419
 GameObject:
   m_ObjectHideFlags: 0
@@ -711,6 +724,17 @@ MonoBehaviour:
   gridConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}
   enemyPrefab: {fileID: 7372269183789494302, guid: 384c00e3f301d4b4ea4a2f9a67785efb,
     type: 3}
+  gridInteractorSettings:
+    GridLayerMask:
+      serializedVersion: 2
+      m_Bits: 256
+    DummyTowerPrefab: {fileID: 130193592807935332, guid: 6b56de37029e97040b4e0db45d5061ca,
+      type: 3}
+    ValidCursorPrefab: {fileID: 1942206327739906697, guid: 59388c14773c2af43a3497b035350af3,
+      type: 3}
+    InvalidCursorPrefab: {fileID: 1942206327739906697, guid: abfa30ab36b2f6d4c8b323bdf5dc99d8,
+      type: 3}
+    HeightOffset: 0.05
 --- !u!114 &1342920087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -788,8 +812,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spawnPosition: {x: 2, y: 1, z: 2}
-  _spawnInterval: 2
-  _enemiesInWave: 5
+  _spawnInterval: 0.2
+  _enemiesInWave: 12
 --- !u!4 &1925016042
 Transform:
   m_ObjectHideFlags: 0
