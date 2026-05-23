@@ -43,7 +43,7 @@ namespace Gameplay.Towers
             _gridGenerator = gridGenerator;
             _settings = settings;
             _instantiator = instantiator;
-            _mainCamera = Camera.main; 
+            _mainCamera = Camera.main;
         }
 
         public void Initialize()

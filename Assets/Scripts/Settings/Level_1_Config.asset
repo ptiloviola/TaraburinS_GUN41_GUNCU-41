@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd572816c8004e64ca65726d5732e3dd, type: 3}
   m_Name: Level_1_Config
   m_EditorClassIdentifier: 
-  width: 15
-  height: 12
+  width: 21
+  height: 15
   rows:
   - columns:
     - elevation: 0
@@ -40,25 +40,6 @@ MonoBehaviour:
       type: 0
     - elevation: 0
       type: 0
-  - columns:
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
     - elevation: 0
       type: 0
     - elevation: 0
@@ -75,6 +56,47 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
       type: 1
     - elevation: 0
       type: 1
@@ -84,6 +106,188 @@ MonoBehaviour:
       type: 0
     - elevation: 0
       type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -107,140 +311,6 @@ MonoBehaviour:
       type: 1
     - elevation: 0
       type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-  - columns:
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-  - columns:
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-  - columns:
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-  - columns:
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 2
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 5
-      type: 0
-    - elevation: 0
-      type: 0
-  - columns:
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-  - columns:
     - elevation: 0
       type: 0
     - elevation: 0
@@ -248,19 +318,9 @@ MonoBehaviour:
     - elevation: 1
       type: 1
     - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
       type: 1
+    - elevation: 0
+      type: 0
     - elevation: 0
       type: 0
     - elevation: 0
@@ -271,32 +331,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 1
-    - elevation: 0
       type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 2
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-  - columns:
-    - elevation: 5
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -305,54 +340,12 @@ MonoBehaviour:
       type: 0
     - elevation: 0
       type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
     - elevation: 1
       type: 0
-  - columns:
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
     - elevation: 2
       type: 0
-  - columns:
     - elevation: 0
       type: 0
-    - elevation: 0
-      type: 0
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
-    - elevation: 0
-      type: 1
     - elevation: 0
       type: 1
     - elevation: 0
@@ -361,9 +354,7 @@ MonoBehaviour:
       type: 0
     - elevation: 0
       type: 0
-    - elevation: 1
-      type: 0
-    - elevation: 1
+    - elevation: 0
       type: 0
   - columns:
     - elevation: 0
@@ -377,9 +368,294 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
+      type: 0
+    - elevation: 2
+      type: 1
+    - elevation: 1
+      type: 0
+    - elevation: 1
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
       type: 1
     - elevation: 0
       type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 1
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 1
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
     - elevation: 0
       type: 0
     - elevation: 0
