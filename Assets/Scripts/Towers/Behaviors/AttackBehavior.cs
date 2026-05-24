@@ -1,6 +1,8 @@
 using Gameplay.Towers.Data;
 using UnityEngine;
 using Gameplay.Towers.Data.Modules;
+using Gameplay.Towers.Visuals;
+using Unity.VisualScripting;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -8,59 +10,116 @@ namespace Gameplay.Towers.Behaviors
     // и привязать к нему точку вылета снаряда (FirePoint) прямо в инспекторе!
     public class AttackBehavior : MonoBehaviour, ITowerBehavior
     {
-        [Header("Ссылки")]
-        [SerializeField] private Transform _firePoint; // Откуда вылетает пуля
 
-        // ДОБАВЛЯЕМ МАСКУ СЛОЯ ДЛЯ ВРАГОВ
+        [Header("Прицеливание")]
+        [SerializeField] private Transform _logicalRotator; // Невидимая ось вращения
+        [SerializeField] private Transform _firePoint;      // Точка вылета снаряда (внутри ротатора)
         [SerializeField] private LayerMask _enemyLayerMask;
+        [SerializeField] private float _turnSpeed = 10f;    // Скорость поворота
+
+
+
         
         private TowerFacade _facade;
+        private ITowerVisuals _visuals;
+        private Transform _currentTarget;
         private float _cooldownTimer;
 
         public void Initialize(TowerFacade facade)
         {
             _facade = facade;
             _cooldownTimer = 0f;
-            // Если точку вылета не назначили, используем центр самой башни
-            if (_firePoint == null)
-            {
-                _firePoint = transform;
-            }
+            _visuals = GetComponentInChildren<ITowerVisuals>();
+            _visuals?.Initialize();
+            if (_logicalRotator == null) _logicalRotator = transform;
+            if (_firePoint == null) _firePoint = _logicalRotator;
+            
         }
 
         public void Tick()
         {
             AttackStats stats = _facade.GetCurrentStats().Attack;
-            
             if (stats == null) return;
 
             _cooldownTimer -= Time.deltaTime;
-            
-            if (_cooldownTimer <= 0f)
+
+            // 1. Поиск цели (если нет текущей, или она выключена/умерла, или ушла слишком далеко)
+            if (!IsTargetValid(stats.Range))
             {
-                ExecuteTestShot(stats);
-                _cooldownTimer = stats.Cooldown; // Сброс таймера перезарядки
+                FindClosestTarget(stats.Range);
             }
+
+            // 2. Если цель есть — поворачиваемся и стреляем
+            if (_currentTarget != null)
+            {
+                AimAtTarget();
+
+                // Стреляем, если прошла перезарядка И дуло смотрит на врага
+                if (_cooldownTimer <= 0f && IsFacingTarget())
+                {
+                    ExecuteShot();
+                    _cooldownTimer = stats.Cooldown;
+                }
+            }
+            
         }
 
-        private void ExecuteTestShot(AttackStats stats)
+        private bool IsTargetValid(float range)
         {
-            // Пускаем физический луч вперед
-            Vector3 direction = _firePoint.forward;
-            Debug.Log($"<color=red>[AttackBehavior] Башня '{_facade.Config.DisplayName}' делает выстрел вперед!</color>");
-            
-            // Визуализируем луч в окне Scene (видно только во время воспроизведения при включенных Gizmos)
-            Debug.DrawRay(_firePoint.position, direction * stats.Range, Color.red, 0.2f);
+            if (_currentTarget == null || !_currentTarget.gameObject.activeInHierarchy) return false;
+            // Проверяем, не ушел ли враг за радиус поражения (используем квадраты дистанций для оптимизации)
+            float sqrDistance = (_currentTarget.position - _logicalRotator.position).sqrMagnitude;
+            return sqrDistance <= (range * range);
+        }
 
+        private void FindClosestTarget(float range)
+        {
+            _currentTarget = null;
+            Collider[] hits = Physics.OverlapSphere(_logicalRotator.position, range, _enemyLayerMask);
             
+            float closestSqrDistance = Mathf.Infinity;
 
-            // ТЕПЕРЬ ЛУЧ ИЩЕТ ТОЛЬКО ВРАГОВ (используем _enemyLayerMask)
-            if (Physics.Raycast(_firePoint.position, direction, out RaycastHit hit, stats.Range, _enemyLayerMask))
+            foreach (var hit in hits)
             {
-                Debug.Log($"<color=yellow>[AttackBehavior] ПОПАДАНИЕ! Луч пробил врага: {hit.collider.name}</color>");
+                float sqrDistance = (hit.transform.position - _logicalRotator.position).sqrMagnitude;
+                if (sqrDistance < closestSqrDistance)
+                {
+                    closestSqrDistance = sqrDistance;
+                    _currentTarget = hit.transform;
+                }
             }
         }
 
+        private void AimAtTarget()
+        {
+            // Направляем вектор на врага, игнорируя высоту (чтобы башня крутилась только влево-вправо)
+            Vector3 direction = _currentTarget.position - _logicalRotator.position;
+            direction.y = 0f;
+
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                _logicalRotator.rotation = Quaternion.Slerp(_logicalRotator.rotation, targetRotation, _turnSpeed * Time.deltaTime);
+            }
+        }
+
+        private bool IsFacingTarget()
+        {
+            Vector3 directionToTarget = (_currentTarget.position - _logicalRotator.position).normalized;
+            directionToTarget.y = 0f;
+            
+            // Dot Product > 0.99 означает, что угол между направлением пушки и врагом меньше ~8 градусов
+            return Vector3.Dot(_logicalRotator.forward, directionToTarget) > 0.99f;
+        }
+
+        private void ExecuteShot()
+        {
+            Debug.Log($"<color=red>[AttackBehavior] Выстрел по {_currentTarget.name}!</color>");
+            Debug.DrawRay(_firePoint.position, _logicalRotator.forward * 5f, Color.red, 0.2f);
+            
+            // Дергаем API анимации (сейчас сработает Dummy, потом — настоящая анимация)
+            _visuals?.PlayShootAnimation();
+        }
 
     }
 }
