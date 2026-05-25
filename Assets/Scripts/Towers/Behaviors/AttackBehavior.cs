@@ -22,6 +22,10 @@ namespace Gameplay.Towers.Behaviors
         
         private TowerFacade _facade;
         private ITowerVisuals _visuals;
+
+
+
+
         private Transform _currentTarget;
         private float _cooldownTimer;
 
@@ -30,9 +34,14 @@ namespace Gameplay.Towers.Behaviors
             _facade = facade;
             _cooldownTimer = 0f;
             _visuals = GetComponentInChildren<ITowerVisuals>();
+
             _visuals?.Initialize();
             if (_logicalRotator == null) _logicalRotator = transform;
             if (_firePoint == null) _firePoint = _logicalRotator;
+
+            // 2. ЗАПУСКАЕМ АНИМАЦИЮ ПОЯВЛЕНИЯ!
+            // Теперь башня плавно вырастет из земли до размера (1,1,1)
+            _visuals?.PlayBuildAnimation();
             
         }
 

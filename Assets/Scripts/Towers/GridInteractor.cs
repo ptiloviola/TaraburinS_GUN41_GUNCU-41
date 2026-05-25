@@ -1,6 +1,8 @@
 using Gameplay.Grid;
 using UnityEngine;
 using Zenject;
+using Gameplay.Towers.Behaviors;
+using Gameplay.Towers.Visuals;
 
 namespace Gameplay.Towers
 {
@@ -136,6 +138,27 @@ namespace Gameplay.Towers
                 gridBlockCollider.bounds.max.y, 
                 gridBlockCollider.transform.position.z
             );
+
+            // Спавним и сохраняем ссылку на созданный объект
+            GameObject towerGo = _instantiator.InstantiatePrefab(_settings.DummyTowerPrefab, spawnPosition, Quaternion.identity, null);
+            
+            // ВЫВОДИМ В КОНСОЛЬ ПОЛНУЮ ИНФОРМАЦИЮ
+            Debug.Log($"<color=orange>[GridInteractor] Создан GameObject: {towerGo.name}. Ищем компоненты...</color>");
+            
+            var facade = towerGo.GetComponent<TowerFacade>();
+            var attack = towerGo.GetComponentInChildren<AttackBehavior>();
+            var visuals = towerGo.GetComponentInChildren<ProceduralTowerVisuals>();
+
+            Debug.Log($"[GridInteractor] Результаты поиска: Facade = {facade != null}, Attack = {attack != null}, Visuals = {visuals != null}");
+
+            if (visuals == null)
+            {
+                Debug.LogError("<color=red>[GridInteractor] КРИТИКА: На созданном объекте физически отсутствует компонент ProceduralTowerVisuals! Мы спавним не тот префаб!</color>");
+            }
+
+            Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Башня построена на {gridPos}!</color>");
+
+            
 
             _instantiator.InstantiatePrefab(_settings.DummyTowerPrefab, spawnPosition, Quaternion.identity, null);
             Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Башня построена на {gridPos}!</color>");

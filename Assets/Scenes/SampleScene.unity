@@ -728,7 +728,7 @@ MonoBehaviour:
     GridLayerMask:
       serializedVersion: 2
       m_Bits: 256
-    DummyTowerPrefab: {fileID: 130193592807935332, guid: 6b56de37029e97040b4e0db45d5061ca,
+    DummyTowerPrefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
       type: 3}
     ValidCursorPrefab: {fileID: 1942206327739906697, guid: 59388c14773c2af43a3497b035350af3,
       type: 3}
