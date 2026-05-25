@@ -7,32 +7,55 @@ namespace Gameplay.Towers.Visuals
         [Header("Ссылка на визуал")]
         [SerializeField] private ProceduralTowerVisuals _visuals;
 
-        [Header("Ползунок вращения")]
+        [Header("Ссылка на логический ротатор (для симуляции)")]
         [SerializeField] private Transform _logicalRotator;
+
+        [Header("Ползунок вращения")]
         [Range(-180f, 180f)]
         [SerializeField] private float _rotationValue;
 
         [Header("Кнопки теста (Галочки)")]
-        [SerializeField] private bool _triggerBuild; // Галочка для теста появления
-
-        // Добавь эту переменную в самый верх тестера к остальным флажкам:
+        [SerializeField] private bool _triggerBuild;
         [SerializeField] private bool _triggerShoot;
+
+        private void Start()
+        {
+            if (_visuals == null) _visuals = GetComponentInChildren<ProceduralTowerVisuals>();
+            
+            // АВТОПОИСК РОТАТОРА ДЛЯ ТЕСТЕРА:
+            // Ищем его на том же уровне, где и в боевом коде
+            if (_logicalRotator == null)
+            {
+                _logicalRotator = transform.Find("Logical_Rotator");
+            }
+
+            if (_visuals != null) _visuals.Initialize();
+        }
 
         private void Update()
         {
-            if (_visuals != null)
+            if (_visuals == null) return;
+
+            // ИСТИННАЯ СИМУЛЯЦИЯ:
+            // Если ротатор в префабе есть, мы крутим ЕГО (имитируем работу AttackBehavior).
+            // Визуалка в LateUpdate сама считает этот поворот, добавит офсет и развернет Turret!
+            if (_logicalRotator != null)
             {
-                // Каждый кадр передаем значение ползунка в визуальный скрипт
+                _logicalRotator.rotation = Quaternion.Euler(0, _rotationValue, 0);
+            }
+            else
+            {
+                // Резервный ручной режим для "голых" визуальных моделей без логического слоя
                 _visuals.SetRotation(_rotationValue);
             }
-            // Если в инспекторе нажали галочку Trigger Build
-            if (_triggerBuild && _visuals != null)
+
+            if (_triggerBuild)
             {
-                _triggerBuild = false; // Сразу выключаем галочку обратно
-                _visuals.PlayBuildAnimation(); // Запускаем анимацию
+                _triggerBuild = false;
+                _visuals.PlayBuildAnimation();
             }
-            // А этот кусок добавь в конец метода Update():
-            if (_triggerShoot && _visuals != null)
+
+            if (_triggerShoot)
             {
                 _triggerShoot = false;
                 _visuals.PlayShootAnimation();

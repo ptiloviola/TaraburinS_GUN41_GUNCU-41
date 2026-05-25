@@ -9,7 +9,8 @@ namespace Gameplay.Towers.Visuals
         [Header("--- Ссылки на меши ---")]
         [SerializeField] private Transform _baseTransform;
         [SerializeField] private Transform _turretTransform;
-        [SerializeField] private Transform _barrelTransform;
+        // [SerializeField] private Transform _barrelTransform;
+        [SerializeField] private Transform[] _barrelTransforms;
 
         [Header("--- Связь с Логикой ---")]
         [Tooltip("Если пусто, скрипт попытается найти объект 'Logical_Rotator' автоматически у родителя.")]
@@ -33,7 +34,11 @@ namespace Gameplay.Towers.Visuals
         [SerializeField] private Ease _turretReturnEase = Ease.OutQuad;
 
         private Sequence _shootSequence;
-        private Vector3 _initialBarrelLocalPos;
+        // private Vector3 _initialBarrelLocalPos;
+        private Vector3[] _initialBarrelLocalPositions;
+
+        // Добавь эту переменную в самый верх класса к остальным приватным полям:
+        private int _currentBarrelIndex = 0;
 
         // Единая переменная для хранения целевого угла
         private float _targetYRotation;
@@ -42,9 +47,19 @@ namespace Gameplay.Towers.Visuals
 
         public void Initialize()
         {
-            if (_barrelTransform != null)
+            if (_barrelTransforms != null && _barrelTransforms.Length > 0)
             {
-                _initialBarrelLocalPos = _barrelTransform.localPosition;
+                // 1. Выделяем память под массив векторов ровно такой же длины, 
+                // сколько стволов перетащили в инспектор
+                _initialBarrelLocalPositions = new Vector3[_barrelTransforms.Length];
+                // 2. Заполняем его через обычный цикл по индексам
+                for (int i = 0; i < _barrelTransforms.Length; i++)
+                {
+                    if (_barrelTransforms[i] != null)
+                    {
+                        _initialBarrelLocalPositions[i] = _barrelTransforms[i].localPosition;
+                    }
+                }
             }
 
             // АВТОПОИСК: Если ссылка в инспекторе пустая, спасаем ситуацию кодом
@@ -74,6 +89,8 @@ namespace Gameplay.Towers.Visuals
 
         public void PlayShootAnimation()
         {
+            // Безопасность: если в инспектор забыли положить стволы, ничего не делаем
+            if (_barrelTransforms == null || _barrelTransforms.Length == 0) return;
             if (_shootSequence != null && _shootSequence.IsActive())
             {
                 _shootSequence.Complete();
@@ -82,11 +99,16 @@ namespace Gameplay.Towers.Visuals
             _shootSequence = DOTween.Sequence();
             Vector3 mechanicalSquash = new Vector3(1f, _turretSquashY, 1f);
 
-            if (_barrelTransform != null)
+            // НАХОДИМ ТЕКУЩИЙ СТВОЛ И ЕГО СТАРТОВУЮ ПОЗИЦИЮ
+            Transform activeBarrel = _barrelTransforms[_currentBarrelIndex];
+            Vector3 activeInitialPos = _initialBarrelLocalPositions[_currentBarrelIndex];
+            // 1. АНИМАЦИЯ АКТИВНОГО СТВОЛА (Стреляет только один!)
+            if (activeBarrel != null)
             {
-                float recoilX = _initialBarrelLocalPos.x - _recoilDistance;
-                _shootSequence.Append(_barrelTransform.DOLocalMoveX(recoilX, _shootDuration * 0.25f).SetEase(_recoilEase));
-                _shootSequence.Append(_barrelTransform.DOLocalMoveX(_initialBarrelLocalPos.x, _shootDuration * 0.75f).SetEase(_barrelReturnEase));
+                float recoilX = activeInitialPos.x - _recoilDistance;
+
+                _shootSequence.Append(activeBarrel.DOLocalMoveX(recoilX, _shootDuration * 0.25f).SetEase(_recoilEase));
+                _shootSequence.Append(activeBarrel.DOLocalMoveX(activeInitialPos.x, _shootDuration * 0.75f).SetEase(_barrelReturnEase));
             }
 
             if (_turretTransform != null)
@@ -94,6 +116,10 @@ namespace Gameplay.Towers.Visuals
                 _shootSequence.Insert(0, _turretTransform.DOScale(mechanicalSquash, _shootDuration * 0.25f).SetEase(_recoilEase));
                 _shootSequence.Insert(_shootDuration * 0.25f, _turretTransform.DOScale(Vector3.one, _shootDuration * 0.75f).SetEase(_turretReturnEase)); 
             }
+            // ТВОЯ МАГИЯ ЗАКОЛЬЦОВЫВАНИЯ:
+            // После того как выстрел настроен, сдвигаем индекс на следующий ствол.
+            // Если стволов 2, то индекс будет циклично меняться: 0 -> 1 -> 0 -> 1...
+            _currentBarrelIndex = (_currentBarrelIndex + 1) % _barrelTransforms.Length;
         }
 
         private void ResetScaleToZero()
