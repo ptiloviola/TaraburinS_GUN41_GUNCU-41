@@ -9,7 +9,7 @@ namespace Gameplay.Towers.Visuals
         [Header("--- Ссылки на меши ---")]
         [SerializeField] private Transform _baseTransform;
         [SerializeField] private Transform _turretTransform;
-        // [SerializeField] private Transform _barrelTransform;
+
         [SerializeField] private Transform[] _barrelTransforms;
 
         [Header("--- Связь с Логикой ---")]
@@ -34,7 +34,6 @@ namespace Gameplay.Towers.Visuals
         [SerializeField] private Ease _turretReturnEase = Ease.OutQuad;
 
         private Sequence _shootSequence;
-        // private Vector3 _initialBarrelLocalPos;
         private Vector3[] _initialBarrelLocalPositions;
 
         // Добавь эту переменную в самый верх класса к остальным приватным полям:
