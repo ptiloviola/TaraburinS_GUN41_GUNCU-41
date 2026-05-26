@@ -58,7 +58,12 @@ namespace Gameplay.Towers.Visuals
             if (_triggerShoot)
             {
                 _triggerShoot = false;
-                _visuals.PlayShootAnimation();
+                // Бьем лазером на 5 юнитов вперед от ротатора для теста
+                Vector3 fakeTarget = _logicalRotator != null ? 
+                    _logicalRotator.position + _logicalRotator.forward * 5f : 
+                    transform.position + Vector3.forward * 5f;
+                    
+                _visuals.PlayShootAnimation(fakeTarget);
             }
         }
     }

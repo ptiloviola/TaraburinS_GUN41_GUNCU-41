@@ -32,8 +32,20 @@ namespace Gameplay.Towers.Visuals
         [SerializeField] private Ease _recoilEase = Ease.OutQuad;
         [SerializeField] private Ease _barrelReturnEase = Ease.OutQuad;
         [SerializeField] private Ease _turretReturnEase = Ease.OutQuad;
+        
+        [Header("--- Эффекты ---")]
+        [SerializeField] private LineRenderer _laserRenderer;
+        [SerializeField] private float _laserMaxWidth = 0.3f;
 
-        private Sequence _shootSequence;
+
+
+
+        // private Sequence _shootSequence;
+        // Вместо одного _shootSequence у нас теперь два независимых контроллера:
+        private Sequence[] _barrelSequences; // Массив личных секвенций для каждого ствола
+        private Sequence _sharedEffectsSequence; // Общая секвенция для Головы и Лазера
+
+
         private Vector3[] _initialBarrelLocalPositions;
 
         // Добавь эту переменную в самый верх класса к остальным приватным полям:
@@ -51,7 +63,9 @@ namespace Gameplay.Towers.Visuals
                 // 1. Выделяем память под массив векторов ровно такой же длины, 
                 // сколько стволов перетащили в инспектор
                 _initialBarrelLocalPositions = new Vector3[_barrelTransforms.Length];
-                // 2. Заполняем его через обычный цикл по индексам
+                // ВЫДЕЛЯЕМ ПАМЯТЬ ПОД МАССИВ СЕКВЕНЦИЙ СТВОЛОВ:
+                _barrelSequences = new Sequence[_barrelTransforms.Length];
+
                 for (int i = 0; i < _barrelTransforms.Length; i++)
                 {
                     if (_barrelTransforms[i] != null)
@@ -86,38 +100,74 @@ namespace Gameplay.Towers.Visuals
             }
         }
 
-        public void PlayShootAnimation()
+        public void PlayShootAnimation(Vector3 targetPosition)
         {
-            // Безопасность: если в инспектор забыли положить стволы, ничего не делаем
             if (_barrelTransforms == null || _barrelTransforms.Length == 0) return;
-            if (_shootSequence != null && _shootSequence.IsActive())
-            {
-                _shootSequence.Complete();
-            }
 
-            _shootSequence = DOTween.Sequence();
-            Vector3 mechanicalSquash = new Vector3(1f, _turretSquashY, 1f);
-
-            // НАХОДИМ ТЕКУЩИЙ СТВОЛ И ЕГО СТАРТОВУЮ ПОЗИЦИЮ
             Transform activeBarrel = _barrelTransforms[_currentBarrelIndex];
             Vector3 activeInitialPos = _initialBarrelLocalPositions[_currentBarrelIndex];
-            // 1. АНИМАЦИЯ АКТИВНОГО СТВОЛА (Стреляет только один!)
+
+            // ---------------------------------------------------------
+            // 1. ПЕРСОНАЛЬНАЯ АНИМАЦИЯ СТВОЛА (ПОРШНИ)
+            // ---------------------------------------------------------
+            // Мы прерываем секвенцию ТОЛЬКО того ствола, который стреляет прямо сейчас.
+            // Соседний ствол продолжит свое плавное движение!
+            if (_barrelSequences[_currentBarrelIndex] != null && _barrelSequences[_currentBarrelIndex].IsActive())
+            {
+                _barrelSequences[_currentBarrelIndex].Complete();
+            }
+
+            _barrelSequences[_currentBarrelIndex] = DOTween.Sequence();
+            
             if (activeBarrel != null)
             {
                 float recoilX = activeInitialPos.x - _recoilDistance;
-
-                _shootSequence.Append(activeBarrel.DOLocalMoveX(recoilX, _shootDuration * 0.25f).SetEase(_recoilEase));
-                _shootSequence.Append(activeBarrel.DOLocalMoveX(activeInitialPos.x, _shootDuration * 0.75f).SetEase(_barrelReturnEase));
+                _barrelSequences[_currentBarrelIndex].Append(activeBarrel.DOLocalMoveX(recoilX, _shootDuration * 0.25f).SetEase(_recoilEase));
+                _barrelSequences[_currentBarrelIndex].Append(activeBarrel.DOLocalMoveX(activeInitialPos.x, _shootDuration * 0.75f).SetEase(_barrelReturnEase));
             }
+
+            // ---------------------------------------------------------
+            // 2. ОБЩАЯ АНИМАЦИЯ (ГОЛОВА И ЛАЗЕР)
+            // ---------------------------------------------------------
+            // Голова и лазер у нас одни на всю башню, поэтому их старую анимацию мы всегда убиваем
+            if (_sharedEffectsSequence != null && _sharedEffectsSequence.IsActive())
+            {
+                _sharedEffectsSequence.Complete();
+            }
+
+            _sharedEffectsSequence = DOTween.Sequence();
+            Vector3 mechanicalSquash = new Vector3(1f, _turretSquashY, 1f);
 
             if (_turretTransform != null)
             {
-                _shootSequence.Insert(0, _turretTransform.DOScale(mechanicalSquash, _shootDuration * 0.25f).SetEase(_recoilEase));
-                _shootSequence.Insert(_shootDuration * 0.25f, _turretTransform.DOScale(Vector3.one, _shootDuration * 0.75f).SetEase(_turretReturnEase)); 
+                _sharedEffectsSequence.Insert(0, _turretTransform.DOScale(mechanicalSquash, _shootDuration * 0.25f).SetEase(_recoilEase));
+                _sharedEffectsSequence.Insert(_shootDuration * 0.25f, _turretTransform.DOScale(Vector3.one, _shootDuration * 0.75f).SetEase(_turretReturnEase));
             }
-            // ТВОЯ МАГИЯ ЗАКОЛЬЦОВЫВАНИЯ:
-            // После того как выстрел настроен, сдвигаем индекс на следующий ствол.
-            // Если стволов 2, то индекс будет циклично меняться: 0 -> 1 -> 0 -> 1...
+
+            if (_laserRenderer != null && activeBarrel != null)
+            {
+                _laserRenderer.enabled = true;
+                Vector3 firePointPos = activeBarrel.position + activeBarrel.right * 0.5f;
+                _laserRenderer.SetPosition(0, firePointPos);
+                _laserRenderer.SetPosition(1, targetPosition + Vector3.up * 0.5f);
+                _laserRenderer.widthMultiplier = _laserMaxWidth;
+
+                // Лазер теперь живет в общей секвенции, он никогда не потеряется!
+                _sharedEffectsSequence.Insert(0, DOTween.To(
+                    () => _laserRenderer.widthMultiplier, 
+                    x => _laserRenderer.widthMultiplier = x, 
+                    0f, 
+                    _shootDuration
+                ).SetEase(Ease.OutExpo));
+
+                // Выключаем лазер, когда общая секвенция завершилась
+                _sharedEffectsSequence.OnComplete(() => 
+                {
+                    if (_laserRenderer != null) _laserRenderer.enabled = false;
+                });
+            }
+
+            // ПЕРЕКЛЮЧАЕМ ИНДЕКС СТВОЛА НА СЛЕДУЮЩИЙ
             _currentBarrelIndex = (_currentBarrelIndex + 1) % _barrelTransforms.Length;
         }
 

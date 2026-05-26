@@ -12,8 +12,8 @@ namespace Gameplay.Towers.Visuals
         // Метод для инициализации визуала (передаем ссылку на данные, если нужно)
         void Initialize();
         
-        // Воспроизвести анимацию выстрела (отдача, эффекты, звук)
-        void PlayShootAnimation();
+        // Воспроизвести анимацию выстрела (отдача, эффекты, звук, след выстрела)
+        void PlayShootAnimation(Vector3 targetPosition);
         
         // Воспроизвести анимацию строительства/появления башни
         void PlayBuildAnimation();

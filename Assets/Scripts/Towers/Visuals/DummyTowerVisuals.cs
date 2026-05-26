@@ -16,7 +16,7 @@ public class DummyTowerVisuals : MonoBehaviour, ITowerVisuals
         throw new NotImplementedException();
     }
 
-    public void PlayShootAnimation()
+    public void PlayShootAnimation(Vector3 targetPosition)
     {
         // Здесь в будущем DOTween будет сжимать меши, а пока просто лог
         Debug.Log("<color=cyan>[DummyTowerVisuals] БАБАХ! (Проигрывается сочная анимация отдачи)</color>");

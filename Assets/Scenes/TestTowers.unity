@@ -383,6 +383,12 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!120 &969190352 stripped
+LineRenderer:
+  m_CorrespondingSourceObject: {fileID: 2767537639249881226, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
+    type: 3}
+  m_PrefabInstance: {fileID: 577283969141791098}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1099953698 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
@@ -539,6 +545,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RangeTower2barrels
       objectReference: {fileID: 0}
+    - target: {fileID: 3941470187196837383, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
+        type: 3}
+      propertyPath: _laserRenderer
+      value: 
+      objectReference: {fileID: 969190352}
     - target: {fileID: 5932089929565763045, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -592,7 +603,7 @@ PrefabInstance:
     - target: {fileID: 7400648276859534693, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

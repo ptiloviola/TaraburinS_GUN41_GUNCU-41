@@ -126,8 +126,8 @@ namespace Gameplay.Towers.Behaviors
             Debug.Log($"<color=red>[AttackBehavior] Выстрел по {_currentTarget.name}!</color>");
             Debug.DrawRay(_firePoint.position, _logicalRotator.forward * 5f, Color.red, 0.2f);
             
-            // Дергаем API анимации (сейчас сработает Dummy, потом — настоящая анимация)
-            _visuals?.PlayShootAnimation();
+            // Передаем точные мировые координаты врага на момент выстрела
+            _visuals?.PlayShootAnimation(_currentTarget.position);
         }
 
     }
