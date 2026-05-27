@@ -37,6 +37,10 @@ namespace Gameplay.Towers.Visuals
         [SerializeField] private LineRenderer _laserRenderer;
         [SerializeField] private float _laserMaxWidth = 0.3f;
 
+        // 1. ДОБАВЛЯЕМ МАССИВ ДЛЯ НАШИХ ЧАСТИЦ (По одному на ствол)
+        [Tooltip("Перетащите сюда Particle System пара из каждого ствола в том же порядке, что и сами стволы")]
+        [SerializeField] private ParticleSystem[] _steamParticles;
+
 
 
 
@@ -107,6 +111,13 @@ namespace Gameplay.Towers.Visuals
             Transform activeBarrel = _barrelTransforms[_currentBarrelIndex];
             Vector3 activeInitialPos = _initialBarrelLocalPositions[_currentBarrelIndex];
 
+            // 2. ИЩЕМ АКТИВНЫЙ ПАР
+            ParticleSystem activeSteam = null;
+            if (_steamParticles != null && _currentBarrelIndex < _steamParticles.Length)
+            {
+                activeSteam = _steamParticles[_currentBarrelIndex];
+            }
+
             // ---------------------------------------------------------
             // 1. ПЕРСОНАЛЬНАЯ АНИМАЦИЯ СТВОЛА (ПОРШНИ)
             // ---------------------------------------------------------
@@ -124,6 +135,12 @@ namespace Gameplay.Towers.Visuals
                 float recoilX = activeInitialPos.x - _recoilDistance;
                 _barrelSequences[_currentBarrelIndex].Append(activeBarrel.DOLocalMoveX(recoilX, _shootDuration * 0.25f).SetEase(_recoilEase));
                 _barrelSequences[_currentBarrelIndex].Append(activeBarrel.DOLocalMoveX(activeInitialPos.x, _shootDuration * 0.75f).SetEase(_barrelReturnEase));
+                // 3. МАГИЯ СВЯЗКИ: InsertCallback!
+                // Мы говорим: "Ровно на 0-й секунде (когда ствол пошел назад), дерни метод Play() у нашей системы частиц"
+                if (activeSteam != null)
+                {
+                    _barrelSequences[_currentBarrelIndex].InsertCallback(0f, () => activeSteam.Play());
+                }
             }
 
             // ---------------------------------------------------------
