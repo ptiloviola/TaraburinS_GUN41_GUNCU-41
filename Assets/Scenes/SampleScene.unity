@@ -474,6 +474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78340f292b591bb4486d400908f8bd64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lives: 20
 --- !u!65 &711978087
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -813,7 +814,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spawnPosition: {x: 2, y: 1, z: 2}
   _spawnInterval: 0.2
-  _enemiesInWave: 12
+  _enemiesInWave: 15
 --- !u!4 &1925016042
 Transform:
   m_ObjectHideFlags: 0

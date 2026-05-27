@@ -3,6 +3,7 @@ using UnityEngine;
 using Gameplay.Towers.Data.Modules;
 using Gameplay.Towers.Visuals;
 using Unity.VisualScripting;
+using Gameplay.Core;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -66,7 +67,7 @@ namespace Gameplay.Towers.Behaviors
                 // Стреляем, если прошла перезарядка И дуло смотрит на врага
                 if (_cooldownTimer <= 0f && IsFacingTarget())
                 {
-                    ExecuteShot();
+                    ExecuteShot(stats.Damage);
                     _cooldownTimer = stats.Cooldown;
                 }
             }
@@ -121,11 +122,18 @@ namespace Gameplay.Towers.Behaviors
             return Vector3.Dot(_logicalRotator.forward, directionToTarget) > 0.99f;
         }
 
-        private void ExecuteShot()
+        private void ExecuteShot(float damage)
         {
             Debug.Log($"<color=red>[AttackBehavior] Выстрел по {_currentTarget.name}!</color>");
             Debug.DrawRay(_firePoint.position, _logicalRotator.forward * 5f, Color.red, 0.2f);
             
+            // Пытаемся найти компонент здоровья на враге
+            var damageable = _currentTarget.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(damage); // НАНОСИМ УРОН!
+            }
+
             // Передаем точные мировые координаты врага на момент выстрела
             _visuals?.PlayShootAnimation(_currentTarget.position);
         }
