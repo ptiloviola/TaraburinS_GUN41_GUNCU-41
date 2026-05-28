@@ -729,13 +729,15 @@ MonoBehaviour:
     GridLayerMask:
       serializedVersion: 2
       m_Bits: 256
-    DummyTowerPrefab: {fileID: 3929638890925405715, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
+    DummyTowerPrefab: {fileID: 1926724689136184970, guid: 8faeee0504cf3d74fb41a207e19c7325,
       type: 3}
     ValidCursorPrefab: {fileID: 1942206327739906697, guid: 59388c14773c2af43a3497b035350af3,
       type: 3}
     InvalidCursorPrefab: {fileID: 1942206327739906697, guid: abfa30ab36b2f6d4c8b323bdf5dc99d8,
       type: 3}
     HeightOffset: 0.05
+  _cannonballPrefab: {fileID: 4721952518259150526, guid: b1577e7c0fd34324eaad8e1fcbb7514e,
+    type: 3}
 --- !u!114 &1342920087
 MonoBehaviour:
   m_ObjectHideFlags: 0

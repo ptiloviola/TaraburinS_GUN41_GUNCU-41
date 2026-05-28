@@ -6,6 +6,7 @@ using Gameplay.Enemies;
 using Gameplay.Spawner;
 using Gameplay.Base;
 using Gameplay.Towers;
+using Gameplay.Towers.Behaviors.Weapons;
 
 
 namespace Infrastructure.Installers
@@ -22,6 +23,8 @@ namespace Infrastructure.Installers
         [Header("Настройки систем")]
         // Появится в инспекторе инсталлера, сюда кидаем префаб и маску!
         [SerializeField] private GridInteractor.Settings gridInteractorSettings;
+
+        [SerializeField] private KinematicProjectile _cannonballPrefab;
 
 
         public override void InstallBindings()
@@ -64,6 +67,13 @@ namespace Infrastructure.Installers
             // 2. Биндим сам интерактор к двум интерфейсам: 
             // как класс (если кто-то захочет его запросить) и как ITickable (чтобы работал Tick)
             Container.BindInterfacesAndSelfTo<GridInteractor>().AsSingle();
+
+            Container.BindMemoryPool<KinematicProjectile, KinematicProjectile.Pool>()
+             .WithInitialSize(10)
+             .FromComponentInNewPrefab(_cannonballPrefab)
+             .UnderTransformGroup("Projectiles");
+
+
 
 
 

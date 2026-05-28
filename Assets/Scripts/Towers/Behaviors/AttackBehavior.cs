@@ -4,6 +4,8 @@ using Gameplay.Towers.Data.Modules;
 using Gameplay.Towers.Visuals;
 using Unity.VisualScripting;
 using Gameplay.Core;
+using Gameplay.Towers.Behaviors.Weapons;
+
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -17,6 +19,9 @@ namespace Gameplay.Towers.Behaviors
         [SerializeField] private Transform _firePoint;      // Точка вылета снаряда (внутри ротатора)
         [SerializeField] private LayerMask _enemyLayerMask;
         [SerializeField] private float _turnSpeed = 10f;    // Скорость поворота
+
+        // Добавь это в начало класса, где объявляются переменные:
+        private IAttackExecutor _attackExecutor;
 
 
 
@@ -43,6 +48,13 @@ namespace Gameplay.Towers.Behaviors
             // 2. ЗАПУСКАЕМ АНИМАЦИЮ ПОЯВЛЕНИЯ!
             // Теперь башня плавно вырастет из земли до размера (1,1,1)
             _visuals?.PlayBuildAnimation();
+
+            // Добавь это в метод Initialize():
+            _attackExecutor = GetComponent<IAttackExecutor>();
+            if (_attackExecutor == null)
+            {
+                Debug.LogError($"[AttackBehavior] На башне {gameObject.name} нет компонента IAttackExecutor (Оружия)!");
+            }
             
         }
 
@@ -127,12 +139,8 @@ namespace Gameplay.Towers.Behaviors
             Debug.Log($"<color=red>[AttackBehavior] Выстрел по {_currentTarget.name}!</color>");
             Debug.DrawRay(_firePoint.position, _logicalRotator.forward * 5f, Color.red, 0.2f);
             
-            // Пытаемся найти компонент здоровья на враге
-            var damageable = _currentTarget.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                damageable.TakeDamage(damage); // НАНОСИМ УРОН!
-            }
+            // Делегируем нанесение урона установленному оружию (Лазеру или Пушке)
+            _attackExecutor?.ExecuteAttack(_currentTarget, damage, _firePoint);
 
             // Передаем точные мировые координаты врага на момент выстрела
             _visuals?.PlayShootAnimation(_currentTarget.position);
