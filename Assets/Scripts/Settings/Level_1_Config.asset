@@ -115,7 +115,7 @@ MonoBehaviour:
       type: 0
     - elevation: 0
       type: 0
-    - elevation: 0
+    - elevation: 1
       type: 1
     - elevation: 0
       type: 0
@@ -184,7 +184,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 1
+      type: 0
     - elevation: 0
       type: 0
     - elevation: 0

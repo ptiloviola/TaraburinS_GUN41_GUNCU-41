@@ -723,13 +723,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}
-  enemyPrefab: {fileID: 7372269183789494302, guid: 384c00e3f301d4b4ea4a2f9a67785efb,
+  enemyPrefab: {fileID: 4190784476696311094, guid: 5775723e01e29184ca5b3ece358be6f5,
     type: 3}
   gridInteractorSettings:
     GridLayerMask:
       serializedVersion: 2
       m_Bits: 256
-    DummyTowerPrefab: {fileID: 1926724689136184970, guid: 8faeee0504cf3d74fb41a207e19c7325,
+    DummyTowerPrefab: {fileID: 3929638890925405715, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
       type: 3}
     ValidCursorPrefab: {fileID: 1942206327739906697, guid: 59388c14773c2af43a3497b035350af3,
       type: 3}

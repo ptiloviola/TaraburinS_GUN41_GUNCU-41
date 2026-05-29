@@ -50,34 +50,6 @@ namespace Gameplay.Enemies
 
         public void Tick(float deltaTime)
         {
-            // // Здесь можно обрабатывать специфичную логику, 
-            // // например, проверять, дошел ли враг до финиша.
-            
-            // if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh)
-            // {
-            //     return;
-            // }
-            // if (_agent.pathPending)
-            // {
-            //     return;
-            // }
-            
-            // if (_agent.remainingDistance <= 1.0f)
-            // {
-            //     if (!_agent.hasPath || _agent.velocity.sqrMagnitude < 1f)
-            //     {
-            //         // Враг дошел до базы! 
-            //         // Отключаем агент, чтобы он не пытался двигаться в пуле
-                    
-            //         Debug.Log($"<color=green>[NavMeshMovement] Враг {_enemy.gameObject.name} успешно достиг цели!</color>");
-                    
-            //         _agent.enabled = false; 
-                    
-            //         // Возвращаем врага в пул (он исчезнет со сцены)
-            //         _enemy.Despawn();
-            //     }
-            // }
-
             // Оставляем только базовую защиту от ошибок.
             // Больше мы не проверяем remainingDistance!
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) 
