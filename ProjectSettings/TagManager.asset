@@ -41,3 +41,27 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Sky
+    uniqueID: 811242053
+    locked: 0
+  - name: Background
+    uniqueID: 4246158713
+    locked: 0
+  - name: Midground
+    uniqueID: 491490575
+    locked: 0
+  - name: Level
+    uniqueID: 3131224443
+    locked: 0
+  - name: Hazards
+    uniqueID: 3303296537
+    locked: 0
+  - name: Player
+    uniqueID: 1466629665
+    locked: 0
+  - name: Foreground
+    uniqueID: 3460835699
+    locked: 0
+  - name: HiddenWorld
+    uniqueID: 3656366629
+    locked: 0
