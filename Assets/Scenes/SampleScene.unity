@@ -723,7 +723,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}
-  enemyPrefab: {fileID: 4190784476696311094, guid: 5775723e01e29184ca5b3ece358be6f5,
+  enemyPrefab: {fileID: 5292484915554831660, guid: dc0455a21480a764aac72c24a4b202a6,
     type: 3}
   gridInteractorSettings:
     GridLayerMask:
