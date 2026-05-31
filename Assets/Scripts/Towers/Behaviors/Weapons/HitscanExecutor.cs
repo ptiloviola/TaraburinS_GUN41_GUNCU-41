@@ -10,7 +10,8 @@ namespace Gameplay.Towers.Behaviors.Weapons
             // Здесь живет старая добрая логика мгновенного выстрела
             Debug.DrawRay(firePoint.position, firePoint.forward * 5f, Color.red, 0.2f);
             
-            var damageable = target.GetComponent<IDamageable>();
+            // var damageable = target.GetComponent<IDamageable>();
+            var damageable = target.GetComponentInParent<IDamageable>();
             if (damageable != null)
             {
                 damageable.TakeDamage(damage);
