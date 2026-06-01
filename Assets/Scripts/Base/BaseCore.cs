@@ -15,7 +15,10 @@ namespace Gameplay.Base
             // Лог 1: Сработало ли вообще физическое касание?
             Debug.Log($"<color=cyan>[BaseCore] Что-то коснулось базы! Имя объекта: {other.gameObject.name}</color>");
             /// Лог 2: Пытаемся найти наш фасад на объекте
-            if (other.TryGetComponent(out EnemyFacade enemy))
+            // Ищем фасад на самом объекте ИЛИ поднимаемся вверх до корня префаба
+            EnemyFacade enemy = other.GetComponentInParent<EnemyFacade>();
+
+            if (enemy != null)
             {
                 Debug.Log($"<color=green>[BaseCore] Нашли EnemyFacade на {enemy.gameObject.name}! Уничтожаем.</color>");
                 // Отнимаем жизнь и проверяем поражение
@@ -24,8 +27,8 @@ namespace Gameplay.Base
             }
             else
             {
-                // Лог 3: Касание было, но нужного скрипта нет
-                Debug.LogWarning($"<color=red>[BaseCore] На объекте {other.gameObject.name} нет компонента EnemyFacade! Может, он висит на дочернем объекте?</color>");
+                // Лог 3: Касание было, но нужного скрипта нет ни тут, ни у родителей
+                Debug.LogWarning($"<color=red>[BaseCore] В базу врезалось что-то без EnemyFacade: {other.gameObject.name}!</color>");
             }
         }
 

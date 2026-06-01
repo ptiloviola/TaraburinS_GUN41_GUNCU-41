@@ -494,8 +494,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2, y: 5, z: 4}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!23 &711978088
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -723,7 +723,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}
-  enemyPrefab: {fileID: 5292484915554831660, guid: dc0455a21480a764aac72c24a4b202a6,
+  enemyPrefab: {fileID: 6390705832738829721, guid: 65c3614e836d8494b86c7f34067439f5,
     type: 3}
   gridInteractorSettings:
     GridLayerMask:

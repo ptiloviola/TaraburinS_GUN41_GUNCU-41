@@ -634,7 +634,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
   - columns:
     - elevation: 0
       type: 0
