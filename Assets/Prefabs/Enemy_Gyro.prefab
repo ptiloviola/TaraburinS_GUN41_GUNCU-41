@@ -157,13 +157,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3055197869304941540, guid: e9092fab2080f1544b9357823f0a0817,
         type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055197869304941540, guid: e9092fab2080f1544b9357823f0a0817,
+        type: 3}
       propertyPath: m_BaseOffset
-      value: 1.5
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4190784476696311094, guid: e9092fab2080f1544b9357823f0a0817,
         type: 3}
       propertyPath: m_Name
       value: Enemy_Gyro
+      objectReference: {fileID: 0}
+    - target: {fileID: 4288731326268897973, guid: e9092fab2080f1544b9357823f0a0817,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7702059966537891958, guid: e9092fab2080f1544b9357823f0a0817,
         type: 3}
@@ -179,6 +189,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7702059966537891958, guid: e9092fab2080f1544b9357823f0a0817,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

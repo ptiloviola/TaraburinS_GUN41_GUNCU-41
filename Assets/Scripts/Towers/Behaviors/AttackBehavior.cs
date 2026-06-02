@@ -1,11 +1,9 @@
-using Gameplay.Towers.Data;
 using UnityEngine;
 using Gameplay.Towers.Data.Modules;
 using Gameplay.Towers.Visuals;
-using Unity.VisualScripting;
-using Gameplay.Core;
 using Gameplay.Towers.Behaviors.Weapons;
-
+// НОВОЕ: Подключаем пространство имен стратегий прицеливания
+using Gameplay.Towers.Behaviors.Aiming;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -22,15 +20,11 @@ namespace Gameplay.Towers.Behaviors
 
         // Добавь это в начало класса, где объявляются переменные:
         private IAttackExecutor _attackExecutor;
+        private IAimStrategy _aimStrategy; // НОВОЕ: Ссылка на стратегию прицеливания
 
 
-
-        
         private TowerFacade _facade;
         private ITowerVisuals _visuals;
-
-
-
 
         private Transform _currentTarget;
         private float _cooldownTimer;
@@ -54,6 +48,12 @@ namespace Gameplay.Towers.Behaviors
             if (_attackExecutor == null)
             {
                 Debug.LogError($"[AttackBehavior] На башне {gameObject.name} нет компонента IAttackExecutor (Оружия)!");
+            }
+            // НОВОЕ: Ищем стратегию прицеливания
+            _aimStrategy = GetComponent<IAimStrategy>();
+            if (_aimStrategy == null)
+            {
+                Debug.LogError($"[AttackBehavior] На башне {gameObject.name} нет компонента IAimStrategy (Прицеливания)!");
             }
             
         }
@@ -89,9 +89,14 @@ namespace Gameplay.Towers.Behaviors
         private bool IsTargetValid(float range)
         {
             if (_currentTarget == null || !_currentTarget.gameObject.activeInHierarchy) return false;
-            // Проверяем, не ушел ли враг за радиус поражения (используем квадраты дистанций для оптимизации)
+            
             float sqrDistance = (_currentTarget.position - _logicalRotator.position).sqrMagnitude;
-            return sqrDistance <= (range * range);
+            if (sqrDistance > (range * range)) return false;
+
+            // СБРОС ЦЕЛИ: Если враг вылетел за пределы нашего угла (например, резко взлетел вверх)
+            if (_aimStrategy != null && !_aimStrategy.CanAimAt(_logicalRotator, _currentTarget)) return false;
+
+            return true;
         }
 
         private void FindClosestTarget(float range)
@@ -104,34 +109,31 @@ namespace Gameplay.Towers.Behaviors
             foreach (var hit in hits)
             {
                 float sqrDistance = (hit.transform.position - _logicalRotator.position).sqrMagnitude;
+                
+                // Сначала проверяем дистанцию
                 if (sqrDistance < closestSqrDistance)
                 {
-                    closestSqrDistance = sqrDistance;
-                    _currentTarget = hit.transform;
+                    // А ТЕПЕРЬ САМОЕ ГЛАВНОЕ: Проверяем, позволяет ли физический угол башни выстрелить туда
+                    if (_aimStrategy == null || _aimStrategy.CanAimAt(_logicalRotator, hit.transform))
+                    {
+                        closestSqrDistance = sqrDistance;
+                        _currentTarget = hit.transform;
+                    }
                 }
             }
         }
 
+        // НОВОЕ: Делегируем поворот стратегии
         private void AimAtTarget()
         {
-            // Направляем вектор на врага, игнорируя высоту (чтобы башня крутилась только влево-вправо)
-            Vector3 direction = _currentTarget.position - _logicalRotator.position;
-            direction.y = 0f;
-
-            if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(direction);
-                _logicalRotator.rotation = Quaternion.Slerp(_logicalRotator.rotation, targetRotation, _turnSpeed * Time.deltaTime);
-            }
+            _aimStrategy?.AimAtTarget(_logicalRotator, _currentTarget, _turnSpeed);
         }
 
+        // НОВОЕ: Делегируем проверку угла стратегии
         private bool IsFacingTarget()
         {
-            Vector3 directionToTarget = (_currentTarget.position - _logicalRotator.position).normalized;
-            directionToTarget.y = 0f;
-            
-            // Dot Product > 0.99 означает, что угол между направлением пушки и врагом меньше ~8 градусов
-            return Vector3.Dot(_logicalRotator.forward, directionToTarget) > 0.99f;
+            if (_aimStrategy == null) return false;
+            return _aimStrategy.IsFacingTarget(_logicalRotator, _currentTarget);
         }
 
         private void ExecuteShot(float damage)
@@ -144,6 +146,44 @@ namespace Gameplay.Towers.Behaviors
 
             // Передаем точные мировые координаты врага на момент выстрела
             _visuals?.PlayShootAnimation(_currentTarget.position);
+        }
+
+        // --- БЛОК ДЕБАГА И ВИЗУАЛИЗАЦИИ ---
+        
+        // Сохраняем радиус для отрисовки, так как Gizmos работает даже на паузе
+        private float _debugRange = 5f; 
+
+        private void OnDrawGizmos()
+        {
+            float drawRange = 5f; 
+            if (Application.isPlaying && _facade != null && _facade.GetCurrentStats() != null)
+            {
+                drawRange = _facade.GetCurrentStats().Attack.Range;
+            }
+
+            Vector3 center = _logicalRotator != null ? _logicalRotator.position : transform.position;
+
+            // Рисуем границы радара
+            Gizmos.color = _currentTarget != null ? Color.red : Color.yellow;
+            Gizmos.DrawWireSphere(center, drawRange);
+
+            // ---> ВОТ ЭТОТ БЛОК ОТВЕЧАЕТ ЗА ЛУЧИ УГЛОВ <---
+            if (Application.isPlaying && _aimStrategy != null)
+            {
+                _aimStrategy.DrawAimGizmo(_logicalRotator != null ? _logicalRotator : transform, drawRange);
+            }
+            else
+            {
+                // Для отрисовки прямо в редакторе (когда игра на паузе)
+                GetComponent<IAimStrategy>()?.DrawAimGizmo(_logicalRotator != null ? _logicalRotator : transform, drawRange);
+            }
+            // ----------------------------------------------
+
+            if (_currentTarget != null && _firePoint != null)
+            {
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawLine(_firePoint.position, _currentTarget.position);
+            }
         }
 
     }

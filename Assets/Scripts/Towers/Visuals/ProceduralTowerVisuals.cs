@@ -15,6 +15,15 @@ namespace Gameplay.Towers.Visuals
         [Header("--- Связь с Логикой ---")]
         [Tooltip("Если пусто, скрипт попытается найти объект 'Logical_Rotator' автоматически у родителя.")]
         [SerializeField] private Transform _logicalRotator; 
+        [Header("--- Зенитная механика (Двухосевая) ---")]
+        [Tooltip("Включите для зениток")]
+        [SerializeField] private bool _copyPitch = false;
+
+        [Tooltip("Ось вертикального наклона (Pitch). Сюда кидаем нашу новую пустышку Elevation_Pivot")]
+        [SerializeField] private Transform _elevationPivot;
+
+        [Tooltip("Локальная ось наклона. Так как башня из Blender повернута на -90 (смотрит по X), осью подъема стволов будет ось Z. Впишите: X=0, Y=0, Z=1 (или -1)")]
+        [SerializeField] private Vector3 _localPitchAxis = new Vector3(0, 0, -1);
 
         [Tooltip("Смещение поворота в градусах. Помогает направить ствол из Blender (ось X) вслед за логикой Unity (ось Z). Попробуйте -90 или 90.")]
         [SerializeField] private float _rotationOffset = -90f; // <--- НАШ СПАСИТЕЛЬНЫЙ ОФСЕТ
@@ -202,14 +211,24 @@ namespace Gameplay.Towers.Visuals
 
         private void LateUpdate()
         {
-            // Копируем поворот с учетом компенсации осей из Blender
             if (_logicalRotator != null && _turretTransform != null)
             {
-                // Берем чистый угол Y из геймплейной логики и добавляем наш офсет
-                float targetYAngle = _logicalRotator.rotation.eulerAngles.y + _rotationOffset;
-                
-                // Применяем финальный разворот к голове башни
+                // 1. ГОРИЗОНТАЛЬ (Yaw) - Вращаем только саму платформу (Turret)
+                float targetYAngle = _logicalRotator.eulerAngles.y + _rotationOffset;
                 _turretTransform.rotation = Quaternion.Euler(0, targetYAngle, 0);
+
+                // 2. ВЕРТИКАЛЬ (Pitch) - Вращаем только крепление стволов (Elevation_Pivot)
+                if (_copyPitch && _elevationPivot != null)
+                {
+                    // Достаем чистый угол наклона из логики (в Unity он хранится в оси X ротатора)
+                    float pitch = _logicalRotator.eulerAngles.x;
+                    
+                    // Приводим угол от формата 0..360 к формату -180..180 (где минус - это ствол вверх)
+                    if (pitch > 180f) pitch -= 360f;
+
+                    // Применяем наклон строго по одной локальной оси
+                    _elevationPivot.localRotation = Quaternion.Euler(_localPitchAxis * pitch);
+                }
             }
         }
     }
