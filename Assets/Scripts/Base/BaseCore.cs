@@ -1,5 +1,10 @@
 using UnityEngine;
 using Gameplay.Enemies;
+using Infrastructure.Signals; // Подключаем наши сигналы
+using Zenject;
+
+
+
 
 namespace Gameplay.Base
 {
@@ -9,6 +14,18 @@ namespace Gameplay.Base
     {
         [Header("Настройки Базы")]
         [SerializeField] private int _lives = 20; // Стартовое количество жизней
+
+        private SignalBus _signalBus;
+
+        // Внедряем SignalBus через Zenject
+        [Inject]
+        public void Construct(SignalBus signalBus)
+        {
+            _signalBus = signalBus;
+        }
+
+
+
         private void OnTriggerEnter(Collider other)
         {
 
@@ -35,10 +52,14 @@ namespace Gameplay.Base
         private void TakeDamage(int amount)
         {
             _lives -= amount;
+            // "Кричим" на всю игру, что жизни изменились
+            _signalBus.Fire(new SignalBaseDamaged { CurrentLives = _lives });
             Debug.Log($"<color=orange>[BaseCore] Пропущен враг! Осталось жизней: {_lives}</color>");
 
             if (_lives <= 0)
             {
+                // Отправляем сигнал поражения
+                _signalBus.Fire<SignalGameOver>();
                 Debug.Log("<color=red>[BaseCore] ИГРА ОКОНЧЕНА (GAME OVER)!</color>");
                 // В будущем мы добавим сюда паузу игры и вызов UI-экрана поражения
             }
