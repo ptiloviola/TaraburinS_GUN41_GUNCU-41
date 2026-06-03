@@ -7,7 +7,7 @@ using Gameplay.Spawner;
 using Gameplay.Base;
 using Gameplay.Towers;
 using Gameplay.Towers.Behaviors.Weapons;
-
+using Gameplay.Economy;
 
 namespace Infrastructure.Installers
 {
@@ -34,9 +34,12 @@ namespace Infrastructure.Installers
 
             // Регистрируем наши кастомные сигналы в системе
             Container.DeclareSignal<SignalBaseDamaged>();
-            Container.DeclareSignal<SignalEnemyDied>();
+            Container.DeclareSignal<SignalEnemyKilled>();
             Container.DeclareSignal<SignalGameOver>();
             Container.DeclareSignal<SignalBalanceChanged>();
+
+            // Биндим наш Банк
+            Container.BindInterfacesAndSelfTo<BankService>().AsSingle();
 
             // Регистрируем экземпляр нашего ScriptableObject в контейнере.
             // // Теперь любой класс может написать [Inject] private GridConfig _config;

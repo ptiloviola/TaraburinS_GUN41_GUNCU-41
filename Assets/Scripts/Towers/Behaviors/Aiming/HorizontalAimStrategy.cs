@@ -20,7 +20,7 @@ namespace Gameplay.Towers.Behaviors.Aiming
             bool isAllowed = Mathf.Abs(pitchAngle) <= _verticalTolerance;
 
             // === ЖЕСТКИЙ ЛОГ ===
-            Debug.Log($"<color=orange>[MATH TEST]</color> Башня: {gameObject.name} | Цель: {target.name} | Y цели: {target.position.y:F2} | Y ствола: {rotator.position.y:F2} | Угол: {pitchAngle:F1}° | Допуск: {_verticalTolerance}° | Разрешено: {isAllowed}");
+            //Debug.Log($"<color=orange>[MATH TEST]</color> Башня: {gameObject.name} | Цель: {target.name} | Y цели: {target.position.y:F2} | Y ствола: {rotator.position.y:F2} | Угол: {pitchAngle:F1}° | Допуск: {_verticalTolerance}° | Разрешено: {isAllowed}");
 
             return isAllowed;
         }

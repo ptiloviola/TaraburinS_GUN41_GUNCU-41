@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Gameplay.Core;
+using Infrastructure.Signals;
 
 namespace Gameplay.Enemies
 {
@@ -10,6 +11,7 @@ namespace Gameplay.Enemies
     {
         private IMovementStrategy _movementStrategy;
         private Pool _pool;
+        private SignalBus _signalBus;
 
         // --- НОВОЕ: Ссылка на здоровье ---
         [SerializeField] private HealthComponent _health;
@@ -28,9 +30,10 @@ namespace Gameplay.Enemies
 
         // Магия Zenject: он сам вставит сюда ссылку на пул при инстанцировании префаба!
         [Inject]
-        public void Construct(Pool pool)
+        public void Construct(Pool pool, SignalBus signalBus)
         {
             _pool = pool;
+            _signalBus = signalBus;
         }
 
         // --- НОВОЕ: Ищем компонент, если забыли назначить в инспекторе ---
@@ -83,6 +86,7 @@ namespace Gameplay.Enemies
         // --- НОВОЕ: Обработчик смерти ---
         private void HandleDeath()
         {
+            _signalBus.Fire(new SignalEnemyKilled { Reward = 10 });
             Despawn(); // Если ХП упало до нуля, просто возвращаем врага в пул
         }
 

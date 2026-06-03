@@ -14,7 +14,7 @@ namespace Infrastructure.Signals
     }
 
     // Сигнал вызывается, когда любой враг погибает или деспавнится
-    public struct SignalEnemyDied
+    public struct SignalEnemyKilled
     {
         public int Reward; // Банк будет читать это поле
     }
@@ -30,6 +30,5 @@ namespace Infrastructure.Signals
     {
         public int CurrentBalance;
     }
-
 
 }
