@@ -3,6 +3,7 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Towers.Behaviors;
 using Gameplay.Towers.Visuals;
+using Gameplay.Economy;
 
 namespace Gameplay.Towers
 {
@@ -14,6 +15,7 @@ namespace Gameplay.Towers
         private readonly Camera _mainCamera;
         private readonly Settings _settings;
         private readonly IInstantiator _instantiator;
+        private readonly BankService _bankService; // Ссылка на наш кошелек
 
         // Храним экземпляры обоих курсоров
         private GameObject _validCursorInstance;
@@ -27,6 +29,9 @@ namespace Gameplay.Towers
         {
             public LayerMask GridLayerMask;
             public GameObject DummyTowerPrefab;
+            [Header("Экономика")]
+            public int DummyTowerCost = 50; // Цена базовой башни для тестов
+
             [Header("Курсоры")]
             // ТЕПЕРЬ ДВА ПРЕФАБА: Один зеленый, другой красный
             public GameObject ValidCursorPrefab;
@@ -39,12 +44,14 @@ namespace Gameplay.Towers
             IGridService gridService, 
             GridGenerator gridGenerator, 
             Settings settings,
-            IInstantiator instantiator)
+            IInstantiator instantiator,
+            BankService bankService)
         {
             _gridService = gridService;
             _gridGenerator = gridGenerator;
             _settings = settings;
             _instantiator = instantiator;
+            _bankService = bankService;
             _mainCamera = Camera.main;
         }
 
@@ -77,7 +84,11 @@ namespace Gameplay.Towers
                 Vector2Int gridPos = new Vector2Int(gridX, gridZ);
 
                 // Запрашиваем состояние ячейки
-                bool canBuild = _gridService.CanBuildAt(gridPos);
+                bool isCellFree = _gridService.CanBuildAt(gridPos);
+                // 2. Проверяем, хватает ли денег на постройку
+                bool hasEnoughMoney = _bankService.CurrentBalance >= _settings.DummyTowerCost;
+                // Разрешаем строить ТОЛЬКО если есть и место, и деньги
+                bool canBuild = isCellFree && hasEnoughMoney;
 
                 // 1. Показываем нужный курсор и перемещаем его
                 UpdateCursor(hit.collider, canBuild);
@@ -87,13 +98,26 @@ namespace Gameplay.Towers
                 {
                     if (canBuild)
                     {
-                        BuildDummyTower(gridPos, hit.collider);
-                        // Сразу после постройки ячейка занята, переключаемся на красный курсор
-                        UpdateCursor(hit.collider, false); 
+                        // Пытаемся списать деньги. Если SpendMoney вернул true - строим!
+                        if (_bankService.SpendMoney(_settings.DummyTowerCost))
+                        {
+                            BuildDummyTower(gridPos, hit.collider);
+                            // Сразу после постройки ячейка занята, переключаемся на красный курсор
+                            UpdateCursor(hit.collider, false); 
+                        }
+                        
                     }
                     else
                     {
-                        Debug.LogWarning($"[GridInteractor] ОТКАЗ! Нельзя строить на {gridPos}.");
+                        // Подробные логи, чтобы понимать, почему не можем построить
+                        if (!isCellFree)
+                        {
+                            Debug.LogWarning($"[GridInteractor] ОТКАЗ! Нельзя строить на {gridPos} - место занято или это дорога.");
+                        }
+                        else if (!hasEnoughMoney)
+                        {
+                            Debug.LogWarning($"[GridInteractor] ОТКАЗ! Не хватает денег. Нужно: {_settings.DummyTowerCost}, Баланс: {_bankService.CurrentBalance}");
+                        }
                     }
                 }
             }
@@ -156,11 +180,6 @@ namespace Gameplay.Towers
                 Debug.LogError("<color=red>[GridInteractor] КРИТИКА: На созданном объекте физически отсутствует компонент ProceduralTowerVisuals! Мы спавним не тот префаб!</color>");
             }
 
-            Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Башня построена на {gridPos}!</color>");
-
-            
-
-            _instantiator.InstantiatePrefab(_settings.DummyTowerPrefab, spawnPosition, Quaternion.identity, null);
             Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Башня построена на {gridPos}!</color>");
         }
         
