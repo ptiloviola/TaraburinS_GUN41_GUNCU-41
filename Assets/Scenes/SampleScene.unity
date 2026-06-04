@@ -1048,6 +1048,7 @@ MonoBehaviour:
       m_Bits: 256
     DummyTowerPrefab: {fileID: 3929638890925405715, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
       type: 3}
+    DummyTowerCost: 50
     ValidCursorPrefab: {fileID: 1942206327739906697, guid: 59388c14773c2af43a3497b035350af3,
       type: 3}
     InvalidCursorPrefab: {fileID: 1942206327739906697, guid: abfa30ab36b2f6d4c8b323bdf5dc99d8,
@@ -1132,8 +1133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spawnPosition: {x: 2, y: 1, z: 2}
-  _spawnInterval: 0.2
-  _enemiesInWave: 15
+  _waveConfig: {fileID: 11400000, guid: 27d66bcb5cdbfab4185593913162db07, type: 2}
 --- !u!4 &1925016042
 Transform:
   m_ObjectHideFlags: 0

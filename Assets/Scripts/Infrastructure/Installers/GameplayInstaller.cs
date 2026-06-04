@@ -37,6 +37,7 @@ namespace Infrastructure.Installers
             Container.DeclareSignal<SignalEnemyKilled>();
             Container.DeclareSignal<SignalGameOver>();
             Container.DeclareSignal<SignalBalanceChanged>();
+            Container.DeclareSignal<SignalWaveStarted>();
 
             // Биндим наш Банк
             Container.BindInterfacesAndSelfTo<BankService>().AsSingle();

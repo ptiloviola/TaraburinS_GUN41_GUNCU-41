@@ -31,4 +31,10 @@ namespace Infrastructure.Signals
         public int CurrentBalance;
     }
 
+    public struct SignalWaveStarted
+    {
+        public int CurrentWaveIndex;
+        public int TotalWaves;
+    }
+
 }
