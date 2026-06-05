@@ -8,6 +8,7 @@ using Gameplay.Base;
 using Gameplay.Towers;
 using Gameplay.Towers.Behaviors.Weapons;
 using Gameplay.Economy;
+using Gameplay.Towers.Data; // Подключаем пространство имен каталога
 
 namespace Infrastructure.Installers
 {
@@ -25,6 +26,9 @@ namespace Infrastructure.Installers
         [SerializeField] private GridInteractor.Settings gridInteractorSettings;
 
         [SerializeField] private KinematicProjectile _cannonballPrefab;
+
+        [Header("Конфиги и Данные")]
+        [SerializeField] private TowerRegistry _towerRegistry; // Ссылка на наш каталог башен в инспекторе
 
 
         public override void InstallBindings()
@@ -78,6 +82,8 @@ namespace Infrastructure.Installers
              .WithInitialSize(10)
              .FromComponentInNewPrefab(_cannonballPrefab)
              .UnderTransformGroup("Projectiles");
+
+            Container.BindInstance(_towerRegistry).AsSingle();
 
 
 

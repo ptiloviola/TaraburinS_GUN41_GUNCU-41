@@ -4,6 +4,9 @@ using Zenject;
 using Gameplay.Towers.Behaviors;
 using Gameplay.Towers.Visuals;
 using Gameplay.Economy;
+using Gameplay.Towers.Data;
+using System;
+using UnityEngine.EventSystems; // Обязательно для работы с интерфейсом!
 
 namespace Gameplay.Towers
 {
@@ -17,6 +20,11 @@ namespace Gameplay.Towers
         private readonly IInstantiator _instantiator;
         private readonly BankService _bankService; // Ссылка на наш кошелек
 
+        // НОВОЕ: Наш каталог всех башен
+        private readonly TowerRegistry _towerRegistry;
+        // НОВОЕ: Данные башни, которую игрок собирается построить прямо сейчас
+        private TowerShopData _selectedTowerData;
+
         // Храним экземпляры обоих курсоров
         private GameObject _validCursorInstance;
         private GameObject _invalidCursorInstance;
@@ -24,13 +32,13 @@ namespace Gameplay.Towers
         // Ссылка на текущий активный курсор, чтобы не делать лишних GetActive()
         private GameObject _currentActiveCursor;
 
+        // НОВОЕ: Событие, которое сообщит UI, что выбор сброшен
+        public event Action OnTowerDeselected;
+
         [System.Serializable]
         public class Settings
         {
             public LayerMask GridLayerMask;
-            public GameObject DummyTowerPrefab;
-            [Header("Экономика")]
-            public int DummyTowerCost = 50; // Цена базовой башни для тестов
 
             [Header("Курсоры")]
             // ТЕПЕРЬ ДВА ПРЕФАБА: Один зеленый, другой красный
@@ -45,13 +53,15 @@ namespace Gameplay.Towers
             GridGenerator gridGenerator, 
             Settings settings,
             IInstantiator instantiator,
-            BankService bankService)
+            BankService bankService,
+            TowerRegistry towerRegistry)
         {
             _gridService = gridService;
             _gridGenerator = gridGenerator;
             _settings = settings;
             _instantiator = instantiator;
             _bankService = bankService;
+            _towerRegistry = towerRegistry;
             _mainCamera = Camera.main;
         }
 
@@ -66,10 +76,67 @@ namespace Gameplay.Towers
             _invalidCursorInstance.SetActive(false);
             
             Debug.Log("<color=cyan>[GridInteractor] Профессиональные курсоры созданы!</color>");
+            
+            // МЫ УДАЛИЛИ ХАК. Теперь _selectedTowerData изначально null.
+            // И благодаря твоей проверке в Tick() (if (_selectedTowerData == null) return;) 
+            // строитель просто будет спать, пока игрок не кликнет по кнопке.
+            
+            // ВРЕМЕННЫЙ ХАК ДО ПОЯВЛЕНИЯ UI: 
+            // Берем первую башню из каталога по умолчанию, чтобы было что строить
+            // if (_towerRegistry.Towers.Count > 0)
+            // {
+            //     SelectTower(_towerRegistry.Towers[0].TowerId);
+            // }
+            // else
+            // {
+            //     Debug.LogError("[GridInteractor] В каталоге нет башен!");
+            // }
+        }
+
+        // Метод, который позже будет вызывать UI-панель при клике на кнопку
+        public void SelectTower(string towerId)
+        {
+            _selectedTowerData = _towerRegistry.GetTowerById(towerId);
+            
+            if (_selectedTowerData != null)
+                Debug.Log($"<color=cyan>[GridInteractor] Выбрана башня для постройки: {_selectedTowerData.DisplayName} (Цена: {_selectedTowerData.Cost})</color>");
+            else
+                Debug.LogError($"[GridInteractor] Башня с ID {towerId} не найдена в каталоге!");
+        }
+
+        // НОВЫЙ МЕТОД: Очистка выбора
+        public void DeselectTower()
+        {
+            _selectedTowerData = null;
+            HideAllCursors();
+            
+            // Запускаем событие для всех подписчиков (например, для UI-панели)
+            OnTowerDeselected?.Invoke(); 
+            
+            Debug.Log("<color=cyan>[GridInteractor] Режим строительства отменен.</color>");
         }
 
         public void Tick()
         {
+            // НОВОЕ: Проверяем нажатие Правой кнопки мыши (1) или Escape для отмены
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (_selectedTowerData != null)
+                {
+                    DeselectTower();
+                }
+            }
+            // Если ничего не выбрано - даже не пытаемся обрабатывать клики
+            if (_selectedTowerData == null) return;
+            // 3. НОВОЕ: Защита от "сквозного клика" через UI
+            // Если мышка сейчас находится над любым элементом Canvas
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                HideAllCursors(); // Прячем зеленую/красную подсветку ячейки
+                return;           // Прерываем Tick, чтобы физический луч не пускался
+            }
+
+            // 4. Если мышка над свободной зоной - пускаем луч и разрешаем строить
             HandleMouseInteraction();
         }
 
@@ -85,8 +152,9 @@ namespace Gameplay.Towers
 
                 // Запрашиваем состояние ячейки
                 bool isCellFree = _gridService.CanBuildAt(gridPos);
-                // 2. Проверяем, хватает ли денег на постройку
-                bool hasEnoughMoney = _bankService.CurrentBalance >= _settings.DummyTowerCost;
+
+                // БЕРЕМ ЦЕНУ ИЗ ВЫБРАННОЙ БАШНИ
+                bool hasEnoughMoney = _bankService.CurrentBalance >= _selectedTowerData.Cost;
                 // Разрешаем строить ТОЛЬКО если есть и место, и деньги
                 bool canBuild = isCellFree && hasEnoughMoney;
 
@@ -99,9 +167,9 @@ namespace Gameplay.Towers
                     if (canBuild)
                     {
                         // Пытаемся списать деньги. Если SpendMoney вернул true - строим!
-                        if (_bankService.SpendMoney(_settings.DummyTowerCost))
+                        if (_bankService.SpendMoney(_selectedTowerData.Cost))
                         {
-                            BuildDummyTower(gridPos, hit.collider);
+                            BuildTower(gridPos, hit.collider);
                             // Сразу после постройки ячейка занята, переключаемся на красный курсор
                             UpdateCursor(hit.collider, false); 
                         }
@@ -116,7 +184,7 @@ namespace Gameplay.Towers
                         }
                         else if (!hasEnoughMoney)
                         {
-                            Debug.LogWarning($"[GridInteractor] ОТКАЗ! Не хватает денег. Нужно: {_settings.DummyTowerCost}, Баланс: {_bankService.CurrentBalance}");
+                            Debug.LogWarning($"[GridInteractor] ОТКАЗ! Не хватает денег. Нужно: {_selectedTowerData.Cost}, Баланс: {_bankService.CurrentBalance}");
                         }
                     }
                 }
@@ -152,7 +220,7 @@ namespace Gameplay.Towers
             _currentActiveCursor.transform.position = targetPosition;
         }
 
-        private void BuildDummyTower(Vector2Int gridPos, Collider gridBlockCollider)
+        private void BuildTower(Vector2Int gridPos, Collider gridBlockCollider)
         {
             GridNode node = _gridService.GetNode(gridPos);
             node.IsOccupied = true;
@@ -164,10 +232,9 @@ namespace Gameplay.Towers
             );
 
             // Спавним и сохраняем ссылку на созданный объект
-            GameObject towerGo = _instantiator.InstantiatePrefab(_settings.DummyTowerPrefab, spawnPosition, Quaternion.identity, null);
+            GameObject towerGo = _instantiator.InstantiatePrefab(_selectedTowerData.Prefab, spawnPosition, Quaternion.identity, null);
             
-            // ВЫВОДИМ В КОНСОЛЬ ПОЛНУЮ ИНФОРМАЦИЮ
-            Debug.Log($"<color=orange>[GridInteractor] Создан GameObject: {towerGo.name}. Ищем компоненты...</color>");
+            
             
             var facade = towerGo.GetComponent<TowerFacade>();
             var attack = towerGo.GetComponentInChildren<AttackBehavior>();
@@ -179,8 +246,9 @@ namespace Gameplay.Towers
             {
                 Debug.LogError("<color=red>[GridInteractor] КРИТИКА: На созданном объекте физически отсутствует компонент ProceduralTowerVisuals! Мы спавним не тот префаб!</color>");
             }
+            // ВЫВОДИМ В КОНСОЛЬ ПОЛНУЮ ИНФОРМАЦИЮ
+            Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Построена {_selectedTowerData.DisplayName} на {gridPos} за {_selectedTowerData.Cost} монет.</color>");
 
-            Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Башня построена на {gridPos}!</color>");
         }
         
         private void HideAllCursors()
