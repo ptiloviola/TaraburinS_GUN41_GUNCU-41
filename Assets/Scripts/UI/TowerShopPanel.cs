@@ -4,6 +4,7 @@ using Gameplay.Towers.Data;
 using Gameplay.Towers; // Для доступа к GridInteractor
 using System.Collections.Generic; // Нужно для списков
 using TMPro; // Для текста тултипа
+using Gameplay.Towers.Data.Modules;
 
 
 namespace Gameplay.UI
@@ -135,20 +136,14 @@ namespace Gameplay.UI
                 _tooltipNameText.text = data.DisplayName;
                 // Собираем строку характеристик на основе твоих модулей
                 string statsStr = "";
-                if (baseLevel.Attack != null && baseLevel.Attack.Damage > 0)
+                // ПРОСТОЙ И ГЕНИАЛЬНЫЙ ЦИКЛ: 
+                // UI просит все модули и говорит: "Просто дайте мне ваш текст!"
+                foreach (IModuleDescriptor module in baseLevel.GetActiveModules())
                 {
-                    statsStr += $"Урон: {baseLevel.Attack.Damage}\n";
-                    statsStr += $"Радиус: {baseLevel.Attack.Range}\n";
-                    statsStr += $"Кулдаун: {baseLevel.Attack.Cooldown} сек\n";
-                }
-                
-                if (baseLevel.Aura != null && baseLevel.Aura.Radius > 0)
-                {
-                    statsStr += $"Радиус Ауры: {baseLevel.Aura.Radius}\n";
-                    statsStr += $"Замедление: {baseLevel.Aura.SlowdownMultiplier}x\n";
+                    statsStr += module.GetStatsDescription();
                 }
 
-                _tooltipStatsText.text = statsStr;
+                _tooltipStatsText.text = statsStr.Trim();;
                 _tooltipPanel.SetActive(true);
                 
             }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9135692716712994365}
   - component: {fileID: 5393410052814909471}
   - component: {fileID: 3242313251146315221}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: RadiusIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}

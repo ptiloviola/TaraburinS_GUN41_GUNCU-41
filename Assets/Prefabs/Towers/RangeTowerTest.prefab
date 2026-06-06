@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1234650078190084447}
   - component: {fileID: 5156420197562128241}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,7 +48,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _baseTransform: {fileID: 3397754600758017836}
   _turretTransform: {fileID: 5337976988180364402}
-  _barrelTransform: {fileID: 5224069891382285833}
+  _barrelTransforms: []
+  _logicalRotator: {fileID: 7719654304960999622}
+  _copyPitch: 0
+  _elevationPivot: {fileID: 0}
+  _localPitchAxis: {x: 0, y: 0, z: 1}
+  _rotationOffset: -90
   _buildDuration: 0.5
   _buildEase: 27
   _shootDuration: 0.25
@@ -57,7 +62,9 @@ MonoBehaviour:
   _recoilEase: 6
   _barrelReturnEase: 6
   _turretReturnEase: 6
-  _logicalRotator: {fileID: 7719654304960999622}
+  _laserRenderer: {fileID: 0}
+  _laserMaxWidth: 0.3
+  _steamParticles: []
 --- !u!1 &1206027748422666790
 GameObject:
   m_ObjectHideFlags: 0
@@ -69,7 +76,7 @@ GameObject:
   - component: {fileID: 1607219229625140047}
   - component: {fileID: 6077655359845708730}
   - component: {fileID: 9214533203317062409}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: RangeTowerTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +142,7 @@ GameObject:
   - component: {fileID: 5337976988180364402}
   - component: {fileID: 3652590420092556200}
   - component: {fileID: 7714380387533721000}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,7 +224,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7719654304960999622}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Logical_Rotator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -251,7 +258,7 @@ GameObject:
   - component: {fileID: 5224069891382285833}
   - component: {fileID: 2448267462419954032}
   - component: {fileID: 2883497291478659413}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +339,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5319466047695738253}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -365,7 +372,7 @@ GameObject:
   - component: {fileID: 3397754600758017836}
   - component: {fileID: 2265001192276814320}
   - component: {fileID: 8048337561486015131}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

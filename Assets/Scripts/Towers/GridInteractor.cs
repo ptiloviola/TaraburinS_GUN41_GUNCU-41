@@ -260,7 +260,16 @@ namespace Gameplay.Towers
             // Спавним и сохраняем ссылку на созданный объект
             GameObject towerGo = _instantiator.InstantiatePrefab(_selectedTowerData.Prefab, spawnPosition, Quaternion.identity, null);
             
-            
+            // НОВОЕ: Ищем наш "паспорт" и заполняем его!
+            if (towerGo.TryGetComponent(out TowerInstance towerInstance))
+            {
+                // Передаем боевой конфиг и координаты клетки
+                towerInstance.Initialize(_selectedTowerData.TowerConfig, gridPos);
+            }
+            else
+            {
+                Debug.LogWarning($"[GridInteractor] На префабе {_selectedTowerData.Prefab.name} нет скрипта TowerInstance!");
+            }
             
             var facade = towerGo.GetComponent<TowerFacade>();
             var attack = towerGo.GetComponentInChildren<AttackBehavior>();

@@ -30,7 +30,10 @@ namespace Infrastructure.Installers
         [Header("Конфиги и Данные")]
         [SerializeField] private TowerRegistry _towerRegistry; // Ссылка на наш каталог башен в инспекторе
 
+        [Header("Настройки Слоев")]
+        [SerializeField] private LayerMask _towerLayerMask; // Назначь в инспекторе слой Tower!
 
+        
         public override void InstallBindings()
         {
             // Инициализируем встроенную шину сигналов Zenject
@@ -84,6 +87,12 @@ namespace Infrastructure.Installers
              .UnderTransformGroup("Projectiles");
 
             Container.BindInstance(_towerRegistry).AsSingle();
+
+            // Регистрируем сервис выделения (передаем ему камеру и маску слоя)
+            Container.BindInterfacesAndSelfTo<TowerSelectionService>()
+                     .AsSingle()
+                     .WithArguments(Camera.main, _towerLayerMask)
+                     .NonLazy();
 
 
 

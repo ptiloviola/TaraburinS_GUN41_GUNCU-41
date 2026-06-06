@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2013802512576192232}
   - component: {fileID: 7606519097736120902}
   - component: {fileID: 8468681026833485568}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,7 +185,10 @@ GameObject:
   - component: {fileID: 135073954517548277}
   - component: {fileID: 7977650445509351927}
   - component: {fileID: 2592835290429401131}
-  m_Layer: 0
+  - component: {fileID: 9018403315348128107}
+  - component: {fileID: 1996542747888263960}
+  - component: {fileID: -761134238866531938}
+  m_Layer: 7
   m_Name: cannonballTowerTest_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -284,6 +287,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _verticalTolerance: 15
+--- !u!114 &9018403315348128107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926724689136184970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384d6200d152a6846b67f7dc7279adf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &1996542747888263960
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926724689136184970}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.5463161, z: 1.2865942}
+  m_Center: {x: 0, y: 0.27315807, z: 0.14329708}
+--- !u!114 &-761134238866531938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926724689136184970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11240d2df3a4a664dac4a7620a939b6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2825307496775094794
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,7 +341,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1957830981407176550}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -326,7 +374,7 @@ GameObject:
   - component: {fileID: 290366890347110676}
   - component: {fileID: 7736937313198090257}
   - component: {fileID: 3649385606412082078}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +457,7 @@ GameObject:
   - component: {fileID: 7879057351727019545}
   - component: {fileID: 309819935820692194}
   - component: {fileID: 4566508244647082049}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,7 +539,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1355285404530712234}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Logical_Rotator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -525,7 +573,7 @@ GameObject:
   - component: {fileID: 239661865440609367}
   - component: {fileID: 6936106570237940134}
   - component: {fileID: 3106144669068557846}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

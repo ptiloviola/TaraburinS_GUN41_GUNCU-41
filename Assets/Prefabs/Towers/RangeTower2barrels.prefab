@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7209307938038716687}
   - component: {fileID: 5443830760385689727}
   - component: {fileID: 7130483573530859447}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 4948790352228714512}
   - component: {fileID: 3941470187196837383}
   - component: {fileID: 2767537639249881226}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,6 +136,9 @@ MonoBehaviour:
   - {fileID: 407547282258650299}
   - {fileID: 4059981341746222137}
   _logicalRotator: {fileID: 8694569178857730175}
+  _copyPitch: 0
+  _elevationPivot: {fileID: 0}
+  _localPitchAxis: {x: 0, y: 0, z: -1}
   _rotationOffset: -90
   _buildDuration: 0.5
   _buildEase: 27
@@ -268,7 +271,10 @@ GameObject:
   - component: {fileID: 3185065552530650880}
   - component: {fileID: 7400648276859534693}
   - component: {fileID: 4502546087185729095}
-  m_Layer: 0
+  - component: {fileID: 7574691433265480603}
+  - component: {fileID: 82799684455489566}
+  - component: {fileID: 8282581552577450488}
+  m_Layer: 7
   m_Name: RangeTower2barrels
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,6 +373,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6cb3dfe68aa6894d81611da59fd80a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7574691433265480603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3929638890925405715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384d6200d152a6846b67f7dc7279adf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &82799684455489566
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3929638890925405715}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8282581552577450488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3929638890925405715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11240d2df3a4a664dac4a7620a939b6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5931894481428781462
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,7 +427,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 51284356758595256}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +460,7 @@ GameObject:
   - component: {fileID: 7017893385741540974}
   - component: {fileID: 3431381054225205302}
   - component: {fileID: 4593361487432896280}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -494,7 +545,7 @@ GameObject:
   - component: {fileID: 4059981341746222137}
   - component: {fileID: 284856327237525187}
   - component: {fileID: 166578474728725713}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Barrel_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -576,7 +627,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8694569178857730175}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Logical_Rotator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -610,7 +661,7 @@ GameObject:
   - component: {fileID: 407547282258650299}
   - component: {fileID: 4868252731633377791}
   - component: {fileID: 4897822906462874883}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Barrel_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -694,7 +745,7 @@ GameObject:
   - component: {fileID: 8865768664571335296}
   - component: {fileID: 5261946610394184294}
   - component: {fileID: 2048700485581420387}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Steam_VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5591,7 +5642,7 @@ GameObject:
   - component: {fileID: 1202321256626816020}
   - component: {fileID: 6286558492475144204}
   - component: {fileID: 5185776957779389540}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Steam_VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 889783599917484572}
   - component: {fileID: 6964013808657154934}
   - component: {fileID: 6806066777006014110}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TestTower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1870862965999925717}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Logical_Rotator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 6142779773895786217}
   - component: {fileID: 631744510817567094}
   - component: {fileID: 4417530500063116707}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9133923574833033831}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
