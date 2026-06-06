@@ -1,4 +1,5 @@
 using UnityEngine;
+using Gameplay.Towers;
 
 namespace Gameplay.Towers.Data
 {
@@ -23,6 +24,9 @@ namespace Gameplay.Towers.Data
 
         // В будущем сюда можно добавить:
         // public string Description; // Описание ("Стреляет лазером по площади")
-        // public TowerConfig Config; // Ссылка на боевые характеристики (урон, радиус)
+
+        [Header("Боевые параметры (Для радиуса и UI)")]
+        [Tooltip("Ссылка на конфиг характеристик этой башни")]
+        public TowerConfig TowerConfig; // Ссылка на боевые характеристики (урон, радиус)
     }
 }

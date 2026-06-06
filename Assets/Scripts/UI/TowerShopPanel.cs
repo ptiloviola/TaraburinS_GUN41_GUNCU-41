@@ -3,6 +3,7 @@ using Zenject;
 using Gameplay.Towers.Data;
 using Gameplay.Towers; // Для доступа к GridInteractor
 using System.Collections.Generic; // Нужно для списков
+using TMPro; // Для текста тултипа
 
 
 namespace Gameplay.UI
@@ -12,6 +13,11 @@ namespace Gameplay.UI
         [Header("Настройки UI")]
         [SerializeField] private TowerButtonView _buttonPrefab;
         [SerializeField] private Transform _buttonsContainer; // Куда спавнить кнопки
+
+        [Header("Настройки Тултипа")]
+        [SerializeField] private GameObject _tooltipPanel; // Вся панель подсказки
+        [SerializeField] private TMP_Text _tooltipNameText; // Заголовок
+        [SerializeField] private TMP_Text _tooltipStatsText; // Характеристики
 
         private TowerRegistry _towerRegistry;
         private GridInteractor _gridInteractor;
@@ -35,6 +41,9 @@ namespace Gameplay.UI
             GenerateShopButtons();
             // НОВОЕ: Подписываемся на событие сброса выбора из строителя
             _gridInteractor.OnTowerDeselected += HandleDeselectFromGrid;
+
+            // Изначально прячем тултип
+            if (_tooltipPanel != null) _tooltipPanel.SetActive(false);
 
             // МЫ УДАЛИЛИ автоматический клик.
             // Кнопки сами при инициализации вызывают SetSelected(false), 
@@ -71,8 +80,8 @@ namespace Gameplay.UI
                 // Создаем кнопку в контейнере
                 TowerButtonView newButton = Instantiate(_buttonPrefab, _buttonsContainer);
                 
-                // Передаем в кнопку данные и метод, который нужно вызвать при клике
-                newButton.Init(towerData, OnTowerButtonClicked);
+                // Передаем методы наведения в Init
+                newButton.Init(towerData, OnTowerButtonClicked, OnButtonHoverEnter, OnButtonHoverExit);
                 _spawnedButtons.Add(newButton); // Сохраняем кнопку в список
             }
             
@@ -113,6 +122,44 @@ namespace Gameplay.UI
                 // Если ID совпадает с нажатым - подсвечиваем, иначе гасим
                 btn.SetSelected(btn.TowerId == clickedTowerId); 
             }
+        }
+        // НОВОЕ: Обработка наведения
+        private void OnButtonHoverEnter(string hoveredTowerId)
+        {
+            if (_tooltipPanel == null) return;
+            // Находим данные башни по ID
+            TowerShopData data = _towerRegistry.GetTowerById(hoveredTowerId);
+            if (data != null && data.TowerConfig != null && data.TowerConfig.Levels.Count > 0)
+            {
+                TowerLevelData baseLevel = data.TowerConfig.Levels[0];
+                _tooltipNameText.text = data.DisplayName;
+                // Собираем строку характеристик на основе твоих модулей
+                string statsStr = "";
+                if (baseLevel.Attack != null && baseLevel.Attack.Damage > 0)
+                {
+                    statsStr += $"Урон: {baseLevel.Attack.Damage}\n";
+                    statsStr += $"Радиус: {baseLevel.Attack.Range}\n";
+                    statsStr += $"Кулдаун: {baseLevel.Attack.Cooldown} сек\n";
+                }
+                
+                if (baseLevel.Aura != null && baseLevel.Aura.Radius > 0)
+                {
+                    statsStr += $"Радиус Ауры: {baseLevel.Aura.Radius}\n";
+                    statsStr += $"Замедление: {baseLevel.Aura.SlowdownMultiplier}x\n";
+                }
+
+                _tooltipStatsText.text = statsStr;
+                _tooltipPanel.SetActive(true);
+                
+            }
+            
+        }
+
+        // НОВОЕ: Обработка выхода курсора
+        private void OnButtonHoverExit()
+        {
+            // Скрываем тултип
+            if (_tooltipPanel != null) _tooltipPanel.SetActive(false);
         }
     }
 }

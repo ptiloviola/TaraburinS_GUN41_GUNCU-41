@@ -19,9 +19,11 @@ MonoBehaviour:
     Icon: {fileID: 21300000, guid: 76b2b3623875b22488d7152125b46e71, type: 3}
     Prefab: {fileID: 3929638890925405715, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
       type: 3}
+    TowerConfig: {fileID: 11400000, guid: e21c2c6eaa9ef04458b86dfb71ca06f0, type: 2}
   - TowerId: cannonball_tower
     DisplayName: "\u041F\u0443\u0448\u043A\u0430 \u0441 \u044F\u0434\u0440\u0430\u043C\u0438"
     Cost: 80
     Icon: {fileID: 21300000, guid: b857fcf2c0acd1e42a6c5536cfe0251d, type: 3}
     Prefab: {fileID: 1926724689136184970, guid: 8faeee0504cf3d74fb41a207e19c7325,
       type: 3}
+    TowerConfig: {fileID: 11400000, guid: 19fd970d01f3eec4a96712905c13cca7, type: 2}

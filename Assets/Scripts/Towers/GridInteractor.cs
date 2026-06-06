@@ -31,6 +31,8 @@ namespace Gameplay.Towers
         
         // Ссылка на текущий активный курсор, чтобы не делать лишних GetActive()
         private GameObject _currentActiveCursor;
+        // НОВОЕ: Ссылка на инстанс радиуса
+        private GameObject _radiusIndicatorInstance;
 
         // НОВОЕ: Событие, которое сообщит UI, что выбор сброшен
         public event Action OnTowerDeselected;
@@ -45,6 +47,9 @@ namespace Gameplay.Towers
             public GameObject ValidCursorPrefab;
             public GameObject InvalidCursorPrefab;
             // Смещение по высоте над сеткой, чтобы избежать мерцания (Z-fighting)
+            // НОВОЕ: Поле для префаба радиуса
+            [Tooltip("Префаб полупрозрачного круга")]
+            public GameObject RadiusIndicatorPrefab;
             public float HeightOffset = 0.05f; 
         }
 
@@ -71,9 +76,13 @@ namespace Gameplay.Towers
             _validCursorInstance = _instantiator.InstantiatePrefab(_settings.ValidCursorPrefab);
             _invalidCursorInstance = _instantiator.InstantiatePrefab(_settings.InvalidCursorPrefab);
             
+            _radiusIndicatorInstance = _instantiator.InstantiatePrefab(_settings.RadiusIndicatorPrefab);
+            // Изначально скрываем радиус
+            _radiusIndicatorInstance.SetActive(false); 
             // Изначально скрываем оба
             _validCursorInstance.SetActive(false);
             _invalidCursorInstance.SetActive(false);
+            
             
             Debug.Log("<color=cyan>[GridInteractor] Профессиональные курсоры созданы!</color>");
             
@@ -100,6 +109,16 @@ namespace Gameplay.Towers
             
             if (_selectedTowerData != null)
                 Debug.Log($"<color=cyan>[GridInteractor] Выбрана башня для постройки: {_selectedTowerData.DisplayName} (Цена: {_selectedTowerData.Cost})</color>");
+                if (_selectedTowerData.TowerConfig != null)
+                {
+                    // В Unity масштаб 1 означает диаметр 1 метр. 
+                    // Радиус (Range) нужно умножить на 2, чтобы получить диаметр круга.
+                    TowerLevelData baseLevel = _selectedTowerData.TowerConfig.Levels[0]; // Берем характеристики первого уровня
+                    float targetDiameter = GetTowerRange(baseLevel) * 2f;
+                    Debug.Log($"[GridInteractor] Боевые характеристики: Урон = {baseLevel.Attack.Damage}, Радиус = {baseLevel.Attack.Range}");
+                    // Меняем только X и Z. Ось Y (толщину блина) оставляем маленькой.
+                    _radiusIndicatorInstance.transform.localScale = new Vector3(targetDiameter, 0.01f, targetDiameter);
+                }
             else
                 Debug.LogError($"[GridInteractor] Башня с ID {towerId} не найдена в каталоге!");
         }
@@ -218,6 +237,13 @@ namespace Gameplay.Towers
             );
             
             _currentActiveCursor.transform.position = targetPosition;
+            // НОВОЕ: Перемещаем и показываем радиус атаки вместе с курсором
+            if (!_radiusIndicatorInstance.activeSelf)
+            {
+                _radiusIndicatorInstance.SetActive(true);
+            }
+            // Радиус рисуем чуть ниже курсора, чтобы он лежал прямо на земле
+            _radiusIndicatorInstance.transform.position = targetPosition + Vector3.down * (_settings.HeightOffset * 0.5f);
         }
 
         private void BuildTower(Vector2Int gridPos, Collider gridBlockCollider)
@@ -258,6 +284,28 @@ namespace Gameplay.Towers
                 _currentActiveCursor.SetActive(false);
                 _currentActiveCursor = null;
             }
+
+            // НОВОЕ: Прячем радиус, когда мышка уходит с сетки или сбрасывается выбор
+            if (_radiusIndicatorInstance != null)
+            {
+                _radiusIndicatorInstance.SetActive(false);
+            }
+        }
+
+        private float GetTowerRange(TowerLevelData levelData)
+        {
+             if (levelData.Attack != null && levelData.Attack.Range > 0)
+             {
+                 return levelData.Attack.Range;
+             }
+
+             if (levelData.Aura != null && levelData.Aura.Radius > 0)
+             {
+                 return levelData.Aura.Radius;
+             }
+
+             // Если башня вообще без радиуса (например, добывает деньги)
+             return 0f; // Если данных нет, возвращаем 0
         }
     }
 }

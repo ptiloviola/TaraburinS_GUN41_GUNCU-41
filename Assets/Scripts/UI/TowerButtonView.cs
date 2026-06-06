@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using TMPro; // Обязательно используем TextMeshPro для красивого текста
 using Gameplay.Towers.Data;
 using System;
+using UnityEngine.EventSystems; // Обязательно для событий мыши
 
 namespace Gameplay.UI
 {
-    public class TowerButtonView : MonoBehaviour
+    // Добавляем интерфейсы IPointerEnterHandler и IPointerExitHandler
+    public class TowerButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("UI Элементы")]
         [SerializeField] private Image _backgroundImage; // Фон самой кнопки
@@ -24,8 +26,12 @@ namespace Gameplay.UI
 
         private Action<string> _onClickedCallback; // Делегат для передачи клика "наверх"
 
+        // НОВОЕ: Делегаты для наведения мыши
+        private Action<string> _onHoverEnterCallback;
+        private Action _onHoverExitCallback;
+        
         // Метод инициализации. Панель вызовет его и передаст данные башни
-        public void Init(TowerShopData data, Action<string> onClicked)
+        public void Init(TowerShopData data, Action<string> onClicked, Action<string> onHoverEnter, Action onHoverExit)
         {
             TowerId = data.TowerId;
             _nameText.text = data.DisplayName;
@@ -35,6 +41,8 @@ namespace Gameplay.UI
                 _iconImage.sprite = data.Icon;
 
             _onClickedCallback = onClicked;
+            _onHoverEnterCallback = onHoverEnter;
+            _onHoverExitCallback = onHoverExit;
             
             // Подписываемся на клик самой Unity UI кнопки
             _button.onClick.AddListener(HandleClick);
@@ -56,10 +64,22 @@ namespace Gameplay.UI
             }
         }
 
+        
+        // НОВОЕ: Метод срабатывает автоматически при входе курсора в зону кнопки
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _onHoverEnterCallback?.Invoke(TowerId);
+        }
+        // НОВОЕ: Метод срабатывает автоматически при выходе курсора
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _onHoverExitCallback?.Invoke();
+        }
         private void OnDestroy()
         {
             // Хороший тон: отписываемся от событий при уничтожении объекта
             _button.onClick.RemoveListener(HandleClick);
         }
+        
     }
 }

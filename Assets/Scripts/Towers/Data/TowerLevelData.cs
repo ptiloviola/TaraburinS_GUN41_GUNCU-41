@@ -13,5 +13,6 @@ namespace Gameplay.Towers.Data
         public AttackStats Attack;
         public AuraStats Aura;
         // В будущем новые модули (TrapStats, SpawnerStats) будешь добавлять сюда
+
     }
 }

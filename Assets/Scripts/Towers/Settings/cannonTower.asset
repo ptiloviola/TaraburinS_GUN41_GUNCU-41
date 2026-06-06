@@ -20,7 +20,7 @@ MonoBehaviour:
       type: 3}
     Attack:
       Damage: 21
-      Range: 8
+      Range: 4
       Cooldown: 2
     Aura:
       Radius: 0

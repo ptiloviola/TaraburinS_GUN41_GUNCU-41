@@ -1230,6 +1230,8 @@ MonoBehaviour:
       type: 3}
     InvalidCursorPrefab: {fileID: 1942206327739906697, guid: abfa30ab36b2f6d4c8b323bdf5dc99d8,
       type: 3}
+    RadiusIndicatorPrefab: {fileID: 4508128813081476246, guid: 3908adae3b577e24ca0daeeb8d5e23de,
+      type: 3}
     HeightOffset: 0.05
   _cannonballPrefab: {fileID: 4721952518259150526, guid: b1577e7c0fd34324eaad8e1fcbb7514e,
     type: 3}
