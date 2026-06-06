@@ -52,6 +52,9 @@ MonoBehaviour:
   _barrelTransforms:
   - {fileID: 290366890347110676}
   _logicalRotator: {fileID: 1355285404530712234}
+  _copyPitch: 0
+  _elevationPivot: {fileID: 0}
+  _localPitchAxis: {x: 0, y: 0, z: -1}
   _rotationOffset: -90
   _buildDuration: 0.5
   _buildEase: 27
@@ -181,6 +184,7 @@ GameObject:
   - component: {fileID: 8172699972568849139}
   - component: {fileID: 135073954517548277}
   - component: {fileID: 7977650445509351927}
+  - component: {fileID: 2592835290429401131}
   m_Layer: 0
   m_Name: cannonballTowerTest_1
   m_TagString: Untagged
@@ -253,6 +257,8 @@ MonoBehaviour:
   _rotationValue: -17.4
   _triggerBuild: 0
   _triggerShoot: 0
+  _projectilePrefab: {fileID: 0}
+  _firePoint: {fileID: 0}
 --- !u!114 &7977650445509351927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,6 +271,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e23cd12c291edd4ca0774b8959ff807, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2592835290429401131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926724689136184970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab8786fcadacb940bdac6f48b3d8ab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _verticalTolerance: 15
 --- !u!1 &2825307496775094794
 GameObject:
   m_ObjectHideFlags: 0
