@@ -26,3 +26,14 @@ MonoBehaviour:
       Radius: 0
       TickRate: 0
       SlowdownMultiplier: 0
+  - UpgradeCost: 0
+    VisualPrefab: {fileID: 1926724689136184970, guid: 8faeee0504cf3d74fb41a207e19c7325,
+      type: 3}
+    Attack:
+      Damage: 30
+      Range: 5
+      Cooldown: 1.5
+    Aura:
+      Radius: 0
+      TickRate: 0
+      SlowdownMultiplier: 0

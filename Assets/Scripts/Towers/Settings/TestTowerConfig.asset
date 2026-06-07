@@ -20,8 +20,19 @@ MonoBehaviour:
       type: 3}
     Attack:
       Damage: 3
-      Range: 10
+      Range: 8
       Cooldown: 0.2
+    Aura:
+      Radius: 0
+      TickRate: 0
+      SlowdownMultiplier: 0
+  - UpgradeCost: 2
+    VisualPrefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
+      type: 3}
+    Attack:
+      Damage: 5
+      Range: 10
+      Cooldown: 0.125
     Aura:
       Radius: 0
       TickRate: 0

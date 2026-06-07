@@ -1369,6 +1369,7 @@ GameObject:
   - component: {fileID: 716193752}
   - component: {fileID: 716193751}
   - component: {fileID: 716193754}
+  - component: {fileID: 716193755}
   m_Layer: 5
   m_Name: UpgradeButton
   m_TagString: Untagged
@@ -1498,6 +1499,18 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &716193755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 716193749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849d83d18df3688489273fe136262716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2269,6 +2282,7 @@ MonoBehaviour:
   _upgradeCostText: {fileID: 1981481568}
   _sellButton: {fileID: 1147922654}
   _sellPriceText: {fileID: 707473791}
+  _upgradeButtonHoverListener: {fileID: 716193755}
 --- !u!114 &1201101544
 MonoBehaviour:
   m_ObjectHideFlags: 0

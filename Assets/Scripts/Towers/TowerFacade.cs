@@ -11,6 +11,9 @@ namespace Gameplay.Towers
         public int CurrentLevel { get; private set; }
         public TowerConfig Config => _config;
 
+        // НОВОЕ: Перенесли координату клетки прямо сюда!
+        public Vector2Int GridPosition { get; private set; }
+
         private ITowerBehavior[] _behaviors; // Массив всех модулей башни
         // НОВОЕ: Событие для обновления UI-панели магазина
         public event Action OnLevelChanged;
@@ -25,7 +28,7 @@ namespace Gameplay.Towers
             {
                 if (_config != null)
                 {
-                    Initialize(_config);
+                    Initialize(_config, Vector2Int.zero);
                 }
                 else
                 {
@@ -34,9 +37,10 @@ namespace Gameplay.Towers
             }
         }
 
-        public void Initialize(TowerConfig config)
+        public void Initialize(TowerConfig config, Vector2Int gridPos)
         {
             _config = config;
+            GridPosition = gridPos; // Сохраняем координату
             // CurrentLevel = 0; // ВНИМАНИЕ: Если ты будешь загружать сохранения, уровень нужно будет брать оттуда
             
             // МАГИЯ КОМПОЗИЦИИ: 

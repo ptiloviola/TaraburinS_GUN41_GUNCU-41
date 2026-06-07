@@ -11,10 +11,10 @@ namespace Gameplay.Towers
         private readonly LayerMask _towerLayerMask;// Слой, на котором лежат башни
 
         // События для UI контекстного меню
-        public event Action<TowerInstance> OnTowerSelected;
+        public event Action<TowerFacade> OnTowerSelected;
         public event Action OnTowerDeselected;
 
-        public TowerInstance CurrentSelectedTower { get; private set; }
+        public TowerFacade CurrentSelectedTower { get; private set; }
 
         public TowerSelectionService(Camera mainCamera, LayerMask towerLayerMask)
         {
@@ -49,11 +49,11 @@ namespace Gameplay.Towers
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, _towerLayerMask))
             {
                 // Если попали в объект башни
-                if (hit.collider.TryGetComponent(out TowerInstance clickedTower) ||
-                hit.collider.GetComponentInParent<TowerInstance>() != null)
+                if (hit.collider.TryGetComponent(out TowerFacade clickedTower) ||
+                hit.collider.GetComponentInParent<TowerFacade>() != null)
                 {
-                    TowerInstance foundTower = clickedTower != null 
-                    ? clickedTower : hit.collider.GetComponentInParent<TowerInstance>();
+                    TowerFacade foundTower = clickedTower != null 
+                    ? clickedTower : hit.collider.GetComponentInParent<TowerFacade>();
                     Select(foundTower);
                 }
             }
@@ -65,9 +65,15 @@ namespace Gameplay.Towers
             }
         }
 
-        public void Select(TowerInstance tower)
+        public void Select(TowerFacade tower)
         {
             if (CurrentSelectedTower == tower) return; // Уже выделена
+
+            // НОВОЕ: Если мы выбрали новую башню, но старая еще в фокусе — сбрасываем старую!
+            if (CurrentSelectedTower != null)
+            {
+                Deselect(); 
+            }
 
             CurrentSelectedTower = tower;
             OnTowerSelected?.Invoke(tower);

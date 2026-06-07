@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5393410052814909471}
   - component: {fileID: 3242313251146315221}
   m_Layer: 7
-  m_Name: RadiusIndicator
+  m_Name: RadiusIndicator2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 81710558e50447c4596d53140495a773, type: 2}
+  - {fileID: 2100000, guid: 60a5dbc8fc154904c9c85099e5567aac, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

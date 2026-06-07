@@ -261,10 +261,10 @@ namespace Gameplay.Towers
             GameObject towerGo = _instantiator.InstantiatePrefab(_selectedTowerData.Prefab, spawnPosition, Quaternion.identity, null);
             
             // НОВОЕ: Ищем наш "паспорт" и заполняем его!
-            if (towerGo.TryGetComponent(out TowerInstance towerInstance))
+            if (towerGo.TryGetComponent(out TowerFacade towerFacade))
             {
                 // Передаем боевой конфиг и координаты клетки
-                towerInstance.Initialize(_selectedTowerData.TowerConfig, gridPos);
+                towerFacade.Initialize(_selectedTowerData.TowerConfig, gridPos);
             }
             else
             {
