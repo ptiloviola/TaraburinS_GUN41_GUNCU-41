@@ -1,5 +1,6 @@
 using Gameplay.Towers.Data;
 using UnityEngine;
+using System;
 
 namespace Gameplay.Towers
 {
@@ -11,6 +12,8 @@ namespace Gameplay.Towers
         public TowerConfig Config => _config;
 
         private ITowerBehavior[] _behaviors; // Массив всех модулей башни
+        // НОВОЕ: Событие для обновления UI-панели магазина
+        public event Action OnLevelChanged;
 
 
         // Добавляем Unity-метод Start для автономного дебага
@@ -34,7 +37,7 @@ namespace Gameplay.Towers
         public void Initialize(TowerConfig config)
         {
             _config = config;
-            CurrentLevel = 0;
+            // CurrentLevel = 0; // ВНИМАНИЕ: Если ты будешь загружать сохранения, уровень нужно будет брать оттуда
             
             // МАГИЯ КОМПОЗИЦИИ: 
             // Ищем все скрипты на этом префабе, которые реализуют ITowerBehavior
@@ -67,6 +70,17 @@ namespace Gameplay.Towers
         {
             if (!CanUpgrade()) return;
             CurrentLevel++;
+            // НОВОЕ: Заставляем все модули перечитать статы из конфига!
+            // Так как CurrentLevel увеличился, GetCurrentStats() теперь вернет новые данные.
+            foreach (var behavior in _behaviors)
+            {
+                behavior.Initialize(this); 
+            }
+
+            // Оповещаем UI, что уровень изменился
+            OnLevelChanged?.Invoke();
+            
+            Debug.Log($"<color=green>[TowerFacade] {_config.DisplayName} улучшена до уровня {CurrentLevel + 1}!</color>");
             // Здесь в будущем добавим перерисовку VisualPrefab
         }
     }

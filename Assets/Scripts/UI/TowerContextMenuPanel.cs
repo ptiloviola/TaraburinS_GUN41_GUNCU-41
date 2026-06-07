@@ -5,6 +5,7 @@ using Zenject;
 using Gameplay.Towers;
 using Gameplay.Towers.Data;
 using Gameplay.Towers.Data.Modules;
+using Gameplay.Economy; // Подключаем экономику!
 
 namespace Gameplay.UI
 {
@@ -23,12 +24,14 @@ namespace Gameplay.UI
         [SerializeField] private TMP_Text _sellPriceText;
 
         private TowerSelectionService _selectionService;
+        private BankService _bankService; // НОВОЕ: Ссылка на банк
         private TowerInstance _currentTower;
 
         [Inject]
-        public void Construct(TowerSelectionService selectionService)
+        public void Construct(TowerSelectionService selectionService, BankService bankService)
         {
             _selectionService = selectionService;
+            _bankService = bankService;
         }
 
         private void Start()
@@ -109,10 +112,24 @@ namespace Gameplay.UI
         {
             if (_currentTower != null && !_currentTower.IsMaxLevel())
             {
-                // Заглушка: тут будет проверка денег через BankService
-                Debug.Log($"<color=green>[UI] Нажата кнопка Улучшить для {_currentTower.Config.DisplayName}</color>");
-                _currentTower.Upgrade();
-                UpdateUI(); // Обновляем текст на кнопках после апгрейда
+                // 1. Узнаем, сколько стоит СЛЕДУЮЩИЙ уровень
+               int cost = _currentTower.Config.Levels[_currentTower.CurrentLevel + 1].UpgradeCost;
+                // 2. Пытаемся списать деньги
+                if (_bankService.SpendMoney(cost))
+                {
+                    Debug.Log($"<color=green>[UI] Успешная покупка апгрейда за {cost}$</color>");
+                    // 3. Если деньги списались - прокачиваем башню!
+                    _currentTower.Upgrade();
+                    // 4. Обновляем текст в UI (чтобы показать новые статы и цену следующего уровня)
+                    UpdateUI();
+                }
+                else
+                {
+                    // Денег не хватило
+                    Debug.LogWarning("<color=red>[UI] Недостаточно золота для апгрейда!</color>");
+                    // В будущем здесь можно добавить визуальный фидбек, например, покрасить текст цены в красный на полсекунды
+                }
+                
             }
         }
 
