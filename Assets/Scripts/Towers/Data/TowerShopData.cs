@@ -7,14 +7,14 @@ namespace Gameplay.Towers.Data
     [System.Serializable]
     public class TowerShopData
     {
-        [Tooltip("Уникальный строковый ID (например: basic_tower, laser_tower)")]
-        public string TowerId;
-
-        [Tooltip("Имя, которое увидит игрок в UI")]
-        public string DisplayName;
 
         [Tooltip("Цена постройки")]
         public int Cost;
+
+        // НОВОЕ: Настройка процента возврата при продаже
+        [Range(0f, 1f)]
+        [Tooltip("Доля возврата средств при продаже (0.5 = 50%, 0.9 = 90%)")]
+        public float SellRefundMultiplier = 0.5f;
 
         [Tooltip("Иконка для кнопки в UI")]
         public Sprite Icon;

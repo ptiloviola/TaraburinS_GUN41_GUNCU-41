@@ -133,7 +133,7 @@ namespace Gameplay.UI
             if (data != null && data.TowerConfig != null && data.TowerConfig.Levels.Count > 0)
             {
                 TowerLevelData baseLevel = data.TowerConfig.Levels[0];
-                _tooltipNameText.text = data.DisplayName;
+                _tooltipNameText.text = data.TowerConfig.DisplayName;
                 // Собираем строку характеристик на основе твоих модулей
                 string statsStr = "";
                 // ПРОСТОЙ И ГЕНИАЛЬНЫЙ ЦИКЛ: 

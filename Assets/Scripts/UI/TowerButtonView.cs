@@ -33,8 +33,8 @@ namespace Gameplay.UI
         // Метод инициализации. Панель вызовет его и передаст данные башни
         public void Init(TowerShopData data, Action<string> onClicked, Action<string> onHoverEnter, Action onHoverExit)
         {
-            TowerId = data.TowerId;
-            _nameText.text = data.DisplayName;
+            TowerId = data.TowerConfig.TowerId;
+            _nameText.text = data.TowerConfig.DisplayName;
             _costText.text = $"{data.Cost} $";
             
             if (data.Icon != null) 

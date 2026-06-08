@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Gameplay.Towers.Data;
+using System.Linq; // Нужно для удобного поиска
 
 namespace Gameplay.Towers.Data
 {
@@ -11,10 +13,17 @@ namespace Gameplay.Towers.Data
 
         // Метод-помощник: Позволяет быстро найти данные башни по её ID.
         // Это понадобится GridInteractor'у, когда UI скажет ему: "Строй башню laser_tower!"
-        public TowerShopData GetTowerById(string id)
+        // Поиск по текстовому ID (для кнопок UI)
+        public TowerShopData GetTowerById(string towerId)
         {
-            // Используем LINQ для поиска в списке первого совпадения
-            return Towers.Find(tower => tower.TowerId == id);
+            // Берем ID прямо из вложенного конфига!
+            return Towers.FirstOrDefault(t => t.TowerConfig != null && t.TowerConfig.TowerId == towerId);
+        }
+
+        // НОВОЕ: Безопасный поиск по ссылке на сам конфиг (без использования текста!)
+        public TowerShopData GetTowerByConfig(TowerConfig configToFind)
+        {
+            return Towers.FirstOrDefault(t => t.TowerConfig == configToFind);
         }
     }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adcdef347df95d84c8f123578d9d3d57, type: 3}
   m_Name: cannonTower
   m_EditorClassIdentifier: 
-  TowerId: cannonballTower
+  TowerId: cannonball_tower
   DisplayName: cannonballTower
   Levels:
   - UpgradeCost: 0

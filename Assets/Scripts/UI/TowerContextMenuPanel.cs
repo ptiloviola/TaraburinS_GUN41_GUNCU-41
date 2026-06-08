@@ -7,6 +7,7 @@ using Gameplay.Towers.Data;
 using Gameplay.Towers.Data.Modules;
 using Gameplay.Economy; // Подключаем экономику!
 using Gameplay.Towers.Visuals; // Добавили пространство имен визуала
+using Gameplay.Grid;
 
 namespace Gameplay.UI
 {
@@ -27,13 +28,18 @@ namespace Gameplay.UI
 
         private TowerSelectionService _selectionService;
         private BankService _bankService; // НОВОЕ: Ссылка на банк
+        private IGridService _gridService; // НОВОЕ: Ссылка на сетку
+        private TowerRegistry _towerRegistry; // НОВОЕ: Доступ к каталогу магазина
         private TowerFacade _currentTower;
+        private int _currentCalculatedSellValue; // Кешируем сумму продажи, чтобы не считать дважды
 
         [Inject]
-        public void Construct(TowerSelectionService selectionService, BankService bankService)
+        public void Construct(TowerSelectionService selectionService, BankService bankService, IGridService gridService, TowerRegistry towerRegistry)
         {
             _selectionService = selectionService;
             _bankService = bankService;
+            _gridService = gridService;
+            _towerRegistry = towerRegistry;
         }
 
         private void Start()
@@ -118,11 +124,42 @@ namespace Gameplay.UI
                 _upgradeCostText.text = $"Улучшить\n{cost} $";
             }
 
-            // Логика кнопки Sell (Допустим, возвращаем 50% от стоимости текущего уровня)
-            // В будущем цену можно брать из TowerShopData или считать сумму всех вложенных денег
-            int sellValue = currentLevelData.UpgradeCost > 0 ? currentLevelData.UpgradeCost / 2 : 25; 
-            _sellPriceText.text = $"Продать\n+{sellValue} $";
+            // Логика кнопки Sell
+            // НОВОЕ: Честный калькулятор стоимости продажи
+            CalculateSellValue();
+            _sellPriceText.text = $"Продать\n+{_currentCalculatedSellValue} $";
         }
+
+        private void CalculateSellValue()
+        {
+            _currentCalculatedSellValue = 0;
+            
+            // 1. Ищем данные башни в магазине по её ID
+            TowerShopData shopData = _towerRegistry.GetTowerByConfig(_currentTower.Config);
+            
+            if (shopData != null)
+            {
+                // 2. Стартовая инвестиция (базовая цена постройки)
+                int totalInvested = shopData.Cost;
+
+                // 3. Добавляем стоимость всех купленных апгрейдов (от 1-го уровня до текущего)
+                // Начинаем с i=1, так как Levels[0] дается бесплатно при постройке
+                for (int i = 1; i <= _currentTower.CurrentLevel; i++)
+                {
+                    totalInvested += _currentTower.Config.Levels[i].UpgradeCost;
+                }
+
+                // 4. Применяем множитель возврата (например, 50%) и округляем
+                _currentCalculatedSellValue = Mathf.RoundToInt(totalInvested * shopData.SellRefundMultiplier);
+            }
+            else
+            {
+                Debug.LogWarning($"[UI] Не удалось найти башню {_currentTower.Config.TowerId} в магазине для расчета цены!");
+            }
+        }
+
+
+
 
         private void ShowCurrentRadiusOnly()
         {
@@ -200,9 +237,28 @@ namespace Gameplay.UI
         {
             if (_currentTower != null)
             {
-                // Заглушка: тут будет начисление денег и удаление башни
-                Debug.Log($"<color=red>[UI] Нажата кнопка Продать для {_currentTower.Config.DisplayName}</color>");
-                _selectionService.Deselect(); // Снимаем выделение
+                // 1. Начисляем деньги в банк (используем уже посчитанную сумму)
+                _bankService.AddMoney(_currentCalculatedSellValue);
+                
+                // 2. Освобождаем клетку сетки (делаем ее снова доступной для застройки)
+                GridNode node = _gridService.GetNode(_currentTower.GridPosition);
+                if (node != null)
+                {
+                    node.IsOccupied = false;
+                }
+
+                // 3. Запоминаем саму "тушку" башни
+                GameObject towerObject = _currentTower.gameObject;
+                Debug.Log($"<color=red>[UI] Башня {_currentTower.Config.DisplayName} продана за {_currentCalculatedSellValue}$. Клетка {_currentTower.GridPosition} освобождена.</color>");
+
+                // 5. Сбрасываем выделение (это автоматически скроет UI и выключит цилиндры радиусов)
+                _selectionService.Deselect();
+
+                // 6. Уничтожаем башню
+                Destroy(towerObject);
+
+                
+
             }
         }
     }

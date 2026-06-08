@@ -108,7 +108,7 @@ namespace Gameplay.Towers
             _selectedTowerData = _towerRegistry.GetTowerById(towerId);
             
             if (_selectedTowerData != null)
-                Debug.Log($"<color=cyan>[GridInteractor] Выбрана башня для постройки: {_selectedTowerData.DisplayName} (Цена: {_selectedTowerData.Cost})</color>");
+                Debug.Log($"<color=cyan>[GridInteractor] Выбрана башня для постройки: {_selectedTowerData.TowerConfig.DisplayName} (Цена: {_selectedTowerData.Cost})</color>");
                 if (_selectedTowerData.TowerConfig != null)
                 {
                     // В Unity масштаб 1 означает диаметр 1 метр. 
@@ -282,7 +282,7 @@ namespace Gameplay.Towers
                 Debug.LogError("<color=red>[GridInteractor] КРИТИКА: На созданном объекте физически отсутствует компонент ProceduralTowerVisuals! Мы спавним не тот префаб!</color>");
             }
             // ВЫВОДИМ В КОНСОЛЬ ПОЛНУЮ ИНФОРМАЦИЮ
-            Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Построена {_selectedTowerData.DisplayName} на {gridPos} за {_selectedTowerData.Cost} монет.</color>");
+            Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Построена {_selectedTowerData.TowerConfig.DisplayName} на {gridPos} за {_selectedTowerData.Cost} монет.</color>");
 
         }
         
