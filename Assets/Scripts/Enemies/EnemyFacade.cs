@@ -30,10 +30,16 @@ namespace Gameplay.Enemies
 
         // Магия Zenject: он сам вставит сюда ссылку на пул при инстанцировании префаба!
         [Inject]
-        public void Construct(Pool pool, SignalBus signalBus)
+        public void Construct(SignalBus signalBus)
+        {
+            
+            _signalBus = signalBus;
+        }
+
+        // 2. НОВОЕ: Добавь этот метод. Режиссер вызовет его при спавне.
+        public void SetPool(Pool pool)
         {
             _pool = pool;
-            _signalBus = signalBus;
         }
 
         // --- НОВОЕ: Ищем компонент, если забыли назначить в инспекторе ---

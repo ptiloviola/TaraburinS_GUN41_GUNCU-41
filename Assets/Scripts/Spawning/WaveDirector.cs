@@ -2,24 +2,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Spawning.Data;
+using Zenject;
+using Gameplay.Enemies;
+using Gameplay.Base;
+using Infrastructure.Signals;
 
 namespace Gameplay.Spawning
 {
     public class WaveDirector : MonoBehaviour
     {
-        [Header("Для теста перетащи сюда SO")]
-        [SerializeField] private LevelWavesConfig _testConfig;
+        [Header("Настройки уровня")]
+        [SerializeField] private LevelWavesConfig _levelConfig;
+
 
         private IWaveProvider _waveProvider;
+        private SpawnLocationService _locationService;
+        private BaseCore _baseCore;
+        private SignalBus _signalBus;
+        private DiContainer _container; // Нужен, чтобы доставать пулы по ID
+
         private int _currentWaveNumber = 0;
+
+
+        [Inject]
+        public void Construct(SpawnLocationService locationService, BaseCore baseCore, SignalBus signalBus, DiContainer container)
+        {
+            _locationService = locationService;
+            _baseCore = baseCore;
+            _signalBus = signalBus;
+            _container = container;
+        }
+
+
 
         private void Start()
         {
-            // В будущем мы будем инжектить провайдер через Zenject.
-            // Сейчас собираем его вручную для быстрого теста.
-            _waveProvider = new StaticWaveProvider(_testConfig);
+            if (_levelConfig == null) return;
+            _waveProvider = new StaticWaveProvider(_levelConfig);
             StartCoroutine(DirectorRoutine());
-
         }
 
         // Главный цикл (State Machine на базе корутины)
@@ -34,7 +54,8 @@ namespace Gameplay.Spawning
                 Debug.Log($"<color=yellow>[Director] Волна {_currentWaveNumber} начнется через {currentWave.DelayBeforeWave} сек...</color>");
                 yield return new WaitForSeconds(currentWave.DelayBeforeWave);
                 
-                // Состояние 2: Спавн отрядов
+                // Вызываем сигнал начала волны
+                // _signalBus.Fire(new SignalWaveStarted { ... });
                 Debug.Log($"<color=green>[Director] СТАРТ ВОЛНЫ {_currentWaveNumber}!</color>");
                 yield return StartCoroutine(SpawnWaveRoutine(currentWave));
                 
@@ -62,9 +83,41 @@ namespace Gameplay.Spawning
                 {
                     // ЗДЕСЬ БУДЕТ РЕАЛЬНЫЙ СПАВН ИЗ ПУЛА
                     Debug.Log($"   -> Спавн {currentSquad.EnemyId} ({i + 1}/{currentSquad.Count})");
-                    
+                    // Вызываем наш новый умный метод физического спавна
+                    SpawnPhysicalEnemy(currentSquad.EnemyId, currentSquad.SpawnPointId);
                     yield return new WaitForSeconds(currentSquad.SpawnInterval);
                 }
+            }
+        }
+
+        private void SpawnPhysicalEnemy(string enemyId, string SpawnPointId)
+        {
+            // 1. Узнаем ГДЕ спавнить (спрашиваем Резолвер)
+            if (!_locationService.TryGetSpawnPosition(SpawnPointId, out Vector3 spawnPos))
+            {
+                spawnPos = Vector3.zero; // Если точка не найдена, кидаем в центр
+            }
+            try
+            {
+                // 2. Узнаем КОГО спавнить (ищем пул с нужным ID)
+                EnemyFacade.Pool specificPool = _container.ResolveId<EnemyFacade.Pool>(enemyId);
+                EnemyFacade enemy = specificPool.Spawn();
+                
+                // НОВОЕ: Передаем врагу ЕГО ЛИЧНЫЙ ПУЛ!
+                enemy.SetPool(specificPool);
+                // 3. Ставим на точку и даем пинок в сторону базы (твой идеальный код!)
+                var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                if (agent != null)
+                {
+                    agent.Warp(spawnPos);
+                }
+                // Временно создаем стратегию здесь. В идеале база должна сама отдавать свои координаты.
+                IMovementStrategy movement = new NavMeshMovement(_baseCore.transform.position);
+                enemy.InitializeMovement(movement);
+            }
+            catch (ZenjectException)
+            {
+                Debug.LogError($"[Director] Ошибка спавна! Пул для врага '{enemyId}' не найден. Проверь EnemyRegistry и Installer!");
             }
         }
 

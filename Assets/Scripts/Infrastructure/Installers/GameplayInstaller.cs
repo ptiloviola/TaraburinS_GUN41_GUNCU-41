@@ -3,12 +3,13 @@ using Zenject;
 using Infrastructure.Signals;
 using Gameplay.Grid; // Подключаем нашу сетку
 using Gameplay.Enemies; 
-using Gameplay.Spawner;
 using Gameplay.Base;
 using Gameplay.Towers;
 using Gameplay.Towers.Behaviors.Weapons;
 using Gameplay.Economy;
 using Gameplay.Towers.Data; // Подключаем пространство имен каталога
+using Gameplay.Spawning.Data; // Подключаем данные спавнера
+using Gameplay.Spawning;
 
 namespace Infrastructure.Installers
 {
@@ -32,6 +33,11 @@ namespace Infrastructure.Installers
 
         [Header("Настройки Слоев")]
         [SerializeField] private LayerMask _towerLayerMask; // Назначь в инспекторе слой Tower!
+
+        [Header("Данные Спавнера")]
+        [SerializeField] private EnemyRegistry _enemyRegistry; // Перетащи сюда свой SO Каталога
+
+
 
         
         public override void InstallBindings()
@@ -59,15 +65,30 @@ namespace Infrastructure.Installers
 
             // Настройка MemoryPool для врагов
             // Мы связываем наш Фасад и внутренний класс Pool
-            Container.BindMemoryPool<EnemyFacade, EnemyFacade.Pool>()
-            .WithInitialSize(5) // Игра сразу создаст 5 сфер в памяти при старте (под капотом)
-            .FromComponentInNewPrefab(enemyPrefab) // Будет брать их из этого префаба
-            .UnderTransformGroup("EnemyPool"); // Спрячет их в иерархии под один пустой объект
+            // Container.BindMemoryPool<EnemyFacade, EnemyFacade.Pool>()
+            // .WithInitialSize(5) // Игра сразу создаст 5 сфер в памяти при старте (под капотом)
+            // .FromComponentInNewPrefab(enemyPrefab) // Будет брать их из этого префаба
+            // .UnderTransformGroup("EnemyPool"); // Спрячет их в иерархии под один пустой объект
+            // Debug.Log("<color=green>[Zenject] MemoryPool для EnemyFacade успешно настроен!</color>");
 
-            Debug.Log("<color=green>[Zenject] MemoryPool для EnemyFacade успешно настроен!</color>");
             
-            // Находим спавнер на сцене и разрешаем его зависимости при старте
-            Container.Bind<WaveSpawner>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<SpawnLocationService>().FromComponentInHierarchy().AsSingle();
+            // Проходим по всем врагам в каталоге и создаем для КАЖДОГО свой собственный Пул!
+            foreach (var enemyData in _enemyRegistry.Enemies)
+            {
+                Container.BindMemoryPool<EnemyFacade, EnemyFacade.Pool>()
+                    .WithId(enemyData.EnemyId) // МАГИЯ ЗДЕСЬ: Мы даем пулу имя!
+                    .WithInitialSize(5)
+                    .FromComponentInNewPrefab(enemyData.Prefab)
+                    .UnderTransformGroup($"EnemyPool_{enemyData.EnemyId}"); // Группируем аккуратно
+            }
+
+            Debug.Log("<color=green>[Zenject] Мульти-пулы для врагов успешно созданы!</color>");
+
+
+
+
+
 
             // Находим базу на сцене и делаем ее доступной для инъекций
             Container.Bind<BaseCore>().FromComponentInHierarchy().AsSingle();
@@ -93,12 +114,6 @@ namespace Infrastructure.Installers
                      .AsSingle()
                      .WithArguments(Camera.main, _towerLayerMask)
                      .NonLazy();
-
-
-
-
-
-
         
         }
     }

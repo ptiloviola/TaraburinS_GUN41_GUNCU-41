@@ -68,6 +68,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_Base_jumper
       objectReference: {fileID: 0}
+    - target: {fileID: 4348054012084483283, guid: e9092fab2080f1544b9357823f0a0817,
+        type: 3}
+      propertyPath: _maxHealth
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 7702059966537891958, guid: e9092fab2080f1544b9357823f0a0817,
         type: 3}
       propertyPath: m_LocalScale.x
