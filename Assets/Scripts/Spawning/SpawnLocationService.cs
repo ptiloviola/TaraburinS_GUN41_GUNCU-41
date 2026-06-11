@@ -23,25 +23,30 @@ namespace Gameplay.Spawning
         {
             position = Vector3.zero;
 
-            // 1. СНАЧАЛА ИЩЕМ НА СЦЕНЕ (Среди специальных объектов)
-            var scenePoint = _sceneSpawnPoints.FirstOrDefault(p => p.PointId == pointId);
+            // 1. ИЩЕМ НА СЦЕНЕ (С защитой от удаленных объектов: p != null)
+            var scenePoint = _sceneSpawnPoints.FirstOrDefault(p => p != null && p.PointId == pointId);
             if (scenePoint != null)
             {
                 position = scenePoint.transform.position;
                 return true;
             }
-            // 2. ЕСЛИ НЕ НАШЛИ - ИЩЕМ НА СЕТКЕ!
-            // (Предполагается, что в GridService мы добавим метод GetNodeBySpawnId, 
-            // или просто будем брать первую попавшуюся клетку NodeType.Spawn, если ID совпадает)
+
+            // 2. ИЩЕМ НА СЕТКЕ (Наши нарисованные пурпурные клетки)
+            // Запрашиваем у сервиса все клетки типа Spawn
+            List<GridNode> spawnNodes = _gridService.GetNodesByType(NodeType.Spawn);
             
-            /* Раскомментируем, когда обновим GridService:
-            GridNode spawnNode = _gridService.GetSpawnNode(pointId);
-            if (spawnNode != null)
+            if (spawnNodes != null && spawnNodes.Count > 0)
             {
-                position = spawnNode.WorldPosition;
+                // Пока берем просто первую попавшуюся клетку спавна. 
+                // В будущем, если у нас будет много РАЗНЫХ точек спавна на сетке, 
+                // мы научимся различать их по ID.
+                GridNode spawnNode = spawnNodes[0]; 
+                
+                // Используем наш новый метод перевода сеточных координат в 3D-мировые!
+                position = _gridService.GetWorldPosition(spawnNode);
                 return true;
             }
-            */
+            
             Debug.LogError($"[SpawnLocationService] Точка спавна '{pointId}' не найдена ни на сцене, ни на сетке!");
             return false;
         }

@@ -1,40 +1,44 @@
 using UnityEngine;
 using Zenject;
 using Unity.AI.Navigation; // Подключаем пространство имен нового пакета навигации
+using Gameplay.Base;
+using UnityEditor.Experimental.GraphView;
 
 namespace Gameplay.Grid
 {
     public class GridGenerator : MonoBehaviour
     {
         [Header("Визуальное оформление")]
-        [SerializeField] private GridTheme theme;
+        [SerializeField] private GridTheme _theme;
 
         [Header("Настройки визуала")]
-        [SerializeField] private GameObject cubePrefab; // Прераб серого куба
-        [SerializeField] private float spacing = 1.1f;    // Расстояние между кубами
-        [SerializeField] private float elevationStep = 0.5f; // Высота одного уровня рельефа
+        [SerializeField] private GameObject _cubePrefab; // Прераб серого куба
+        [SerializeField] private float _spacing = 1.1f;    // Расстояние между кубами
+        [SerializeField] private float _elevationStep = 0.5f; // Высота одного уровня рельефа
 
         [Header("Навигация")]
         // Ссылка на компонент, который будет запекать сетку на лету
-        [SerializeField] private NavMeshSurface navMeshSurface;
+        [SerializeField] private NavMeshSurface _navMeshSurface;
 
         // ДОБАВИЛИ: Ссылка на конфиг только для отображения в эдиторе
         [Header("Настройка в Редакторе (Gizmos)")]
-        [SerializeField] private GridConfig editorConfig;
+        [SerializeField] private GridConfig _editorConfig;
 
 
         private IGridService _gridService;
+        private BaseCore.Factory _baseFactory; // НОВОЕ: Внедряем фабрику баз
 
 
         // Публичные свойства только для чтения, чтобы наш Editor-скрипт мог брать эти данные
-        public float Spacing => spacing;
-        public GridConfig EditorConfig => editorConfig;
+        public float Spacing => _spacing;
+        public GridConfig EditorConfig => _editorConfig;
 
         // Внедрение зависимости через метод-конструктор
         [Inject]
-        public void Construct(IGridService gridService)
+        public void Construct(IGridService gridService, BaseCore.Factory baseFactory)
         {
             _gridService = gridService;
+            _baseFactory = baseFactory; // Получаем фабрику баз от Zenject
 
         }
 
@@ -42,7 +46,7 @@ namespace Gameplay.Grid
         {
 
             // Берем ТОЛЬКО тот конфиг, который настроен в Инспекторе
-            GridConfig activeConfig = editorConfig;
+            GridConfig activeConfig = _editorConfig;
 
             if (activeConfig == null)
             {
@@ -70,15 +74,15 @@ namespace Gameplay.Grid
             }
 
             // 1. Инициализируем математические данные через сервис
-            _gridService.InitializeGrid(w, h, elevationMap, typeMap);
+            _gridService.InitializeGrid(w, h, elevationMap, typeMap, _spacing, _elevationStep);
 
             // 2. Строим 3D-мир на основе этих данных
             CreateVisualGrid();
 
             // 3. КРИТИЧЕСКИЙ ШАГ: Запекаем навигацию прямо в Runtime!
-            if (navMeshSurface != null)
+            if (_navMeshSurface != null)
             {
-                navMeshSurface.BuildNavMesh(); // Движок посмотрит на созданные кубы и построит дороги
+                _navMeshSurface.BuildNavMesh(); // Движок посмотрит на созданные кубы и построит дороги
                 Debug.Log("<color=magenta>[GridGenerator] NavMesh успешно запечен в Runtime!</color>");
             }
             else
@@ -110,12 +114,12 @@ namespace Gameplay.Grid
                     
                     // Рассчитываем позицию куба в пространстве Unity.
                     // Считаем добавленную высоту
-                    float addedHeight = node.Elevation * elevationStep;
+                    float addedHeight = node.Elevation * _elevationStep;
                     // Спавним центр на половине добавленной высоты
-                    Vector3 spawnPosition = new Vector3(x * spacing, addedHeight / 2f, z * spacing);
+                    Vector3 spawnPosition = new Vector3(x * _spacing, addedHeight / 2f, z * _spacing);
 
                     // Спавним куб
-                    GameObject block = Instantiate(cubePrefab, spawnPosition, Quaternion.identity, transform);
+                    GameObject block = Instantiate(_cubePrefab, spawnPosition, Quaternion.identity, transform);
                     block.name = $"Node_[{x},{z}]_Height_{node.Elevation}";
                     
                     // Немного растянем куб по вертикали, чтобы получился сплошной рельеф, а не летающие панели
@@ -130,26 +134,48 @@ namespace Gameplay.Grid
                     NavMeshModifier modifier = block.AddComponent<NavMeshModifier>();
                     modifier.overrideArea = true;
 
-                    if (node.Type == NodeType.Path)
+                    // ПЕРЕД настройкой материалов кубика добавляем логику спавна префаба базы:
+                    if (node.Type == NodeType.Base)
                     {
+                        // 1. Просим фабрику создать физический префаб базы со всеми инъекциями
+                        BaseCore baseInstance = _baseFactory.Create();
+                        // 2. Рассчитываем идеальные координаты поверхности куба ячейки
+                        Vector3 surfacePos = _gridService.GetWorldPosition(node);
+                        // ИСПРАВЛЕНИЕ УТОПЛЕННОСТИ: Прибавляем индивидуальный оффсет префаба базы
+                        surfacePos.y += baseInstance.VerticalOffset;
+                        // 3. Ставим базу на ее законное место
+                        baseInstance.transform.position = surfacePos;
+                        baseInstance.transform.SetParent(transform); // Аккуратно группируем под генератором
+                    }
+
+                    if (node.Type == NodeType.Path || node.Type == NodeType.Spawn || node.Type == NodeType.Base)
+                    {
+                        // Спавн и База тоже должны быть проходимыми для врагов!
                         modifier.area = pathAreaIndex; // Назначаем зону CustomPath
+
+                        if(_theme != null)
+                        {
+                            Material mat = _theme.GetMaterial(node.Type);
+                            if (mat != null)
+                            {
+                                blockRenderer.material = mat;
+                            }
+                        }
                         
-                        if (theme != null && theme.pathMaterial != null)
-                            blockRenderer.material = theme.pathMaterial;
                     }
                     else if (node.Type == NodeType.Obstacle)
                     {
                         modifier.area = 1; // 1 — это встроенная зона Not Walkable (Ходить нельзя никому)
                         
-                        if (theme != null && theme.obstacleMaterial != null)
-                            blockRenderer.material = theme.obstacleMaterial;
+                        if (_theme != null && _theme.obstacleMaterial != null)
+                            blockRenderer.material = _theme.obstacleMaterial;
                     }
                     else // NodeType.Ground
                     {
                         modifier.area = groundAreaIndex; // Назначаем зону CustomGround
                         
-                        if (theme != null && theme.groundMaterial != null)
-                            blockRenderer.material = theme.groundMaterial;
+                        if (_theme != null && _theme.groundMaterial != null)
+                            blockRenderer.material = _theme.groundMaterial;
                     }
 
                 }
@@ -158,13 +184,13 @@ namespace Gameplay.Grid
 
         private void OnDrawGizmos()
         {
-            if (Application.isPlaying || editorConfig == null) return;
+            if (Application.isPlaying || _editorConfig == null) return;
 
-            for (int x = 0; x < editorConfig.width; x++)
+            for (int x = 0; x < _editorConfig.width; x++)
             {
-                for (int z = 0; z < editorConfig.height; z++)
+                for (int z = 0; z < _editorConfig.height; z++)
                 {
-                    GridCellData cellData = editorConfig.GetCellData(x, z);
+                    GridCellData cellData = _editorConfig.GetCellData(x, z);
                     
                     // 1. Цвета кисточки
                     switch (cellData.type)
@@ -175,16 +201,22 @@ namespace Gameplay.Grid
                         case NodeType.Obstacle: 
                             Gizmos.color = new Color(1f, 0f, 0f, 0.5f); // Красный
                             break; 
+                        case NodeType.Spawn: // НОВОЕ
+                            Gizmos.color = new Color(1f, 0f, 1f, 0.6f); // Пурпурный (Маджента)
+                            break;
+                        case NodeType.Base:  // НОВОЕ
+                            Gizmos.color = new Color(0f, 0f, 1f, 0.6f); // Темно-синий
+                            break;
                         default: 
-                            Gizmos.color = new Color(0f, 1f, 1f, 0.4f); // Голубой
-                            break; 
+                            Gizmos.color = new Color(0f, 1f, 1f, 0.4f); // Голубой (Ground)
+                        break;
                     }
                     
                     // Считаем, сколько высоты мы добавили ячейке
-                    float addedHeight = cellData.elevation * elevationStep;
+                    float addedHeight = cellData.elevation * _elevationStep;
                     
                     // Центр поднимается ровно на ПОЛОВИНУ добавленной высоты
-                    Vector3 center = new Vector3(x * spacing, addedHeight / 2f, z * spacing);
+                    Vector3 center = new Vector3(x * _spacing, addedHeight / 2f, z * _spacing);
                     
                     // Общий размер (базовая толщина 0.2 + добавленная высота)
                     Vector3 size = new Vector3(0.9f, 0.2f + addedHeight, 0.9f);

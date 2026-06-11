@@ -2,7 +2,7 @@ using UnityEngine;
 using Gameplay.Enemies;
 using Infrastructure.Signals; // Подключаем наши сигналы
 using Zenject;
-
+using Gameplay.Grid; // Подключаем доступ к сетке
 
 
 
@@ -12,17 +12,44 @@ namespace Gameplay.Base
     [RequireComponent(typeof(Collider))]
     public class BaseCore : MonoBehaviour
     {
+        [Header("Настройки визуала")]
+        [Tooltip("Если база уходит под землю, увеличь этот параметр в Инспекторе ПРЕФАБА")]
+        [SerializeField] private float _verticalOffset = 0.5f;
+
         [Header("Настройки Базы")]
         [SerializeField] private int _lives = 20; // Стартовое количество жизней
 
         private SignalBus _signalBus;
+        private BaseRegistry _baseRegistry; // НОВОЕ: Ссылка на реестр баз
+        private IGridService _gridService;
+
+        // Публичное свойство, чтобы GridGenerator мог прочитать, на сколько поднять базу
+        public float VerticalOffset => _verticalOffset;
 
         // Внедряем SignalBus через Zenject
         [Inject]
-        public void Construct(SignalBus signalBus)
+        public void Construct(SignalBus signalBus, BaseRegistry baseRegistry)
         {
             _signalBus = signalBus;
+            _baseRegistry = baseRegistry;
         }
+
+        // НОВОЕ: Автоматическая регистрация при спавне
+        private void OnEnable()
+        {
+            // Знак '?' спасает от ошибки, если база на сцене до инициализации Zenject
+            _baseRegistry?.Register(this); 
+        }
+
+        // НОВОЕ: Автоматическое удаление из реестра при уничтожении
+        private void OnDisable()
+        {
+            _baseRegistry?.Unregister(this);
+        }
+
+
+
+
 
 
 
@@ -64,5 +91,8 @@ namespace Gameplay.Base
                 // В будущем мы добавим сюда паузу игры и вызов UI-экрана поражения
             }
         }
+
+        // НОВОЕ: Паттерн Фабрики для создания префабов базы через Zenject
+        public class Factory : PlaceholderFactory<BaseCore> { }
     }
 }

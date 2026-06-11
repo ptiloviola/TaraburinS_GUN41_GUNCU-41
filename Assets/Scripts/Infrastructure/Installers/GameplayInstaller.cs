@@ -37,7 +37,8 @@ namespace Infrastructure.Installers
         [Header("Данные Спавнера")]
         [SerializeField] private EnemyRegistry _enemyRegistry; // Перетащи сюда свой SO Каталога
 
-
+        [Header("Префаб Базы")]
+        [SerializeField] private BaseCore _basePrefab; // Сюда перетащим префаб базы из папки проекта
 
         
         public override void InstallBindings()
@@ -114,6 +115,15 @@ namespace Infrastructure.Installers
                      .AsSingle()
                      .WithArguments(Camera.main, _towerLayerMask)
                      .NonLazy();
+
+            // 1. Регистрируем реестр как единственный экземпляр на сцену
+            Container.Bind<BaseRegistry>().AsSingle();
+
+            // 2. Регистрируем фабрику префаба базы
+            Container.BindFactory<BaseCore, BaseCore.Factory>()
+                .FromComponentInNewPrefab(_basePrefab)
+                .UnderTransformGroup("Bases_Pool");
+
         
         }
     }

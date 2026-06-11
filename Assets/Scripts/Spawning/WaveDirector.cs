@@ -17,7 +17,7 @@ namespace Gameplay.Spawning
 
         private IWaveProvider _waveProvider;
         private SpawnLocationService _locationService;
-        private BaseCore _baseCore;
+        private BaseRegistry _baseRegistry; // ИСПРАВЛЕНО: Вместо BaseCore внедряем реестр
         private SignalBus _signalBus;
         private DiContainer _container; // Нужен, чтобы доставать пулы по ID
 
@@ -25,10 +25,10 @@ namespace Gameplay.Spawning
 
 
         [Inject]
-        public void Construct(SpawnLocationService locationService, BaseCore baseCore, SignalBus signalBus, DiContainer container)
+        public void Construct(SpawnLocationService locationService, BaseRegistry baseRegistry, SignalBus signalBus, DiContainer container)
         {
             _locationService = locationService;
-            _baseCore = baseCore;
+            _baseRegistry = baseRegistry;
             _signalBus = signalBus;
             _container = container;
         }
@@ -111,9 +111,19 @@ namespace Gameplay.Spawning
                 {
                     agent.Warp(spawnPos);
                 }
-                // Временно создаем стратегию здесь. В идеале база должна сама отдавать свои координаты.
-                IMovementStrategy movement = new NavMeshMovement(_baseCore.transform.position);
-                enemy.InitializeMovement(movement);
+                // ИСПРАВЛЕНО: Запрашиваем цель у реестра баз
+                BaseCore targetBase = _baseRegistry.GetMainBase();
+                if (targetBase != null)
+                {
+                    // Временно создаем стратегию здесь. В идеале база должна сама отдавать свои координаты.
+                    IMovementStrategy movement = new NavMeshMovement(targetBase.transform.position);
+                    enemy.InitializeMovement(movement);
+                }
+                else
+                {
+                    Debug.LogError("[Director] Ошибка! Враг заспавнен, но в реестре BaseRegistry нет ни одной активной базы для атаки!");
+                }
+                
             }
             catch (ZenjectException)
             {

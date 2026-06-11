@@ -15,3 +15,5 @@ MonoBehaviour:
   groundMaterial: {fileID: 2100000, guid: 9788bbbafe57bcb488ee714f9f9dc2db, type: 2}
   pathMaterial: {fileID: 2100000, guid: 58b3c3e2f1eea0c4bbbb45d61db99df1, type: 2}
   obstacleMaterial: {fileID: 2100000, guid: 2d5822b1336a2634d83752950b82ec5f, type: 2}
+  spawnMaterial: {fileID: 2100000, guid: 64fa1b054988c1b47b68e5b1d8b7d943, type: 2}
+  baseMaterial: {fileID: 2100000, guid: 2ff832a7b81d657498dc1f53bfaaa942, type: 2}

@@ -8,7 +8,8 @@ namespace Gameplay.Editor
     public class GridGeneratorEditor : UnityEditor.Editor
     {
         // 1. Режимы нашей кисточки
-        public enum BrushMode { PaintGround, PaintPath, PaintObstacle, RaiseElevation, LowerElevation }
+        public enum BrushMode { PaintGround, PaintPath, PaintObstacle, 
+        PaintSpawn, PaintBase, RaiseElevation, LowerElevation }
         private BrushMode _currentBrushMode = BrushMode.PaintPath;
 
         // 2. Рисуем интерфейс прямо в Инспекторе Unity
@@ -46,11 +47,16 @@ namespace Gameplay.Editor
 
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("🖌 Инструменты Левел-Дизайнера", EditorStyles.boldLabel);
-
+            // КНОПКИ КИСТОЧЕК (Сгруппированы по логике)
             GUILayout.BeginHorizontal();
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintPath, "Дорога (Желтая)", "Button")) _currentBrushMode = BrushMode.PaintPath;
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintGround, "Земля (Голубая)", "Button")) _currentBrushMode = BrushMode.PaintGround;
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintObstacle, "Препятствие (Красное)", "Button")) _currentBrushMode = BrushMode.PaintObstacle;
+            GUILayout.EndHorizontal();
+            // НОВЫЕ КНОПКИ ДЛЯ СПАВНА И БАЗЫ
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintSpawn, "Спавн (Пурпур)", "Button")) _currentBrushMode = BrushMode.PaintSpawn;
+            if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintBase, "База (Синий)", "Button")) _currentBrushMode = BrushMode.PaintBase;
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -117,6 +123,13 @@ namespace Gameplay.Editor
                     break;
                 case BrushMode.PaintObstacle:
                     if (cellData.type != NodeType.Obstacle) { cellData.type = NodeType.Obstacle; isChanged = true; }
+                    break;
+                // НОВЫЕ РЕЖИМЫ КИСТИ:
+                case BrushMode.PaintSpawn:
+                    if (cellData.type != NodeType.Spawn) { cellData.type = NodeType.Spawn; isChanged = true; }
+                    break;
+                case BrushMode.PaintBase:
+                    if (cellData.type != NodeType.Base) { cellData.type = NodeType.Base; isChanged = true; }
                     break;
                 case BrushMode.RaiseElevation:
                     if (Event.current.type == EventType.MouseDown) { cellData.elevation += 1; isChanged = true; }
