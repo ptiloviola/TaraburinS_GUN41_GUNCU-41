@@ -115,7 +115,8 @@ namespace Gameplay.Spawning
                     agent.Warp(spawnPos);
                 }
                 // 2. Ищем КОНКРЕТНУЮ базу из отряда
-                BaseCore targetBase = _baseRegistry.GetBaseById(targetBaseId);
+                // ИСПРАВЛЕНИЕ: Передаем координаты спавна (spawnPos) для расчета дистанции!
+                BaseCore targetBase = _baseRegistry.GetBaseById(targetBaseId, spawnPos);
                 if (targetBase != null)
                 {
                     // Временно создаем стратегию здесь. В идеале база должна сама отдавать свои координаты.

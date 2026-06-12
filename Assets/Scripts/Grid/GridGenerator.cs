@@ -243,6 +243,22 @@ namespace Gameplay.Grid
 
                     Gizmos.DrawCube(center, size);
                     Gizmos.DrawWireCube(center, size);
+                    // НОВОЕ: Рисуем парящий текст над Спавном и Базой прямо в редакторе!
+#if UNITY_EDITOR
+                    GUIStyle style = new GUIStyle();
+                    style.normal.textColor = Color.white;
+                    style.fontStyle = FontStyle.Bold;
+                    style.alignment = TextAnchor.MiddleCenter;
+
+                    if (cellData.type == NodeType.Spawn)
+                    {
+                        UnityEditor.Handles.Label(center + Vector3.up, $"Spawn_{x}_{z}", style);
+                    }
+                    else if (cellData.type == NodeType.Base)
+                    {
+                        UnityEditor.Handles.Label(center + Vector3.up, $"Base_{x}_{z}", style);
+                    }
+#endif
                 }
             }
         }
