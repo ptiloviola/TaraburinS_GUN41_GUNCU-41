@@ -17,6 +17,7 @@ namespace Gameplay.Base
         [SerializeField] private float _verticalOffset = 0.5f;
 
         [Header("Настройки Базы")]
+        public string BaseId = "MainBase"; // НОВОЕ ПОЛЕ
         [SerializeField] private int _lives = 20; // Стартовое количество жизней
 
         private SignalBus _signalBus;
@@ -35,14 +36,14 @@ namespace Gameplay.Base
         }
 
         // НОВОЕ: Автоматическая регистрация при спавне
-        private void OnEnable()
+        // ИСПРАВЛЕНИЕ: Меняем OnEnable/OnDisable на Start/OnDestroy
+        private void Start()
         {
             // Знак '?' спасает от ошибки, если база на сцене до инициализации Zenject
-            _baseRegistry?.Register(this); 
+            _baseRegistry?.Register(this);
         }
 
-        // НОВОЕ: Автоматическое удаление из реестра при уничтожении
-        private void OnDisable()
+        private void OnDestroy()
         {
             _baseRegistry?.Unregister(this);
         }

@@ -16,7 +16,8 @@ namespace Gameplay.Spawning
 
 
         private IWaveProvider _waveProvider;
-        private SpawnLocationService _locationService;
+        // Заменяем старый SpawnLocationService на новый SpawnRegistry
+        private SpawnRegistry _spawnRegistry;
         private BaseRegistry _baseRegistry; // ИСПРАВЛЕНО: Вместо BaseCore внедряем реестр
         private SignalBus _signalBus;
         private DiContainer _container; // Нужен, чтобы доставать пулы по ID
@@ -25,9 +26,10 @@ namespace Gameplay.Spawning
 
 
         [Inject]
-        public void Construct(SpawnLocationService locationService, BaseRegistry baseRegistry, SignalBus signalBus, DiContainer container)
+        public void Construct(SpawnRegistry spawnRegistry, 
+            BaseRegistry baseRegistry, SignalBus signalBus, DiContainer container)
         {
-            _locationService = locationService;
+            _spawnRegistry = spawnRegistry;
             _baseRegistry = baseRegistry;
             _signalBus = signalBus;
             _container = container;
@@ -84,17 +86,18 @@ namespace Gameplay.Spawning
                     // ЗДЕСЬ БУДЕТ РЕАЛЬНЫЙ СПАВН ИЗ ПУЛА
                     Debug.Log($"   -> Спавн {currentSquad.EnemyId} ({i + 1}/{currentSquad.Count})");
                     // Вызываем наш новый умный метод физического спавна
-                    SpawnPhysicalEnemy(currentSquad.EnemyId, currentSquad.SpawnPointId);
+                    SpawnPhysicalEnemy(currentSquad.EnemyId, currentSquad.SpawnPointId, currentSquad.TargetBaseId);
                     yield return new WaitForSeconds(currentSquad.SpawnInterval);
                 }
             }
         }
 
-        private void SpawnPhysicalEnemy(string enemyId, string SpawnPointId)
+        private void SpawnPhysicalEnemy(string enemyId, string spawnPointId, string targetBaseId)
         {
-            // 1. Узнаем ГДЕ спавнить (спрашиваем Резолвер)
-            if (!_locationService.TryGetSpawnPosition(SpawnPointId, out Vector3 spawnPos))
+            // 1. Ищем спавн в реестре
+            if (!_spawnRegistry.TryGetSpawnPosition(spawnPointId, out Vector3 spawnPos))
             {
+                Debug.LogWarning($"[Director] Спавн '{spawnPointId}' не найден, кидаем в 0,0,0");
                 spawnPos = Vector3.zero; // Если точка не найдена, кидаем в центр
             }
             try
@@ -111,8 +114,8 @@ namespace Gameplay.Spawning
                 {
                     agent.Warp(spawnPos);
                 }
-                // ИСПРАВЛЕНО: Запрашиваем цель у реестра баз
-                BaseCore targetBase = _baseRegistry.GetMainBase();
+                // 2. Ищем КОНКРЕТНУЮ базу из отряда
+                BaseCore targetBase = _baseRegistry.GetBaseById(targetBaseId);
                 if (targetBase != null)
                 {
                     // Временно создаем стратегию здесь. В идеале база должна сама отдавать свои координаты.

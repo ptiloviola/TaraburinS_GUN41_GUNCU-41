@@ -18,23 +18,27 @@ MonoBehaviour:
     - EnemyId: sphere_1
       Count: 3
       SpawnInterval: 1
-      SpawnPointId: NorthSpawn
+      SpawnPointId: Spawn_2_2
+      TargetBaseId: Base_7_12
     ClearReward: 0
   - DelayBeforeWave: 0
     Squads:
     - EnemyId: jumper
       Count: 7
       SpawnInterval: 1
-      SpawnPointId: NorthSpawn
+      SpawnPointId: Spawn_2_2
+      TargetBaseId: Base_7_12
     ClearReward: 0
-  - DelayBeforeWave: 3
+  - DelayBeforeWave: 1
     Squads:
     - EnemyId: jumper
       Count: 10
       SpawnInterval: 1
-      SpawnPointId: NorthSpawn
+      SpawnPointId: Spawn_15_11
+      TargetBaseId: Base_15_3
     - EnemyId: sphere_1
       Count: 10
       SpawnInterval: 2
-      SpawnPointId: NorthSpawn
+      SpawnPointId: Spawn_15_11
+      TargetBaseId: Base_15_3
     ClearReward: 0

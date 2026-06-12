@@ -2,7 +2,8 @@ using UnityEngine;
 using Zenject;
 using Unity.AI.Navigation; // Подключаем пространство имен нового пакета навигации
 using Gameplay.Base;
-using UnityEditor.Experimental.GraphView;
+using Gameplay.Spawning;
+
 
 namespace Gameplay.Grid
 {
@@ -27,6 +28,7 @@ namespace Gameplay.Grid
 
         private IGridService _gridService;
         private BaseCore.Factory _baseFactory; // НОВОЕ: Внедряем фабрику баз
+        private EnemySpawnPoint.Factory _spawnFactory; // НОВОЕ: Фабрика спавнов
 
 
         // Публичные свойства только для чтения, чтобы наш Editor-скрипт мог брать эти данные
@@ -35,10 +37,11 @@ namespace Gameplay.Grid
 
         // Внедрение зависимости через метод-конструктор
         [Inject]
-        public void Construct(IGridService gridService, BaseCore.Factory baseFactory)
+        public void Construct(IGridService gridService, BaseCore.Factory baseFactory, EnemySpawnPoint.Factory spawnFactory)
         {
             _gridService = gridService;
             _baseFactory = baseFactory; // Получаем фабрику баз от Zenject
+            _spawnFactory = spawnFactory;
 
         }
 
@@ -145,7 +148,24 @@ namespace Gameplay.Grid
                         surfacePos.y += baseInstance.VerticalOffset;
                         // 3. Ставим базу на ее законное место
                         baseInstance.transform.position = surfacePos;
-                        baseInstance.transform.SetParent(transform); // Аккуратно группируем под генератором
+                        // Аккуратно группируем под генератором
+                        baseInstance.transform.SetParent(transform);
+                        // НОВОЕ: Присваиваем уникальный ID по координатам сетки!
+                        baseInstance.BaseId = $"Base_{x}_{z}";
+                        // НОВОЕ: Переименовываем GameObject на сцене для удобства геймдизайнера!
+                        baseInstance.gameObject.name = $"[MARKER] Base_ID: Base_{x}_{z}";
+                    }
+                    else if (node.Type == NodeType.Spawn)
+                    {
+                        // НОВОЕ: Спавним маркер врагов
+                        EnemySpawnPoint spawnInstance = _spawnFactory.Create();
+                        spawnInstance.transform.position = _gridService.GetWorldPosition(node);
+                        spawnInstance.transform.SetParent(transform);
+                        
+                        // НОВОЕ: Присваиваем уникальный ID по координатам сетки!
+                        spawnInstance.PointId = $"Spawn_{x}_{z}";
+                        // НОВОЕ: Переименовываем GameObject на сцене для удобства геймдизайнера!
+                        spawnInstance.gameObject.name = $"[MARKER] Spawn_ID: Spawn_{x}_{z}";
                     }
 
                     if (node.Type == NodeType.Path || node.Type == NodeType.Spawn || node.Type == NodeType.Base)

@@ -39,7 +39,8 @@ namespace Infrastructure.Installers
 
         [Header("Префаб Базы")]
         [SerializeField] private BaseCore _basePrefab; // Сюда перетащим префаб базы из папки проекта
-
+        [Header("Префаб точки спауна")]
+        [SerializeField] private EnemySpawnPoint _spawnMarkerPrefab;
         
         public override void InstallBindings()
         {
@@ -72,8 +73,7 @@ namespace Infrastructure.Installers
             // .UnderTransformGroup("EnemyPool"); // Спрячет их в иерархии под один пустой объект
             // Debug.Log("<color=green>[Zenject] MemoryPool для EnemyFacade успешно настроен!</color>");
 
-            
-            Container.Bind<SpawnLocationService>().FromComponentInHierarchy().AsSingle();
+        
             // Проходим по всем врагам в каталоге и создаем для КАЖДОГО свой собственный Пул!
             foreach (var enemyData in _enemyRegistry.Enemies)
             {
@@ -118,13 +118,14 @@ namespace Infrastructure.Installers
 
             // 1. Регистрируем реестр как единственный экземпляр на сцену
             Container.Bind<BaseRegistry>().AsSingle();
+            Container.Bind<SpawnRegistry>().AsSingle(); // НОВОЕ
 
-            // 2. Регистрируем фабрику префаба базы
+            // 2. Регистрируем фабрику префабов баз и точек спауна на сетке
             Container.BindFactory<BaseCore, BaseCore.Factory>()
-                .FromComponentInNewPrefab(_basePrefab)
-                .UnderTransformGroup("Bases_Pool");
-
-        
+                .FromComponentInNewPrefab(_basePrefab).UnderTransformGroup("Bases");
+                
+            Container.BindFactory<EnemySpawnPoint, EnemySpawnPoint.Factory>()
+                .FromComponentInNewPrefab(_spawnMarkerPrefab).UnderTransformGroup("Spawns");
         }
     }
 }
