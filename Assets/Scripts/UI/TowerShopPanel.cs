@@ -84,6 +84,9 @@ namespace Gameplay.UI
                 // Передаем методы наведения в Init
                 newButton.Init(towerData, OnTowerButtonClicked, OnButtonHoverEnter, OnButtonHoverExit);
                 _spawnedButtons.Add(newButton); // Сохраняем кнопку в список
+                // --- НОВАЯ СТРОЧКА ---
+                // Ставим созданную кнопку предпоследней в списке (перед кнопкой NextPage)
+                newButton.transform.SetSiblingIndex(_buttonsContainer.childCount - 2);
             }
             
             Debug.Log($"<color=cyan>[TowerShopPanel] Сгенерировано {_towerRegistry.Towers.Count} кнопок магазина.</color>");
