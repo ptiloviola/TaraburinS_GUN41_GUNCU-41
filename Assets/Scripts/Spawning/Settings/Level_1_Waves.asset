@@ -18,7 +18,7 @@ MonoBehaviour:
     - EnemyId: sphere_1
       Count: 3
       SpawnInterval: 1
-      SpawnPointId: Spawn_0_1
+      SpawnPointId: Spawn_1_2
       TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
         \u043F\u0443\u0442\u0438]"
     ClearReward: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
     - EnemyId: jumper
       Count: 7
       SpawnInterval: 1
-      SpawnPointId: Spawn_14_1
+      SpawnPointId: Spawn_15_10
       TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
         \u043F\u0443\u0442\u0438]"
     ClearReward: 0
@@ -36,13 +36,11 @@ MonoBehaviour:
     - EnemyId: jumper
       Count: 5
       SpawnInterval: 1
-      SpawnPointId: Spawn_14_1
-      TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
-        \u043F\u0443\u0442\u0438]"
+      SpawnPointId: Spawn_15_10
+      TargetBaseId: Base_2_20
     - EnemyId: sphere_1
       Count: 5
       SpawnInterval: 2
-      SpawnPointId: Spawn_14_1
-      TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
-        \u043F\u0443\u0442\u0438]"
+      SpawnPointId: Spawn_1_2
+      TargetBaseId: Base_2_20
     ClearReward: 0
