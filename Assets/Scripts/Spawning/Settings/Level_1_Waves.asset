@@ -13,16 +13,15 @@ MonoBehaviour:
   m_Name: Level_1_Waves
   m_EditorClassIdentifier: 
   Waves:
-  - DelayBeforeWave: 0
+  - DelayBeforeWave: 5
     Squads:
     - EnemyId: sphere_1
       Count: 3
       SpawnInterval: 1
       SpawnPointId: Spawn_1_2
-      TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
-        \u043F\u0443\u0442\u0438]"
+      TargetBaseId: Base_2_20
     ClearReward: 0
-  - DelayBeforeWave: 0
+  - DelayBeforeWave: 9
     Squads:
     - EnemyId: jumper
       Count: 7
@@ -31,7 +30,7 @@ MonoBehaviour:
       TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
         \u043F\u0443\u0442\u0438]"
     ClearReward: 0
-  - DelayBeforeWave: 1
+  - DelayBeforeWave: 11
     Squads:
     - EnemyId: jumper
       Count: 5

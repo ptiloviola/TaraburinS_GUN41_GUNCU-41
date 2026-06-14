@@ -6,6 +6,7 @@ using Zenject;
 using Gameplay.Enemies;
 using Gameplay.Base;
 using Infrastructure.Signals;
+using Gameplay.Economy;
 
 namespace Gameplay.Spawning
 {
@@ -21,18 +22,23 @@ namespace Gameplay.Spawning
         private BaseRegistry _baseRegistry; // ИСПРАВЛЕНО: Вместо BaseCore внедряем реестр
         private SignalBus _signalBus;
         private DiContainer _container; // Нужен, чтобы доставать пулы по ID
+        private BankService _bankService;
 
         private int _currentWaveNumber = 0;
+
+        private bool _isForceStartRequested = false;
 
 
         [Inject]
         public void Construct(SpawnRegistry spawnRegistry, 
-            BaseRegistry baseRegistry, SignalBus signalBus, DiContainer container)
+            BaseRegistry baseRegistry, SignalBus signalBus, DiContainer container,
+            BankService bankService)
         {
             _spawnRegistry = spawnRegistry;
             _baseRegistry = baseRegistry;
             _signalBus = signalBus;
             _container = container;
+            _bankService = bankService;
         }
 
 
@@ -44,17 +50,81 @@ namespace Gameplay.Spawning
             StartCoroutine(DirectorRoutine());
         }
 
+        private void OnEnable()
+        {
+            _signalBus.Subscribe<SignalForceStartWave>(OnForceStartRequested);
+        }
+
+        private void OnDisable()
+        {
+            _signalBus.TryUnsubscribe<SignalForceStartWave>(OnForceStartRequested);
+        }
+
+        private void OnForceStartRequested()
+        {
+            _isForceStartRequested = true;
+        }
+
         // Главный цикл (State Machine на базе корутины)
         private IEnumerator DirectorRoutine()
         {
             Debug.Log("<color=cyan>[Director] Режиссер начал работу.</color>");
+            // (проверяем каждые 0.1 сек, чтобы не вешать игру)
+            while (_baseRegistry.GetBaseById("", Vector3.zero) == null)
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
+            // Получаем реальное количество волн из конфига!
+            int totalWaves = _levelConfig.Waves.Count;
             while (_waveProvider.HasNextWave())
             {
                 _currentWaveNumber++;
                 WaveData currentWave = _waveProvider.GetNextWave();
                 // Состояние 1: Ожидание начала волны
                 Debug.Log($"<color=yellow>[Director] Волна {_currentWaveNumber} начнется через {currentWave.DelayBeforeWave} сек...</color>");
-                yield return new WaitForSeconds(currentWave.DelayBeforeWave);
+                // yield return new WaitForSeconds(currentWave.DelayBeforeWave);
+                
+                // Обновляем текст в UI (Волна 1 из 5)
+                _signalBus.Fire(new SignalWaveStateChanged
+                {
+                    CurrentWave = _currentWaveNumber,
+                    // Пока заглушка или можно брать из конфига
+                    TotalWaves = totalWaves
+                });
+                // --- УМНЫЙ ТАЙМЕР ОЖИДАНИЯ ---
+                float timer = currentWave.DelayBeforeWave;
+                float totalTime = timer;
+                // Сбрасываем флаг перед каждой волной
+                _isForceStartRequested = false;
+                // Крутимся в цикле, пока есть время И игрок не нажал кнопку досрочного старта
+                while (timer > 0 && !_isForceStartRequested)
+                {
+                    timer -= Time.deltaTime;
+                    // Сообщаем UI, сколько времени осталось
+                    _signalBus.Fire(new SignalWaveTimerUpdated
+                    {
+                        TimeLeft = Mathf.Max(0, timer),
+                        Progress = 1f - (timer / totalTime)
+                    });
+                    // Ждем один кадр
+                    yield return null;
+                }
+
+                // --- ЛОГИКА НАГРАДЫ ЗА ДОСРОЧНЫЙ СТАРТ ---
+                if (_isForceStartRequested)
+                {
+                    // Например, 5 золота за каждую сэкономленную секунду
+                    int rewardMoney = Mathf.CeilToInt(timer) * 5;
+                    Debug.Log($"<color=yellow>[WaveDirector] Досрочный старт! Выдана награда: {rewardMoney} монет.</color>");
+                    
+                    _bankService.AddMoney(rewardMoney);
+                    // Сбрасываем таймер в UI на 0
+                    _signalBus.Fire(new SignalWaveTimerUpdated
+                    {
+                        TimeLeft = 0,
+                        Progress = 1f
+                    });
+                }
                 
                 // Вызываем сигнал начала волны
                 // _signalBus.Fire(new SignalWaveStarted { ... });
@@ -64,6 +134,7 @@ namespace Gameplay.Spawning
                 // Состояние 3: Ожидание зачистки
                 // Пока просто имитируем, что игрок убил всех за 3 секунды
                 Debug.Log($"<color=orange>[Director] Все враги выпущены. Ждем зачистки карты...</color>");
+                // Заглушка до реализации учета живых врагов
                 yield return new WaitForSeconds(3f);
 
                 Debug.Log($"<color=cyan>[Director] Волна {_currentWaveNumber} зачищена! Награда: {currentWave.ClearReward}</color>");

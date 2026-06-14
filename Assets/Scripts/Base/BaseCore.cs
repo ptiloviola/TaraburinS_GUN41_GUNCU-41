@@ -8,6 +8,8 @@ using Gameplay.Grid; // Подключаем доступ к сетке
 
 namespace Gameplay.Base
 {
+    // НОВОЕ: Перечисление режимы работы здоровья
+    public enum BaseHealthMode { Global, Individual }
     // Требуем, чтобы на объекте обязательно был коллайдер
     [RequireComponent(typeof(Collider))]
     public class BaseCore : MonoBehaviour
@@ -18,21 +20,33 @@ namespace Gameplay.Base
 
         [Header("Настройки Базы")]
         public string BaseId = "MainBase"; // НОВОЕ ПОЛЕ
-        [SerializeField] private int _lives = 20; // Стартовое количество жизней
+
+
+        [Header("Настройки Здоровья")]
+        [Tooltip("Global = снимает общие жизни игрока. Individual = у базы свои ХП.")]
+        [SerializeField] private BaseHealthMode _healthMode = BaseHealthMode.Global;
+
+        // Это поле работает только если выбран режим Individual
+        [SerializeField] private int _individualLives = 20;
+
 
         private SignalBus _signalBus;
         private BaseRegistry _baseRegistry; // НОВОЕ: Ссылка на реестр баз
         private IGridService _gridService;
+
+        private PlayerHealthService _playerHealthService; // НОВОЕ
 
         // Публичное свойство, чтобы GridGenerator мог прочитать, на сколько поднять базу
         public float VerticalOffset => _verticalOffset;
 
         // Внедряем SignalBus через Zenject
         [Inject]
-        public void Construct(SignalBus signalBus, BaseRegistry baseRegistry)
+        public void Construct(SignalBus signalBus, BaseRegistry baseRegistry, 
+            PlayerHealthService playerHealthService)
         {
             _signalBus = signalBus;
             _baseRegistry = baseRegistry;
+            _playerHealthService = playerHealthService;
         }
 
         // НОВОЕ: Автоматическая регистрация при спавне
@@ -47,11 +61,6 @@ namespace Gameplay.Base
         {
             _baseRegistry?.Unregister(this);
         }
-
-
-
-
-
 
 
         private void OnTriggerEnter(Collider other)
@@ -79,17 +88,27 @@ namespace Gameplay.Base
 
         private void TakeDamage(int amount)
         {
-            _lives -= amount;
-            // "Кричим" на всю игру, что жизни изменились
-            _signalBus.Fire(new SignalBaseDamaged { CurrentLives = _lives });
-            Debug.Log($"<color=orange>[BaseCore] Пропущен враг! Осталось жизней: {_lives}</color>");
-
-            if (_lives <= 0)
+            // --- НОВАЯ УМНАЯ ЛОГИКА ---
+            if (_healthMode == BaseHealthMode.Global)
             {
-                // Отправляем сигнал поражения
-                _signalBus.Fire<SignalGameOver>();
-                Debug.Log("<color=red>[BaseCore] ИГРА ОКОНЧЕНА (GAME OVER)!</color>");
-                // В будущем мы добавим сюда паузу игры и вызов UI-экрана поражения
+                // Передаем урон Глобальному менеджеру (UI не будет прыгать!)
+                _playerHealthService.TakeGlobalDamage(amount);
+            }
+            else
+            {
+                // Режим независимой базы
+                _individualLives -= amount;
+                Debug.Log($"<color=orange>[BaseCore] База {BaseId} получила урон. Осталось личных жизней: {_individualLives}</color>");
+                
+                // Задел на будущее: 
+                // _signalBus.Fire(new SignalSpecificBaseDamaged { BaseId = this.BaseId, Lives = _individualLives });
+                
+                if (_individualLives <= 0)
+                {
+                    Debug.Log($"<color=red>[BaseCore] База {BaseId} УНИЧТОЖЕНА!</color>");
+                    // Здесь будет логика взрыва конкретной базы и удаления её с карты
+                    Destroy(gameObject); 
+                }
             }
         }
 

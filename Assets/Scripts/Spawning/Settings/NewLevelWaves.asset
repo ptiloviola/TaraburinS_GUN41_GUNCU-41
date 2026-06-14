@@ -18,12 +18,16 @@ MonoBehaviour:
     - EnemyId: enemy_1
       Count: 2
       SpawnInterval: 3
-      SpawnPointId: 1
+      SpawnPointId: Spawn_1_2
+      TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
     ClearReward: 10
   - DelayBeforeWave: 0
     Squads:
     - EnemyId: enemy_2
       Count: 8
       SpawnInterval: 1
-      SpawnPointId: 2
+      SpawnPointId: Spawn_1_2
+      TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
     ClearReward: 20

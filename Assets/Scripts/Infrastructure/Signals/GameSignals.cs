@@ -37,4 +37,21 @@ namespace Infrastructure.Signals
         public int TotalWaves;
     }
 
+    // Сигнал, чтобы обновлять кружок таймера в UI
+    public struct SignalWaveTimerUpdated
+    {
+        public float TimeLeft; // Сколько секунд осталось
+        public float Progress; // Прогресс от 0.0 до 1.0 (для Fill Amount)
+    }
+
+    // Сигнал от кнопки UI к Режиссеру: "Хватит ждать, запускай!"
+    public struct SignalForceStartWave { }
+
+    // Сигнал для изменения текста волны (если его еще нет)
+    public struct SignalWaveStateChanged
+    {
+        public int CurrentWave;
+        public int TotalWaves;
+    }
+
 }

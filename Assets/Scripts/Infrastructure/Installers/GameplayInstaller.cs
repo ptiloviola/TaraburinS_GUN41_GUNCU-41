@@ -53,6 +53,9 @@ namespace Infrastructure.Installers
             Container.DeclareSignal<SignalGameOver>();
             Container.DeclareSignal<SignalBalanceChanged>();
             Container.DeclareSignal<SignalWaveStarted>();
+            Container.DeclareSignal<SignalWaveTimerUpdated>();
+            Container.DeclareSignal<SignalForceStartWave>();
+            Container.DeclareSignal<SignalWaveStateChanged>();
 
             // Биндим наш Банк
             Container.BindInterfacesAndSelfTo<BankService>().AsSingle();
@@ -126,6 +129,10 @@ namespace Infrastructure.Installers
                 
             Container.BindFactory<EnemySpawnPoint, EnemySpawnPoint.Factory>()
                 .FromComponentInNewPrefab(_spawnMarkerPrefab).UnderTransformGroup("Spawns");
+
+            // Регистрируем сервис здоровья игрока (как и банк)
+            Container.BindInterfacesAndSelfTo<PlayerHealthService>().AsSingle();
+            
         }
     }
 }
