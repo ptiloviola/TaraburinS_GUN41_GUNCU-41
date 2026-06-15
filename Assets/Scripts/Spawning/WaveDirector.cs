@@ -23,6 +23,7 @@ namespace Gameplay.Spawning
         private SignalBus _signalBus;
         private DiContainer _container; // Нужен, чтобы доставать пулы по ID
         private BankService _bankService;
+        private EnemyTrackerService _enemyTracker; // НОВОЕ: Наш Радар
 
         private int _currentWaveNumber = 0;
 
@@ -32,13 +33,14 @@ namespace Gameplay.Spawning
         [Inject]
         public void Construct(SpawnRegistry spawnRegistry, 
             BaseRegistry baseRegistry, SignalBus signalBus, DiContainer container,
-            BankService bankService)
+            BankService bankService, EnemyTrackerService enemyTracker)
         {
             _spawnRegistry = spawnRegistry;
             _baseRegistry = baseRegistry;
             _signalBus = signalBus;
             _container = container;
             _bankService = bankService;
+            _enemyTracker = enemyTracker;
         }
 
 
@@ -91,54 +93,94 @@ namespace Gameplay.Spawning
                     // Пока заглушка или можно брать из конфига
                     TotalWaves = totalWaves
                 });
-                // --- УМНЫЙ ТАЙМЕР ОЖИДАНИЯ ---
-                float timer = currentWave.DelayBeforeWave;
-                float totalTime = timer;
+                
                 // Сбрасываем флаг перед каждой волной
                 _isForceStartRequested = false;
-                // Крутимся в цикле, пока есть время И игрок не нажал кнопку досрочного старта
-                while (timer > 0 && !_isForceStartRequested)
-                {
-                    timer -= Time.deltaTime;
-                    // Сообщаем UI, сколько времени осталось
-                    _signalBus.Fire(new SignalWaveTimerUpdated
-                    {
-                        TimeLeft = Mathf.Max(0, timer),
-                        Progress = 1f - (timer / totalTime)
-                    });
-                    // Ждем один кадр
-                    yield return null;
-                }
 
-                // --- ЛОГИКА НАГРАДЫ ЗА ДОСРОЧНЫЙ СТАРТ ---
-                if (_isForceStartRequested)
+                // --- НОВАЯ УМНАЯ ЛОГИКА ОЖИДАНИЯ ---
+                if (currentWave.StartMode == WaveStartMode.TimeAfterPrevious)
                 {
-                    // Например, 5 золота за каждую сэкономленную секунду
-                    int rewardMoney = Mathf.CeilToInt(timer) * 5;
-                    Debug.Log($"<color=yellow>[WaveDirector] Досрочный старт! Выдана награда: {rewardMoney} монет.</color>");
+                    // Режим 1: Ждем по таймеру (с возможностью досрочного пуска)
+                    float timer = currentWave.DelayBeforeWave;
+                    float totalTime = timer;
+                    // Крутимся в цикле, пока есть время И игрок не нажал кнопку досрочного старта
+                    while (timer > 0 && !_isForceStartRequested)
+                    {
+                        timer -= Time.deltaTime;
+                        // Сообщаем UI, сколько времени осталось
+                        _signalBus.Fire(new SignalWaveTimerUpdated
+                        {
+                            TimeLeft = Mathf.Max(0, timer),
+                            Progress = 1f - (timer / totalTime)
+                        });
+                        // Ждем один кадр
+                        yield return null;
+                        // --- ЛОГИКА НАГРАДЫ ЗА ДОСРОЧНЫЙ СТАРТ ---
+                        if (_isForceStartRequested)
+                        {
+                            // Например, 5 золота за каждую сэкономленную секунду
+                            int rewardMoney = Mathf.CeilToInt(timer) * 5;
+                            Debug.Log($"<color=yellow>[WaveDirector] Досрочный старт! Выдана награда: {rewardMoney} монет.</color>");
+                            
+                            _bankService.AddMoney(rewardMoney);
+                            // Сбрасываем таймер в UI на 0
+                            _signalBus.Fire(new SignalWaveTimerUpdated
+                            {
+                                TimeLeft = 0,
+                                Progress = 1f
+                            });
+                        }
+                    }
+                }
+                else if (currentWave.StartMode == WaveStartMode.StrictClear)
+                {
+                    // Режим 2: Ждем полной зачистки радара (или досрочного пуска игроком)
                     
-                    _bankService.AddMoney(rewardMoney);
-                    // Сбрасываем таймер в UI на 0
-                    _signalBus.Fire(new SignalWaveTimerUpdated
+                    // Шлем в UI ноль, чтобы текст сменился на "АТАКА!" или чтобы кнопка стала доступна
+                    _signalBus.Fire(new SignalWaveTimerUpdated { TimeLeft = 0, Progress = 1f });
+                    
+
+                    // Если это не первая волна, ждем зачистки радара
+                    if (_currentWaveNumber > 1)
                     {
-                        TimeLeft = 0,
-                        Progress = 1f
-                    });
+                        Debug.Log($"<color=cyan>[Director] Волна {_currentWaveNumber} ждет зачистки карты...</color>");
+                        // Крутимся в цикле, пока на карте есть враги И игрок не нажал "Скипнуть"
+                        while (!_enemyTracker.IsMapClear && !_isForceStartRequested)
+                        {
+                            // Просто ждем следующий кадр
+                            yield return null;
+                        }
+                    }
+                    if (_isForceStartRequested)
+                    {
+                        Debug.Log("<color=yellow>[Director] Игрок не стал ждать зачистки и вызвал волну досрочно!</color>");
+                    }
+                }
+
+
+
+
+                     
+                // ==========================================
+                // ЭТАП 2: СТАРТ СПАВНА
+                // ==========================================
+                
+                // Гасим таймер, пишем "АТАКА!", отключаем кнопку досрочного старта
+                _signalBus.Fire(new SignalWaveTimerUpdated { TimeLeft = 0, Progress = 1f }); 
+                Debug.Log($"<color=green>[Director] СТАРТ ВОЛНЫ {_currentWaveNumber}!</color>");
+                // ЗАПУСКАЕМ В ФОНЕ (без yield return)
+                yield return StartCoroutine(SpawnWaveRoutine(currentWave));
+
+                // ==========================================
+                // ЭТАП 3: АКТИВНАЯ ЖИЗНЬ ВОЛНЫ (Бой)
+                // ==========================================
+                
+                if (currentWave.ActiveWaveDuration > 0)
+                {
+                    // Ждем, пока идет активный бой. В это время таймер следующей волны еще не запущен!
+                    yield return new WaitForSeconds(currentWave.ActiveWaveDuration);
                 }
                 
-                // Вызываем сигнал начала волны
-                // _signalBus.Fire(new SignalWaveStarted { ... });
-                Debug.Log($"<color=green>[Director] СТАРТ ВОЛНЫ {_currentWaveNumber}!</color>");
-                yield return StartCoroutine(SpawnWaveRoutine(currentWave));
-                
-                // Состояние 3: Ожидание зачистки
-                // Пока просто имитируем, что игрок убил всех за 3 секунды
-                Debug.Log($"<color=orange>[Director] Все враги выпущены. Ждем зачистки карты...</color>");
-                // Заглушка до реализации учета живых врагов
-                yield return new WaitForSeconds(3f);
-
-                Debug.Log($"<color=cyan>[Director] Волна {_currentWaveNumber} зачищена! Награда: {currentWave.ClearReward}</color>");
-
             }
             Debug.Log("<color=green>[Director] ВСЕ ВОЛНЫ ПРОЙДЕНЫ! ПОБЕДА!</color>");
         }
@@ -179,6 +221,8 @@ namespace Gameplay.Spawning
                 
                 // НОВОЕ: Передаем врагу ЕГО ЛИЧНЫЙ ПУЛ!
                 enemy.SetPool(specificPool);
+                // НОВОЕ: Враг физически на сцене -> кричим в эфир!
+                _signalBus.Fire<SignalEnemySpawned>();
                 // 3. Ставим на точку и даем пинок в сторону базы (твой идеальный код!)
                 var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
                 if (agent != null)

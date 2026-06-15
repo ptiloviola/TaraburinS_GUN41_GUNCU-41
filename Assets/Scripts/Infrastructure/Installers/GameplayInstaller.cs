@@ -64,6 +64,8 @@ namespace Infrastructure.Installers
             // // Теперь любой класс может написать [Inject] private GridConfig _config;
             // Container.Bind<GridConfig>().FromInstance(gridConfig).AsSingle();
             Container.Bind<IGridService>().To<GridService>().AsSingle();
+            // Трекер живых врагов (Радар)
+            Container.BindInterfacesAndSelfTo<EnemyTrackerService>().AsSingle();
 
             Debug.Log("<color=green>[Zenject] Сетка и её конфигурация успешно зарегистрированы!</color>");
 
@@ -132,6 +134,10 @@ namespace Infrastructure.Installers
 
             // Регистрируем сервис здоровья игрока (как и банк)
             Container.BindInterfacesAndSelfTo<PlayerHealthService>().AsSingle();
+
+            Container.DeclareSignal<SignalEnemySpawned>();
+            Container.DeclareSignal<SignalAllEnemiesCleared>();
+            Container.DeclareSignal<SignalEnemyReachedBase>();
             
         }
     }

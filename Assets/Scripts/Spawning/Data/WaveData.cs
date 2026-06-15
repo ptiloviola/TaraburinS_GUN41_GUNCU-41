@@ -7,9 +7,14 @@ namespace Gameplay.Spawning.Data
     [Serializable]
     public class WaveData
     {
-        [Tooltip("Время на подготовку ПЕРЕД началом этой волны")]
-        public float DelayBeforeWave = 5.0f;
-        
+        [Header("Логика старта волны")]
+        [Tooltip("Как должна начаться эта волна?")]
+        public WaveStartMode StartMode = WaveStartMode.TimeAfterPrevious;
+        [Tooltip("Сколько секунд длится бой ДО того, как появится таймер следующей волны (Кнопка отключена)")]
+        public float ActiveWaveDuration = 15f; // НОВОЕ ПОЛЕ
+        [Tooltip("Таймер ПЕРЕД началом этой волны (Кнопка 'Досрочно' активна)")]
+        public float DelayBeforeWave = 10f;
+ 
         [Tooltip("Отряды, из которых состоит эта волна")]
         public List<SquadData> Squads = new List<SquadData>();
         

@@ -77,6 +77,8 @@ namespace Gameplay.Base
                 Debug.Log($"<color=green>[BaseCore] Нашли EnemyFacade на {enemy.gameObject.name}! Уничтожаем.</color>");
                 // Отнимаем жизнь и проверяем поражение
                 TakeDamage(1);
+                // НОВОЕ: Четко сообщаем системе, что враг дошел до финиша
+                _signalBus.Fire<SignalEnemyReachedBase>();
                 enemy.Despawn();
             }
             else

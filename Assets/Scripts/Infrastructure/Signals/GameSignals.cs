@@ -13,11 +13,21 @@ namespace Infrastructure.Signals
         }
     }
 
+    // Сигнал: Враг только что появился на карте
+    public struct SignalEnemySpawned { }
+
+
     // Сигнал вызывается, когда любой враг погибает или деспавнится
     public struct SignalEnemyKilled
     {
         public int Reward; // Банк будет читать это поле
     }
+
+    // Сигнал: Враг успешно дошел до базы и исчез
+    public struct SignalEnemyReachedBase { }
+
+    // Сигнал: Счетчик живых врагов опустился до нуля (карта чиста)
+    public struct SignalAllEnemiesCleared { }
 
     // Сигнал: Жизни упали до 0
     public struct SignalGameOver
@@ -53,5 +63,7 @@ namespace Infrastructure.Signals
         public int CurrentWave;
         public int TotalWaves;
     }
+
+    
 
 }
