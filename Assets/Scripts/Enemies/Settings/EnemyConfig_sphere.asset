@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyId: sphere
   DisplayName: sphere
-  UIIcon: {fileID: 0}
+  UIIcon: {fileID: 21300000, guid: 32fd088693d2fef4786097e06e33ed3e, type: 3}
   Prefab: {fileID: 4288731326268897973, guid: 5775723e01e29184ca5b3ece358be6f5, type: 3}
   MaxHealth: 100
   MoveSpeed: 4.5

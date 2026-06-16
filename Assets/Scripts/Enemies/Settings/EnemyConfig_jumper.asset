@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyId: jumper
   DisplayName: jumper
-  UIIcon: {fileID: 0}
+  UIIcon: {fileID: 21300000, guid: 553d8739bcc6da149ae6d6cbe0b74e18, type: 3}
   Prefab: {fileID: 5250815434494493359, guid: dc0455a21480a764aac72c24a4b202a6, type: 3}
   MaxHealth: 200
   MoveSpeed: 1.5

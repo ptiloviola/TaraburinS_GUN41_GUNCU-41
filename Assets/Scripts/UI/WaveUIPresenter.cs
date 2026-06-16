@@ -5,6 +5,7 @@ using TMPro;
 using Zenject;
 using Infrastructure.Signals;
 using System.Collections.Generic;
+using Gameplay.Enemies.Data;
 
 
 
@@ -25,12 +26,15 @@ namespace Gameplay.UI
         private ForecastIconView.Factory _iconFactory;
 
         private SignalBus _signalBus;
+        private EnemyRegistry _enemyRegistry;
 
         [Inject]
-        public void Construct(SignalBus signalBus, ForecastIconView.Factory iconFactory)
+        public void Construct(SignalBus signalBus, ForecastIconView.Factory iconFactory, 
+            EnemyRegistry enemyRegistry)
         {
             _signalBus = signalBus;
             _iconFactory = iconFactory;
+            _enemyRegistry = enemyRegistry;
         }
 
         private void OnEnable()
@@ -112,8 +116,13 @@ namespace Gameplay.UI
                 
                 // Обязательно false во втором параметре, чтобы UI масштаб не сломался
                 iconObj.transform.SetParent(_forecastContainer, false); 
+                // --- МАГИЯ ЗДЕСЬ ---
+                // Запрашиваем конфиг врага по его строковому ID
+                EnemyConfig config = _enemyRegistry.GetEnemyById(kvp.Key);
+                // Достаем иконку (если конфиг или иконка не найдены, передастся null)
+                Sprite iconSprite = config != null ? config.UIIcon : null;
                 
-                iconObj.Setup(kvp.Key, kvp.Value);
+                iconObj.Setup(kvp.Key, kvp.Value, iconSprite);
             }
         }
 
