@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 namespace Infrastructure.Signals
 {
     // Сигнал вызывается, когда база получает урон
@@ -62,6 +63,13 @@ namespace Infrastructure.Signals
     {
         public int CurrentWave;
         public int TotalWaves;
+    }
+
+    // Сигнал с прогнозом грядущей волны
+    public struct SignalWaveForecastUpdated
+    {
+        // Ключ: ID врага (например "goblin"), Значение: общее количество в волне
+        public Dictionary<string, int> EnemyCounts; 
     }
 
     

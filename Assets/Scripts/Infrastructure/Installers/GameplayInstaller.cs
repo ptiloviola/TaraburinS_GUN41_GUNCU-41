@@ -10,6 +10,7 @@ using Gameplay.Economy;
 using Gameplay.Towers.Data; // Подключаем пространство имен каталога
 using Gameplay.Spawning.Data; // Подключаем данные спавнера
 using Gameplay.Spawning;
+using Gameplay.UI;
 
 namespace Infrastructure.Installers
 {
@@ -41,6 +42,9 @@ namespace Infrastructure.Installers
         [SerializeField] private BaseCore _basePrefab; // Сюда перетащим префаб базы из папки проекта
         [Header("Префаб точки спауна")]
         [SerializeField] private EnemySpawnPoint _spawnMarkerPrefab;
+
+        [Header("UI Префабы")]
+        [SerializeField] private ForecastIconView _forecastIconPrefab; // Сюда закинем префаб карточки
         
         public override void InstallBindings()
         {
@@ -138,6 +142,12 @@ namespace Infrastructure.Installers
             Container.DeclareSignal<SignalEnemySpawned>();
             Container.DeclareSignal<SignalAllEnemiesCleared>();
             Container.DeclareSignal<SignalEnemyReachedBase>();
+
+            Container.DeclareSignal<SignalWaveForecastUpdated>();
+
+            // Регистрируем фабрику UI-иконок
+            Container.BindFactory<ForecastIconView, ForecastIconView.Factory>()
+                 .FromComponentInNewPrefab(_forecastIconPrefab);
             
         }
     }

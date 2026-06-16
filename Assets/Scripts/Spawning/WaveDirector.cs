@@ -93,7 +93,25 @@ namespace Gameplay.Spawning
                     // Пока заглушка или можно брать из конфига
                     TotalWaves = totalWaves
                 });
+
+
+                // ==========================================
+                // НОВОЕ: СОБИРАЕМ ПРОГНОЗ ВОЛНЫ
+                // ==========================================
+                Dictionary<string, int> forecast = new Dictionary<string, int>();
+                foreach (var squad in currentWave.Squads)
+                {
+                    if (forecast.ContainsKey(squad.EnemyId))
+                        forecast[squad.EnemyId] += squad.Count;
+                    else
+                        forecast[squad.EnemyId] = squad.Count;
+                }
                 
+                // Шлем прогноз в UI!
+                _signalBus.Fire(new SignalWaveForecastUpdated { EnemyCounts = forecast });
+                // ==========================================
+
+
                 // Сбрасываем флаг перед каждой волной
                 _isForceStartRequested = false;
 

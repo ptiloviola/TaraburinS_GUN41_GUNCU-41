@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 using Zenject;
 using Infrastructure.Signals;
+using System.Collections.Generic;
+
 
 
 namespace Gameplay.UI
@@ -16,18 +18,27 @@ namespace Gameplay.UI
         [SerializeField] private TextMeshProUGUI _waveNumberText; // Текст "Волна 1/5"
         [SerializeField] private Button _forceStartButton; // Кнопка досрочного старта
 
+        [Header("Прогноз волны")]
+        // Ссылка на наш пустой контейнер
+        [SerializeField] private Transform _forecastContainer;
+        // Внедряем фабрику иконок
+        private ForecastIconView.Factory _iconFactory;
+
         private SignalBus _signalBus;
 
         [Inject]
-        public void Construct(SignalBus signalBus)
+        public void Construct(SignalBus signalBus, ForecastIconView.Factory iconFactory)
         {
             _signalBus = signalBus;
+            _iconFactory = iconFactory;
         }
 
         private void OnEnable()
         {
             _signalBus.Subscribe<SignalWaveTimerUpdated>(OnTimerUpdated);
             _signalBus.Subscribe<SignalWaveStateChanged>(OnWaveStateChanged);
+            _signalBus.Subscribe<SignalWaveForecastUpdated>(OnForecastUpdated); // НОВОЕ
+
             _forceStartButton.onClick.AddListener(OnForceStartClicked);
             
         }
@@ -36,9 +47,12 @@ namespace Gameplay.UI
         {
             _signalBus.TryUnsubscribe<SignalWaveTimerUpdated>(OnTimerUpdated);
             _signalBus.TryUnsubscribe<SignalWaveStateChanged>(OnWaveStateChanged);
+            _signalBus.TryUnsubscribe<SignalWaveForecastUpdated>(OnForecastUpdated); // НОВОЕ
             
             _forceStartButton.onClick.RemoveListener(OnForceStartClicked);
         }
+
+
 
         // Обновляем таймер
         private void OnTimerUpdated(SignalWaveTimerUpdated signal)
@@ -78,6 +92,29 @@ namespace Gameplay.UI
         private void OnForceStartClicked()
         {
             _signalBus.Fire<SignalForceStartWave>();
+        }
+
+        // НОВОЕ: Метод отрисовки прогноза
+        private void OnForecastUpdated(SignalWaveForecastUpdated signal)
+        {
+            if (_forecastContainer == null) return;
+
+            // 1. Очищаем контейнер от старых иконок прошлой волны
+            foreach (Transform child in _forecastContainer)
+            {
+                Destroy(child.gameObject);
+            }
+
+            // 2. Создаем новые карточки
+            foreach (KeyValuePair<string, int> kvp in signal.EnemyCounts)
+            {
+                ForecastIconView iconObj = _iconFactory.Create();
+                
+                // Обязательно false во втором параметре, чтобы UI масштаб не сломался
+                iconObj.transform.SetParent(_forecastContainer, false); 
+                
+                iconObj.Setup(kvp.Key, kvp.Value);
+            }
         }
 
     }
