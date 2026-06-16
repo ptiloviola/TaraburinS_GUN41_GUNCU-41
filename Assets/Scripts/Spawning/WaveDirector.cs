@@ -7,6 +7,7 @@ using Gameplay.Enemies;
 using Gameplay.Base;
 using Infrastructure.Signals;
 using Gameplay.Economy;
+using Gameplay.Enemies.Data;
 
 namespace Gameplay.Spawning
 {
@@ -28,12 +29,15 @@ namespace Gameplay.Spawning
         private int _currentWaveNumber = 0;
 
         private bool _isForceStartRequested = false;
+        // ИСПРАВЛЕНО: Используем наш новый реестр
+        private EnemyRegistry _enemyRegistry;
 
 
         [Inject]
         public void Construct(SpawnRegistry spawnRegistry, 
             BaseRegistry baseRegistry, SignalBus signalBus, DiContainer container,
-            BankService bankService, EnemyTrackerService enemyTracker)
+            BankService bankService, EnemyTrackerService enemyTracker, 
+            EnemyRegistry enemyRegistry)
         {
             _spawnRegistry = spawnRegistry;
             _baseRegistry = baseRegistry;
@@ -41,6 +45,7 @@ namespace Gameplay.Spawning
             _container = container;
             _bankService = bankService;
             _enemyTracker = enemyTracker;
+            _enemyRegistry = enemyRegistry;
         }
 
 
@@ -233,12 +238,21 @@ namespace Gameplay.Spawning
             }
             try
             {
+                // НОВОЕ: Находим конфиг врага через LINQ-метод реестра
+                EnemyConfig config = _enemyRegistry.GetEnemyById(enemyId);
+                if (config == null)
+                {
+                    Debug.LogError($"[Director] Враг '{enemyId}' не найден в EnemyRegistry!");
+                    return;
+                }
                 // 2. Узнаем КОГО спавнить (ищем пул с нужным ID)
                 EnemyFacade.Pool specificPool = _container.ResolveId<EnemyFacade.Pool>(enemyId);
                 EnemyFacade enemy = specificPool.Spawn();
                 
                 // НОВОЕ: Передаем врагу ЕГО ЛИЧНЫЙ ПУЛ!
                 enemy.SetPool(specificPool);
+                // НОВОЕ: Загружаем характеристики во врага!
+                enemy.InitConfig(config);
                 // НОВОЕ: Враг физически на сцене -> кричим в эфир!
                 _signalBus.Fire<SignalEnemySpawned>();
                 // 3. Ставим на точку и даем пинок в сторону базы (твой идеальный код!)

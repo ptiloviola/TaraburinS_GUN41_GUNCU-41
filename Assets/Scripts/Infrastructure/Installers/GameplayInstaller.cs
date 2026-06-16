@@ -8,9 +8,9 @@ using Gameplay.Towers;
 using Gameplay.Towers.Behaviors.Weapons;
 using Gameplay.Economy;
 using Gameplay.Towers.Data; // Подключаем пространство имен каталога
-using Gameplay.Spawning.Data; // Подключаем данные спавнера
 using Gameplay.Spawning;
 using Gameplay.UI;
+using Gameplay.Enemies.Data;
 
 namespace Infrastructure.Installers
 {
@@ -84,21 +84,24 @@ namespace Infrastructure.Installers
 
         
             // Проходим по всем врагам в каталоге и создаем для КАЖДОГО свой собственный Пул!
-            foreach (var enemyData in _enemyRegistry.Enemies)
+            if (_enemyRegistry != null)
             {
-                Container.BindMemoryPool<EnemyFacade, EnemyFacade.Pool>()
-                    .WithId(enemyData.EnemyId) // МАГИЯ ЗДЕСЬ: Мы даем пулу имя!
-                    .WithInitialSize(5)
-                    .FromComponentInNewPrefab(enemyData.Prefab)
-                    .UnderTransformGroup($"EnemyPool_{enemyData.EnemyId}"); // Группируем аккуратно
+                foreach (var config in _enemyRegistry.Enemies)
+                {
+                    if (config.Prefab != null)
+                    {
+                        Container.BindMemoryPool<EnemyFacade, EnemyFacade.Pool>()
+                        .WithId(config.EnemyId) // МАГИЯ ЗДЕСЬ: Мы даем пулу имя!
+                        .WithInitialSize(5)
+                        .FromComponentInNewPrefab(config.Prefab)
+                        .UnderTransformGroup($"EnemyPool_{config.EnemyId}"); // Группируем аккуратно
+                    }
+                }
             }
-
-            Debug.Log("<color=green>[Zenject] Мульти-пулы для врагов успешно созданы!</color>");
-
-
-
-
-
+            // Биндим сам реестр, чтобы WaveDirector мог его запросить
+                Container.BindInstance(_enemyRegistry).AsSingle();
+                Debug.Log("<color=green>[Zenject] Мульти-пулы для врагов успешно созданы из реестра!</color>");
+            
 
             // Находим базу на сцене и делаем ее доступной для инъекций
             Container.Bind<BaseCore>().FromComponentInHierarchy().AsSingle();

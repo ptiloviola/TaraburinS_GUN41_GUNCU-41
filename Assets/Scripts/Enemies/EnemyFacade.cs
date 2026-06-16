@@ -2,6 +2,8 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Core;
 using Infrastructure.Signals;
+using Gameplay.Enemies.Data;
+using UnityEngine.AI;
 
 namespace Gameplay.Enemies
 {
@@ -27,6 +29,8 @@ namespace Gameplay.Enemies
 
         // Геттер, чтобы стратегия движения могла прочитать этот режим
         public MovementType EnemyMovementType => _movementType;
+        // НОВОЕ: Свойство для доступа к конфигу (понадобится базе для расчета урона)
+        public EnemyConfig Config { get; private set; }
 
         // Магия Zenject: он сам вставит сюда ссылку на пул при инстанцировании префаба!
         [Inject]
@@ -58,7 +62,7 @@ namespace Gameplay.Enemies
             
             if (_health != null)
             {
-                _health.Initialize(); // Восстанавливаем 100% ХП
+                // ИСПРАВЛЕНО: _health.Initialize() убрано отсюда, оно будет в InitConfig
                 _health.OnDied += HandleDeath; // Подписываемся на смерть
             }
         }
@@ -69,6 +73,21 @@ namespace Gameplay.Enemies
             if (_health != null)
             {
                 _health.OnDied -= HandleDeath;
+            }
+        }
+
+        // НОВОЕ: Метод инициализации из конфига. Вызывается Режиссером при спавне.
+        public void InitConfig(EnemyConfig config)
+        {
+            Config = config;
+            if (_health != null)
+            {
+                _health.Initialize(config.MaxHealth);
+            }
+            var agent = GetComponent<NavMeshAgent>();
+            if (agent != null)
+            {
+                agent.speed = config.MoveSpeed;
             }
         }
 
@@ -92,7 +111,8 @@ namespace Gameplay.Enemies
         // --- НОВОЕ: Обработчик смерти ---
         private void HandleDeath()
         {
-            _signalBus.Fire(new SignalEnemyKilled { Reward = 10 });
+            int reward = Config != null ? Config.RewardMoney : 10;
+            _signalBus.Fire(new SignalEnemyKilled { Reward = reward });
             Despawn(); // Если ХП упало до нуля, просто возвращаем врага в пул
         }
 
@@ -103,7 +123,7 @@ namespace Gameplay.Enemies
                 // Очищаем логику движения перед возвратом в пул
                 _movementStrategy = null;
                 
-                var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+                var agent = GetComponent<NavMeshAgent>();
                 if (agent != null) 
                 {
                     agent.enabled = false;

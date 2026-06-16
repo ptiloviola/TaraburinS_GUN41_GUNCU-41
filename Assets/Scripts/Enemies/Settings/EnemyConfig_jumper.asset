@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55426c75f7b57784495fa19a16c35695, type: 3}
+  m_Name: EnemyConfig_jumper
+  m_EditorClassIdentifier: 
+  EnemyId: jumper
+  DisplayName: jumper
+  UIIcon: {fileID: 0}
+  Prefab: {fileID: 5250815434494493359, guid: dc0455a21480a764aac72c24a4b202a6, type: 3}
+  MaxHealth: 200
+  MoveSpeed: 1.5
+  DamageToBase: 2
+  RewardMoney: 25

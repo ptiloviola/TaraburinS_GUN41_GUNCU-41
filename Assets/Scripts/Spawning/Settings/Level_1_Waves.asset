@@ -17,7 +17,7 @@ MonoBehaviour:
     ActiveWaveDuration: 0
     DelayBeforeWave: 5
     Squads:
-    - EnemyId: sphere_1
+    - EnemyId: sphere
       Count: 5
       SpawnInterval: 1
       SpawnPointId: Spawn_1_2
@@ -33,7 +33,7 @@ MonoBehaviour:
     DelayBeforeWave: 9
     Squads:
     - EnemyId: jumper
-      Count: 7
+      Count: 4
       SpawnInterval: 1
       SpawnPointId: Spawn_15_10
       TargetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
@@ -48,7 +48,7 @@ MonoBehaviour:
       SpawnInterval: 1
       SpawnPointId: Spawn_15_10
       TargetBaseId: Base_2_20
-    - EnemyId: sphere_1
+    - EnemyId: sphere
       Count: 5
       SpawnInterval: 2
       SpawnPointId: Spawn_1_2
