@@ -216,6 +216,15 @@ namespace Gameplay.Spawning
             while (squadQueue.Count > 0)
             {
                 SquadData currentSquad = squadQueue.Dequeue();
+                // ==========================================
+                // НОВОЕ: ТЕЛЕГРАФИРОВАНИЕ СПАВНА
+                // ==========================================
+                float warningTime = 2f; // Портал будет "гореть" 2 секунды
+                _spawnRegistry.TriggerWarning(currentSquad.SpawnPointId, warningTime);
+                
+                // Ждем, пока проиграется эффект
+                yield return new WaitForSeconds(warningTime);
+                
                 Debug.Log($"[Director] Выходит отряд: {currentSquad.Count}x {currentSquad.EnemyId} (Точка: {currentSquad.SpawnPointId})");
                 for (int i = 0; i < currentSquad.Count; i++)
                 {

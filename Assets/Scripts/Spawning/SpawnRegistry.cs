@@ -38,6 +38,15 @@ namespace Gameplay.Spawning
             return false;
         }
 
+        public void TriggerWarning(string spawnId, float duration)
+        {
+            // Убедись, что твоя коллекция спавнов называется _spawns (или поправь под свое название)
+            if (_spawns.TryGetValue(spawnId, out EnemySpawnPoint point))
+            {
+                point.TriggerWarning(duration);
+            }
+        }
+
 
 
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Zenject;
+using Gameplay.Spawning.Visuals;
 
 namespace Gameplay.Spawning
 {
@@ -8,16 +9,33 @@ namespace Gameplay.Spawning
         public string PointId = "DefaultSpawn";
         private SpawnRegistry _registry;
 
+        // Ссылка на компонент визуала (через абстракцию!)
+        private ISpawnVisuals _visuals;
+
         [Inject]
         public void Construct(SpawnRegistry registry)
         {
             _registry = registry;
         }
 
+        private void Awake()
+        {
+            // Ищем любой скрипт, реализующий ISpawnVisuals на этом объекте или детях
+            _visuals = GetComponentInChildren<ISpawnVisuals>();
+        }
+
         // ИСПРАВЛЕНИЕ: Переносим регистрацию в Start()
         private void Start() => _registry?.Register(this);
         // ИСПРАВЛЕНИЕ: Раз регистрируемся в Start, выписываемся в OnDestroy
         private void OnDestroy() => _registry?.Unregister(this);
+
+        // Публичный метод для Реестра
+        public void TriggerWarning(float duration)
+        {
+            _visuals?.PlayWarningEffect(duration);
+        }
+
+        
 
         private void OnDrawGizmos()
         {
