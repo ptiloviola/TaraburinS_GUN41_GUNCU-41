@@ -901,7 +901,7 @@ MonoBehaviour:
   _verticalTurnSensitivity: 5
   _verticalMinAngle: -89
   _verticalMaxAngle: 89
-  _jumpSpeed: 7
+  _jumpSpeed: 3
   _characterController: {fileID: 2028709946}
   _transform: {fileID: 2028709943}
   _cameraTransform: {fileID: 963194228}
