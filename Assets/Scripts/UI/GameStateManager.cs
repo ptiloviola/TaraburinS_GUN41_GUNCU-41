@@ -50,6 +50,18 @@ namespace Bowling.UI
                 _activeMechanic.OnThrowExecuted -= HandleThrow;
             }
         }
+
+        public void ResetRound()
+        {
+            _ballController.ResetBall();
+            
+            if (_activeMechanic != null)
+            {
+                _activeMechanic.ResetMechanic();
+            }
+            
+            Debug.Log("Раунд сброшен. Можно бросать снова!");
+        }
     }
 }
 

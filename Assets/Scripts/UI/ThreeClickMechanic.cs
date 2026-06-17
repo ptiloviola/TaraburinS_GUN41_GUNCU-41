@@ -10,6 +10,7 @@ namespace Bowling.UI
         [SerializeField] private float _powerSliderSpeed = 50f;
         [SerializeField] private Slider _accuracySlider;
         [SerializeField] private float _accuracySliderSpeed = 3f;
+        
         private float _accuracyTimer = 0f;
 
         private enum ClickState {Idle, SettingPower, SettingAccuracy, Finished}
@@ -31,8 +32,11 @@ namespace Bowling.UI
         [SerializeField] private float _powerMultiplier = 15f;
         [SerializeField] private float _sideDeviationMultiplier = 2f;
 
+        [SerializeField] private GameObject _uiContainer;
+
         private void Update()
         {
+            if (_isThrowExecuted) return;
             if (Input.GetMouseButtonDown(0))
             {
                 AdvanceState();
@@ -84,7 +88,30 @@ namespace Bowling.UI
             }
         }
 
+        public override void ResetMechanic()
+        {
+            _currentState = ClickState.Idle;
+            _powerTimer = 0f;
+            _accuracyTimer = 0f;
+            
+            if (_powerSlider != null) _powerSlider.value = 0f;
+            if (_accuracySlider != null) _accuracySlider.value = 0f;
 
+            if (_sweetSpotRect != null)
+            {
+                _sweetSpotRect.sizeDelta = new Vector2(_maxSweetSpotWidth, _sweetSpotRect.sizeDelta.y);
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (_uiContainer != null) _uiContainer.SetActive(true);
+        }
+        private void OnDisable()
+        {
+            if (_uiContainer != null) _uiContainer.SetActive(false);
+            ResetMechanic();
+        }
 
 
     }

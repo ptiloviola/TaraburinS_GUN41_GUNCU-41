@@ -9,9 +9,18 @@ namespace Bowling.Ball
         private Rigidbody _rb;
         private IThrowStrategy _currentStrategy;
 
+        private Vector3 _startPosition;
+        private Quaternion _startRotation;
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
+        }
+
+        private void Start()
+        {
+            _startPosition = transform.position;
+            _startRotation = transform.rotation;
         }
 
         public void SetStrategy(IThrowStrategy throwStrategy)
@@ -40,6 +49,15 @@ namespace Bowling.Ball
         private void Update()
         {
             _currentStrategy?.HandleUpdate();
+        }
+
+        public void ResetBall()
+        {
+            _rb.velocity = Vector3.zero;
+            _rb.angularVelocity = Vector3.zero;
+            _rb.WakeUp();
+            transform.position = _startPosition;
+            transform.rotation = _startRotation;
         }
 
     }
