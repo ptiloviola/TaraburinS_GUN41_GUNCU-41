@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 namespace Bowling.Ball
 {
     public class MovePositionStrategy : IThrowStrategy

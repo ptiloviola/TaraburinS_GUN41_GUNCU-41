@@ -16,13 +16,10 @@ namespace Bowling.Ball
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
-        }
-
-        private void Start()
-        {
             _startPosition = transform.position;
             _startRotation = transform.rotation;
         }
+
 
         public void SetStrategy(IThrowStrategy throwStrategy)
         {
@@ -55,11 +52,13 @@ namespace Bowling.Ball
         public void ResetBall()
         {
             _currentStrategy?.ResetStrategy();
+            _rb.isKinematic = true;
             _rb.velocity = Vector3.zero;
             _rb.angularVelocity = Vector3.zero;
-            transform.position = _startPosition;
-            transform.rotation = _startRotation;
+            _rb.position = _startPosition;
+            _rb.rotation = _startRotation;
             _rb.WakeUp();
+            _rb.isKinematic = false;
         }
 
         private void OnCollisionEnter(Collision collision)

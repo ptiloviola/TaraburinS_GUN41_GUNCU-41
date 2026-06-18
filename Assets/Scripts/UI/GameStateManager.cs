@@ -10,11 +10,9 @@ namespace Bowling.UI
         [SerializeField] private BallController _ballController;
         [SerializeField] private BaseThrowMechanic[] _inputMechanics;
         [SerializeField] private PhysicsConfig _physicsConfig;
+        [SerializeField] private PinDeckManager _pinDeckManager;
 
         private BaseThrowMechanic _activeMechanic;
-
-        [SerializeField] private GameObject _pinDeck;
-        private BowlingPin[] _bowlingPins;
 
         public event System.Action<int> OnPinsKnockedDown;
 
@@ -22,9 +20,9 @@ namespace Bowling.UI
         {
             SetPhysicsStrategy(0);
             SetInputMechanic(0);  
-            if (_pinDeck != null)
+            if (_pinDeckManager.ActivePins.Count == 0)
             {
-                _bowlingPins = _pinDeck.GetComponentsInChildren<BowlingPin>();
+                _pinDeckManager.SpawnPins();
             }
         }
 
@@ -84,15 +82,13 @@ namespace Bowling.UI
                 _activeMechanic.ResetMechanic();
             }
 
-            if (_bowlingPins != null)
+            if (_pinDeckManager.ActivePins != null)
             {
-                foreach(var pin in _bowlingPins)
-                {
-                    pin.ResetPin();
-                }
+                _pinDeckManager.ResetDeck();
             }
 
-          
+
+            _pinDeckManager.ResetDeck();
             Debug.Log("Раунд сброшен. Можно бросать снова!");
         }
 
@@ -105,7 +101,7 @@ namespace Bowling.UI
         {
             yield return new WaitForSeconds(5f);
             int fallenCount = 0;
-            foreach(var pin in _bowlingPins)
+            foreach(var pin in _pinDeckManager.ActivePins)
             {
                 if(pin.IsFallen)
                 {
