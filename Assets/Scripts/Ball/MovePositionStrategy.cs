@@ -27,9 +27,14 @@ namespace Bowling.Ball
         public void Initialize(Transform transform, Rigidbody rb)
         {
             _rb = rb;
-            if (transform.TryGetComponent<SphereCollider>(out SphereCollider collider))
+            SphereCollider collider = transform.GetComponentInChildren<SphereCollider>();
+            if (collider != null)
             {
-                _ballRadius = collider.radius * transform.localScale.x;
+                _ballRadius = collider.radius * collider.transform.lossyScale.x;
+            }
+            else
+            {
+                _ballRadius = 0.5f;
             }
         }
         public void ExecuteThrow(Vector3 direction, float force)

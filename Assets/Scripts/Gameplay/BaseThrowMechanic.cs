@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 
-namespace Bowling.UI
+namespace Bowling.Gameplay
 {
     public class BaseThrowMechanic : MonoBehaviour
     {

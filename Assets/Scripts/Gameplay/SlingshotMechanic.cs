@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Bowling.UI
+namespace Bowling.Gameplay
 {
     public class SlingshotMechanic : BaseThrowMechanic
     {

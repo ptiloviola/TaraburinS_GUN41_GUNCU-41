@@ -13,6 +13,8 @@ namespace Bowling.Ball
         private Vector3 _startPosition;
         private Quaternion _startRotation;
 
+        private GameObject _currentVisualChild;
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
@@ -80,6 +82,24 @@ namespace Bowling.Ball
                 moveStrategy.StopMotorAndTransferPhysics();
             }
             
+        }
+
+        public void ApplyBallPrefab(GameObject prefab, float mass)
+        {
+            if (_currentStrategy != null)
+            {
+                Destroy(_currentVisualChild);
+            }
+
+            _currentVisualChild = Instantiate(prefab, transform);
+            _currentVisualChild.transform.localPosition = Vector3.zero;
+            _currentVisualChild.transform.localRotation = Quaternion.identity;
+            _currentVisualChild.transform.localScale = Vector3.one;
+            _rb.mass = mass;
+            if (_currentStrategy != null)
+            {
+                _currentStrategy.Initialize(transform, _rb);
+            }
         }
 
     }

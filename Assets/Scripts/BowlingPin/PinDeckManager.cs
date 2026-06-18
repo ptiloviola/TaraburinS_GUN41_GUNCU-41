@@ -69,7 +69,6 @@ namespace Bowling.BowlingPins
             ActivePins.Clear();
         }
 
-
         public void ResetDeck()
         {
             SpawnPins();

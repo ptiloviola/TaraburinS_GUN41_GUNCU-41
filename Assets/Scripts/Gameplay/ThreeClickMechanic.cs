@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Bowling.UI
+namespace Bowling.Gameplay
 {
     public class ThreeClickMechanic : BaseThrowMechanic
     {
@@ -41,6 +41,11 @@ namespace Bowling.UI
             if (_isThrowExecuted) return;
             if (Input.GetMouseButtonDown(0))
             {
+                if (UnityEngine.EventSystems.EventSystem.current != null && 
+                    UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                {
+                    return; 
+                }
                 AdvanceState();
             }
             if (_currentState == ClickState.SettingPower)

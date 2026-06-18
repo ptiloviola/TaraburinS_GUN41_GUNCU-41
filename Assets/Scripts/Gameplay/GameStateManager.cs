@@ -3,7 +3,7 @@ using UnityEngine;
 using Bowling.BowlingPins;
 using System.Collections;
 
-namespace Bowling.UI
+namespace Bowling.Gameplay
 {
     public class GameStateManager : MonoBehaviour
     {
