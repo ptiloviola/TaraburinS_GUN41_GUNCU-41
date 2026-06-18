@@ -15,6 +15,11 @@ namespace Gameplay.Towers.Data
         public AuraStats Aura;
         // В будущем новые модули (TrapStats, SpawnerStats) будешь добавлять сюда
 
+        [Tooltip("Настройки казармы (заполнять только для башен-казарм)")]
+        public BarracksModuleDescriptor Barracks; // НАШ НОВЫЙ МОДУЛЬ!
+
+
+
         // НОВЫЙ МЕТОД: Собираем все модули, которые реализуют интерфейс IModuleDescriptor.
         // Используем yield return - это классная фича C#, которая создает итератор на лету,
         // не выделяя память под новый список List<T>!
@@ -22,6 +27,8 @@ namespace Gameplay.Towers.Data
         {
             if (Attack != null) yield return Attack;
             if (Aura != null) yield return Aura;
+            if (Barracks != null) yield return Barracks;
+
             
             // В будущем, когда добавишь новые модули, просто допишешь сюда одну строчку:
             // if (Trap != null) yield return Trap;

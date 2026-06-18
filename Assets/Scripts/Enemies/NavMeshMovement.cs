@@ -58,5 +58,3 @@ namespace Gameplay.Enemies
         }
     }
 }
-
-
