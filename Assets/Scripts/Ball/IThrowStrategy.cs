@@ -12,6 +12,9 @@ namespace Bowling.Ball
         void HandleFixedUpdate();
 
         void HandleUpdate();
+
+        void ResetStrategy();
+
     }
 }
 

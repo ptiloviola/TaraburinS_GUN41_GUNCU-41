@@ -1,4 +1,5 @@
 using UnityEngine;
+using Bowling.BowlingPins;
 
 
 namespace Bowling.Ball
@@ -53,11 +54,33 @@ namespace Bowling.Ball
 
         public void ResetBall()
         {
+            _currentStrategy?.ResetStrategy();
             _rb.velocity = Vector3.zero;
             _rb.angularVelocity = Vector3.zero;
-            _rb.WakeUp();
             transform.position = _startPosition;
             transform.rotation = _startRotation;
+            _rb.WakeUp();
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (_currentStrategy is MovePositionStrategy moveStrategy)
+            {
+                if (collision.gameObject.TryGetComponent<BowlingPin>(out BowlingPin pin))
+                {
+                    
+                    Vector3 impactVector = moveStrategy.CurrentVelocity * 2.0f;
+
+                    Rigidbody pinRb = pin.GetComponent<Rigidbody>();
+                    if (pinRb != null)
+                    {
+                        pinRb.AddForce(impactVector, ForceMode.Impulse);
+                    }
+                     
+                }
+                moveStrategy.StopMotorAndTransferPhysics();
+            }
+            
         }
 
     }

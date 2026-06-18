@@ -34,6 +34,8 @@ namespace Bowling.UI
 
         [SerializeField] private GameObject _uiContainer;
 
+        
+
         private void Update()
         {
             if (_isThrowExecuted) return;
@@ -74,6 +76,7 @@ namespace Bowling.UI
                     {
                         float newWidth = Mathf.Lerp(_maxSweetSpotWidth, _minSweetSpotWidth, powerPercent);
                         _sweetSpotRect.sizeDelta = new Vector2(newWidth, _sweetSpotRect.sizeDelta.y);
+
                     }
                     _currentState = ClickState.SettingAccuracy;
                     break;
@@ -90,6 +93,7 @@ namespace Bowling.UI
 
         public override void ResetMechanic()
         {
+            base.ResetMechanic();
             _currentState = ClickState.Idle;
             _powerTimer = 0f;
             _accuracyTimer = 0f;

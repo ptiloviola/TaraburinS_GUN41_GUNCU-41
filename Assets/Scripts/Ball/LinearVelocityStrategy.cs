@@ -1,38 +1,41 @@
 
 using UnityEngine;
 
-
 namespace Bowling.Ball
 {
-    public class AddForceStrategy : IThrowStrategy
+    public class LinearVelocityStrategy : IThrowStrategy
     {
+
+        private float _multiplier = 0.5f;
+
+
         private Rigidbody _rb;
 
-        private float _addForceMultiplier = 1f;
-
-        public AddForceStrategy(PhysicsConfig config)
+        public LinearVelocityStrategy(PhysicsConfig config)
         {
-            _addForceMultiplier = config.AddForceMultiplier;
+            _multiplier = config.VelocityMultiplier;
         }
 
         public void Initialize(Transform transform, Rigidbody rb)
         {
             _rb = rb;
-            _rb.isKinematic = false;
         }
+
         public void ExecuteThrow(Vector3 direction, float force)
         {
-            _rb.AddForce(direction.normalized * force * _addForceMultiplier, ForceMode.Impulse);
+            Debug.Log($"direction = {direction}, force = {force}");
+            _rb.velocity = direction * (force * _multiplier);
+
         }
 
         public void HandleFixedUpdate()
         {
-
+            
         }
 
         public void HandleUpdate()
         {
-
+            
         }
 
 
@@ -41,5 +44,5 @@ namespace Bowling.Ball
             
         }
     }
-
 }
+
