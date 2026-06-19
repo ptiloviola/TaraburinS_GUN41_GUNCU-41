@@ -8,12 +8,13 @@ using UnityEngine.AI;
 namespace Gameplay.Enemies
 {
 
-
+    [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyFacade : MonoBehaviour
     {
         private IMovementStrategy _movementStrategy;
         private Pool _pool;
         private SignalBus _signalBus;
+        private NavMeshAgent _agent;
 
         // --- НОВОЕ: Ссылка на здоровье ---
         [SerializeField] private HealthComponent _health;
@@ -49,6 +50,8 @@ namespace Gameplay.Enemies
         // --- НОВОЕ: Ищем компонент, если забыли назначить в инспекторе ---
         private void Awake()
         {
+            // Кешируем компонент один раз при рождении объекта
+            _agent = GetComponent<NavMeshAgent>();
             if (_health == null) _health = GetComponent<HealthComponent>();
         }
 
@@ -84,11 +87,9 @@ namespace Gameplay.Enemies
             {
                 _health.Initialize(config.MaxHealth);
             }
-            var agent = GetComponent<NavMeshAgent>();
-            if (agent != null)
-            {
-                agent.speed = config.MoveSpeed;
-            }
+            _agent.speed = Config.MoveSpeed;
+            // добавить ангулар спид как у защитника
+
         }
 
 
@@ -123,11 +124,10 @@ namespace Gameplay.Enemies
                 // Очищаем логику движения перед возвратом в пул
                 _movementStrategy = null;
                 
-                var agent = GetComponent<NavMeshAgent>();
-                if (agent != null) 
-                {
-                    agent.enabled = false;
-                }
+                
+                
+                _agent.enabled = false;
+                
 
                 // MonoMemoryPool сам сделает gameObject.SetActive(false)!
                 _pool.Despawn(this);
