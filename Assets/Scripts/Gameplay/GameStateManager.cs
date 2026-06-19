@@ -2,6 +2,7 @@ using Bowling.Ball;
 using UnityEngine;
 using Bowling.BowlingPins;
 using System.Collections;
+using Bowling.UI;
 
 namespace Bowling.Gameplay
 {
@@ -11,6 +12,8 @@ namespace Bowling.Gameplay
         [SerializeField] private BaseThrowMechanic[] _inputMechanics;
         [SerializeField] private PhysicsConfig _physicsConfig;
         [SerializeField] private PinDeckManager _pinDeckManager;
+        [SerializeField] private StrikeEffect _strikeEffect;
+        private Coroutine _scoringCoroutine;
 
         private BaseThrowMechanic _activeMechanic;
 
@@ -75,6 +78,12 @@ namespace Bowling.Gameplay
 
         public void ResetRound()
         {
+            if (_scoringCoroutine != null)
+            {
+                StopCoroutine(_scoringCoroutine);
+                _scoringCoroutine = null;
+            }
+
             _ballController.ResetBall();
             
             if (_activeMechanic != null)
@@ -94,13 +103,18 @@ namespace Bowling.Gameplay
 
         public void StartScoringRoutine() 
         {
-            StartCoroutine(CalculateScoreAfterDelay());
+            if (_scoringCoroutine != null)
+            {
+                StopCoroutine(_scoringCoroutine);
+            }
+            _scoringCoroutine = StartCoroutine(CalculateScoreAfterDelay());
         }
 
         private IEnumerator CalculateScoreAfterDelay()
         {
             yield return new WaitForSeconds(5f);
             int fallenCount = 0;
+            int totalPins = _pinDeckManager.ActivePins.Count;
             foreach(var pin in _pinDeckManager.ActivePins)
             {
                 if(pin.IsFallen)
@@ -110,6 +124,12 @@ namespace Bowling.Gameplay
             }
             Debug.Log($"Бросок завершен! Упало кеглей: {fallenCount}");
             OnPinsKnockedDown?.Invoke(fallenCount);
+            
+            if (fallenCount == totalPins && totalPins > 0)
+            {
+                Debug.Log($"Страйк!");
+                if (_strikeEffect != null) _strikeEffect.PlayStrikeEffect();
+            }
         }
     }
 }

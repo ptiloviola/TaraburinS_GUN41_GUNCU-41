@@ -13,7 +13,7 @@ namespace Bowling.Audio
         private void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
-            _audioSource.playOnAwake = false; // Кегля молчит при появлении
+            _audioSource.playOnAwake = false;
         }
 
         private void OnCollisionEnter(Collision collision)
