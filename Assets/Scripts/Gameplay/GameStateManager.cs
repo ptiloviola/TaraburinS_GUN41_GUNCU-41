@@ -4,7 +4,6 @@ using Bowling.BowlingPins;
 using System.Collections;
 using Bowling.UI;
 using TMPro;
-using Unity.VisualScripting;
 
 namespace Bowling.Gameplay
 {
@@ -19,7 +18,7 @@ namespace Bowling.Gameplay
         [SerializeField] private TMP_Text _scoreText;
         [SerializeField] private TMP_Text _bestScoreText;
         private int _bestScore = 0;
-        [SerializeField] private StrikeEffect _strikeEffect;
+        [SerializeField] private StrikeAndSpareEffect _strikeEffect;
 
         private BowlingScoreCalculator _scoreCalculator;
         private BowlingGameLoop _gameLoop;

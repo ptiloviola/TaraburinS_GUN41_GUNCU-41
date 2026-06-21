@@ -25,20 +25,13 @@ namespace Bowling.Ball
             _rb.AddForce(direction.normalized * force * _addForceMultiplier, ForceMode.Impulse);
         }
 
-        public void HandleFixedUpdate()
-        {
-
-        }
-
-        public void HandleUpdate()
-        {
-
-        }
-
-
         public void ResetStrategy()
         {
             
+        }
+        public void HandleCollision(Collision collision)
+        {
+
         }
     }
 

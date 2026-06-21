@@ -27,20 +27,13 @@ namespace Bowling.Ball
 
         }
 
-        public void HandleFixedUpdate()
-        {
-            
-        }
-
-        public void HandleUpdate()
-        {
-            
-        }
-
-
         public void ResetStrategy()
         {
             
+        }
+        public void HandleCollision(Collision collision)
+        {
+
         }
     }
 }

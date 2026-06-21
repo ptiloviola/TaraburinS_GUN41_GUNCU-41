@@ -1,6 +1,4 @@
 using UnityEngine;
-using Bowling.BowlingPins;
-
 
 namespace Bowling.Ball
 {
@@ -9,6 +7,7 @@ namespace Bowling.Ball
     {
         private Rigidbody _rb;
         private IThrowStrategy _currentStrategy;
+        private ITickableStrategy _tickableStrategy;
 
         private Vector3 _startPosition;
         private Quaternion _startRotation;
@@ -23,9 +22,10 @@ namespace Bowling.Ball
         }
 
 
-        public void SetStrategy(IThrowStrategy throwStrategy)
+        public void SetStrategy(IThrowStrategy strategy)
         {
-            _currentStrategy = throwStrategy;
+            _currentStrategy = strategy;
+            _tickableStrategy = strategy as ITickableStrategy;
             _currentStrategy.Initialize(transform, _rb);
         }
 
@@ -43,12 +43,12 @@ namespace Bowling.Ball
 
         private void FixedUpdate()
         {
-            _currentStrategy?.HandleFixedUpdate();
+            _tickableStrategy?.FixedTick();
         }
 
         private void Update()
         {
-            _currentStrategy?.HandleUpdate();
+            _tickableStrategy?.Tick();
         }
 
         public void ResetBall()
@@ -65,22 +65,7 @@ namespace Bowling.Ball
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (_currentStrategy is MovePositionStrategy moveStrategy)
-            {
-                if (collision.gameObject.TryGetComponent<BowlingPin>(out BowlingPin pin))
-                {
-                    
-                    Vector3 impactVector = moveStrategy.CurrentVelocity * 2.0f;
-
-                    Rigidbody pinRb = pin.GetComponent<Rigidbody>();
-                    if (pinRb != null)
-                    {
-                        pinRb.AddForce(impactVector, ForceMode.Impulse);
-                    }
-                     
-                }
-                moveStrategy.StopMotorAndTransferPhysics();
-            }
+            _currentStrategy?.HandleCollision(collision);
             
         }
 

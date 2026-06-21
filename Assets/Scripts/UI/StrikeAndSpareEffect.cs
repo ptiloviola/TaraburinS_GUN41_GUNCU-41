@@ -1,12 +1,11 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using System;
 
 namespace Bowling.UI
 {
     [RequireComponent(typeof(TMP_Text), typeof(AudioSource))]
-    public class StrikeEffect : MonoBehaviour
+    public class StrikeAndSpareEffect : MonoBehaviour
     {
         private TMP_Text _text;
         private AudioSource _audio;

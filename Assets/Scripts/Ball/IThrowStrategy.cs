@@ -9,11 +9,9 @@ namespace Bowling.Ball
 
         void ExecuteThrow(Vector3 direction, float force);
 
-        void HandleFixedUpdate();
-
-        void HandleUpdate();
-
         void ResetStrategy();
+
+        void HandleCollision(Collision collision);
 
     }
 }

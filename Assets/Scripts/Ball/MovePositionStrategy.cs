@@ -1,14 +1,15 @@
 using UnityEngine;
+using Bowling.BowlingPins;
 
 namespace Bowling.Ball
 {
-    public class MovePositionStrategy : IThrowStrategy
+    public class MovePositionStrategy : ITickableStrategy
     {
         private Rigidbody _rb;
 
         private Vector3 _direction;
         private float _force;
-        private bool _isMoving = false;
+        private bool _isMotorActive = false;
         private float _frictionDecay = 0.98f;
         private float _movePositionMultiplier = 0.42f;
 
@@ -41,12 +42,12 @@ namespace Bowling.Ball
         {
             _direction = direction.normalized;
             _force = force;
-            _isMoving = true;
+            _isMotorActive = true;
         }
 
-        public void HandleFixedUpdate()
+        public void FixedTick()
         {
-            if (_isMoving)
+            if (_isMotorActive)
             {
                 Vector3 step = _direction * (_force * _movePositionMultiplier * Time.fixedDeltaTime);
                 _rb.MovePosition(_rb.position + step);
@@ -68,22 +69,32 @@ namespace Bowling.Ball
             
         }
 
-        public void HandleUpdate()
+        public void Tick()
         {
 
         }
 
         public void ResetStrategy()
         {
-            _isMoving = false;
+            _isMotorActive = false;
             _force = 0f;
         }
 
-        public void StopMotorAndTransferPhysics()
+        public void HandleCollision(Collision collision)
         {
-            if (!_isMoving) return;
+            if (!_isMotorActive) return;
 
-            _isMoving = false;
+            if (collision.gameObject.TryGetComponent<BowlingPin>(out BowlingPin pin))
+            {
+                Vector3 impactVector = CurrentVelocity * 2.0f; // Убедись, что имя переменной совпадает с твоим
+                Rigidbody pinRb = pin.GetComponent<Rigidbody>();
+                if (pinRb != null)
+                {
+                    pinRb.AddForce(impactVector, ForceMode.Impulse);
+                }
+            }
+
+            _isMotorActive = false;
             float linearSpeed = _force * _movePositionMultiplier;
             _rb.velocity = _direction * linearSpeed; 
             Vector3 rotationAxis = Vector3.Cross(Vector3.up, _direction).normalized;
