@@ -159,12 +159,21 @@ namespace Bowling.Gameplay
             TurnResult result = _gameLoop.RegisterThrow(fallenCount);
             UpdateUI();
 
-            
             if (fallenCount == totalPinsOnDeck && totalPinsOnDeck > 0)
             {
-
-                if (_strikeEffect != null) _strikeEffect.PlayStrikeEffect();
+                string strikeOrSpareText = "STRIKE";
+                if (totalPinsOnDeck == _pinDeckManager.FullDeckSize)
+                {
+                    Debug.Log("СТРАЙК!!!");
+                }
+                else
+                {
+                    Debug.Log("СПЭР!!!");  
+                    strikeOrSpareText = "SPARE";
+                }
+                if (_strikeEffect != null) _strikeEffect.PlayStrikeSpareEffect(strikeOrSpareText);
             }
+            
             ProcessTurnResult(result);
         }
 

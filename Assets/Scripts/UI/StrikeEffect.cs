@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using System;
 
 namespace Bowling.UI
 {
@@ -21,17 +22,18 @@ namespace Bowling.UI
             _audio = GetComponent<AudioSource>();
         }
 
-        public void PlayStrikeEffect()
+        public void PlayStrikeSpareEffect(string text)
         {
             gameObject.SetActive(true);
-            StartCoroutine(AnimateText());
+            StartCoroutine(AnimateText(text));
         }
 
-        private IEnumerator AnimateText()
+        private IEnumerator AnimateText(string text)
         {
             _audio.Play();
             
             float time = 0f;
+            _text.text = text;
             Color originalColor = _text.color;
 
             while (time < _animationDuration)

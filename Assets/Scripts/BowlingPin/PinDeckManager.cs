@@ -14,6 +14,8 @@ namespace Bowling.BowlingPins
         [Tooltip("Расстояние между центрами соседних кеглей.")]
         [SerializeField] private float _spacing = 0.3f;
 
+        public int FullDeckSize { get; private set; }
+
 
         public List<BowlingPin> ActivePins { get; private set; } = new List<BowlingPin>();
 
@@ -47,6 +49,7 @@ namespace Bowling.BowlingPins
                     }
                 }
             }
+            FullDeckSize = ActivePins.Count;
         }
         [ContextMenu("Удалить все кегли (Clear)")]
         public void ClearPins()
