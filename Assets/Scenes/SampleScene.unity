@@ -1244,6 +1244,75 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 271725654}
   m_CullTransparentMesh: 1
+--- !u!1 &274541732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 274541735}
+  - component: {fileID: 274541734}
+  - component: {fileID: 274541733}
+  m_Layer: 0
+  m_Name: UI_BallSelection_System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &274541733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274541732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37f5edd6f704d81459d1a8b1127e8ad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _model: {fileID: 274541734}
+  _view: {fileID: 1441383719}
+  _ballController: {fileID: 8118584526089110046}
+--- !u!114 &274541734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274541732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 491f69ee7f164e944b3b59f7820a8b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _availableBalls:
+  - Name: Black-Pink
+    Icon: {fileID: 21300000, guid: 02f83a90e35fb37428f737072f90091f, type: 3}
+    BallPrefab: {fileID: 4927716588663859363, guid: 2649ba951c81d9c499c0952580a23d71, type: 3}
+    Mass: 13
+  - Name: Hypno ball
+    Icon: {fileID: 21300000, guid: 238aa247853e55e42b5b9f8b03cebcc0, type: 3}
+    BallPrefab: {fileID: 5370355847178190836, guid: 219925881ca064b409078c5e1cd1ef13, type: 3}
+    Mass: 42
+--- !u!4 &274541735
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274541732}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.133328, y: -15.990456, z: 8.696808}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &295556258
 GameObject:
   m_ObjectHideFlags: 0
@@ -3537,7 +3606,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 1853540719}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -6013,7 +6082,7 @@ GameObject:
   - component: {fileID: 1441383718}
   - component: {fileID: 1441383717}
   - component: {fileID: 1441383716}
-  - component: {fileID: 1441383715}
+  - component: {fileID: 1441383719}
   m_Layer: 5
   m_Name: BallSelectionPanel
   m_TagString: Untagged
@@ -6042,37 +6111,6 @@ RectTransform:
   m_AnchoredPosition: {x: -200, y: 200}
   m_SizeDelta: {x: 400, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1441383715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1441383713}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ab45f5d70bf2fa429d30e0c106edf3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ballController: {fileID: 8118584526089110046}
-  _availableBalls:
-  - Name: PinkBall
-    Icon: {fileID: 21300000, guid: 02f83a90e35fb37428f737072f90091f, type: 3}
-    BallPrefab: {fileID: 4927716588663859363, guid: 2649ba951c81d9c499c0952580a23d71, type: 3}
-    Mass: 12
-  - Name: GhypnoBall
-    Icon: {fileID: 21300000, guid: 238aa247853e55e42b5b9f8b03cebcc0, type: 3}
-    BallPrefab: {fileID: 5370355847178190836, guid: 219925881ca064b409078c5e1cd1ef13, type: 3}
-    Mass: 30
-  _ballButtons:
-  - {fileID: 1851122880}
-  - {fileID: 1499220848}
-  _buttonIcons:
-  - {fileID: 1421327082}
-  - {fileID: 1765440606}
-  _buttonTexts:
-  - {fileID: 1877060557}
-  - {fileID: 535068976}
 --- !u!114 &1441383716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6137,6 +6175,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1441383713}
   m_CullTransparentMesh: 1
+--- !u!114 &1441383719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1441383713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74d53c4af17d1e1469664a3b5dacd6c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ballButtons:
+  - {fileID: 1851122880}
+  - {fileID: 1499220848}
+  _buttonIcons:
+  - {fileID: 1421327082}
+  - {fileID: 1765440606}
+  _buttonTexts:
+  - {fileID: 1877060557}
+  - {fileID: 535068976}
 --- !u!1 &1474597025
 GameObject:
   m_ObjectHideFlags: 0
@@ -7982,7 +8041,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1926629505}
   - component: {fileID: 1926629504}
-  - component: {fileID: 1926629503}
+  - component: {fileID: 1926629506}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -7990,26 +8049,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1926629503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1926629502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &1926629504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8040,6 +8079,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1926629506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926629502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!1 &1933026536
 GameObject:
   m_ObjectHideFlags: 0
@@ -8680,18 +8749,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b72dac40c80fe440a644cf4e27b27f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isPointerOverUI: 0
   _powerSlider: {fileID: 722903879}
-  _powerSliderSpeed: 50
   _accuracySlider: {fileID: 680830961}
+  _sweetSpotRect: {fileID: 1203122101}
+  _uiContainer: {fileID: 1387672869}
+  _powerSliderSpeed: 50
+  _powerMultiplier: 4
   _accuracySliderSpeed: 3
   _minAccuracySpeed: 2
   _maxAccuracySpeed: 8
-  _sweetSpotRect: {fileID: 1203122101}
   _maxSweetSpotWidth: 200
   _minSweetSpotWidth: 20
-  _powerMultiplier: 4
   _sideDeviationMultiplier: 0.5
-  _uiContainer: {fileID: 1387672869}
 --- !u!114 &2126437363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8745,6 +8815,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c60626c4e2590448096ff930e2aec8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isPointerOverUI: 0
   _maxForce: 200
   _dragMultiplier: 50
   _lineRenderer: {fileID: 787035769}
@@ -8924,7 +8995,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rollClip: {fileID: 8300000, guid: 57b2df5006000ee42a2dcac1db438eaf, type: 3}
-  _hitClip: {fileID: 8300000, guid: 231d43e4e2b255440ba2190c5fae6734, type: 3}
+  _hitClip: {fileID: 8300000, guid: 7a24a2621ef6376488b71f3b5c32a614, type: 3}
   _maxSpeed: 20
   _maxHitForce: 15
 --- !u!114 &8118584526089110046
@@ -8951,3 +9022,4 @@ SceneRoots:
   - {fileID: 3567160724741853099}
   - {fileID: 2126437364}
   - {fileID: 1299033375}
+  - {fileID: 274541735}

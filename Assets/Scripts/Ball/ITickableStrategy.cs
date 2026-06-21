@@ -1,4 +1,3 @@
-using UnityEngine;
 namespace Bowling.Ball
 {
     public interface ITickableStrategy : IThrowStrategy

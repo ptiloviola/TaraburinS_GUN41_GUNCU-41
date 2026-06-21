@@ -54,7 +54,7 @@ namespace Bowling.Ball
         public void ResetBall()
         {
             _currentStrategy?.ResetStrategy();
-            _rb.isKinematic = true;
+            if (_rb != null) _rb.isKinematic = false;
             _rb.velocity = Vector3.zero;
             _rb.angularVelocity = Vector3.zero;
             _rb.position = _startPosition;
@@ -76,11 +76,18 @@ namespace Bowling.Ball
                 Destroy(_currentVisualChild);
             }
 
+            
+
             _currentVisualChild = Instantiate(prefab, transform);
             _currentVisualChild.transform.localPosition = Vector3.zero;
             _currentVisualChild.transform.localRotation = Quaternion.identity;
             _currentVisualChild.transform.localScale = Vector3.one;
-            _rb.mass = mass;
+            if (_rb != null)
+            {
+                _rb.velocity = Vector3.zero;
+                _rb.angularVelocity = Vector3.zero;
+                _rb.mass = mass;
+            }
             if (_currentStrategy != null)
             {
                 _currentStrategy.Initialize(transform, _rb);

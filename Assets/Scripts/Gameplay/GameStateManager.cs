@@ -26,17 +26,26 @@ namespace Bowling.Gameplay
         private Coroutine _scoringCoroutine;
         private BaseThrowMechanic _activeMechanic;
         private bool _isGameOver = false;
+        private BowlingInputActions _inputActions;
 
         private void Awake()
         {
             _scoreCalculator = new BowlingScoreCalculator();
             _gameLoop = new BowlingGameLoop();
+            _inputActions = new BowlingInputActions();
         }
 
 
         private void Start()
         {
             SetPhysicsStrategy(0);
+            foreach (var mechanic in _inputMechanics)
+            {
+                if (mechanic != null) 
+                {
+                    mechanic.Initialize(_inputActions);
+                }
+            }
             SetInputMechanic(0);  
             if (_pinDeckManager.ActivePins.Count == 0)
             {
@@ -64,14 +73,14 @@ namespace Bowling.Gameplay
                 if (mechanic != null)
                 {
                     mechanic.OnThrowExecuted -= HandleThrowExecuted;
-                    mechanic.enabled = false;
+                    mechanic.DisableMechanic();
                 }
             }
             
             if (index >= 0 && index < _inputMechanics.Length)
             {
                 _activeMechanic = _inputMechanics[index];
-                _activeMechanic.enabled = true;
+                _activeMechanic.EnableMechanic();
                 _activeMechanic.OnThrowExecuted += HandleThrowExecuted;
                 Debug.Log($"Механика ввода изменена на: {_activeMechanic.GetType().Name}");
             }

@@ -51,7 +51,7 @@ namespace Bowling.Audio
             float hitForce = collision.relativeVelocity.magnitude;
 
             // Игнорируем микро-касания, чтобы не было "спама" звуком
-            if (hitForce > 1f)
+            if (hitForce > 1f && _hitClip != null)
             {
                 // Высчитываем громкость удара (слабый удар = тихий звук)
                 float hitVolume = Mathf.Clamp01(hitForce / _maxHitForce);
