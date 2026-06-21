@@ -11,6 +11,8 @@ using Gameplay.Towers.Data; // Подключаем пространство и�
 using Gameplay.Spawning;
 using Gameplay.UI;
 using Gameplay.Enemies.Data;
+using Gameplay.Units;
+using Gameplay.Units.Data;
 
 namespace Infrastructure.Installers
 {
@@ -20,8 +22,6 @@ namespace Infrastructure.Installers
         // Ссылка на наш конфиг, которую мы укажем в инспекторе SceneContext
         [SerializeField] private GridConfig gridConfig;
 
-        // Ссылка на префаб врага для пула
-        [SerializeField] private GameObject enemyPrefab;
 
         [Header("Настройки систем")]
         // Появится в инспекторе инсталлера, сюда кидаем префаб и маску!
@@ -37,6 +37,9 @@ namespace Infrastructure.Installers
 
         [Header("Данные Спавнера")]
         [SerializeField] private EnemyRegistry _enemyRegistry; // Перетащи сюда свой SO Каталога
+
+
+        [SerializeField] private DefenderRegistry _defenderRegistry;
 
         [Header("Префаб Базы")]
         [SerializeField] private BaseCore _basePrefab; // Сюда перетащим префаб базы из папки проекта
@@ -98,6 +101,21 @@ namespace Infrastructure.Installers
                     }
                 }
             }
+
+            if (_defenderRegistry != null)
+            {
+                foreach (var config in _defenderRegistry.Defenders)
+                {
+                    if (config.Prefab != null)
+                    {
+                        Container.BindMemoryPool<DefenderFacade, DefenderFacade.Pool>()
+                            .WithId(config.DefenderId) // Привязываем пул к ID защитника!
+                            .WithInitialSize(3)
+                            .FromComponentInNewPrefab(config.Prefab)
+                            .UnderTransformGroup($"DefenderPool_{config.DefenderId}");
+                    }
+                }
+            }
             // Биндим сам реестр, чтобы WaveDirector мог его запросить
                 Container.BindInstance(_enemyRegistry).AsSingle();
                 Debug.Log("<color=green>[Zenject] Мульти-пулы для врагов успешно созданы из реестра!</color>");
@@ -151,6 +169,7 @@ namespace Infrastructure.Installers
             // Регистрируем фабрику UI-иконок
             Container.BindFactory<ForecastIconView, ForecastIconView.Factory>()
                  .FromComponentInNewPrefab(_forecastIconPrefab);
+
             
         }
     }

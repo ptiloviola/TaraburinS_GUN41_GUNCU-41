@@ -5,6 +5,8 @@ namespace Gameplay.Units.Data
     [CreateAssetMenu(fileName = "NewDefenderConfig", menuName = "TD/Defender Config")]
     public class DefenderConfig : ScriptableObject
     {
+        [Header("Базовая информация")]
+        public string DefenderId; // НОВОЕ: Уникальный ID (например, "militia", "knight")
         [Header("Визуал")]
         public GameObject Prefab;
 
