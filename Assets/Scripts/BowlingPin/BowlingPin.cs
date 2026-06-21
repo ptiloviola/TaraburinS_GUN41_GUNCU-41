@@ -6,11 +6,10 @@ namespace Bowling.BowlingPins
     public class BowlingPin : MonoBehaviour
     {
         private Rigidbody _rb;
-        private bool _isLyingDown = false;
         private Vector3 _startPosition;
         private Quaternion _startRotation;
 
-        public bool IsFallen => _isLyingDown;
+
 
         void Start()
         {
@@ -19,21 +18,11 @@ namespace Bowling.BowlingPins
             _startRotation = transform.rotation;
         }
 
-        // Update is called once per frame
-        void FixedUpdate()
+        public bool IsFallen()
         {
-            if (!_isLyingDown)
-            {
-                // хотелось сделать чистую проверку на то, что кегля упала и лежит(чтобы исключить случай, 
-                // когда упав, она вернулась в стоячее положение), но не получилось поймать это
-                //if ((Vector3.Angle(Vector3.up, transform.up) > 45) && (_rb.velocity.magnitude < 0.2f))
-                if (Vector3.Angle(Vector3.up, transform.up) > 45)
-                {
-                    _isLyingDown = true;
-                    Debug.Log($"Кегля {transform.gameObject.name} упала");
-                }
-            }
+            return Vector3.Angle(Vector3.up, transform.up) > 45f;
         }
+
 
         public void ResetPin()
         {
@@ -41,8 +30,7 @@ namespace Bowling.BowlingPins
             _rb.angularVelocity = Vector3.zero;
             transform.position = _startPosition;
             transform.rotation = _startRotation;
-            _isLyingDown = false;
-            _rb.WakeUp();
+            _rb.Sleep();
         }
     }
 }

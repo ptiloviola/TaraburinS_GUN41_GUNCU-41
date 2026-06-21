@@ -3,6 +3,8 @@ using UnityEngine;
 using Bowling.BowlingPins;
 using System.Collections;
 using Bowling.UI;
+using TMPro;
+using Unity.VisualScripting;
 
 namespace Bowling.Gameplay
 {
@@ -10,14 +12,28 @@ namespace Bowling.Gameplay
     {
         [SerializeField] private BallController _ballController;
         [SerializeField] private BaseThrowMechanic[] _inputMechanics;
-        [SerializeField] private PhysicsConfig _physicsConfig;
         [SerializeField] private PinDeckManager _pinDeckManager;
+
+        [SerializeField] private PhysicsConfig _physicsConfig;
+        
+        [SerializeField] private TMP_Text _scoreText;
+        [SerializeField] private TMP_Text _bestScoreText;
+        private int _bestScore = 0;
         [SerializeField] private StrikeEffect _strikeEffect;
+
+        private BowlingScoreCalculator _scoreCalculator;
+        private BowlingGameLoop _gameLoop;
+
         private Coroutine _scoringCoroutine;
-
         private BaseThrowMechanic _activeMechanic;
+        private bool _isGameOver = false;
 
-        public event System.Action<int> OnPinsKnockedDown;
+        private void Awake()
+        {
+            _scoreCalculator = new BowlingScoreCalculator();
+            _gameLoop = new BowlingGameLoop();
+        }
+
 
         private void Start()
         {
@@ -27,6 +43,7 @@ namespace Bowling.Gameplay
             {
                 _pinDeckManager.SpawnPins();
             }
+            UpdateUI();
         }
 
         public void SetPhysicsStrategy(int index)
@@ -38,7 +55,7 @@ namespace Bowling.Gameplay
                 _ballController.SetStrategy(newStrategy);
             }
             
-            ResetRound();
+            ResetFullGame();
         }
 
         public void SetInputMechanic(int index)
@@ -47,7 +64,7 @@ namespace Bowling.Gameplay
             {
                 if (mechanic != null)
                 {
-                    mechanic.OnThrowExecuted -= HandleThrow;
+                    mechanic.OnThrowExecuted -= HandleThrowExecuted;
                     mechanic.enabled = false;
                 }
             }
@@ -56,25 +73,20 @@ namespace Bowling.Gameplay
             {
                 _activeMechanic = _inputMechanics[index];
                 _activeMechanic.enabled = true;
-                _activeMechanic.OnThrowExecuted += HandleThrow;
+                _activeMechanic.OnThrowExecuted += HandleThrowExecuted;
                 Debug.Log($"Механика ввода изменена на: {_activeMechanic.GetType().Name}");
             }
-            ResetRound();
         }
 
-        private void HandleThrow(Vector3 dir, float force)
+        private void HandleThrowExecuted(Vector3 dir, float force)
         {
+            if (_isGameOver) return;
             _ballController.ThrowBall(dir, force);
-            StartScoringRoutine();
+            if (_scoringCoroutine != null) StopCoroutine(_scoringCoroutine);
+            _scoringCoroutine = StartCoroutine(CalculateScoreAfterDelay());
         }
 
-        private void OnDestroy()
-        {
-            if (_activeMechanic != null)
-            {
-                _activeMechanic.OnThrowExecuted -= HandleThrow;
-            }
-        }
+
 
         public void ResetRound()
         {
@@ -112,26 +124,113 @@ namespace Bowling.Gameplay
 
         private IEnumerator CalculateScoreAfterDelay()
         {
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(0.5f);
+            float maxWaitTime = 7f;
+            float timer = 0f;
+            while (timer < maxWaitTime)
+            {
+                timer += Time.deltaTime;
+
+                if (_ballController.IsSettled() && _pinDeckManager.AreAllPinsSettled())
+                {
+                    break;
+                }
+
+                yield return null; // Ждем следующий кадр
+            }
+            
+            int totalPinsOnDeck = _pinDeckManager.ActivePins.Count;
             int fallenCount = 0;
-            int totalPins = _pinDeckManager.ActivePins.Count;
+            
             foreach(var pin in _pinDeckManager.ActivePins)
             {
-                if(pin.IsFallen)
+                if(pin != null && pin.IsFallen())
                 {
-                    fallenCount += 1;
+                    fallenCount++;
                 }
             }
-            Debug.Log($"Бросок завершен! Упало кеглей: {fallenCount}");
-            OnPinsKnockedDown?.Invoke(fallenCount);
-            
-            if (fallenCount == totalPins && totalPins > 0)
+            Debug.Log($"Бросок завершен! Упало кеглей: {fallenCount} из {totalPinsOnDeck}");
+            _scoreCalculator.AddRoll(fallenCount);
+            int currentScore = _scoreCalculator.CalculateTotalScore();
+            if (currentScore > _bestScore)
             {
-                Debug.Log($"Страйк!");
+                _bestScore = currentScore;
+            }
+            TurnResult result = _gameLoop.RegisterThrow(fallenCount);
+            UpdateUI();
+
+            
+            if (fallenCount == totalPinsOnDeck && totalPinsOnDeck > 0)
+            {
+
                 if (_strikeEffect != null) _strikeEffect.PlayStrikeEffect();
+            }
+            ProcessTurnResult(result);
+        }
+
+        private void ProcessTurnResult(TurnResult result)
+        {
+            switch(result)
+            {
+                case TurnResult.NextThrow:
+                    _pinDeckManager.RemoveFallenPins();
+                    _ballController.ResetBall();
+                    if (_activeMechanic != null) _activeMechanic.ResetMechanic();
+                    break;
+                case TurnResult.NextFrame:
+                    _pinDeckManager.ResetDeck();
+                    _ballController.ResetBall();
+                    if (_activeMechanic != null) _activeMechanic.ResetMechanic();
+                    break;
+                case TurnResult.GameOver:
+                    _isGameOver = true;
+                    _scoreText.text += "\nИГРА ОКОНЧЕНА!";
+                    break;
+            }
+        }
+
+        public void ResetFullGame()
+        {
+            if (_scoringCoroutine != null)
+            {
+                StopCoroutine(_scoringCoroutine);
+                _scoringCoroutine = null;
+            }
+            _isGameOver = false;
+            _scoreCalculator.ResetGame();
+            _gameLoop.ResetLoop();
+            _ballController.ResetBall();
+            _pinDeckManager.ResetDeck();
+            if (_activeMechanic != null) _activeMechanic.ResetMechanic();
+            UpdateUI();
+            Debug.Log("Игра полностью сброшена! Начинаем с 1 фрейма.");
+        }
+
+        private void UpdateUI()
+        {
+            if (_scoreText != null)
+            {
+                _scoreText.text = $"Фрейм: {_gameLoop.CurrentFrame}/10\n" +
+                                  $"Бросок: {_gameLoop.CurrentThrow}\n" +
+                                  $"Очки: {_scoreCalculator.CalculateTotalScore()}";
+            }
+            if (_bestScoreText != null)
+            {
+                _bestScoreText.text = $"Рекорд: {_bestScore}";
+            }
+        }
+
+
+        private void OnDestroy()
+        {
+            if (_activeMechanic != null)
+            {
+                _activeMechanic.OnThrowExecuted -= HandleThrowExecuted;
             }
         }
     }
+
+    
 }
 
 

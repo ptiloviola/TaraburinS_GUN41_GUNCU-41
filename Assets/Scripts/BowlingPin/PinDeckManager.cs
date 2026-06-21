@@ -73,5 +73,41 @@ namespace Bowling.BowlingPins
         {
             SpawnPins();
         }
+
+        public void RemoveFallenPins()
+        {
+            for (int i = ActivePins.Count - 1; i >= 0; i--)
+            {
+                BowlingPin pin = ActivePins[i];
+                if (pin != null && pin.IsFallen())
+                {
+                    pin.gameObject.SetActive(false);
+                    Destroy(pin.gameObject);
+                    ActivePins.RemoveAt(i);
+                }
+                else if (pin != null)
+                {
+                    pin.ResetPin();
+                }
+            }
+        }
+
+        public bool AreAllPinsSettled()
+        {
+            foreach (var pin in ActivePins)
+            {
+                if (pin != null)
+                {
+                    if (pin.TryGetComponent<Rigidbody>(out Rigidbody rb))
+                    {
+                        if (rb.velocity.magnitude > 0.05f || rb.angularVelocity.magnitude > 0.05f)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
     }
 }

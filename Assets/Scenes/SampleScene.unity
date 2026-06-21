@@ -2734,8 +2734,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: 570}
-  m_SizeDelta: {x: 300, y: 60}
+  m_AnchoredPosition: {x: -200, y: 420}
+  m_SizeDelta: {x: 300, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &743066245
 MonoBehaviour:
@@ -7160,8 +7160,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2126437363}
-        m_TargetAssemblyTypeName: Bowling.UI.GameStateManager, Assembly-CSharp
-        m_MethodName: ResetRound
+        m_TargetAssemblyTypeName: Bowling.Gameplay.GameStateManager, Assembly-CSharp
+        m_MethodName: ResetFullGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8708,12 +8708,14 @@ MonoBehaviour:
   _inputMechanics:
   - {fileID: 2126437362}
   - {fileID: 2126437365}
+  _pinDeckManager: {fileID: 1299033376}
   _physicsConfig:
     AddForceMultiplier: 2
     VelocityMultiplier: 0.3
     MovePositionMultiplier: 0.21
     FrictionDecay: 0.997
-  _pinDeckManager: {fileID: 1299033376}
+  _scoreText: {fileID: 479176625}
+  _bestScoreText: {fileID: 1818779859}
   _strikeEffect: {fileID: 1474597027}
 --- !u!4 &2126437364
 Transform:

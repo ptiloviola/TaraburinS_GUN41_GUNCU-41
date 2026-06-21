@@ -102,6 +102,11 @@ namespace Bowling.Ball
             }
         }
 
+        public bool IsSettled()
+        {
+            return _rb.velocity.magnitude < 0.05f && _rb.angularVelocity.magnitude < 0.05f;
+        }
+
     }
 }
 

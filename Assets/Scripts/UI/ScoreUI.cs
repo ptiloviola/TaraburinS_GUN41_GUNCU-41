@@ -19,15 +19,15 @@ namespace Bowling.UI
             _bestScore.text = "Рекорд: 0";
         }
 
-        private void OnEnable()
-        {
-            _gameStateManager.OnPinsKnockedDown += HandleNewScore;
-        }
+        // private void OnEnable()
+        // {
+        //     _gameStateManager.OnPinsKnockedDown += HandleNewScore;
+        // }
 
-        private void OnDisable()
-        {
-            _gameStateManager.OnPinsKnockedDown -= HandleNewScore;
-        }
+        // private void OnDisable()
+        // {
+        //     _gameStateManager.OnPinsKnockedDown -= HandleNewScore;
+        // }
 
         void HandleNewScore(int score)
         {
