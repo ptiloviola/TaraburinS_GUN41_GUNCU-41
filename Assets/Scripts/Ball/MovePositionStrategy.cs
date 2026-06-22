@@ -40,6 +40,7 @@ namespace Bowling.Ball
         }
         public void ExecuteThrow(Vector3 direction, float force)
         {
+            _rb.isKinematic = true;
             _direction = direction.normalized;
             _force = force;
             _isMotorActive = true;
@@ -84,22 +85,32 @@ namespace Bowling.Ball
         {
             if (!_isMotorActive) return;
 
+            // 1. Проверяем, что мы столкнулись ИМЕННО С КЕГЛЕЙ
+            // Если это пол, стена или желоб — просто едем дальше!
             if (collision.gameObject.TryGetComponent<BowlingPin>(out BowlingPin pin))
             {
-                Vector3 impactVector = CurrentVelocity * 2.0f; // Убедись, что имя переменной совпадает с твоим
+                // Толкаем кеглю
+                Vector3 impactVector = CurrentVelocity * 2.0f;
                 Rigidbody pinRb = pin.GetComponent<Rigidbody>();
                 if (pinRb != null)
                 {
                     pinRb.AddForce(impactVector, ForceMode.Impulse);
                 }
-            }
 
-            _isMotorActive = false;
-            float linearSpeed = _force * _movePositionMultiplier;
-            _rb.velocity = _direction * linearSpeed; 
-            Vector3 rotationAxis = Vector3.Cross(Vector3.up, _direction).normalized;
-            _rb.angularVelocity = rotationAxis * (linearSpeed / _ballRadius);
-            _force = 0f;
+                // 2. Выключаем кинематический мотор
+                _isMotorActive = false;
+                
+                // 3. КРИТИЧЕСКИЙ ФИКС: Возвращаем шару физику, чтобы он покатился дальше по инерции
+                _rb.isKinematic = false;
+
+                // Передаем накопленную кинематическую энергию в реальный физический движок
+                float linearSpeed = _force * _movePositionMultiplier;
+                _rb.velocity = _direction * linearSpeed; 
+                Vector3 rotationAxis = Vector3.Cross(Vector3.up, _direction).normalized;
+                _rb.angularVelocity = rotationAxis * (linearSpeed / _ballRadius);
+                
+                _force = 0f;
+            }
         }
     }
 }

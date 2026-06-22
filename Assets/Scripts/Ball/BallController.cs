@@ -14,6 +14,9 @@ namespace Bowling.Ball
 
         private GameObject _currentVisualChild;
 
+        private Vector3 _lastPosition;
+        private float _kinematicSpeed;
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
@@ -43,12 +46,21 @@ namespace Bowling.Ball
 
         private void FixedUpdate()
         {
+            // 1. СНАЧАЛА замеряем скорость (результат работы прошлого кадра)
+            if (_rb != null && _rb.isKinematic)
+            {
+                _kinematicSpeed = Vector3.Distance(_rb.position, _lastPosition) / Time.fixedDeltaTime;
+                _lastPosition = _rb.position;
+            }
+
+            // 2. И ТОЛЬКО ПОТОМ командуем стратегии двигать шар дальше
             _tickableStrategy?.FixedTick();
         }
 
         private void Update()
         {
             _tickableStrategy?.Tick();
+            
         }
 
         public void ResetBall()
@@ -61,6 +73,8 @@ namespace Bowling.Ball
             _rb.rotation = _startRotation;
             _rb.WakeUp();
             _rb.isKinematic = false;
+            _lastPosition = _rb.position; 
+            _kinematicSpeed = 0f;
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -96,7 +110,18 @@ namespace Bowling.Ball
 
         public bool IsSettled()
         {
-            return _rb.velocity.magnitude < 0.05f && _rb.angularVelocity.magnitude < 0.05f;
+            float stopThreshold = 0.15f;
+            if (_rb.isKinematic)
+            {
+                // Если шар в режиме MovePosition, смотрим на нашу самодельную скорость
+                // (Если меньше 0.05 единиц в секунду — значит остановился)
+                return _kinematicSpeed < stopThreshold; 
+            }
+            else
+            {
+                // Если шар в режиме AddForce, смотрим на нативную физику
+                return _rb.velocity.magnitude < stopThreshold && _rb.angularVelocity.magnitude < stopThreshold;
+            }
         }
 
     }

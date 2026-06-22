@@ -8843,6 +8843,7 @@ MonoBehaviour:
     VelocityMultiplier: 0.3
     MovePositionMultiplier: 0.21
     FrictionDecay: 0.997
+  _maxScoringWaitTime: 7
   _strikeEffect: {fileID: 1474597027}
 --- !u!4 &2126437364
 Transform:
@@ -8880,7 +8881,7 @@ MonoBehaviour:
   _visualLineMultiplier: 5
   _shakeThreshold: 0.652
   _shakeAmplitude: 3
-  _shakeSpeed: 12
+  _shakeSpeed: 5
 --- !u!1 &407096141645358507
 GameObject:
   m_ObjectHideFlags: 0

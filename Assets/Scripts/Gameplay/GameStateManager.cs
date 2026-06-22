@@ -1,10 +1,10 @@
 using Bowling.Ball;
 using UnityEngine;
 using Bowling.BowlingPins;
-using System.Collections;
 using Bowling.UI;
-using TMPro;
 using System;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace Bowling.Gameplay
 {
@@ -15,14 +15,18 @@ namespace Bowling.Gameplay
         [SerializeField] private PinDeckManager _pinDeckManager;
 
         [SerializeField] private PhysicsConfig _physicsConfig;
+
+        [Header("Настройки таймингов")]
+        [SerializeField] private float _maxScoringWaitTime = 12f;
         
-        private int _bestScore = 0;
         [SerializeField] private StrikeAndSpareEffect _strikeEffect;
 
         private BowlingScoreCalculator _scoreCalculator;
         private BowlingGameLoop _gameLoop;
 
-        private Coroutine _scoringCoroutine;
+        // Рубильник для отмены асинхронной задачи
+        private CancellationTokenSource _scoringCts;
+
         private BaseThrowMechanic _activeMechanic;
         private bool _isGameOver = false;
         private BowlingInputActions _inputActions;
@@ -92,52 +96,39 @@ namespace Bowling.Gameplay
         {
             if (_isGameOver) return;
             _ballController.ThrowBall(dir, force);
-            if (_scoringCoroutine != null) StopCoroutine(_scoringCoroutine);
-            _scoringCoroutine = StartCoroutine(CalculateScoreAfterDelay());
+            StartScoringRoutine();
         }
+
 
 
 
         public void ResetRound()
         {
-            if (_scoringCoroutine != null)
-            {
-                StopCoroutine(_scoringCoroutine);
-                _scoringCoroutine = null;
-            }
+            CancelScoringTask();
 
             _ballController.ResetBall();
+            if (_activeMechanic != null) _activeMechanic.ResetMechanic();
+            if (_pinDeckManager.ActivePins != null) _pinDeckManager.ResetDeck();
             
-            if (_activeMechanic != null)
-            {
-                _activeMechanic.ResetMechanic();
-            }
-
-            if (_pinDeckManager.ActivePins != null)
-            {
-                _pinDeckManager.ResetDeck();
-            }
-
-
-            _pinDeckManager.ResetDeck();
             Debug.Log("Раунд сброшен. Можно бросать снова!");
         }
 
         public void StartScoringRoutine() 
         {
-            if (_scoringCoroutine != null)
-            {
-                StopCoroutine(_scoringCoroutine);
-            }
-            _scoringCoroutine = StartCoroutine(CalculateScoreAfterDelay());
+            CancelScoringTask(); // Отменяем предыдущую задачу, если она была
+            
+            _scoringCts = new CancellationTokenSource(); // Создаем новый рубильник
+            
+            // Запускаем асинхронную задачу и передаем ей провод (токен). Forget() значит "не жди результата здесь"
+            CalculateScoreAfterDelayAsync(_scoringCts.Token).Forget();
         }
 
-        private IEnumerator CalculateScoreAfterDelay()
+        private async UniTaskVoid CalculateScoreAfterDelayAsync(CancellationToken token)
         {
-            yield return new WaitForSeconds(0.5f);
-            float maxWaitTime = 7f;
+            // 1. Ждем полсекунды (с поддержкой отмены)
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: token);
             float timer = 0f;
-            while (timer < maxWaitTime)
+            while (timer < _maxScoringWaitTime)
             {
                 timer += Time.deltaTime;
 
@@ -145,8 +136,8 @@ namespace Bowling.Gameplay
                 {
                     break;
                 }
-
-                yield return null;
+                // Ждем следующего кадра (аналог yield return null)
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             }
             
             int totalPinsOnDeck = _pinDeckManager.ActivePins.Count;
@@ -161,11 +152,6 @@ namespace Bowling.Gameplay
             }
             Debug.Log($"Бросок завершен! Упало кеглей: {fallenCount} из {totalPinsOnDeck}");
             _scoreCalculator.AddRoll(fallenCount);
-            int currentScore = _scoreCalculator.CalculateTotalScore();
-            if (currentScore > _bestScore)
-            {
-                _bestScore = currentScore;
-            }
             TurnResult result = _gameLoop.RegisterThrow(fallenCount);
             UpdateUI();
 
@@ -187,17 +173,25 @@ namespace Bowling.Gameplay
             ProcessTurnResult(result);
         }
 
+        private void CancelScoringTask()
+        {
+            if (_scoringCts != null)
+            {
+                _scoringCts.Cancel();  // Дергаем рубильник
+                _scoringCts.Dispose(); // Освобождаем память
+                _scoringCts = null;
+            }
+        }
+
         private void ProcessTurnResult(TurnResult result)
         {
             switch(result)
             {
                 case TurnResult.NextThrow:
-                    _pinDeckManager.RemoveFallenPins();
-                    _ballController.ResetBall();
-                    if (_activeMechanic != null) _activeMechanic.ResetMechanic();
-                    break;
                 case TurnResult.NextFrame:
-                    _pinDeckManager.ResetDeck();
+                    if (result == TurnResult.NextThrow) _pinDeckManager.RemoveFallenPins();
+                    else _pinDeckManager.ResetDeck();
+                    
                     _ballController.ResetBall();
                     if (_activeMechanic != null) _activeMechanic.ResetMechanic();
                     break;
@@ -210,11 +204,8 @@ namespace Bowling.Gameplay
 
         public void ResetFullGame()
         {
-            if (_scoringCoroutine != null)
-            {
-                StopCoroutine(_scoringCoroutine);
-                _scoringCoroutine = null;
-            }
+            CancelScoringTask();
+
             _isGameOver = false;
             _scoreCalculator.ResetGame();
             _gameLoop.ResetLoop();
@@ -234,6 +225,7 @@ namespace Bowling.Gameplay
 
         private void OnDestroy()
         {
+            CancelScoringTask();
             if (_activeMechanic != null)
             {
                 _activeMechanic.OnThrowExecuted -= HandleThrowExecuted;
