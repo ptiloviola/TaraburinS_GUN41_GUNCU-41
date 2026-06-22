@@ -3447,14 +3447,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f1725e33d735ea4f8640600063f8cce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputMechanics:
-  - {fileID: 859225730}
-  - {fileID: 859225729}
-  _physicsConfig:
-    AddForceMultiplier: 1.7
-    VelocityMultiplier: 0.5
-    MovePositionMultiplier: 0.42
-    FrictionDecay: 0.98
   _ballController: {fileID: 8118584526089110046}
 --- !u!4 &859225728
 Transform:
@@ -5856,6 +5848,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ba8a8ef6751a0d49af2c3aa3acf939d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _physicsConfig:
+    AddForceMultiplier: 2
+    VelocityMultiplier: 0.5
+    MovePositionMultiplier: 0.42
+    FrictionDecay: 0.98
 --- !u!114 &1357892309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9044,8 +9041,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2126437364}
   - component: {fileID: 2126437363}
-  - component: {fileID: 2126437362}
-  - component: {fileID: 2126437365}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -9053,31 +9048,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2126437362
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2126437361}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b72dac40c80fe440a644cf4e27b27f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isPointerOverUI: 0
-  _powerSlider: {fileID: 722903879}
-  _accuracySlider: {fileID: 680830961}
-  _sweetSpotRect: {fileID: 1203122101}
-  _uiContainer: {fileID: 1387672869}
-  _powerSliderSpeed: 50
-  _powerMultiplier: 4
-  _accuracySliderSpeed: 3
-  _minAccuracySpeed: 2
-  _maxAccuracySpeed: 8
-  _maxSweetSpotWidth: 200
-  _minSweetSpotWidth: 20
-  _sideDeviationMultiplier: 0.5
 --- !u!114 &2126437363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9107,27 +9077,6 @@ Transform:
   - {fileID: 787035770}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2126437365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2126437361}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70c60626c4e2590448096ff930e2aec8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isPointerOverUI: 0
-  _maxForce: 200
-  _dragMultiplier: 50
-  _lineRenderer: {fileID: 787035769}
-  _ballTransform: {fileID: 3567160724741853099}
-  _visualLineMultiplier: 5
-  _shakeThreshold: 0.652
-  _shakeAmplitude: 3
-  _shakeSpeed: 5
 --- !u!1 &407096141645358507
 GameObject:
   m_ObjectHideFlags: 0

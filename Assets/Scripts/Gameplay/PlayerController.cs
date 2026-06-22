@@ -1,73 +1,85 @@
 using UnityEngine;
 using Bowling.Ball;
 using Zenject;
+using System.Collections.Generic;
 
 namespace Bowling.Gameplay
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private BaseThrowMechanic[] _inputMechanics;
-        [SerializeField] private PhysicsConfig _physicsConfig;
+        [Header("Ссылки на сцену")]
         [SerializeField] private BallController _ballController;
-        private BowlingInputActions _inputActions;
+
+        private List<BaseThrowMechanic> _mechanics;
+        private DiContainer _container;
         private GameStateManager _gameStateManager;
+        private BowlingInputActions _inputActions;
+
         private BaseThrowMechanic _activeMechanic;
         private bool _canThrow = true;
 
         [Inject]
-        public void Construct(BowlingInputActions inputActions, GameStateManager gameStateManager)
+        public void Construct(
+            GameStateManager gameStateManager,
+            List<BaseThrowMechanic> mechanics, 
+            DiContainer container,
+            BowlingInputActions inputActions)
         {
-            _inputActions = inputActions;
             _gameStateManager = gameStateManager;
+            _mechanics = mechanics;
+            _container = container;
+            _inputActions = inputActions;
+
+            foreach (var mechanic in _mechanics)
+            {
+                if (mechanic != null)
+                {
+                    mechanic.Initialize(_inputActions); 
+                    mechanic.OnThrowExecuted += HandleThrowExecuted;
+                }
+            }
         }
 
         private void Start()
         {
-            foreach (var mechanic in _inputMechanics)
-            {
-                if (mechanic != null) mechanic.Initialize(_inputActions);
-            }
-            
+            _inputActions.Enable();
             SetPhysicsStrategy(0);
             SetInputMechanic(0);  
         }
 
         public void SetPhysicsStrategy(int index)
         {
-            IThrowStrategy newStrategy = ThrowStrategyFactory.CreateStrategy(index, _physicsConfig);
-            
-            if (newStrategy != null)
+            IThrowStrategy newStrategy = index switch
             {
-                _ballController.SetStrategy(newStrategy);
-            }
+                0 => _container.Instantiate<AddForceStrategy>(),
+                1 => _container.Instantiate<LinearVelocityStrategy>(),
+                2 => _container.Instantiate<MovePositionStrategy>(),
+                _ => null
+            };
             
-            _gameStateManager.ResetFullGame();
+            if (newStrategy != null) _ballController.SetStrategy(newStrategy);
+            _gameStateManager.ResetFullGame(); 
         }
 
         public void SetInputMechanic(int index)
         {
-            foreach (var mechanic in _inputMechanics)
+            foreach (var mechanic in _mechanics)
             {
-                if (mechanic != null)
-                {
-                    mechanic.OnThrowExecuted -= HandleThrowExecuted;
-                    mechanic.DisableMechanic();
-                }
+                if (mechanic != null) mechanic.DisableMechanic();
             }
             
-            if (index >= 0 && index < _inputMechanics.Length)
+            if (index >= 0 && index < _mechanics.Count)
             {
-                _activeMechanic = _inputMechanics[index];
+                _activeMechanic = _mechanics[index];
                 _activeMechanic.EnableMechanic();
-                _activeMechanic.OnThrowExecuted += HandleThrowExecuted;
-                Debug.Log($"Механика ввода изменена на: {_activeMechanic.GetType().Name}");
+                Debug.Log($"[PlayerController] Включена механика: {_activeMechanic.GetType().Name}");
             }
         }
-
 
         private void HandleThrowExecuted(Vector3 dir, float force)
         {
             if (!_canThrow) return;
+            
             _ballController.ThrowBall(dir, force);
             LockInput();
             _gameStateManager.StartScoringRoutine();
@@ -75,34 +87,29 @@ namespace Bowling.Gameplay
 
         public void LockInput() => _canThrow = false;
         public void UnlockInput() => _canThrow = true;
-
+        
         public void ResetPlayerState()
         {
             if (_ballController != null) _ballController.ResetBall();
-            
             if (_activeMechanic != null) _activeMechanic.ResetMechanic();
-            
-
             UnlockInput();
         }
 
         public bool IsBallSettled()
         {
-
-            if (_ballController != null)
-            {
-                return _ballController.IsSettled();
-            }
+            if (_ballController != null) return _ballController.IsSettled();
             return true;
         }
 
         private void OnDestroy()
         {
-            if (_activeMechanic != null) _activeMechanic.OnThrowExecuted -= HandleThrowExecuted;
+            if (_mechanics != null)
+            {
+                foreach (var mechanic in _mechanics)
+                {
+                    if (mechanic != null) mechanic.OnThrowExecuted -= HandleThrowExecuted;
+                }
+            }
         }
-
-
     }
 }
-
-

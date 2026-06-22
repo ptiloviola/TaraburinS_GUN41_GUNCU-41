@@ -50,7 +50,7 @@ namespace Bowling.Gameplay
 
         private void OnClickReceived(InputAction.CallbackContext context)
         {
-            if (_isThrowExecuted || _isPointerOverUI) return;
+            if (!this.enabled || _isThrowExecuted || _isPointerOverUI) return;
 
             AdvanceState();
         }

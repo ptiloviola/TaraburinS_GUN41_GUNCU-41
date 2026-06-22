@@ -22,9 +22,7 @@ namespace Bowling.Ball
 
         public void ExecuteThrow(Vector3 direction, float force)
         {
-            Debug.Log($"direction = {direction}, force = {force}");
             _rb.velocity = direction * (force * _multiplier);
-
         }
 
         public void ResetStrategy()
