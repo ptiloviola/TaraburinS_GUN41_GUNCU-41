@@ -112,5 +112,23 @@ namespace Bowling.BowlingPins
             }
             return true;
         }
+
+        public int GetActivePinsCount()
+        {
+            return ActivePins.Count;
+        }
+
+        public int GetFallenPinsCount()
+        {
+            int count = 0;
+            foreach (var pin in ActivePins)
+            {
+                if (pin != null && pin.IsFallen())
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 }

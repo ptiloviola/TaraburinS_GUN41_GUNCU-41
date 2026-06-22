@@ -85,11 +85,8 @@ namespace Bowling.Ball
         {
             if (!_isMotorActive) return;
 
-            // 1. Проверяем, что мы столкнулись ИМЕННО С КЕГЛЕЙ
-            // Если это пол, стена или желоб — просто едем дальше!
             if (collision.gameObject.TryGetComponent<BowlingPin>(out BowlingPin pin))
             {
-                // Толкаем кеглю
                 Vector3 impactVector = CurrentVelocity * 2.0f;
                 Rigidbody pinRb = pin.GetComponent<Rigidbody>();
                 if (pinRb != null)
@@ -97,13 +94,9 @@ namespace Bowling.Ball
                     pinRb.AddForce(impactVector, ForceMode.Impulse);
                 }
 
-                // 2. Выключаем кинематический мотор
                 _isMotorActive = false;
-                
-                // 3. КРИТИЧЕСКИЙ ФИКС: Возвращаем шару физику, чтобы он покатился дальше по инерции
                 _rb.isKinematic = false;
 
-                // Передаем накопленную кинематическую энергию в реальный физический движок
                 float linearSpeed = _force * _movePositionMultiplier;
                 _rb.velocity = _direction * linearSpeed; 
                 Vector3 rotationAxis = Vector3.Cross(Vector3.up, _direction).normalized;

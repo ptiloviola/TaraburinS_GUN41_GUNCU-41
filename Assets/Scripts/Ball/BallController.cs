@@ -46,14 +46,11 @@ namespace Bowling.Ball
 
         private void FixedUpdate()
         {
-            // 1. СНАЧАЛА замеряем скорость (результат работы прошлого кадра)
             if (_rb != null && _rb.isKinematic)
             {
                 _kinematicSpeed = Vector3.Distance(_rb.position, _lastPosition) / Time.fixedDeltaTime;
                 _lastPosition = _rb.position;
             }
-
-            // 2. И ТОЛЬКО ПОТОМ командуем стратегии двигать шар дальше
             _tickableStrategy?.FixedTick();
         }
 
