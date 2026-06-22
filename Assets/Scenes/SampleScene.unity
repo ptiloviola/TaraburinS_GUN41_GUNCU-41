@@ -1460,6 +1460,66 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &471857835
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 471857838}
+  - component: {fileID: 471857837}
+  - component: {fileID: 471857836}
+  m_Layer: 0
+  m_Name: UI_Score_System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &471857836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471857835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8649c804581b30d4ea1c0fd327602904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _model: {fileID: 471857837}
+  _view: {fileID: 743066250}
+  _gameStateManager: {fileID: 2126437363}
+--- !u!114 &471857837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471857835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27e50e2d11e1ee04f885cf22d2ceb877, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &471857838
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471857835}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.8146853, y: -23.236973, z: 7.2206707}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &479176622
 GameObject:
   m_ObjectHideFlags: 0
@@ -1473,7 +1533,7 @@ GameObject:
   - component: {fileID: 479176625}
   - component: {fileID: 479176624}
   m_Layer: 5
-  m_Name: CurrentScoreText
+  m_Name: MaintScoreText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2776,7 +2836,7 @@ GameObject:
   - component: {fileID: 743066244}
   - component: {fileID: 743066248}
   - component: {fileID: 743066247}
-  - component: {fileID: 743066245}
+  - component: {fileID: 743066250}
   - component: {fileID: 743066249}
   m_Layer: 5
   m_Name: ScorePanel
@@ -2806,21 +2866,6 @@ RectTransform:
   m_AnchoredPosition: {x: -200, y: 420}
   m_SizeDelta: {x: 300, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &743066245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 743066243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cfba66fe6d68ab4ca7b460227570f4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _currentScore: {fileID: 479176625}
-  _bestScore: {fileID: 1818779859}
-  _gameStateManager: {fileID: 2126437363}
 --- !u!114 &743066247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2885,6 +2930,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &743066250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743066243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4470339a5809764584bd9a73ae73c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mainScoreText: {fileID: 479176625}
+  _bestScoreText: {fileID: 1818779859}
 --- !u!1 &777851064
 GameObject:
   m_ObjectHideFlags: 0
@@ -8784,8 +8843,6 @@ MonoBehaviour:
     VelocityMultiplier: 0.3
     MovePositionMultiplier: 0.21
     FrictionDecay: 0.997
-  _scoreText: {fileID: 479176625}
-  _bestScoreText: {fileID: 1818779859}
   _strikeEffect: {fileID: 1474597027}
 --- !u!4 &2126437364
 Transform:
@@ -9023,3 +9080,4 @@ SceneRoots:
   - {fileID: 2126437364}
   - {fileID: 1299033375}
   - {fileID: 274541735}
+  - {fileID: 471857838}

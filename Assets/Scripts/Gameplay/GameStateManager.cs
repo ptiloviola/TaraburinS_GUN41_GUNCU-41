@@ -4,6 +4,7 @@ using Bowling.BowlingPins;
 using System.Collections;
 using Bowling.UI;
 using TMPro;
+using System;
 
 namespace Bowling.Gameplay
 {
@@ -15,8 +16,6 @@ namespace Bowling.Gameplay
 
         [SerializeField] private PhysicsConfig _physicsConfig;
         
-        [SerializeField] private TMP_Text _scoreText;
-        [SerializeField] private TMP_Text _bestScoreText;
         private int _bestScore = 0;
         [SerializeField] private StrikeAndSpareEffect _strikeEffect;
 
@@ -27,6 +26,9 @@ namespace Bowling.Gameplay
         private BaseThrowMechanic _activeMechanic;
         private bool _isGameOver = false;
         private BowlingInputActions _inputActions;
+
+        public event Action<int, int, int> OnGameStateUpdated;
+        public event Action OnGameOver;
 
         private void Awake()
         {
@@ -144,7 +146,7 @@ namespace Bowling.Gameplay
                     break;
                 }
 
-                yield return null; // Ждем следующий кадр
+                yield return null;
             }
             
             int totalPinsOnDeck = _pinDeckManager.ActivePins.Count;
@@ -201,7 +203,7 @@ namespace Bowling.Gameplay
                     break;
                 case TurnResult.GameOver:
                     _isGameOver = true;
-                    _scoreText.text += "\nИГРА ОКОНЧЕНА!";
+                    OnGameOver?.Invoke();
                     break;
             }
         }
@@ -225,16 +227,8 @@ namespace Bowling.Gameplay
 
         private void UpdateUI()
         {
-            if (_scoreText != null)
-            {
-                _scoreText.text = $"Фрейм: {_gameLoop.CurrentFrame}/10\n" +
-                                  $"Бросок: {_gameLoop.CurrentThrow}\n" +
-                                  $"Очки: {_scoreCalculator.CalculateTotalScore()}";
-            }
-            if (_bestScoreText != null)
-            {
-                _bestScoreText.text = $"Рекорд: {_bestScore}";
-            }
+            int currentScore = _scoreCalculator.CalculateTotalScore();
+            OnGameStateUpdated?.Invoke(_gameLoop.CurrentFrame, _gameLoop.CurrentThrow, currentScore);
         }
 
 
