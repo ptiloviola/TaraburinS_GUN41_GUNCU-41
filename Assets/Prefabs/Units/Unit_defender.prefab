@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8451884763534960458}
   - component: {fileID: 5149552045092594157}
+  - component: {fileID: 1880209474056357602}
   m_Layer: 0
   m_Name: Unit_defender
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 86427726408802941}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.297, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -56,6 +57,18 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1880209474056357602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86427726408802941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3efceba1acb053428633a1f2ebfa0ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &923131346616537215
 GameObject:
   m_ObjectHideFlags: 0

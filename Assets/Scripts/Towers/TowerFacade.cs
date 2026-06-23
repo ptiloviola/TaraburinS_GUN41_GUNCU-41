@@ -40,20 +40,32 @@ namespace Gameplay.Towers
         public void Initialize(TowerConfig config, Vector2Int gridPos)
         {
             _config = config;
-            GridPosition = gridPos; // Сохраняем координату
-            // CurrentLevel = 0; // ВНИМАНИЕ: Если ты будешь загружать сохранения, уровень нужно будет брать оттуда
+            GridPosition = gridPos;
             
-            // МАГИЯ КОМПОЗИЦИИ: 
-            // Ищем все скрипты на этом префабе, которые реализуют ITowerBehavior
-            _behaviors = GetComponentsInChildren<ITowerBehavior>();
+            Debug.Log($"<color=cyan>[TowerFacade] Начинаем сборку башни {_config.DisplayName} на клетке {gridPos}</color>");
 
-            // Инициализируем каждый модуль
+            // РЕНТГЕН: Получаем вообще ВСЕ скрипты на клоне (даже выключенные)
+            var allScripts = GetComponentsInChildren<MonoBehaviour>(true);
+            foreach (var script in allScripts)
+            {
+                if (script != null)
+                {
+                    // Спрашиваем C#: "Считаешь ли ты этот скрипт модулем башни?"
+                    bool isBehavior = script is ITowerBehavior;
+                    Debug.Log($"[TowerFacade-Рентген] Нашел скрипт: <color=yellow>{script.GetType().Name}</color>. Является ли он ITowerBehavior? <b>{isBehavior}</b>");
+                }
+            }
+
+            // Ищем модули, включив поиск по неактивным объектам (true)
+            _behaviors = GetComponentsInChildren<ITowerBehavior>(true);
+
+            Debug.Log($"<color=cyan>[TowerFacade] Итог: Найдено модулей: {_behaviors.Length}</color>");
+
             foreach (var behavior in _behaviors)
             {
+                Debug.Log($"<color=cyan>[TowerFacade] Запускаем модуль: {behavior.GetType().Name}</color>");
                 behavior.Initialize(this);
             }
-            
-            Debug.Log($"<color=orange>[TowerFacade] Башня {_config.DisplayName} успешно собрана автономно. Модулей: {_behaviors.Length}</color>");
         }
 
         private void Update()

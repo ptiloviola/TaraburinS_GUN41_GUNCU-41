@@ -7,7 +7,7 @@ using Gameplay.Units;
 
 namespace Gameplay.Towers.Behaviors
 {
-    public class BarracksBehavior : MonoBehaviour
+    public class BarracksBehavior : MonoBehaviour, ITowerBehavior
     {
         private TowerFacade _facade;
         private BarracksModuleDescriptor _module;
@@ -26,10 +26,12 @@ namespace Gameplay.Towers.Behaviors
         public void Construct(DiContainer container)
         {
             _container = container;
+            Debug.Log($"<color=yellow>[BarracksBehavior] Zenject внедрил контейнер в {gameObject.name}</color>");
         }
 
         public void Initialize(TowerFacade facade)
         {
+            Debug.Log($"<color=yellow>[BarracksBehavior] Старт Initialize на {gameObject.name}</color>");
             _facade = facade;
             _module = _facade.GetCurrentStats().Barracks;
             if (_module == null || _module.DefenderData == null)
@@ -37,6 +39,15 @@ namespace Gameplay.Towers.Behaviors
                 Debug.LogError($"[BarracksBehavior] На башне {_facade.name} нет модуля Barracks, но скрипт висит!");
                 return;
             }
+
+            if (_module.DefenderData == null)
+            {
+                Debug.LogError($"[BarracksBehavior] ОШИБКА: Не назначен DefenderData в конфиге!");
+                return;
+            }
+
+            Debug.Log($"[BarracksBehavior] Пытаемся получить пул с ID: {_module.DefenderData.DefenderId}");
+
 
             // НОВОЕ: Динамически получаем нужный пул по ID из конфига!
             _defenderPool = _container.ResolveId<DefenderFacade.Pool>(_module.DefenderData.DefenderId);
@@ -46,8 +57,10 @@ namespace Gameplay.Towers.Behaviors
             _rallyPoint = transform.position + transform.forward * (_module.RallyPointRadius * 0.5f);
             // Сбрасываем таймер
             _respawnTimer = _module.RespawnCooldown;
+            Debug.Log($"<color=green>[BarracksBehavior] Инициализация успешна! Таймер: {_respawnTimer}</color>");
             // Если башня проапгрейдилась (Initialize вызвался повторно), 
             // нам нужно обновить статы всем уже живым защитникам!
+            
             foreach (var defender in _activeDefenders)
             {
                 if (defender != null && defender.gameObject.activeInHierarchy)
@@ -75,11 +88,23 @@ namespace Gameplay.Towers.Behaviors
         }
         private void SpawnDefender()
         {
+            Debug.Log("<color=magenta>[BarracksBehavior] ПОПЫТКА СПАВНА!</color>");
             // 1. Просим Zenject выдать нам свободного человечка из пула
             var defender = _defenderPool.Spawn();
-            // 2. Ставим его у основания башни
-            defender.transform.position = transform.position + Vector3.forward * 2f;
-            Debug.Log("Попытка заспавнить защитника!");
+            // 1. Ищем безопасную точку на NavMesh (в радиусе 3 метров от башни)
+            Vector3 desiredSpawnPos = transform.position + transform.forward * 2f;
+            if (UnityEngine.AI.NavMesh.SamplePosition(desiredSpawnPos, out UnityEngine.AI.NavMeshHit hit, 3f, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                Debug.Log("<color=magenta>[BarracksBehavior] ПОПЫТКА defender.WarpTo(hit.position)</color>");
+                // 2. Безопасно телепортируем агента
+                defender.WarpTo(hit.position);
+            }
+            else
+            {
+                Debug.Log("<color=magenta>[BarracksBehavior] ПОПЫТКА defender.WarpTo(transform.position</color>");
+                // Если рядом нет NavMesh (например, башня висит в воздухе), кидаем в центр
+                defender.WarpTo(transform.position); 
+            }
             // 3. Накатываем на него конфиг (скорость и т.д.)
             defender.InitConfig(_module.DefenderData);
             // 4. Немного рандомизируем позицию точки сбора, чтобы они не слипались в одну кучу
@@ -92,7 +117,7 @@ namespace Gameplay.Towers.Behaviors
             // 6. Записываем в журнал учета
             _activeDefenders.Add(defender);
             
-            Debug.Log($"[BarracksBehavior] Из казармы выбежал защитник! В строю: {_activeDefenders.Count}/{_module.MaxDefenders}");
+            Debug.Log($"<color=magenta>[BarracksBehavior] ЗАЩИТНИК ЗАСПАВНЕН! В строю: {_activeDefenders.Count}</color>");
         }
 
         // Если башню продают или уничтожают, нужно убрать всех ее защитников с карты

@@ -3,18 +3,15 @@ using UnityEngine.AI;
 using Zenject;
 using Gameplay.Units.Data;
 
-
 namespace Gameplay.Units
 {
     [RequireComponent(typeof(NavMeshAgent))]
     public class DefenderFacade : MonoBehaviour
     {
-        // Базовые состояния нашего защитника
-        public enum DefenderState
-        {
-            Idle,
-            MovingToRallyPoint
-            // Позже добавим: Combat, Returning
+        public enum DefenderState 
+        { 
+            Idle, 
+            MovingToRallyPoint 
         }
 
         private Pool _pool;
@@ -25,31 +22,47 @@ namespace Gameplay.Units
 
         private void Awake()
         {
-            // Кешируем компонент один раз при рождении объекта
             _agent = GetComponent<NavMeshAgent>();
+            // Изначально отключаем агента, чтобы он не пытался искать NavMesh 
+            // пока болтается где-то в пуле.
+            _agent.enabled = false; 
         }
 
-        // Метод для Zenject MemoryPool
         public void SetPool(Pool pool)
         {
             _pool = pool;
         }
 
-        // Вызывается Казармами (BarracksBehavior) при спавне бойца
+        // НОВОЕ: Бронебойный метод телепортации для пулов!
+        public void WarpTo(Vector3 position)
+        {
+            _agent.enabled = false;       // 1. Усыпляем агента
+            transform.position = position; // 2. Мгновенно переносим
+            _agent.enabled = true;        // 3. Будим. При включении он жестко привязывается к NavMesh!
+        }
+
         public void InitConfig(DefenderConfig config)
         {
             _config = config;
+            
             _agent.speed = _config.MoveSpeed;
             _agent.angularSpeed = _config.AngularSpeed;
-            // Сбрасываем стейт при новом появлении
+            
             SetState(DefenderState.Idle);
         }
 
-        // Приказ от башни: бежать на точку сбора
         public void SendToRallyPoint(Vector3 destination)
         {
-            _agent.SetDestination(destination);
-            SetState(DefenderState.MovingToRallyPoint);
+            // Жесткая проверка: агент должен быть включен и стоять на сетке
+            if (_agent.isActiveAndEnabled && _agent.isOnNavMesh)
+            {
+                _agent.SetDestination(destination);
+                SetState(DefenderState.MovingToRallyPoint);
+            }
+            else
+            {
+                Debug.LogWarning($"<color=orange>[DefenderFacade] {gameObject.name} не на NavMesh! Не могу пойти на точку.</color>");
+            }
         }
 
         private void Update()
@@ -57,33 +70,28 @@ namespace Gameplay.Units
             switch (CurrentState)
             {
                 case DefenderState.Idle:
-                    // Пока ничего не делаем, ждем приказов или врагов
                     break;
+                    
                 case DefenderState.MovingToRallyPoint:
-                    // Проверяем, добежали ли мы до точки (с небольшой погрешностью)
+                    // Проверяем, добежали ли мы
                     if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
                     {
-                        // Добежали, встаем в караул
                         SetState(DefenderState.Idle);
                     }
                     break;
-
             }
         }
 
         private void SetState(DefenderState newState)
         {
             CurrentState = newState;
-            // Здесь в будущем мы будем переключать анимации!
-            // Например: _animator.SetTrigger(newState.ToString());
         }
 
-        // Возврат в пул (вызовем, когда боец умрет или башню продадут)
         public void Despawn()
         {
             if (_pool != null)
             {
-                _agent.ResetPath();
+                _agent.enabled = false; // Обязательно выключаем агента перед возвратом в пул!
                 _pool.Despawn(this);
             }
             else
@@ -92,9 +100,6 @@ namespace Gameplay.Units
             }
         }
 
-
-        // Zenject Пул для Защитников
         public class Pool : MonoMemoryPool<DefenderFacade> { }
     }
 }
-
