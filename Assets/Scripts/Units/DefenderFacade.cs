@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 using Gameplay.Units.Data;
-using Unity.VisualScripting;
+
 
 namespace Gameplay.Units
 {

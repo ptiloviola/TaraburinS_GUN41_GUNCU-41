@@ -268,19 +268,19 @@ namespace Gameplay.Towers
             }
             else
             {
-                Debug.LogWarning($"[GridInteractor] На префабе {_selectedTowerData.Prefab.name} нет скрипта TowerInstance!");
+                Debug.LogWarning($"[GridInteractor] На префабе {_selectedTowerData.Prefab.name} нет скрипта TowerFacade!");
             }
             
-            var facade = towerGo.GetComponent<TowerFacade>();
-            var attack = towerGo.GetComponentInChildren<AttackBehavior>();
-            var visuals = towerGo.GetComponentInChildren<ProceduralTowerVisuals>();
+            // var facade = towerGo.GetComponent<TowerFacade>();
+            // var attack = towerGo.GetComponentInChildren<AttackBehavior>();
+            // var visuals = towerGo.GetComponentInChildren<ProceduralTowerVisuals>();
 
-            Debug.Log($"[GridInteractor] Результаты поиска: Facade = {facade != null}, Attack = {attack != null}, Visuals = {visuals != null}");
+            // Debug.Log($"[GridInteractor] Результаты поиска: Facade = {facade != null}, Attack = {attack != null}, Visuals = {visuals != null}");
 
-            if (visuals == null)
-            {
-                Debug.LogError("<color=red>[GridInteractor] КРИТИКА: На созданном объекте физически отсутствует компонент ProceduralTowerVisuals! Мы спавним не тот префаб!</color>");
-            }
+            // if (visuals == null)
+            // {
+            //     Debug.LogError("<color=red>[GridInteractor] КРИТИКА: На созданном объекте физически отсутствует компонент ProceduralTowerVisuals! Мы спавним не тот префаб!</color>");
+            // }
             // ВЫВОДИМ В КОНСОЛЬ ПОЛНУЮ ИНФОРМАЦИЮ
             Debug.Log($"<color=green>[GridInteractor] УСПЕХ! Построена {_selectedTowerData.TowerConfig.DisplayName} на {gridPos} за {_selectedTowerData.Cost} монет.</color>");
 
@@ -311,6 +311,11 @@ namespace Gameplay.Towers
              if (levelData.Aura != null && levelData.Aura.Radius > 0)
              {
                  return levelData.Aura.Radius;
+             }
+             // НОВОЕ: Если это казарма, показываем радиус сбора!
+             if (levelData.Barracks != null && levelData.Barracks.RallyPointRadius > 0) 
+             {
+                return levelData.Barracks.RallyPointRadius;
              }
 
              // Если башня вообще без радиуса (например, добывает деньги)

@@ -78,7 +78,8 @@ namespace Gameplay.Towers.Behaviors
             // 1. Просим Zenject выдать нам свободного человечка из пула
             var defender = _defenderPool.Spawn();
             // 2. Ставим его у основания башни
-            defender.transform.position = transform.position;
+            defender.transform.position = transform.position + Vector3.forward * 2f;
+            Debug.Log("Попытка заспавнить защитника!");
             // 3. Накатываем на него конфиг (скорость и т.д.)
             defender.InitConfig(_module.DefenderData);
             // 4. Немного рандомизируем позицию точки сбора, чтобы они не слипались в одну кучу

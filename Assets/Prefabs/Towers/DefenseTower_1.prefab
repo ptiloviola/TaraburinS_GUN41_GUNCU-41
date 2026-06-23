@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9200402737669729261}
   - component: {fileID: 7212445517427865888}
   - component: {fileID: 2894620569402564217}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,9 +93,9 @@ GameObject:
   m_Component:
   - component: {fileID: 466061144312362373}
   - component: {fileID: 4332368814026687699}
-  - component: {fileID: 7447148232263684840}
   - component: {fileID: 3885497996408485500}
-  m_Layer: 0
+  - component: {fileID: 7733154501051138241}
+  m_Layer: 7
   m_Name: DefenseTower_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,37 +131,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c2e758fc18a8845ae261d664e48a4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7447148232263684840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5441004498453907254}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 078716e3d862b614abe7d4e17c646255, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseTransform: {fileID: 0}
-  _turretTransform: {fileID: 0}
-  _barrelTransforms: []
-  _logicalRotator: {fileID: 0}
-  _copyPitch: 0
-  _elevationPivot: {fileID: 0}
-  _localPitchAxis: {x: 0, y: 0, z: -1}
-  _rotationOffset: -90
-  _buildDuration: 0.5
-  _buildEase: 27
-  _shootDuration: 0.2
-  _recoilDistance: 0.4
-  _turretSquashY: 0.85
-  _recoilEase: 6
-  _barrelReturnEase: 6
-  _turretReturnEase: 6
-  _laserRenderer: {fileID: 0}
-  _laserMaxWidth: 0.3
-  _steamParticles: []
 --- !u!65 &3885497996408485500
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -181,8 +150,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2.3980455, y: 3.3619115, z: 1}
+  m_Center: {x: 0.052440643, y: 0.05597961, z: 0}
+--- !u!114 &7733154501051138241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5441004498453907254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e94007302172af43ab45785432f3ef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _config: {fileID: 11400000, guid: 97a9d5b12eb88114e9c4fba72bb2425b, type: 2}
 --- !u!1 &8044796459560283508
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,7 +176,7 @@ GameObject:
   - component: {fileID: 461588680095145121}
   - component: {fileID: 3808420336545801084}
   - component: {fileID: 8850315578983818319}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Base.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -3265,7 +3265,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   _enemyRegistry: {fileID: 11400000, guid: ae201c037a1ccd84d95230aa2cbcd63a, type: 2}
-  _defenderRegistry: {fileID: 0}
+  _defenderRegistry: {fileID: 11400000, guid: 33f32a2d06b0a4548836867dbae9f05a, type: 2}
   _basePrefab: {fileID: 8824246545245860079, guid: 7c265b5839dc7204598b286044171e21,
     type: 3}
   _spawnMarkerPrefab: {fileID: 8643751777648313295, guid: a2dcada1a60fcbe44b7bf52a3c13e9fe,
