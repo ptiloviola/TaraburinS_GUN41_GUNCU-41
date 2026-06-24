@@ -5,7 +5,7 @@ using VacuumSim.Robotics.Contracts;
 using Zenject;
 using VacuumSim.Robotics.Configs;
 
-namespace VacuumSim.Robotics.Movement
+namespace VacuumSim.Robotics.Components
 {
     [RequireComponent(typeof(Rigidbody))]
     public class VacuumMotor : MonoBehaviour, IVacuumMotor
@@ -24,6 +24,8 @@ namespace VacuumSim.Robotics.Movement
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
+            // Запрещаем физическому движку усыплять этого робота!
+            _rb.sleepThreshold = 0.0f;
         }
 
         public void MoveForward(float speed)
@@ -85,7 +87,7 @@ namespace VacuumSim.Robotics.Movement
                 Vector3 targetVelocity = transform.forward * _currentSpeed;
                 _rb.velocity = new Vector3(targetVelocity.x, _rb.velocity.y, targetVelocity.z);
                 // Добавляем проверку пульса
-                Debug.Log($"[Motor] Цель: {targetVelocity}. Факт RB: {_rb.velocity}");
+                // Debug.Log($"[Motor] Цель: {targetVelocity}. Факт RB: {_rb.velocity}");
             }
         }
     }

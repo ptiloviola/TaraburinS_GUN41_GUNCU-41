@@ -1,8 +1,7 @@
 using UnityEngine;
 using Zenject;
 using VacuumSim.Robotics.Contracts;
-using VacuumSim.Robotics.Movement;
-using VacuumSim.Robotics.Sensors;
+using VacuumSim.Robotics.Components;
 using VacuumSim.Robotics.Brain;
 using VacuumSim.Robotics.Configs;
 

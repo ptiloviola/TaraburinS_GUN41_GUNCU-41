@@ -3,7 +3,7 @@ using VacuumSim.Robotics.Contracts;
 using Zenject;
 using VacuumSim.Robotics.Configs;
 
-namespace VacuumSim.Robotics.Sensors
+namespace VacuumSim.Robotics.Components
 {
     public class VacuumRaycastSensors : MonoBehaviour, IVacuumSensors
     {
