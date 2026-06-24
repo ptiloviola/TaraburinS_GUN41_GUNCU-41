@@ -5,6 +5,7 @@ using VacuumSim.Robotics.Components;
 using VacuumSim.Robotics.Brain;
 using VacuumSim.Robotics.Configs;
 using VacuumSim.Robotics.Signals;
+using VacuumSim.UI;
 
 namespace VacuumSim.Installers
 {
@@ -41,6 +42,13 @@ namespace VacuumSim.Installers
             // Zenject сам сделает 'new RandomBounceBrain()', сам подтянет для него
             // _motor и _sensors из биндов выше, и сохранит в памяти как IVacuumBrain.
             Container.Bind<IVacuumBrain>().To<RandomBounceBrain>().AsSingle();
+
+            // Биндим View. 
+            // "FromComponentInHierarchy" означает: "Zenject, найди на сцене объект с этим скриптом сам".
+            Container.Bind<VacuumDashboardView>().FromComponentInHierarchy().AsSingle();
+
+            // Биндим Presenter. Он чистый класс, поэтому просто "BindInterfacesTo".
+            Container.BindInterfacesTo<UI.VacuumDashboardPresenter>().AsSingle();
         }
     }
 }
