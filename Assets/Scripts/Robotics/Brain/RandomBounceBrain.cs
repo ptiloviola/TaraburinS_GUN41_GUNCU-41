@@ -12,18 +12,24 @@ namespace VacuumSim.Robotics.Brain
         private readonly IVacuumSensors _sensors;
         private readonly VacuumConfig _config;
 
+        private readonly IVacuumBattery _battery;
+        private readonly IVacuumDustbin _dustbin;
+
         // Конструкторная инъекция (Zenject передаст реализации сюда)
-        public RandomBounceBrain(IVacuumMotor motor, IVacuumSensors sensors, VacuumConfig config)
+        public RandomBounceBrain(IVacuumMotor motor, IVacuumSensors sensors, 
+            VacuumConfig config, IVacuumBattery battery, IVacuumDustbin dustbin)
         {
             _motor = motor;
             _sensors = sensors;
             _config = config;
+            _battery = battery;
+            _dustbin = dustbin;
         }
 
         public async UniTask StartCleaningAsync(CancellationToken token)
         {
-            // Бесконечный цикл работы, пока не сработает токен отмены
-            while (!token.IsCancellationRequested)
+            // Бесконечный цикл работы, пока не сработает токен отмены, батарея жива и бак не полон!
+            while (!token.IsCancellationRequested && !_battery.IsEmpty && !_dustbin.IsFull)
             {
                 Debug.Log("[Brain] Путь свободен. Еду прямо.");
                 _motor.MoveForward(_config.MoveSpeed);
@@ -33,6 +39,8 @@ namespace VacuumSim.Robotics.Brain
                 // ИЗМЕНЕНИЕ: Добавлен PlayerLoopTiming.FixedUpdate. 
                 // Теперь мозг опрашивает лучи строго синхронно с физикой!
                 await UniTask.WaitUntil(() => _sensors.IsObstacleAhead(), PlayerLoopTiming.FixedUpdate, token);
+                // Если во время движения по прямой села батарея - прерываем логику
+                if (_battery.IsEmpty || _dustbin.IsFull) break;
                 // Увидели стену -> останавливаемся
                 _motor.Stop();
 
@@ -57,6 +65,9 @@ namespace VacuumSim.Robotics.Brain
                 // Небольшая пауза после разворота, чтобы пылесос не дергался
                 await UniTask.Delay(200, cancellationToken: token);
             }
+            // Если мы выпали из цикла while, значит наступило критическое состояние (или мы вышли из игры)
+            _motor.Stop();
+            Debug.Log($"[Brain] Уборка остановлена. Батарея: {_battery.CurrentCharge:F1}, Бак: {_dustbin.CurrentFill}");
         }
 
         private float CalculateTurnAngle()

@@ -9,6 +9,7 @@ namespace VacuumSim.Robotics.Contracts
         void Stop();
         // Теперь поворот требует времени и его можно прервать токеном
         UniTask RotateAsync(float angle, CancellationToken token);
+        bool IsMoving { get; }
     }
 
 }

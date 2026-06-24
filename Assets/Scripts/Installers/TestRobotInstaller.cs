@@ -4,6 +4,7 @@ using VacuumSim.Robotics.Contracts;
 using VacuumSim.Robotics.Components;
 using VacuumSim.Robotics.Brain;
 using VacuumSim.Robotics.Configs;
+using VacuumSim.Robotics.Signals;
 
 namespace VacuumSim.Installers
 {
@@ -17,6 +18,20 @@ namespace VacuumSim.Installers
 
         public override void InstallBindings()
         {
+            SignalBusInstaller.Install(Container);
+
+            Container.DeclareSignal<TrashCollectedSignal>();
+            Container.DeclareSignal<BatteryStateSignal>();
+            Container.DeclareSignal<DustbinStateSignal>();
+
+            // 3. Биндим нашу чистую логику батареи
+            // BindInterfacesTo означает: "Свяжи этот класс со всеми интерфейсами, которые он реализует 
+            // (IVacuumBattery, IInitializable, ITickable, IDisposable)".
+            // AsSingle означает: "Создай его ровно ОДИН раз для этого контекста".
+            Container.BindInterfacesTo<VacuumBatteryManager>().AsSingle();
+            Container.BindInterfacesTo<VacuumDustbinManager>().AsSingle();
+
+
             Container.BindInstance(_config).AsSingle();
             // 1. Отдаем в контейнер ссылки на физические компоненты со сцены
             Container.Bind<IVacuumMotor>().FromInstance(_motor).AsSingle();

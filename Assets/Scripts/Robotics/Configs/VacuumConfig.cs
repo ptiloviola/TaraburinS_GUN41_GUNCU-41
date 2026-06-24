@@ -16,8 +16,23 @@ namespace VacuumSim.Robotics.Configs
 
         [Header("Настройки всасывания (Коллектор)")]
         [SerializeField] private float _intakeRadius = 0.5f;
+
+        [Header("Аккумулятор (Battery)")]
+        [Tooltip("Максимальный заряд батареи (в секундах работы или условных единицах)")]
+        public float MaxBattery = 100f;
+        [Tooltip("Трата энергии в секунду просто за то, что робот включен")]
+        public float IdleDrainRate = 0.5f;     
+        [Tooltip("Трата энергии в секунду при движении (добавляется к Idle)")]
+        public float MoveDrainRate = 2.0f;     
+        [Tooltip("Базовая трата энергии за всасывание 1 объекта")]
+        public float SuctionDrainCost = 1.5f;  
+
+        [Header("Пылесборник (Dustbin)")]
+        [Tooltip("Максимальная вместимость бака (например, 100 единиц объема)")]
+        public float MaxDustbinCapacity = 100f;
+
         public float IntakeRadius => _intakeRadius;
-        
+
 
         // Публичные свойства только для чтения (геттеры)
         public float MoveSpeed => _moveSpeed;
