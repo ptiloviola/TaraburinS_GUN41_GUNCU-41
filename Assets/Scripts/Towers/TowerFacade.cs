@@ -44,18 +44,6 @@ namespace Gameplay.Towers
             
             Debug.Log($"<color=cyan>[TowerFacade] Начинаем сборку башни {_config.DisplayName} на клетке {gridPos}</color>");
 
-            // РЕНТГЕН: Получаем вообще ВСЕ скрипты на клоне (даже выключенные)
-            var allScripts = GetComponentsInChildren<MonoBehaviour>(true);
-            foreach (var script in allScripts)
-            {
-                if (script != null)
-                {
-                    // Спрашиваем C#: "Считаешь ли ты этот скрипт модулем башни?"
-                    bool isBehavior = script is ITowerBehavior;
-                    Debug.Log($"[TowerFacade-Рентген] Нашел скрипт: <color=yellow>{script.GetType().Name}</color>. Является ли он ITowerBehavior? <b>{isBehavior}</b>");
-                }
-            }
-
             // Ищем модули, включив поиск по неактивным объектам (true)
             _behaviors = GetComponentsInChildren<ITowerBehavior>(true);
 

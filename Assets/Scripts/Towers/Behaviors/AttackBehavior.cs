@@ -29,10 +29,15 @@ namespace Gameplay.Towers.Behaviors
         private Transform _currentTarget;
         private float _cooldownTimer;
 
+        private AttackStats _currentStats;
+
+        private Collider[] _targetColliders = new Collider[20];
+
         public void Initialize(TowerFacade facade)
         {
             _facade = facade;
             _cooldownTimer = 0f;
+            _currentStats = _facade.GetCurrentStats().Attack;
             _visuals = GetComponentInChildren<ITowerVisuals>();
 
             _visuals?.Initialize();
@@ -44,13 +49,13 @@ namespace Gameplay.Towers.Behaviors
             _visuals?.PlayBuildAnimation();
 
             // Добавь это в метод Initialize():
-            _attackExecutor = GetComponent<IAttackExecutor>();
+            _attackExecutor = GetComponentInChildren<IAttackExecutor>();
             if (_attackExecutor == null)
             {
                 Debug.LogError($"[AttackBehavior] На башне {gameObject.name} нет компонента IAttackExecutor (Оружия)!");
             }
             // НОВОЕ: Ищем стратегию прицеливания
-            _aimStrategy = GetComponent<IAimStrategy>();
+            _aimStrategy = GetComponentInChildren<IAimStrategy>();
             if (_aimStrategy == null)
             {
                 Debug.LogError($"[AttackBehavior] На башне {gameObject.name} нет компонента IAimStrategy (Прицеливания)!");
@@ -60,15 +65,14 @@ namespace Gameplay.Towers.Behaviors
 
         public void Tick()
         {
-            AttackStats stats = _facade.GetCurrentStats().Attack;
-            if (stats == null) return;
+            if (_currentStats == null) return;
 
             _cooldownTimer -= Time.deltaTime;
 
             // 1. Поиск цели (если нет текущей, или она выключена/умерла, или ушла слишком далеко)
-            if (!IsTargetValid(stats.Range))
+            if (!IsTargetValid(_currentStats.Range))
             {
-                FindClosestTarget(stats.Range);
+                FindClosestTarget(_currentStats.Range);
             }
 
             // 2. Если цель есть — поворачиваемся и стреляем
@@ -79,8 +83,8 @@ namespace Gameplay.Towers.Behaviors
                 // Стреляем, если прошла перезарядка И дуло смотрит на врага
                 if (_cooldownTimer <= 0f && IsFacingTarget())
                 {
-                    ExecuteShot(stats.Damage);
-                    _cooldownTimer = stats.Cooldown;
+                    ExecuteShot(_currentStats.Damage);
+                    _cooldownTimer = _currentStats.Cooldown;
                 }
             }
             
@@ -102,12 +106,14 @@ namespace Gameplay.Towers.Behaviors
         private void FindClosestTarget(float range)
         {
             _currentTarget = null;
-            Collider[] hits = Physics.OverlapSphere(_logicalRotator.position, range, _enemyLayerMask);
+
+            int hitsCount = Physics.OverlapSphereNonAlloc(_logicalRotator.position, range, _targetColliders, _enemyLayerMask);
             
             float closestSqrDistance = Mathf.Infinity;
 
-            foreach (var hit in hits)
+            for (int i = 0; i < hitsCount; i++)
             {
+                Collider hit = _targetColliders[i];
                 float sqrDistance = (hit.transform.position - _logicalRotator.position).sqrMagnitude;
                 
                 // Сначала проверяем дистанцию
