@@ -160,6 +160,26 @@ namespace VacuumSim.Pathfinding
             }
         }
 
+        public float GetDirtyPercentage()
+        {
+            if (_grid == null || _grid.Length == 0) return 0f;
+            
+            int walkableCount = 0;
+            int trashCount = 0;
+            
+            foreach (Node node in _grid)
+            {
+                if (node.IsWalkable)
+                {
+                    walkableCount++;
+                    // Считаем ТОЛЬКО настоящий мусор, а не "неисследованные" клетки!
+                    if (node.HasTrash) trashCount++; 
+                }
+            }
+            
+            return walkableCount == 0 ? 0f : (float)trashCount / walkableCount;
+        }
+
 
     }
 }

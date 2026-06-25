@@ -17,9 +17,17 @@ namespace VacuumSim.UI
         [SerializeField] private Button _returnToBaseButton;
         [SerializeField] private Button _emptyBinButton;
         [SerializeField] private Button _choosePointButton;
-
-        // ДОБАВЛЯЕМ ВЫПАДАЮЩИЙ СПИСОК
         [SerializeField] private TMP_Dropdown _strategyDropdown;
+
+        [Header("Панель Game Over")]
+        [SerializeField] private GameObject _gameOverPanel; // Объект-родитель всей панели
+        [SerializeField] private TextMeshProUGUI _finalScoreText;
+        [SerializeField] private TextMeshProUGUI _bestScoreText;
+        [SerializeField] private Button _restartButton;
+
+
+
+
         
         // Выпадающий список (Dropdown) для режимов добавим позже, 
         // оставим для него место в верстке.
@@ -30,6 +38,7 @@ namespace VacuumSim.UI
         public event Action OnEmptyBinClicked;
         public event Action OnChoosePointClicked;
         public event Action<int> OnStrategyChanged;
+        public event Action OnRestartClicked;
 
         private void Awake()
         {
@@ -44,6 +53,14 @@ namespace VacuumSim.UI
             // ПОДПИСЫВАЕМСЯ НА ИЗМЕНЕНИЕ ЗНАЧЕНИЯ В DROPDOWN
             if (_strategyDropdown != null)
                 _strategyDropdown.onValueChanged.AddListener((index) => OnStrategyChanged?.Invoke(index));
+            
+            if (_restartButton != null)
+                _restartButton.onClick.AddListener(() => OnRestartClicked?.Invoke());
+
+            // При старте игры обязательно прячем панель Game Over, если забыли выключить в инспекторе
+            if (_gameOverPanel != null) 
+                _gameOverPanel.SetActive(false);
+        
         }
 
         // =========================================================
@@ -66,6 +83,25 @@ namespace VacuumSim.UI
             if (_scoreText != null) _scoreText.text = $"Очки: {score}";
         }
 
+        public void ShowGameOverScreen(int finalScore, bool isNewRecord)
+        {
+            if (_gameOverPanel != null) _gameOverPanel.SetActive(true);
+            if (_finalScoreText != null) _finalScoreText.text = $"Собрано мусора на: {finalScore} очков";
+
+            if (_bestScoreText != null)
+            {
+                if (isNewRecord)
+                {
+                    _bestScoreText.text = "<color=green>НОВЫЙ РЕКОРД КОМНАТЫ!</color>";
+                }
+                else
+                {
+                    int topScore = PlayerPrefs.GetInt("BestVacuumScore", 0);
+                    _bestScoreText.text = $"Лучший результат: {topScore}";
+                }
+            }
+        }
+
         private void OnDestroy()
         {
             // Хороший тон - отписываться от кнопок при уничтожении Canvas
@@ -73,6 +109,7 @@ namespace VacuumSim.UI
             _emptyBinButton.onClick.RemoveAllListeners();
             _choosePointButton.onClick.RemoveAllListeners();
             _strategyDropdown.onValueChanged.RemoveAllListeners();
+            _restartButton.onClick.RemoveAllListeners();
         }
     }
 }

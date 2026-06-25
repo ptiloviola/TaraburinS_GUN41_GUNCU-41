@@ -16,6 +16,7 @@ namespace VacuumSim.Pathfinding
 
         // Память об уборке
         public bool IsCleaned; // Добавили это!
+        public bool HasTrash = false;
 
         // Данные для алгоритма А*
         public int GCost;

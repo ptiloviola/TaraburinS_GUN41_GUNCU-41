@@ -4,6 +4,7 @@ using VacuumSim.Trash;
 using VacuumSim.Robotics.Configs;
 using VacuumSim.Robotics.Signals;
 using VacuumSim.Robotics.Contracts;
+using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Robotics.Components
 {
@@ -20,16 +21,19 @@ namespace VacuumSim.Robotics.Components
         // Пылесос вряд ли засосет больше 10 объектов за ОДИН физический кадр.
         private readonly Collider[] _hitBuffer = new Collider[10];
 
+        private PathfindingGrid _grid;
+
         private SignalBus _signalBus;
         private IVacuumDustbin _dustbin;
 
         [Inject]
         public void Construct(VacuumConfig config, SignalBus signalBus,
-            IVacuumDustbin dustbin)
+            IVacuumDustbin dustbin, PathfindingGrid grid)
         {
             _config = config;
             _signalBus = signalBus;
             _dustbin = dustbin;
+            _grid = grid;
         }
 
         private void FixedUpdate()
@@ -55,6 +59,14 @@ namespace VacuumSim.Robotics.Components
                     Debug.Log($"[Collector] Всосали: {trash.Type.Title}!");
                     _signalBus.Fire(new TrashCollectedSignal { TrashData = trash.Type });
                     Destroy(hit.gameObject);
+                    if (_grid != null)
+                    {
+                        Node node = _grid.NodeFromWorldPoint(transform.position);
+                        if (node != null)
+                        {
+                            node.HasTrash = false;
+                        }
+                    }
                 }
             }
         }

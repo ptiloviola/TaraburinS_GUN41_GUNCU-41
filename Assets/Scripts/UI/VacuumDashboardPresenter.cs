@@ -7,6 +7,8 @@ using VacuumSim.Robotics.Configs;
 using VacuumSim.Robotics.Brain;
 using VacuumSim.Robotics.Brain.States;
 using VacuumSim.Input;
+using VacuumSim.Rules;
+
 
 namespace VacuumSim.UI
 {
@@ -59,11 +61,14 @@ namespace VacuumSim.UI
             _signalBus.Subscribe<DustbinStateSignal>(OnDustbinChanged);
             _signalBus.Subscribe<TrashCollectedSignal>(OnTrashCollected);
 
+            _signalBus.Subscribe<GameOverSignal>(OnGameOver);
+
             // 2. Подписываемся на клики игрока из интерфейса (View)
             _view.OnReturnToBaseClicked += HandleReturnToBase;
             _view.OnEmptyBinClicked += HandleStartCleaning;
             _view.OnChoosePointClicked += HandleChoosePoint;
             _view.OnStrategyChanged += HandleStrategyChanged;
+            _view.OnRestartClicked += HandleRestart;
 
             // Задаем стартовое значение очков
             _view.UpdateScore(_currentScore);
@@ -128,6 +133,39 @@ namespace VacuumSim.UI
             // и новая стратегия применится сама, когда он начнет уборку!
         }
 
+        private void OnGameOver()
+        {
+            // Жестко останавливаем всю физику и спавнеры мусора
+            Time.timeScale = 0f; 
+
+            // Достаем старый рекорд (если его нет, вернется 0)
+            int bestScore = PlayerPrefs.GetInt("BestVacuumScore", 0);
+            bool isNewRecord = _currentScore > bestScore;
+
+            if (isNewRecord)
+            {
+                Debug.Log($"<color=green>[Score] НОВЫЙ РЕКОРД! {_currentScore} очков!</color>");
+                PlayerPrefs.SetInt("BestVacuumScore", _currentScore);
+                PlayerPrefs.Save();
+            }
+
+            // Передаем данные во View, чтобы он показал финальную панель
+            _view.ShowGameOverScreen(_currentScore, isNewRecord);
+        }
+
+        private void HandleRestart()
+        {
+            Debug.Log("[Presenter] Игрок нажал рестарт. Перезапускаю симуляцию...");
+            
+            // КРИТИЧЕСКИ ВАЖНО: возвращаем время в нормальный поток! 
+            // Иначе новая сцена загрузится на вечной паузе.
+            Time.timeScale = 1f; 
+
+            // Перезагружаем текущую активную сцену
+            int currentSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(currentSceneIndex);
+        }
+
         public void Dispose()
         {
             // Отписка от сигналов шины
@@ -140,6 +178,7 @@ namespace VacuumSim.UI
             _view.OnEmptyBinClicked -= HandleStartCleaning;
             _view.OnChoosePointClicked -= HandleChoosePoint;
             _view.OnStrategyChanged -= HandleStrategyChanged;
+            _view.OnRestartClicked -= HandleRestart;
         }
     }
 }

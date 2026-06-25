@@ -10,6 +10,7 @@ using VacuumSim.Robotics.Brain.States;
 using VacuumSim.Robotics.Brain.Strategies;
 using VacuumSim.Pathfinding;
 using VacuumSim.Input;
+using VacuumSim.Rules;
 
 namespace VacuumSim.Installers
 {
@@ -82,6 +83,9 @@ namespace VacuumSim.Installers
 
             Container.DeclareSignal<TargetPointSelectedSignal>().OptionalSubscriber();
             Container.DeclareSignal<TransitCompletedSignal>().OptionalSubscriber();
+
+            Container.BindInterfacesTo<GameRuleChecker>().AsSingle();
+            Container.DeclareSignal<GameOverSignal>().OptionalSubscriber();
         }
     }
 }

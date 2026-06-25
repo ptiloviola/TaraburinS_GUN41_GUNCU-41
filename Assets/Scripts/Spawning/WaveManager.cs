@@ -143,9 +143,10 @@ namespace VacuumSim.Spawning
                     if (_grid != null)
                     {
                         Node dirtyNode = _grid.NodeFromWorldPoint(point);
-                        if (dirtyNode != null && dirtyNode.IsCleaned)
+                        if (dirtyNode != null)
                         {
                             dirtyNode.IsCleaned = false;
+                            dirtyNode.HasTrash = true;
                             Debug.Log($"[WaveManager] Мусор испачкал ячейку [{dirtyNode.GridX}, {dirtyNode.GridY}]!");
                         }
                     }

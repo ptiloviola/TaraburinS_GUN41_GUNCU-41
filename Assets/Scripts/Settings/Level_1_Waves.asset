@@ -22,4 +22,13 @@ MonoBehaviour:
     - TrashType: {fileID: 11400000, guid: b9ee1291836ef8d4b8f6bd00fad091ad, type: 2}
       Amount: 3
       Mode: 1
+  - DelayBeforeWave: 2
+    Duration: 15
+    SpawnTasks:
+    - TrashType: {fileID: 11400000, guid: 89066ae2deaadea42b132fe444f8c639, type: 2}
+      Amount: 12
+      Mode: 1
+    - TrashType: {fileID: 11400000, guid: b9ee1291836ef8d4b8f6bd00fad091ad, type: 2}
+      Amount: 12
+      Mode: 1
   LoopWaves: 1
