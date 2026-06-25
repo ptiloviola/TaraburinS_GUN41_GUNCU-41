@@ -46,8 +46,13 @@ namespace VacuumSim.Installers
             Container.Bind<CleaningState>().AsSingle();
             Container.Bind<ReturnToBaseState>().AsSingle();
 
-            // Container.Bind<ICleaningStrategy>().To<RandomBounceStrategy>().AsSingle();
+            // Порядок здесь важен! 
+            // Индекс 0 = Случайная (если у тебя остался скрипт RandomBounceStrategy)
+            // Индекс 1 = Змейка
+            // Индекс 2 = Спираль
+            Container.Bind<ICleaningStrategy>().To<RandomBounceStrategy>().AsSingle();
             Container.Bind<ICleaningStrategy>().To<ZigZagStrategy>().AsSingle();
+            Container.Bind<ICleaningStrategy>().To<SpiralStrategy>().AsSingle();
 
             // 2. Регистрируем наше новое архитектурное ядро мозга
             // Связываем его и с интерфейсом IVacuumBrain, и с интерфейсом старта IInitializable

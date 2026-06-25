@@ -17,6 +17,9 @@ namespace VacuumSim.UI
         [SerializeField] private Button _returnToBaseButton;
         [SerializeField] private Button _emptyBinButton;
         [SerializeField] private Button _choosePointButton;
+
+        // ДОБАВЛЯЕМ ВЫПАДАЮЩИЙ СПИСОК
+        [SerializeField] private TMP_Dropdown _strategyDropdown;
         
         // Выпадающий список (Dropdown) для режимов добавим позже, 
         // оставим для него место в верстке.
@@ -26,6 +29,7 @@ namespace VacuumSim.UI
         public event Action OnReturnToBaseClicked;
         public event Action OnEmptyBinClicked;
         public event Action OnChoosePointClicked;
+        public event Action<int> OnStrategyChanged;
 
         private void Awake()
         {
@@ -37,6 +41,9 @@ namespace VacuumSim.UI
             {
                 _choosePointButton.onClick.AddListener(() => OnChoosePointClicked?.Invoke());
             }
+            // ПОДПИСЫВАЕМСЯ НА ИЗМЕНЕНИЕ ЗНАЧЕНИЯ В DROPDOWN
+            if (_strategyDropdown != null)
+                _strategyDropdown.onValueChanged.AddListener((index) => OnStrategyChanged?.Invoke(index));
         }
 
         // =========================================================
@@ -64,6 +71,8 @@ namespace VacuumSim.UI
             // Хороший тон - отписываться от кнопок при уничтожении Canvas
             _returnToBaseButton.onClick.RemoveAllListeners();
             _emptyBinButton.onClick.RemoveAllListeners();
+            _choosePointButton.onClick.RemoveAllListeners();
+            _strategyDropdown.onValueChanged.RemoveAllListeners();
         }
     }
 }

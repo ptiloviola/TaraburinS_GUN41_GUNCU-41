@@ -73,9 +73,9 @@ namespace VacuumSim.Robotics.Brain
             StopCurrentState();
         }
 
-        public void ChangeState(IVacuumState newState)
+        public void ChangeState(IVacuumState newState, bool forceRestart = false)
         {
-            if (_currentState == newState) return;
+            if (!forceRestart && _currentState == newState) return;
 
             StopCurrentState();
 
@@ -141,6 +141,12 @@ namespace VacuumSim.Robotics.Brain
         {
             // Робот доехал. Включаем режим уборки (Змейка начнется из новой точки на свежей сетке!)
             ChangeState(_cleaningState);
+        }
+
+        // Позволяет Презентеру спросить: "Робот сейчас в этом состоянии?"
+        public bool IsActiveState(IVacuumState state)
+        {
+            return _currentState == state;
         }
 
         public void Dispose()

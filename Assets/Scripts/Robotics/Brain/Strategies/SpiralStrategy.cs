@@ -8,7 +8,7 @@ using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Robotics.Brain.Strategies
 {
-    public class ZigZagStrategy : ICleaningStrategy
+    public class SpiralStrategy : ICleaningStrategy
     {
         private readonly IVacuumMotor _motor;
         private readonly VacuumConfig _config;
@@ -17,13 +17,19 @@ namespace VacuumSim.Robotics.Brain.Strategies
 
         private int _currentX;
         private int _currentY;
-        private int _directionX = 1;
+        
+        // Векторы направлений: Вверх, Вправо, Вниз, Влево (по часовой стрелке)
+        private readonly Vector2Int[] _directions = {
+            new Vector2Int(0, 1),
+            new Vector2Int(1, 0),
+            new Vector2Int(0, -1),
+            new Vector2Int(-1, 0)
+        };
+        private int _currentDirIndex = 0; // Начинаем движение "Вверх"
 
-        public ZigZagStrategy(
-            IVacuumMotor motor, 
-            VacuumConfig config, 
-            PathfindingGrid grid,
-            Pathfinder pathfinder)
+        public SpiralStrategy(
+            IVacuumMotor motor, VacuumConfig config, 
+            PathfindingGrid grid, Pathfinder pathfinder)
         {
             _motor = motor;
             _config = config;
@@ -33,12 +39,11 @@ namespace VacuumSim.Robotics.Brain.Strategies
 
         public async UniTask ExecuteAsync(CancellationToken token)
         {
-            Debug.Log("<color=cyan>[ZigZag] --- СТАРТ СТРАТЕГИИ ---</color>");
+            Debug.Log("<color=magenta>[Spiral] --- СТАРТ СПИРАЛЬНОЙ СТРАТЕГИИ ---</color>");
 
             Node startNode = _grid.NodeFromWorldPoint(_motor.Position);
             _currentX = startNode.GridX;
             _currentY = startNode.GridY;
-            Debug.Log($"[ZigZag] Начальная позиция: ячейка [{_currentX}, {_currentY}]");
 
             while (!token.IsCancellationRequested)
             {
@@ -46,70 +51,53 @@ namespace VacuumSim.Robotics.Brain.Strategies
                 if (!currentNode.IsCleaned)
                 {
                     currentNode.IsCleaned = true;
-                    Debug.Log($"[ZigZag] Закрасили ячейку [{_currentX}, {_currentY}]");
                 }
 
-                int nextX = _currentX + _directionX;
-                int nextY = _currentY;
                 bool moveSuccessful = false;
+                int turnsAttempts = 0;
 
-                // Попытка 1: Шаг вперед по ряду
-                if (IsValidWalkableAndDirty(nextX, nextY))
+                // Пытаемся сделать шаг. Если впереди стена - поворачиваем на 90 градусов вправо.
+                // Если сделали 4 поворота (360 градусов) и все равно тупик - выходим из цикла попыток.
+                while (turnsAttempts < 4)
                 {
-                    Debug.Log($"[ZigZag] Путь свободен. Идем по ряду в [{nextX}, {nextY}]");
-                    _currentX = nextX;
-                    moveSuccessful = true;
-                }
-                else
-                {
-                    Debug.Log($"[ZigZag] Впереди препятствие или край [{nextX}, {nextY}]. Пробуем сдвинуться на ряд ВВЕРХ.");
-                    nextX = _currentX;
-                    nextY = _currentY + 1;
+                    int nextX = _currentX + _directions[_currentDirIndex].x;
+                    int nextY = _currentY + _directions[_currentDirIndex].y;
 
                     if (IsValidWalkableAndDirty(nextX, nextY))
                     {
+                        _currentX = nextX;
                         _currentY = nextY;
-                        _directionX = -_directionX;
                         moveSuccessful = true;
-                        Debug.Log($"[ZigZag] Успешно сдвинулись ВВЕРХ на [{nextX}, {nextY}]. Новое направление X: {_directionX}");
+                        break; // Нашли путь, выходим из цикла поворотов
                     }
                     else
                     {
-                        Debug.Log($"[ZigZag] ВВЕРХ нельзя. Пробуем сдвинуться ВНИЗ.");
-                        nextY = _currentY - 1;
-                        if (IsValidWalkableAndDirty(nextX, nextY))
-                        {
-                            _currentY = nextY;
-                            _directionX = -_directionX;
-                            moveSuccessful = true;
-                            Debug.Log($"[ZigZag] Успешно сдвинулись ВНИЗ на [{nextX}, {nextY}]. Новое направление X: {_directionX}");
-                        }
+                        // Поворот на 90 градусов по часовой стрелке
+                        _currentDirIndex = (_currentDirIndex + 1) % 4;
+                        turnsAttempts++;
                     }
                 }
 
+                // Тупик (все 4 стороны заблокированы или убраны)
                 if (!moveSuccessful)
                 {
-                    Debug.LogWarning($"<color=orange>[ZigZag] ТУПИК вокруг ячейки [{_currentX}, {_currentY}]. Ищу транзит по A*...</color>");
+                    Debug.LogWarning($"<color=orange>[Spiral] Локальный тупик. Ищу новую зону через A*...</color>");
                     
                     Node nextDirtyNode = FindNearestDirtyNode();
 
                     if (nextDirtyNode == null)
                     {
-                        Debug.Log("<color=green>[ZigZag] КОМНАТА ПОЛНОСТЬЮ УБРАНА! Жду новый мусор...</color>");
+                        Debug.Log("<color=green>[Spiral] КОМНАТА ПОЛНОСТЬЮ УБРАНА! Жду новый мусор...</color>");
                         _motor.Stop();
                         
-                        // Робот засыпает и каждый кадр проверяет, не намусорил ли WaveManager
                         await UniTask.WaitUntil(() => FindNearestDirtyNode() != null, PlayerLoopTiming.Update, token);
-                        
-                        Debug.Log("[ZigZag] Обнаружен новый мусор! Возобновляю уборку.");
-                        continue; // Начинаем цикл while заново!
+                        continue; 
                     }
 
                     List<Node> path = _pathfinder.FindPath(_motor.Position, nextDirtyNode.WorldPosition);
 
                     if (path != null && path.Count > 0)
                     {
-                        Debug.Log($"[ZigZag] Транзит найден! Едем в ячейку [{nextDirtyNode.GridX}, {nextDirtyNode.GridY}] (Длина пути: {path.Count})");
                         _grid.CurrentPath = path; 
 
                         foreach (Node pathNode in path)
@@ -122,12 +110,11 @@ namespace VacuumSim.Robotics.Brain.Strategies
                         
                         _currentX = nextDirtyNode.GridX;
                         _currentY = nextDirtyNode.GridY;
-                        Debug.Log($"[ZigZag] Транзит окончен. Продолжаем змейку из [{_currentX}, {_currentY}]");
+                        _currentDirIndex = 0; // Сбрасываем направление для новой спирали
                         continue;
                     }
                     else
                     {
-                        Debug.LogError($"[ZigZag] A* не смог проложить путь к грязной зоне [{nextDirtyNode.GridX}, {nextDirtyNode.GridY}]! Отмечаем ее как недоступную.");
                         nextDirtyNode.IsCleaned = true;
                         continue;
                     }
@@ -135,7 +122,6 @@ namespace VacuumSim.Robotics.Brain.Strategies
 
                 // Едем в выбранную ячейку
                 Vector3 targetPos = _grid.GetNodeFromIndices(_currentX, _currentY).WorldPosition;
-                Debug.Log($"[ZigZag] Начинаю физическое движение к мировым координатам {targetPos}");
                 await MoveToNodeAsync(targetPos, token, isTransit: false);
             }
         }
@@ -160,7 +146,6 @@ namespace VacuumSim.Robotics.Brain.Strategies
                     Node node = _grid.GetNodeFromIndices(x, y);
                     if (node.IsWalkable && !node.IsCleaned)
                     {
-                        // Считаем реальную физическую дистанцию до грязной ячейки
                         Vector3 nodePosFlat = new Vector3(node.WorldPosition.x, 0, node.WorldPosition.z);
                         float dist = Vector3.Distance(currentPosFlat, nodePosFlat);
                         

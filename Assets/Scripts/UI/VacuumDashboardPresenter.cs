@@ -63,6 +63,7 @@ namespace VacuumSim.UI
             _view.OnReturnToBaseClicked += HandleReturnToBase;
             _view.OnEmptyBinClicked += HandleStartCleaning;
             _view.OnChoosePointClicked += HandleChoosePoint;
+            _view.OnStrategyChanged += HandleStrategyChanged;
 
             // Задаем стартовое значение очков
             _view.UpdateScore(_currentScore);
@@ -110,6 +111,23 @@ namespace VacuumSim.UI
             _inputHandler.EnableTargetSelection();
         }
 
+        private void HandleStrategyChanged(int index)
+        {
+            Debug.Log($"[UI] Игрок переключил стратегию на индекс: {index}");
+            
+            // 1. Меняем активный индекс
+            _cleaninState.SetStrategy(index);
+            
+            // 2. Если робот УЖЕ убирается прямо сейчас — перезапускаем его
+            if (_brain.IsActiveState(_cleaninState))
+            {
+                Debug.Log("[Presenter] Принудительный перезапуск текущей уборки с новой логикой!");
+                _brain.ChangeState(_cleaninState, forceRestart: true); 
+            }
+            // Если он на базе или в ручном транзите - мы просто запомнили индекс, 
+            // и новая стратегия применится сама, когда он начнет уборку!
+        }
+
         public void Dispose()
         {
             // Отписка от сигналов шины
@@ -121,6 +139,7 @@ namespace VacuumSim.UI
             _view.OnReturnToBaseClicked -= HandleReturnToBase;
             _view.OnEmptyBinClicked -= HandleStartCleaning;
             _view.OnChoosePointClicked -= HandleChoosePoint;
+            _view.OnStrategyChanged -= HandleStrategyChanged;
         }
     }
 }
