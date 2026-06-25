@@ -39,7 +39,7 @@ namespace VacuumSim.Robotics.Components
 
             // Пока считаем, что любая соринка занимает 1 единицу объема.
             // Позже можно будет брать объем прямо из signal.TrashData, если добавим туда такое поле.
-            _currentFill += 1f;
+            _currentFill += signal.TrashData.FillAmount;
 
             FireStateSignal();
 
