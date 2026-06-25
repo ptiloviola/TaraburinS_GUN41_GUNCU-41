@@ -4,6 +4,8 @@ using Zenject;
 using VacuumSim.Robotics.Signals;
 using VacuumSim.Robotics.Contracts;
 using VacuumSim.Robotics.Configs;
+using VacuumSim.Robotics.Brain;
+using VacuumSim.Robotics.Brain.States;
 
 namespace VacuumSim.UI
 {
@@ -16,6 +18,10 @@ namespace VacuumSim.UI
         private readonly IVacuumBattery _battery;
         private readonly VacuumConfig _config;
 
+        private readonly SmartBrain _brain;
+        private readonly ReturnToBaseState _returnState;
+        private readonly CleaningState _cleaninState;
+
         private int _currentScore;
 
         // Zenject внедряет все зависимости сюда, включая наш View со сцены
@@ -24,13 +30,19 @@ namespace VacuumSim.UI
             VacuumDashboardView view, 
             IVacuumDustbin dustbin,
             IVacuumBattery battery,
-            VacuumConfig config)
+            VacuumConfig config,
+            SmartBrain brain,
+            ReturnToBaseState returnState,
+            CleaningState cleaninState)
         {
             _signalBus = signalBus;
             _view = view;
             _dustbin = dustbin;
             _battery = battery;
             _config = config;
+            _brain = brain;
+            _returnState = returnState;
+            _cleaninState = cleaninState;
         }
 
         public void Initialize()
@@ -42,7 +54,7 @@ namespace VacuumSim.UI
 
             // 2. Подписываемся на клики игрока из интерфейса (View)
             _view.OnReturnToBaseClicked += HandleReturnToBase;
-            _view.OnEmptyBinClicked += HandleEmptyBin;
+            _view.OnEmptyBinClicked += HandleStartCleaning;
 
             // Задаем стартовое значение очков
             _view.UpdateScore(_currentScore);
@@ -72,15 +84,15 @@ namespace VacuumSim.UI
         // --- РЕАКЦИИ НА КЛИКИ ИГРОКА ---
         private void HandleReturnToBase()
         {
-            Debug.Log("[UI] Вызвана команда возврата на базу! (Здесь будет переключение стейт-машины)");
-            // В будущем мы дернем интерфейс Мозга или выкинем сигнал ReturnToBaseSignal
+            Debug.Log("[UI] Вызвана команда возврата на базу!");
+            _brain.ChangeState(_returnState);
         }
 
-        private void HandleEmptyBin()
+        private void HandleStartCleaning()
         {
-            Debug.Log("[UI] Вызвана очистка бака!");
+            Debug.Log("[UI] Вызвано возвращение к работе!");
             // Дирижер напрямую дергает логику бака, потому что у него есть ссылка на интерфейс
-            _dustbin.EmptyBin();
+            _brain.ChangeState(_cleaninState);
         }
 
         public void Dispose()
@@ -92,7 +104,7 @@ namespace VacuumSim.UI
 
             // Отписка от событий View
             _view.OnReturnToBaseClicked -= HandleReturnToBase;
-            _view.OnEmptyBinClicked -= HandleEmptyBin;
+            _view.OnEmptyBinClicked -= HandleStartCleaning;
         }
     }
 }

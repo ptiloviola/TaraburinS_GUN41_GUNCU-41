@@ -6,6 +6,9 @@ using VacuumSim.Robotics.Brain;
 using VacuumSim.Robotics.Configs;
 using VacuumSim.Robotics.Signals;
 using VacuumSim.UI;
+using VacuumSim.Robotics.Brain.States;
+using VacuumSim.Robotics.Brain.Strategies;
+using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Installers
 {
@@ -38,17 +41,33 @@ namespace VacuumSim.Installers
             Container.Bind<IVacuumMotor>().FromInstance(_motor).AsSingle();
             Container.Bind<IVacuumSensors>().FromInstance(_sensors).AsSingle();
 
-            // 2. Биндим логику. 
-            // Zenject сам сделает 'new RandomBounceBrain()', сам подтянет для него
-            // _motor и _sensors из биндов выше, и сохранит в памяти как IVacuumBrain.
-            Container.Bind<IVacuumBrain>().To<RandomBounceBrain>().AsSingle();
+            // 1. Регистрируем наши состояния и стратегии
+            Container.Bind<CleaningState>().AsSingle();
+            Container.Bind<ReturnToBaseState>().AsSingle();
+            Container.Bind<ICleaningStrategy>().To<RandomBounceStrategy>().AsSingle();
+
+            // 2. Регистрируем наше новое архитектурное ядро мозга
+            // Связываем его и с интерфейсом IVacuumBrain, и с интерфейсом старта IInitializable
+            Container.BindInterfacesAndSelfTo<SmartBrain>().AsSingle();
 
             // Биндим View. 
             // "FromComponentInHierarchy" означает: "Zenject, найди на сцене объект с этим скриптом сам".
             Container.Bind<VacuumDashboardView>().FromComponentInHierarchy().AsSingle();
 
             // Биндим Presenter. Он чистый класс, поэтому просто "BindInterfacesTo".
-            Container.BindInterfacesTo<UI.VacuumDashboardPresenter>().AsSingle();
+            Container.BindInterfacesTo<VacuumDashboardPresenter>().AsSingle();
+
+            // Биндим компоненты со сцены (Zenject сам найдет их на сцене)
+            Container.Bind<PathfindingGrid>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<BaseStation>().FromComponentInHierarchy().AsSingle();
+
+            // Биндим чистую логику Искателя Пути
+            Container.Bind<Pathfinder>().AsSingle();
+
+            Container.DeclareSignal<ArrivedAtBaseSignal>().OptionalSubscriber();
+            Container.Bind<DockedState>().AsSingle();
+
+            Container.Bind<VacuumCollector>().FromComponentInHierarchy().AsSingle();
         }
     }
 }

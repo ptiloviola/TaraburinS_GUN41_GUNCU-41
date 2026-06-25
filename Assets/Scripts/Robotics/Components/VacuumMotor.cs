@@ -15,6 +15,8 @@ namespace VacuumSim.Robotics.Components
         private float _currentSpeed;
         private bool _isMoving;
         public bool IsMoving => _isMoving;
+        public Vector3 Position => transform.position;
+        public Vector3 Forward => transform.forward;
 
         [Inject]
         public void Construct(VacuumConfig config)

@@ -18,6 +18,8 @@ namespace VacuumSim.Robotics.Components
 
         public float CurrentCharge => _currentCharge;
         public bool IsEmpty => _currentCharge <= 0;
+        public bool IsFull => _currentCharge >= _config.MaxBattery;
+        public bool IsLow => (_currentCharge / _config.MaxBattery) <= 0.20f;
 
         public VacuumBatteryManager(VacuumConfig config, IVacuumMotor motor, 
             SignalBus signalBus)
@@ -87,7 +89,8 @@ namespace VacuumSim.Robotics.Components
             _signalBus.Fire(new BatteryStateSignal
             {
                 CurrentCharge = _currentCharge,
-                MaxCharge = _config.MaxBattery
+                MaxCharge = _config.MaxBattery,
+                IsLow = this.IsLow // Передаем состояние
             });
         }
 
@@ -102,6 +105,23 @@ namespace VacuumSim.Robotics.Components
         public void Dispose()
         {
             _signalBus.Unsubscribe<TrashCollectedSignal>(OnTrashCollected);
+        }
+
+        public void Charge(float amount)
+        {
+            float previousCharge = _currentCharge;
+            _currentCharge = Mathf.Clamp(_currentCharge + amount, 0, _config.MaxBattery);
+
+            // Если раньше мы были пусты, а теперь что-то появилось - сообщаем всем, что мы живы
+            if (previousCharge <= 0 && _currentCharge > 0)
+            {
+                Debug.Log("[Battery] Батарея ожила!");
+            }
+
+            if (Mathf.Abs(previousCharge - _currentCharge) > 0.01f)
+            {
+                FireStateSignal();
+            }
         }
 
     }
