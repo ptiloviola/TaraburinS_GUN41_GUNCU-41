@@ -12,6 +12,8 @@ using VacuumSim.Pathfinding;
 using VacuumSim.Input;
 using VacuumSim.Rules;
 
+using VacuumSim.Cat.Brain;
+
 namespace VacuumSim.Installers
 {
     public class TestRobotInstaller : MonoInstaller
@@ -86,6 +88,10 @@ namespace VacuumSim.Installers
 
             Container.BindInterfacesTo<GameRuleChecker>().AsSingle();
             Container.DeclareSignal<GameOverSignal>().OptionalSubscriber();
+
+
+
+            Container.Bind<CatBrain>().FromComponentInHierarchy().AsSingle();
         }
     }
 }
