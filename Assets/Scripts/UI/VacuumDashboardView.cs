@@ -16,6 +16,7 @@ namespace VacuumSim.UI
         [Header("Интерактивные элементы (Кнопки)")]
         [SerializeField] private Button _returnToBaseButton;
         [SerializeField] private Button _emptyBinButton;
+        [SerializeField] private Button _choosePointButton;
         
         // Выпадающий список (Dropdown) для режимов добавим позже, 
         // оставим для него место в верстке.
@@ -24,12 +25,18 @@ namespace VacuumSim.UI
         // Action - это встроенный делегат C# (по сути, пустой сигнал без параметров).
         public event Action OnReturnToBaseClicked;
         public event Action OnEmptyBinClicked;
+        public event Action OnChoosePointClicked;
 
         private void Awake()
         {
             // Как только кнопка нажата, мы "выстреливаем" нашим событием
             _returnToBaseButton.onClick.AddListener(() => OnReturnToBaseClicked?.Invoke());
             _emptyBinButton.onClick.AddListener(() => OnEmptyBinClicked?.Invoke());
+
+            if (_choosePointButton != null)
+            {
+                _choosePointButton.onClick.AddListener(() => OnChoosePointClicked?.Invoke());
+            }
         }
 
         // =========================================================

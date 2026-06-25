@@ -23,6 +23,9 @@ namespace VacuumSim.Pathfinding
         // Хранилище для визуализации пути
         public System.Collections.Generic.List<Node> CurrentPath;
 
+        public int GridSizeX => _gridSizeX;
+        public int GridSizeY => _gridSizeY;
+
         // Позже Zenject будет вызывать этот метод через интерфейс
         private void Awake()
         {
@@ -111,6 +114,21 @@ namespace VacuumSim.Pathfinding
             }
             return neighbors;
         }
+
+        public Node GetNodeFromIndices(int x, int y)
+        {
+            return _grid[x, y];
+        }
+
+        public void ResetCleaningMemory()
+        {
+            if (_grid == null) return;
+            foreach (Node node in _grid)
+            {
+                node.IsCleaned = false;
+            }
+            Debug.Log("[Grid] Память об уборке стерта. Сетка снова считается грязной.");
+        }
         
         // ==========================================
         // МАГИЯ ОТРИСОВКИ ДЛЯ РАЗРАБОТЧИКА
@@ -124,6 +142,12 @@ namespace VacuumSim.Pathfinding
                 foreach (Node node in _grid)
                 {
                     Gizmos.color = node.IsWalkable ? new Color(0, 1, 0, 0.3f) : new Color(1, 0, 0, 0.5f);
+
+                    // Если ячейка УЖЕ убрана — красим её в красивый полупрозрачный синий или желтый
+                    if (node.IsCleaned)
+                    {
+                        Gizmos.color = new Color(1f, 0.92f, 0.016f, 0.5f); // Желтый след уборки
+                    }
                     
                     // ИЗМЕНЕНИЕ: Если ячейка есть в нашем пути, красим ее в черный!
                     if (CurrentPath != null && CurrentPath.Contains(node))

@@ -14,6 +14,9 @@ namespace VacuumSim.Pathfinding
         public int GridX;
         public int GridY;
 
+        // Память об уборке
+        public bool IsCleaned; // Добавили это!
+
         // Данные для алгоритма А*
         public int GCost;
         public int HCost;
@@ -28,6 +31,7 @@ namespace VacuumSim.Pathfinding
             WorldPosition = worldPosition;
             GridX = gridX;
             GridY = gridY;
+            IsCleaned = false;
         }
     }
 }

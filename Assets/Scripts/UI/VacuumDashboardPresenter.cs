@@ -6,6 +6,7 @@ using VacuumSim.Robotics.Contracts;
 using VacuumSim.Robotics.Configs;
 using VacuumSim.Robotics.Brain;
 using VacuumSim.Robotics.Brain.States;
+using VacuumSim.Input;
 
 namespace VacuumSim.UI
 {
@@ -22,6 +23,10 @@ namespace VacuumSim.UI
         private readonly ReturnToBaseState _returnState;
         private readonly CleaningState _cleaninState;
 
+        private readonly PlayerInputHandler _inputHandler;
+
+
+
         private int _currentScore;
 
         // Zenject внедряет все зависимости сюда, включая наш View со сцены
@@ -33,7 +38,8 @@ namespace VacuumSim.UI
             VacuumConfig config,
             SmartBrain brain,
             ReturnToBaseState returnState,
-            CleaningState cleaninState)
+            CleaningState cleaninState,
+            PlayerInputHandler inputHandler)
         {
             _signalBus = signalBus;
             _view = view;
@@ -43,6 +49,7 @@ namespace VacuumSim.UI
             _brain = brain;
             _returnState = returnState;
             _cleaninState = cleaninState;
+            _inputHandler = inputHandler;
         }
 
         public void Initialize()
@@ -55,6 +62,7 @@ namespace VacuumSim.UI
             // 2. Подписываемся на клики игрока из интерфейса (View)
             _view.OnReturnToBaseClicked += HandleReturnToBase;
             _view.OnEmptyBinClicked += HandleStartCleaning;
+            _view.OnChoosePointClicked += HandleChoosePoint;
 
             // Задаем стартовое значение очков
             _view.UpdateScore(_currentScore);
@@ -95,6 +103,13 @@ namespace VacuumSim.UI
             _brain.ChangeState(_cleaninState);
         }
 
+        private void HandleChoosePoint()
+        {
+            Debug.Log("[UI] Едем туда!");
+            // Дирижер напрямую дергает логику бака, потому что у него есть ссылка на интерфейс
+            _inputHandler.EnableTargetSelection();
+        }
+
         public void Dispose()
         {
             // Отписка от сигналов шины
@@ -105,6 +120,7 @@ namespace VacuumSim.UI
             // Отписка от событий View
             _view.OnReturnToBaseClicked -= HandleReturnToBase;
             _view.OnEmptyBinClicked -= HandleStartCleaning;
+            _view.OnChoosePointClicked -= HandleChoosePoint;
         }
     }
 }

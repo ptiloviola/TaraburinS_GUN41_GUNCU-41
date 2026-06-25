@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VacuumSim.Trash;
+using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Spawning
 {
@@ -15,6 +16,8 @@ namespace VacuumSim.Spawning
         
         [Tooltip("Зона, которая ищет чистые точки на полу")]
         [SerializeField] private SpawnArea _spawnArea;
+        [Tooltip("Матрица навигации для обновления чистоты")]
+        [SerializeField] private PathfindingGrid _grid;
 
         // Токен для безопасной остановки асинхронных задач при выходе из игры
         private CancellationTokenSource _cts;
@@ -135,6 +138,17 @@ namespace VacuumSim.Spawning
                     Vector3 spawnPos = point + new Vector3(0, 0.05f, 0);
                     
                     Instantiate(trashType.Prefab, spawnPos, Quaternion.identity);
+                    // --- ИНТЕГРАЦИЯ С ИИ ---
+                    // Находим ячейку, в которую упал мусор, и говорим роботу, что она грязная!
+                    if (_grid != null)
+                    {
+                        Node dirtyNode = _grid.NodeFromWorldPoint(point);
+                        if (dirtyNode != null && dirtyNode.IsCleaned)
+                        {
+                            dirtyNode.IsCleaned = false;
+                            Debug.Log($"[WaveManager] Мусор испачкал ячейку [{dirtyNode.GridX}, {dirtyNode.GridY}]!");
+                        }
+                    }
                     return; // Успешно создали, выходим из метода
                 }
             }

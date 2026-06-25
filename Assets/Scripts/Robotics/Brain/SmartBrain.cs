@@ -7,6 +7,7 @@ using VacuumSim.Robotics.Contracts;
 using VacuumSim.Robotics.Signals;
 using VacuumSim.Robotics.Brain.States;
 using VacuumSim.Robotics.Components;
+using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Robotics.Brain
 {
@@ -18,11 +19,15 @@ namespace VacuumSim.Robotics.Brain
         // Ссылки на доступные состояния
         private readonly CleaningState _cleaningState;
         private readonly ReturnToBaseState _returnToBaseState;
+        private readonly ManualTransitState _manualTransitState;
 
         private IVacuumState _currentState;
         private CancellationTokenSource _stateCts;
         private readonly DockedState _dockedState;
         private readonly VacuumCollector _collector;
+        private readonly PathfindingGrid _grid;
+
+
 
         public SmartBrain(
             SignalBus signalBus, 
@@ -30,7 +35,9 @@ namespace VacuumSim.Robotics.Brain
             CleaningState cleaningState,
             ReturnToBaseState returnToBaseState,
             DockedState dockedState,
-            VacuumCollector collector)
+            VacuumCollector collector,
+            ManualTransitState manualTransitState,
+            PathfindingGrid grid)
         {
             _signalBus = signalBus;
             _motor = motor;
@@ -38,6 +45,8 @@ namespace VacuumSim.Robotics.Brain
             _returnToBaseState = returnToBaseState;
             _dockedState = dockedState;
             _collector = collector;
+            _manualTransitState = manualTransitState;
+            _grid = grid;
         }
 
         public void Initialize()
@@ -46,6 +55,8 @@ namespace VacuumSim.Robotics.Brain
             _signalBus.Subscribe<BatteryStateSignal>(OnBatteryChanged);
             _signalBus.Subscribe<DustbinStateSignal>(OnDustbinChanged);
             _signalBus.Subscribe<ArrivedAtBaseSignal>(OnArrivedAtBase);
+            _signalBus.Subscribe<TargetPointSelectedSignal>(OnTargetPointSelected);
+            _signalBus.Subscribe<TransitCompletedSignal>(OnManualTransitCompleted);
         }
 
         public async UniTask StartCleaningAsync(CancellationToken token)
@@ -116,11 +127,29 @@ namespace VacuumSim.Robotics.Brain
             ChangeState(_dockedState);
         }
 
+        private void OnTargetPointSelected(TargetPointSelectedSignal signal)
+        {
+            // Игрок кликнул! Бросаем все дела, стираем память сетке
+            _grid.ResetCleaningMemory();
+            
+            // Передаем стейту координату и включаем его
+            _manualTransitState.TargetPoint = signal.Point;
+            ChangeState(_manualTransitState);
+        }
+
+        private void OnManualTransitCompleted()
+        {
+            // Робот доехал. Включаем режим уборки (Змейка начнется из новой точки на свежей сетке!)
+            ChangeState(_cleaningState);
+        }
+
         public void Dispose()
         {
             _signalBus.Unsubscribe<BatteryStateSignal>(OnBatteryChanged);
             _signalBus.Unsubscribe<DustbinStateSignal>(OnDustbinChanged);
             _signalBus.Unsubscribe<ArrivedAtBaseSignal>(OnArrivedAtBase);
+            _signalBus.Unsubscribe<TargetPointSelectedSignal>(OnTargetPointSelected);
+            _signalBus.Unsubscribe<TransitCompletedSignal>(OnManualTransitCompleted);
             StopCurrentState();
         }
     }

@@ -9,6 +9,7 @@ using VacuumSim.UI;
 using VacuumSim.Robotics.Brain.States;
 using VacuumSim.Robotics.Brain.Strategies;
 using VacuumSim.Pathfinding;
+using VacuumSim.Input;
 
 namespace VacuumSim.Installers
 {
@@ -44,7 +45,9 @@ namespace VacuumSim.Installers
             // 1. Регистрируем наши состояния и стратегии
             Container.Bind<CleaningState>().AsSingle();
             Container.Bind<ReturnToBaseState>().AsSingle();
-            Container.Bind<ICleaningStrategy>().To<RandomBounceStrategy>().AsSingle();
+
+            // Container.Bind<ICleaningStrategy>().To<RandomBounceStrategy>().AsSingle();
+            Container.Bind<ICleaningStrategy>().To<ZigZagStrategy>().AsSingle();
 
             // 2. Регистрируем наше новое архитектурное ядро мозга
             // Связываем его и с интерфейсом IVacuumBrain, и с интерфейсом старта IInitializable
@@ -68,6 +71,12 @@ namespace VacuumSim.Installers
             Container.Bind<DockedState>().AsSingle();
 
             Container.Bind<VacuumCollector>().FromComponentInHierarchy().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<PlayerInputHandler>().AsSingle();
+            Container.Bind<ManualTransitState>().AsSingle();
+
+            Container.DeclareSignal<TargetPointSelectedSignal>().OptionalSubscriber();
+            Container.DeclareSignal<TransitCompletedSignal>().OptionalSubscriber();
         }
     }
 }
