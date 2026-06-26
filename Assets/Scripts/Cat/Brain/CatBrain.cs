@@ -36,8 +36,25 @@ namespace VacuumSim.Cat.Brain
 
         private void Start()
         {
+            StartBrain(); // Теперь запуск идет через наш новый метод
+        }
+
+        // ПУБЛИЧНЫЕ МЕТОДЫ ДЛЯ ВНЕШНЕГО КОНТРОЛЯ
+        public void StartBrain()
+        {
+            StopBrain(); // На всякий случай чистим старый токен
             _cts = new CancellationTokenSource();
             CatLifeCycleAsync(_cts.Token).Forget();
+        }
+
+        public void StopBrain()
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel(); // Мгновенно прерывает все Task (ходьбу, ожидание)
+                _cts.Dispose();
+                _cts = null;
+            }
         }
 
         private void Update()

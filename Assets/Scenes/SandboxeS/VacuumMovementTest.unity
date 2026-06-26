@@ -676,6 +676,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 330502566}
+--- !u!114 &330502574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330502564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ac196d6506228940810b36f4fa71677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _radarRadius: 5
+  _radarScanInterval: 3
+  _robotLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  _rideDuration: 7
+  _jumpDuration: 0.4
+  _mountOffset: {x: 0, y: 0.35, z: 0}
 --- !u!1 &341794780
 GameObject:
   m_ObjectHideFlags: 0
@@ -1978,6 +1998,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec6187157da4a6449817aaa9923ad7b7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 330502569}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec6187157da4a6449817aaa9923ad7b7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 330502574}
   m_SourcePrefab: {fileID: 100100000, guid: ec6187157da4a6449817aaa9923ad7b7, type: 3}
 --- !u!1 &678542047
 GameObject:
@@ -2199,6 +2222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: 87e7eb8721aca6c49b044cbd9ed902a3, type: 2}
+  _gameConfig: {fileID: 11400000, guid: 678b8f7b4d41c424c9f067b4efa05003, type: 2}
   _motor: {fileID: 2089436979}
   _sensors: {fileID: 2089436978}
 --- !u!114 &831682538
@@ -6655,7 +6679,7 @@ GameObject:
   - component: {fileID: 2089436986}
   - component: {fileID: 2089436985}
   - component: {fileID: 2089436984}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: VacuumCleaner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6982,7 +7006,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2091185514}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: IntakePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7302,7 +7326,7 @@ GameObject:
   - component: {fileID: 9150791209502644850}
   - component: {fileID: 3654238364150687311}
   - component: {fileID: 7218256380568411486}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LED3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7358,7 +7382,7 @@ GameObject:
   - component: {fileID: 729570731342074715}
   - component: {fileID: 7257114986102846926}
   - component: {fileID: 116132253356588290}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LED_main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7376,7 +7400,7 @@ GameObject:
   - component: {fileID: 2791167556456191419}
   - component: {fileID: 2883847213757992002}
   - component: {fileID: 8727126348123681103}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LED2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7402,7 +7426,7 @@ GameObject:
   - component: {fileID: 920448765742230848}
   - component: {fileID: 8203205303785725550}
   - component: {fileID: 6775195163712713595}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LED1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7540,7 +7564,7 @@ GameObject:
   - component: {fileID: 5992449843517912127}
   - component: {fileID: 8416526403229057269}
   - component: {fileID: 8416526403229057270}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: VacuumCleanerMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

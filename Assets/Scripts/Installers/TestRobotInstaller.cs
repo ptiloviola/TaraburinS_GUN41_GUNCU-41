@@ -11,8 +11,8 @@ using VacuumSim.Robotics.Brain.Strategies;
 using VacuumSim.Pathfinding;
 using VacuumSim.Input;
 using VacuumSim.Rules;
-
 using VacuumSim.Cat.Brain;
+using VacuumSim.GameConfigs;
 
 namespace VacuumSim.Installers
 {
@@ -20,6 +20,7 @@ namespace VacuumSim.Installers
     {
         [Header("Конфигурация")]
         [SerializeField] private VacuumConfig _config;
+        [SerializeField] private GameConfig _gameConfig;
         [Header("Ссылки на компоненты пылесоса")]
         [SerializeField] private VacuumMotor _motor;
         [SerializeField] private VacuumRaycastSensors _sensors;
@@ -41,6 +42,7 @@ namespace VacuumSim.Installers
 
 
             Container.BindInstance(_config).AsSingle();
+            Container.BindInstance(_gameConfig).AsSingle();
             // 1. Отдаем в контейнер ссылки на физические компоненты со сцены
             Container.Bind<IVacuumMotor>().FromInstance(_motor).AsSingle();
             Container.Bind<IVacuumSensors>().FromInstance(_sensors).AsSingle();

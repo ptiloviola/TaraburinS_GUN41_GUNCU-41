@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using VacuumSim.Robotics.Signals; // Проверь, что неймспейс совпадает с твоим
+using VacuumSim.Rules;
 
 namespace VacuumSim.Robotics.Audio
 {
@@ -31,6 +32,7 @@ namespace VacuumSim.Robotics.Audio
         {
             // Подписываемся на сигнал уборки мусора
             _signalBus.Subscribe<TrashCollectedSignal>(OnTrashCollected);
+            _signalBus.Subscribe<GameOverSignal>(OnGameOver);
             
             if (_movementSource != null) 
             {
@@ -76,11 +78,20 @@ namespace VacuumSim.Robotics.Audio
             }
         }
 
+        private void OnGameOver(GameOverSignal signal)
+        {
+            if (_movementSource != null)
+            {
+                _movementSource.Stop(); // Жестко вырубаем мотор
+            }
+        }
+
         private void OnDestroy()
         {
             if (_signalBus != null)
             {
                 _signalBus.TryUnsubscribe<TrashCollectedSignal>(OnTrashCollected);
+                _signalBus.TryUnsubscribe<GameOverSignal>(OnGameOver);
             }
         }
     }

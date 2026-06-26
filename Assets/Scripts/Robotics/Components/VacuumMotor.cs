@@ -17,6 +17,7 @@ namespace VacuumSim.Robotics.Components
         public bool IsMoving => _isMoving;
         public Vector3 Position => transform.position;
         public Vector3 Forward => transform.forward;
+        private float _speedMultiplier = 1.0f;
 
         [Inject]
         public void Construct(VacuumConfig config)
@@ -42,9 +43,14 @@ namespace VacuumSim.Robotics.Components
         {
             _isMoving = false;
             _currentSpeed = 0f;
-            _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
-            // Сбрасываем угловую скорость, чтобы пылесос не крутился по инерции после столкновений
-            _rb.angularVelocity = Vector3.zero; 
+
+            if (_rb != null)
+            {
+                _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
+                // Сбрасываем угловую скорость, чтобы пылесос не крутился по инерции после столкновений
+                _rb.angularVelocity = Vector3.zero; 
+            }
+            
         }
 
         public async UniTask RotateAsync(float angleDelta, CancellationToken token)
@@ -81,13 +87,19 @@ namespace VacuumSim.Robotics.Components
             Debug.Log($"[Motor] Поворот на {angleDelta} градусов завершен.");
         }
 
+        public void SetSpeedMultiplier(float multiplier)
+        {
+            _speedMultiplier = Mathf.Max(0.1f, multiplier);
+            Debug.Log($"[Motor] Множитель скорости изменен: {_speedMultiplier}");
+        }
+
         private void FixedUpdate()
         {
             if (_isMoving)
             {
                 // Постоянно поддерживаем скорость каждый физический кадр, преодолевая трение.
                 // Сохраняем текущую скорость по оси Y (гравитацию), чтобы робот не летал.
-                Vector3 targetVelocity = transform.forward * _currentSpeed;
+                Vector3 targetVelocity = transform.forward * (_currentSpeed * _speedMultiplier);
                 _rb.velocity = new Vector3(targetVelocity.x, _rb.velocity.y, targetVelocity.z);
                 // Добавляем проверку пульса
                 // Debug.Log($"[Motor] Цель: {targetVelocity}. Факт RB: {_rb.velocity}");

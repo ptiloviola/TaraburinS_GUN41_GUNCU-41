@@ -13,6 +13,7 @@ namespace VacuumSim.Robotics.Contracts
         bool IsMoving { get; }
         Vector3 Position { get; } // Текущая позиция
         Vector3 Forward { get; }  // Куда смотрит "лицо" робота
+        void SetSpeedMultiplier(float multiplier);
     }
 
 }
