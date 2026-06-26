@@ -25,6 +25,9 @@ namespace VacuumSim.UI
         [SerializeField] private TextMeshProUGUI _bestScoreText;
         [SerializeField] private Button _restartButton;
 
+        [Header("Индикаторы уровня")]
+        [SerializeField] private TextMeshProUGUI _pollutionText;
+
 
 
 
@@ -92,13 +95,27 @@ namespace VacuumSim.UI
             {
                 if (isNewRecord)
                 {
-                    _bestScoreText.text = "<color=green>НОВЫЙ РЕКОРД КОМНАТЫ!</color>";
+                    _bestScoreText.text = "<color=green>новый рекорд комнаты!</color>";
                 }
                 else
                 {
                     int topScore = PlayerPrefs.GetInt("BestVacuumScore", 0);
                     _bestScoreText.text = $"Лучший результат: {topScore}";
                 }
+            }
+        }
+
+        public void UpdatePollution(float pollutionFraction)
+        {
+            if (_pollutionText != null)
+            {
+                // Переводим доли (0.2f) в понятные проценты (20%)
+                int percent = Mathf.RoundToInt(pollutionFraction * 100);
+                
+                // Можно добавить цветовую индикацию: если грязно - краснеет!
+                string colorHex = percent > 50 ? "#ff4d4d" : "#ffffff"; 
+                
+                _pollutionText.text = $"загрязнение комнаты: <color={colorHex}>{percent}%</color>";
             }
         }
 

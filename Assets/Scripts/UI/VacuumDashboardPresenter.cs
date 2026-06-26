@@ -8,15 +8,17 @@ using VacuumSim.Robotics.Brain;
 using VacuumSim.Robotics.Brain.States;
 using VacuumSim.Input;
 using VacuumSim.Rules;
+using VacuumSim.Pathfinding;
 
 
 namespace VacuumSim.UI
 {
     // Не наследует MonoBehaviour! 
-    public class VacuumDashboardPresenter : IInitializable, IDisposable
+    public class VacuumDashboardPresenter : IInitializable, IDisposable, ITickable
     {
         private readonly SignalBus _signalBus;
         private readonly VacuumDashboardView _view;
+        private readonly PathfindingGrid _grid;
         private readonly IVacuumDustbin _dustbin;
         private readonly IVacuumBattery _battery;
         private readonly VacuumConfig _config;
@@ -41,7 +43,8 @@ namespace VacuumSim.UI
             SmartBrain brain,
             ReturnToBaseState returnState,
             CleaningState cleaninState,
-            PlayerInputHandler inputHandler)
+            PlayerInputHandler inputHandler,
+            PathfindingGrid grid)
         {
             _signalBus = signalBus;
             _view = view;
@@ -52,6 +55,7 @@ namespace VacuumSim.UI
             _returnState = returnState;
             _cleaninState = cleaninState;
             _inputHandler = inputHandler;
+            _grid = grid;
         }
 
         public void Initialize()
@@ -74,6 +78,11 @@ namespace VacuumSim.UI
             _view.UpdateScore(_currentScore);
             _view.UpdateDustbin(_dustbin.CurrentFill, _config.MaxDustbinCapacity);
             _view.UpdateBattery(_battery.CurrentCharge / _config.MaxBattery);
+        }
+        public void Tick()
+        {
+            // Плавно и незаметно обновляем UI в реальном времени
+            _view.UpdatePollution(_grid.GetDirtyPercentage());
         }
 
         // --- РЕАКЦИИ НА ДАННЫЕ РОБОТА ---

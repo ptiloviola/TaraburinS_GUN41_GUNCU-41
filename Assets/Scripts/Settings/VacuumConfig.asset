@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52804e6657b67bc45a082c028526b0dc, type: 3}
   m_Name: VacuumConfig
   m_EditorClassIdentifier: 
-  _moveSpeed: 12
+  _moveSpeed: 14
   _rotationSpeed: 180
   _rayDistance: 3
   _sphereRadius: 0.4
   _sideAngle: 45
   _intakeRadius: 1
-  MaxBattery: 100
+  MaxBattery: 200
   IdleDrainRate: 0.5
   MoveDrainRate: 2
   SuctionDrainCost: 1.5
-  MaxDustbinCapacity: 20
+  MaxDustbinCapacity: 50
