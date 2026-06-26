@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 using VacuumSim.Pathfinding;
-using VacuumSim.Trash; // Добавили пространство имен для мусора
+using VacuumSim.Cat.Contracts;
 
 namespace VacuumSim.Cat.Brain
 {
@@ -13,16 +13,26 @@ namespace VacuumSim.Cat.Brain
         [Inject] private PathfindingGrid _grid;
         [Inject] private Pathfinder _pathfinder;
 
-        [Header("Настройки кота")]
-        [SerializeField] private Animator _animator;
+        [Header("Настройки баланса кота")]
         [SerializeField] private float _moveSpeed = 1.2f;
         [SerializeField] private float _rotationSpeed = 6.0f;
-        
-        // ИСПРАВЛЕНИЕ 1: Теперь кот принимает серьезный тип мусора вместо сырого префаба
-        [SerializeField] private TrashType _catTrashType; 
+
+        // Ссылки на интерфейсы наших новых компонентов
+        private ICatView _view;
+        private ICatObstacle _obstacle;
+        private ICatTrashProducer _trashProducer;
+        private ICatMotor _motor;
 
         private CancellationTokenSource _cts;
-        private Node _lastOccupiedNode; // Ссылка на клетку, которую кот занял собой
+
+        private void Awake()
+        {
+            // Собираем компоненты с этого же GameObject
+            _view = GetComponent<ICatView>();
+            _obstacle = GetComponent<ICatObstacle>();
+            _trashProducer = GetComponent<ICatTrashProducer>();
+            _motor = GetComponent<ICatMotor>();
+        }
 
         private void Start()
         {
@@ -30,29 +40,10 @@ namespace VacuumSim.Cat.Brain
             CatLifeCycleAsync(_cts.Token).Forget();
         }
 
-        // ИСПРАВЛЕНИЕ 2: Динамическое обновление препятствия каждый кадр
         private void Update()
         {
-            if (_grid == null) return;
-
-            // Определяем, на какой ячейке кот находится физически прямо сейчас
-            Node currentNode = _grid.NodeFromWorldPoint(transform.position);
-
-            if (currentNode != _lastOccupiedNode)
-            {
-                // Освобождаем старую клетку (робот снова может через нее ехать)
-                if (_lastOccupiedNode != null)
-                {
-                    _lastOccupiedNode.IsWalkable = true;
-                }
-
-                // Занимаем новую клетку (делаем её стеной для робота)
-                if (currentNode != null && currentNode.IsWalkable)
-                {
-                    _lastOccupiedNode = currentNode;
-                    _lastOccupiedNode.IsWalkable = false; 
-                }
-            }
+            // Обновляем позицию препятствия на сетке каждую секунду/кадр
+            _obstacle.UpdateObstaclePosition(transform.position);
         }
 
         private async UniTask CatLifeCycleAsync(CancellationToken token)
@@ -61,86 +52,44 @@ namespace VacuumSim.Cat.Brain
 
             while (!token.IsCancellationRequested)
             {
-                await WanderAsync(token);
-                await SitAndRestAsync(token);
-                await PoopAndStandAsync(token);
+                await WanderPhaseAsync(token);
+                await RestPhaseAsync(token);
+                await PoopPhaseAsync(token);
             }
         }
 
-        private async UniTask WanderAsync(CancellationToken token)
+        private async UniTask WanderPhaseAsync(CancellationToken token)
         {
-            _animator.CrossFade("Walk", 0.2f);
+            _view.PlayWalk();
 
-            // ХИТРОСТЬ: Временно разблокируем свою клетку, чтобы алгоритмы поиска пути 
-            // не выдали ошибку "Стартовая точка находится внутри стены"
-            if (_lastOccupiedNode != null) _lastOccupiedNode.IsWalkable = true;
-
+            // Отключаем блокировку сетки под собой на время поиска пути, чтобы A* работал корректно
+            _obstacle.SetObstacleActive(false);
             Node targetNode = GetRandomWalkableNode();
-            List<Node> path = null;
+            List<Node> path = targetNode != null ? _pathfinder.FindPath(transform.position, targetNode.WorldPosition) : null;
+            _obstacle.SetObstacleActive(true);
 
-            if (targetNode != null)
+            if (path != null && path.Count > 0)
             {
-                path = _pathfinder.FindPath(transform.position, targetNode.WorldPosition);
-            }
-
-            // Сразу же возвращаем блок обратно, чтобы робот не успел проскочить
-            if (_lastOccupiedNode != null) _lastOccupiedNode.IsWalkable = false;
-
-            if (path == null || path.Count == 0) return;
-
-            foreach (Node node in path)
-            {
-                if (token.IsCancellationRequested) break;
-                
-                Vector3 targetPos = new Vector3(node.WorldPosition.x, transform.position.y, node.WorldPosition.z);
-                
-                while (Vector3.Distance(transform.position, targetPos) > 0.1f)
-                {
-                    Vector3 direction = (targetPos - transform.position).normalized;
-                    if (direction.sqrMagnitude > 0.001f)
-                    {
-                        Quaternion lookRotation = Quaternion.LookRotation(direction);
-                        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * _rotationSpeed);
-                    }
-
-                    transform.position = Vector3.MoveTowards(transform.position, targetPos, _moveSpeed * Time.deltaTime);
-                    await UniTask.Yield(PlayerLoopTiming.Update, token);
-                }
+                await _motor.MoveAlongPathAsync(path, _moveSpeed, _rotationSpeed, token);
             }
         }
 
-        private async UniTask SitAndRestAsync(CancellationToken token)
+        private async UniTask RestPhaseAsync(CancellationToken token)
         {
-            _animator.CrossFade("SitDown", 0.2f);
+            _view.PlaySitDown();
             float restTime = Random.Range(4f, 7f);
             await UniTask.Delay(System.TimeSpan.FromSeconds(restTime), cancellationToken: token);
         }
 
-        private async UniTask PoopAndStandAsync(CancellationToken token)
+        private async UniTask PoopPhaseAsync(CancellationToken token)
         {
-            _animator.CrossFade("StandUp", 0.2f);
+            _view.PlayStandUp();
             await UniTask.Delay(1000, cancellationToken: token);
 
-            // Спавним мусор на основе настроек нашего ScriptableObject
-            if (_catTrashType != null && _catTrashType.Prefab != null)
-            {
-                Vector3 spawnPos = new Vector3(transform.position.x, _grid.transform.position.y + 1f, transform.position.z);
-                
-                // Создаем визуальный объект на сцене
-                Instantiate(_catTrashType.Prefab, spawnPos, Quaternion.identity);
+            // Просто делегируем задачу спавна отдельному модулю
+            _trashProducer.ProduceTrash(transform.position);
 
-                // Регистрируем загрязнение в системе
-                Node currentNode = _grid.NodeFromWorldPoint(spawnPos);
-                if (currentNode != null)
-                {
-                    currentNode.HasTrash = true;
-                    currentNode.IsCleaned = false; 
-                }
-                
-                Debug.Log($"<color=magenta>[Cat] Кот оставил мусор типа: {_catTrashType.Title}!</color>");
-            }
-
-            _animator.CrossFade("Idle", 0.2f);
+            _view.PlayIdle();
             await UniTask.Delay(1500, cancellationToken: token);
         }
 
@@ -155,23 +104,11 @@ namespace VacuumSim.Cat.Brain
                     if (n.IsWalkable) walkableNodes.Add(n);
                 }
             }
-
-            if (walkableNodes.Count > 0)
-            {
-                return walkableNodes[Random.Range(0, walkableNodes.Count)];
-            }
-            return null;
+            return walkableNodes.Count > 0 ? walkableNodes[Random.Range(0, walkableNodes.Count)] : null;
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
-            // Обязательно освобождаем клетку, если кота выключили или уничтожили,
-            // иначе на сетке останется "невидимая вечная стена".
-            if (_lastOccupiedNode != null)
-            {
-                _lastOccupiedNode.IsWalkable = true;
-            }
-            
             if (_cts != null)
             {
                 _cts.Cancel();

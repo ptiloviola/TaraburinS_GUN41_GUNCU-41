@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3d58aaf913f189479d9a38e345d6972, type: 3}
   m_Name: TrashType3
   m_EditorClassIdentifier: 
-  Title: 
-  Prefab: {fileID: 0}
-  Points: 0
-  FillAmount: 0
+  Title: "\u041A\u043E\u0448\u0438\u043D\u044B\u0439 \u043C\u0443\u0441\u043E\u0440"
+  Prefab: {fileID: 2375570929280451184, guid: b3e0faae9048f9442a54f19924178715, type: 3}
+  Points: 7
+  FillAmount: 3
