@@ -35,7 +35,7 @@ namespace VacuumSim.Rules
                 _checkTimer = 0f;
                 float trashPercent = _grid.GetDirtyPercentage();
 
-                Debug.Log($"[GameRule] Пол завален мусором на: {trashPercent * 100:F1}%");
+                // Debug.Log($"[GameRule] Пол завален мусором на: {trashPercent * 100:F1}%");
 
                 if (trashPercent >= _gameConfig.GameOverTrashPercent)
                 {

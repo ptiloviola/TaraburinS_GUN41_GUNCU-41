@@ -35,7 +35,6 @@ namespace VacuumSim.Robotics.Components
         {
             _currentSpeed = speed;
             _isMoving = true;
-            Debug.Log($"[Motor] Двигатель запущен! Скорость: {speed}");
         }
 
         public void Stop()
@@ -54,7 +53,7 @@ namespace VacuumSim.Robotics.Components
         public async UniTask RotateAsync(float angleDelta, CancellationToken token)
         {
             float rotated = 0f;
-            float direction = Mathf.Sign(angleDelta); // 1 (вправо) или -1 (влево)
+            float direction = Mathf.Sign(angleDelta);
             float targetAbs = Mathf.Abs(angleDelta);
 
             while (rotated < targetAbs)
@@ -76,7 +75,7 @@ namespace VacuumSim.Robotics.Components
                 await UniTask.WaitForFixedUpdate(cancellationToken: token);
             }
             
-            Debug.Log($"[Motor] Поворот на {angleDelta} градусов завершен.");
+            // Debug.Log($"[Motor] Поворот на {angleDelta} градусов завершен.");
         }
 
         public void SetSpeedMultiplier(float multiplier)
