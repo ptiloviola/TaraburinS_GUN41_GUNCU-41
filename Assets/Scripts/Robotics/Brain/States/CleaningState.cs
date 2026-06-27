@@ -9,9 +9,8 @@ namespace VacuumSim.Robotics.Brain.States
     public class CleaningState : IVacuumState
     {
         private readonly List<ICleaningStrategy> _strategies;
-        private int _activeIndex = 0; // Индекс текущей стратегии
+        private int _activeIndex = 0;
 
-        // Zenject автоматически соберет все забинденные ICleaningStrategy в этот список!
         public CleaningState(List<ICleaningStrategy> strategies)
         {
             _strategies = strategies;
@@ -34,7 +33,6 @@ namespace VacuumSim.Robotics.Brain.States
         {
             if (_strategies.Count == 0) return;
             
-            // Запускаем выбранную стратегию
             await _strategies[_activeIndex].ExecuteAsync(token);
         }
     }

@@ -28,7 +28,6 @@ namespace VacuumSim.Robotics.Components
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
-            // Запрещаем физическому движку усыплять этого робота!
             _rb.sleepThreshold = 0.0f;
         }
 
@@ -47,7 +46,6 @@ namespace VacuumSim.Robotics.Components
             if (_rb != null)
             {
                 _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
-                // Сбрасываем угловую скорость, чтобы пылесос не крутился по инерции после столкновений
                 _rb.angularVelocity = Vector3.zero; 
             }
             
@@ -59,28 +57,22 @@ namespace VacuumSim.Robotics.Components
             float direction = Mathf.Sign(angleDelta); // 1 (вправо) или -1 (влево)
             float targetAbs = Mathf.Abs(angleDelta);
 
-            // Пока мы не повернулись на нужный угол...
             while (rotated < targetAbs)
             {
-                // Если игру остановили или робот сломался - немедленно прерываем цикл
                 if (token.IsCancellationRequested) return;
 
-                // Считаем, на сколько градусов мы должны повернуться в этот кадр
                 float step = _config.RotationSpeed * Time.fixedDeltaTime;
                 
-                // Защита от "перелета" (чтобы не повернуться на 92 градуса вместо 90)
                 if (rotated + step > targetAbs) 
                 {
                     step = targetAbs - rotated; 
                 }
 
-                // Вращаем Rigidbody
                 Quaternion deltaRotation = Quaternion.Euler(0, step * direction, 0);
                 _rb.MoveRotation(_rb.rotation * deltaRotation);
 
                 rotated += step;
 
-                // ВАЖНО: Ждем следующего ФИЗИЧЕСКОГО кадра, чтобы продолжить цикл
                 await UniTask.WaitForFixedUpdate(cancellationToken: token);
             }
             
@@ -97,11 +89,8 @@ namespace VacuumSim.Robotics.Components
         {
             if (_isMoving)
             {
-                // Постоянно поддерживаем скорость каждый физический кадр, преодолевая трение.
-                // Сохраняем текущую скорость по оси Y (гравитацию), чтобы робот не летал.
                 Vector3 targetVelocity = transform.forward * (_currentSpeed * _speedMultiplier);
                 _rb.velocity = new Vector3(targetVelocity.x, _rb.velocity.y, targetVelocity.z);
-                // Добавляем проверку пульса
                 // Debug.Log($"[Motor] Цель: {targetVelocity}. Факт RB: {_rb.velocity}");
             }
         }

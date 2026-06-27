@@ -17,8 +17,6 @@ namespace VacuumSim.Robotics.Components
         [Header("Данные для редактора (Gizmos)")]
         [SerializeField] private VacuumConfig _config;
 
-        // ОПТИМИЗАЦИЯ: Создаем фиксированный буфер в памяти ОДИН раз.
-        // Пылесос вряд ли засосет больше 10 объектов за ОДИН физический кадр.
         private readonly Collider[] _hitBuffer = new Collider[10];
 
         private PathfindingGrid _grid;
@@ -39,8 +37,6 @@ namespace VacuumSim.Robotics.Components
         private void FixedUpdate()
         {
             if (_dustbin.IsFull) return;
-            // NonAlloc не создает массив, а заполняет наш готовый _hitBuffer.
-            // Он возвращает int — количество РЕАЛЬНО найденных объектов.
             int hitCount = Physics.OverlapSphereNonAlloc(
                 _intakePoint.position, 
                 _config.IntakeRadius, 
@@ -48,7 +44,6 @@ namespace VacuumSim.Robotics.Components
                 _trashMask
             );
 
-            // Идем циклом for только по тем элементам, которые реально нашли
             for (int i = 0; i < hitCount; i++)
             {
                 if (_dustbin.IsFull) break;

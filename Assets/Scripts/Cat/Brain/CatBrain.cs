@@ -17,7 +17,6 @@ namespace VacuumSim.Cat.Brain
         [SerializeField] private float _moveSpeed = 1.2f;
         [SerializeField] private float _rotationSpeed = 6.0f;
 
-        // Ссылки на интерфейсы наших новых компонентов
         private ICatView _view;
         private ICatObstacle _obstacle;
         private ICatTrashProducer _trashProducer;
@@ -27,7 +26,6 @@ namespace VacuumSim.Cat.Brain
 
         private void Awake()
         {
-            // Собираем компоненты с этого же GameObject
             _view = GetComponent<ICatView>();
             _obstacle = GetComponent<ICatObstacle>();
             _trashProducer = GetComponent<ICatTrashProducer>();
@@ -36,13 +34,12 @@ namespace VacuumSim.Cat.Brain
 
         private void Start()
         {
-            StartBrain(); // Теперь запуск идет через наш новый метод
+            StartBrain();
         }
 
-        // ПУБЛИЧНЫЕ МЕТОДЫ ДЛЯ ВНЕШНЕГО КОНТРОЛЯ
         public void StartBrain()
         {
-            StopBrain(); // На всякий случай чистим старый токен
+            StopBrain();
             _cts = new CancellationTokenSource();
             CatLifeCycleAsync(_cts.Token).Forget();
         }
@@ -51,7 +48,7 @@ namespace VacuumSim.Cat.Brain
         {
             if (_cts != null)
             {
-                _cts.Cancel(); // Мгновенно прерывает все Task (ходьбу, ожидание)
+                _cts.Cancel();
                 _cts.Dispose();
                 _cts = null;
             }
@@ -59,7 +56,6 @@ namespace VacuumSim.Cat.Brain
 
         private void Update()
         {
-            // Обновляем позицию препятствия на сетке каждую секунду/кадр
             _obstacle.UpdateObstaclePosition(transform.position);
         }
 
@@ -79,7 +75,6 @@ namespace VacuumSim.Cat.Brain
         {
             _view.PlayWalk();
 
-            // Отключаем блокировку сетки под собой на время поиска пути, чтобы A* работал корректно
             _obstacle.SetObstacleActive(false);
             Node targetNode = GetRandomWalkableNode();
             List<Node> path = targetNode != null ? _pathfinder.FindPath(transform.position, targetNode.WorldPosition) : null;
@@ -103,7 +98,6 @@ namespace VacuumSim.Cat.Brain
             _view.PlayStandUp();
             await UniTask.Delay(1000, cancellationToken: token);
 
-            // Просто делегируем задачу спавна отдельному модулю
             _trashProducer.ProduceTrash(transform.position);
 
             _view.PlayIdle();

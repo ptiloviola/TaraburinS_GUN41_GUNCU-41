@@ -1,7 +1,5 @@
 namespace VacuumSim.Robotics.Signals
 {
-
-    // Сигнал: Состояние бака изменилось
     public struct DustbinStateSignal
     {
         public float CurrentFill;

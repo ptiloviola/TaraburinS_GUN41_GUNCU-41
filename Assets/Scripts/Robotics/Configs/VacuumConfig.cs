@@ -33,8 +33,6 @@ namespace VacuumSim.Robotics.Configs
 
         public float IntakeRadius => _intakeRadius;
 
-
-        // Публичные свойства только для чтения (геттеры)
         public float MoveSpeed => _moveSpeed;
         public float RotationSpeed => _rotationSpeed;
         public float RayDistance => _rayDistance;

@@ -6,8 +6,8 @@ namespace VacuumSim.Trash
     public class TrashType : ScriptableObject
     {
         public string Title;
-        public GameObject Prefab; // Визуальное представление
-        public int Points;        // Сколько очков даем при всасывании
-        public float FillAmount;  // На сколько % забивает бак (например, 0.1f)
+        public GameObject Prefab;
+        public int Points;
+        public float FillAmount;
     }
 }

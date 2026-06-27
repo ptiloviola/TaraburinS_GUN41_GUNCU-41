@@ -4,9 +4,8 @@ namespace VacuumSim.Robotics.Contracts
     {
         float CurrentCharge { get; }
         bool IsEmpty { get; }
-        bool IsFull { get; } // Добавили проверку на полный заряд
-        void Charge(float amount); // Добавили метод зарядки
-        // Метод для влияния кота
+        bool IsFull { get; }
+        void Charge(float amount);
         void SetLoadMultiplier(float multiplier); 
     }
 

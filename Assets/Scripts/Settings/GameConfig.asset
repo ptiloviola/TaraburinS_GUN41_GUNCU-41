@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42293039366ea1a4482e7cca45eb7fd0, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  _gameOverTrashPercent: 0.07
+  _gameOverTrashPercent: 0.42
   _catSpeedMultiplier: 0.4
   _catBatteryMultiplier: 2

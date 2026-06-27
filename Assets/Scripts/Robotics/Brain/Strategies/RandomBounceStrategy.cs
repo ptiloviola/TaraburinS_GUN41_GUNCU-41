@@ -21,7 +21,6 @@ namespace VacuumSim.Robotics.Brain.Strategies
 
         public async UniTask ExecuteAsync(CancellationToken token)
         {
-            // Этот цикл работает, пока внешняя система (Мозг) не отменит токен
             while (!token.IsCancellationRequested)
             {
                 Debug.Log("[Strategy] Хаотичный режим: Еду прямо.");

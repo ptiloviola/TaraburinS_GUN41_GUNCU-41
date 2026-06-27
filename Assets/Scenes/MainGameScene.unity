@@ -495,7 +495,7 @@ GameObject:
   - component: {fileID: 85448329}
   - component: {fileID: 85448328}
   - component: {fileID: 85448327}
-  m_Layer: 7
+  m_Layer: 2
   m_Name: TrashSpawnArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1657,7 +1657,7 @@ Transform:
   m_GameObject: {fileID: 444675677}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.09, y: 1.51, z: 14.47}
+  m_LocalPosition: {x: -5.09, y: 3.01, z: 14.47}
   m_LocalScale: {x: 2.0869381, y: 1.6219, z: 1.9325153}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2692,7 +2692,7 @@ GameObject:
   - component: {fileID: 834065479}
   - component: {fileID: 834065478}
   - component: {fileID: 834065480}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: NavGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2746,7 +2746,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -3629,7 +3629,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 53}
   m_SizeDelta: {x: 1000, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1186986749
@@ -4088,7 +4088,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 100}
+  m_SizeDelta: {x: 400, y: 126}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1258843630
 MonoBehaviour:

@@ -16,7 +16,6 @@ namespace VacuumSim.Robotics.Brain
         private readonly SignalBus _signalBus;
         private readonly IVacuumMotor _motor;
         
-        // Ссылки на доступные состояния
         private readonly CleaningState _cleaningState;
         private readonly ReturnToBaseState _returnToBaseState;
         private readonly ManualTransitState _manualTransitState;
@@ -51,7 +50,6 @@ namespace VacuumSim.Robotics.Brain
 
         public void Initialize()
         {
-            // Мозг подписывается на сигналы критических изменений
             _signalBus.Subscribe<BatteryStateSignal>(OnBatteryChanged);
             _signalBus.Subscribe<DustbinStateSignal>(OnDustbinChanged);
             _signalBus.Subscribe<ArrivedAtBaseSignal>(OnArrivedAtBase);
@@ -61,10 +59,8 @@ namespace VacuumSim.Robotics.Brain
 
         public async UniTask StartCleaningAsync(CancellationToken token)
         {
-            // Стартуем с режима уборки
             ChangeState(_cleaningState);
 
-            // Держим мозг активным, пока работает вся симуляция
             while (!token.IsCancellationRequested)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, token);
@@ -84,8 +80,6 @@ namespace VacuumSim.Robotics.Brain
 
             Debug.Log($"[SmartBrain] Смена режима на: {newState.GetType().Name}");
 
-            // Включаем коллектор всегда, КРОМЕ состояния парковки.
-            // Таким образом, по пути на базу он будет собирать мусор, а на зарядке - нет!
             _collector.enabled = (newState != _dockedState);
 
             _currentState.ExecuteAsync(_stateCts.Token).Forget();
@@ -102,11 +96,8 @@ namespace VacuumSim.Robotics.Brain
             _motor.Stop();
         }
 
-        // --- РЕАКТИВНЫЕ ТРИГГЕРЫ ПЕРЕКЛЮЧЕНИЯ ---
-
         private void OnBatteryChanged(BatteryStateSignal signal)
         {
-            // Если мы уже заряжаемся — игнорируем панику батареи!
             if (_currentState is DockedState) return; 
 
             if (signal.IsLow) 
@@ -129,21 +120,17 @@ namespace VacuumSim.Robotics.Brain
 
         private void OnTargetPointSelected(TargetPointSelectedSignal signal)
         {
-            // Игрок кликнул! Бросаем все дела, стираем память сетке
             _grid.ResetCleaningMemory();
             
-            // Передаем стейту координату и включаем его
             _manualTransitState.TargetPoint = signal.Point;
             ChangeState(_manualTransitState);
         }
 
         private void OnManualTransitCompleted()
         {
-            // Робот доехал. Включаем режим уборки (Змейка начнется из новой точки на свежей сетке!)
             ChangeState(_cleaningState);
         }
 
-        // Позволяет Презентеру спросить: "Робот сейчас в этом состоянии?"
         public bool IsActiveState(IVacuumState state)
         {
             return _currentState == state;

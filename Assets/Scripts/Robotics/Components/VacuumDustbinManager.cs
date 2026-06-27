@@ -27,7 +27,6 @@ namespace VacuumSim.Robotics.Components
         {
             _currentFill = 0f;
             
-            // Подписываемся на тот же самый сигнал, что и Батарея!
             _signalBus.Subscribe<TrashCollectedSignal>(OnTrashCollected);
             
             FireStateSignal();
@@ -37,8 +36,6 @@ namespace VacuumSim.Robotics.Components
         {
             if (IsFull) return;
 
-            // Пока считаем, что любая соринка занимает 1 единицу объема.
-            // Позже можно будет брать объем прямо из signal.TrashData, если добавим туда такое поле.
             _currentFill += signal.TrashData.FillAmount;
 
             FireStateSignal();

@@ -56,14 +56,12 @@ namespace VacuumSim.Pathfinding
         {
             _grid = new Node[_gridSizeX, _gridSizeY];
             
-            // ФИКС 1: Фиксируем высоту (Y) по объекту, а не по центру коллайдера
             Vector3 worldBottomLeft = new Vector3(
                 _gridBoundsCollider.bounds.center.x - _gridWorldSize.x / 2,
                 transform.position.y,
                 _gridBoundsCollider.bounds.center.z - _gridWorldSize.y / 2
             );
 
-            // ФИКС 2: Прячем коллайдер границ перед сканированием, чтобы не заблокировать самих себя
             _gridBoundsCollider.enabled = false;
 
             for (int x = 0; x < _gridSizeX; x++)
@@ -85,7 +83,6 @@ namespace VacuumSim.Pathfinding
                 }
             }
             
-            // Включаем коллайдер обратно
             _gridBoundsCollider.enabled = true;
             
             Debug.Log($"[Grid] Сетка сгенерирована: {_gridSizeX * _gridSizeY} ячеек. Размер: {_gridWorldSize.x} x {_gridWorldSize.y}");

@@ -40,7 +40,7 @@ namespace VacuumSim.Robotics.Brain.States
             if (path == null || path.Count == 0)
             {
                 Debug.LogWarning("[State] Невозможно проехать в эту точку!");
-                _signalBus.Fire<TransitCompletedSignal>(); // Возвращаем как было
+                _signalBus.Fire<TransitCompletedSignal>();
                 return;
             }
 
@@ -56,10 +56,9 @@ namespace VacuumSim.Robotics.Brain.States
             _motor.Stop();
             
             Debug.Log("[State] Прибыл в указанную точку. Передаю управление.");
-            _signalBus.Fire<TransitCompletedSignal>(); // Сообщаем мозгу, что пора включать уборку
+            _signalBus.Fire<TransitCompletedSignal>();
         }
 
-        // (Метод движения такой же, как в Змейке, копируем его сюда для автономности стейта)
         private async UniTask MoveToNodeAsync(Vector3 targetPos, CancellationToken token)
         {
             Vector3 targetPosFlat = new Vector3(targetPos.x, 0, targetPos.z);

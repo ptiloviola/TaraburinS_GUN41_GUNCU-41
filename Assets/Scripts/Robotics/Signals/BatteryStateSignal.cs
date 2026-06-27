@@ -1,6 +1,5 @@
 namespace VacuumSim.Robotics.Signals
 {
-    // Сигнал: Состояние батареи изменилось (для UI и Мозга)
     public struct BatteryStateSignal
     {
         public float CurrentCharge;

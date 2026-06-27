@@ -20,7 +20,7 @@ namespace VacuumSim.UI
         [SerializeField] private TMP_Dropdown _strategyDropdown;
 
         [Header("Панель Game Over")]
-        [SerializeField] private GameObject _gameOverPanel; // Объект-родитель всей панели
+        [SerializeField] private GameObject _gameOverPanel;
         [SerializeField] private TextMeshProUGUI _finalScoreText;
         [SerializeField] private TextMeshProUGUI _bestScoreText;
         [SerializeField] private Button _restartButton;
@@ -29,14 +29,6 @@ namespace VacuumSim.UI
         [SerializeField] private TextMeshProUGUI _pollutionText;
 
 
-
-
-        
-        // Выпадающий список (Dropdown) для режимов добавим позже, 
-        // оставим для него место в верстке.
-
-        // События, через которые View сообщает дирижеру (Presenter'у) о действиях игрока.
-        // Action - это встроенный делегат C# (по сути, пустой сигнал без параметров).
         public event Action OnReturnToBaseClicked;
         public event Action OnEmptyBinClicked;
         public event Action OnChoosePointClicked;
@@ -45,7 +37,6 @@ namespace VacuumSim.UI
 
         private void Awake()
         {
-            // Как только кнопка нажата, мы "выстреливаем" нашим событием
             _returnToBaseButton.onClick.AddListener(() => OnReturnToBaseClicked?.Invoke());
             _emptyBinButton.onClick.AddListener(() => OnEmptyBinClicked?.Invoke());
 
@@ -53,22 +44,17 @@ namespace VacuumSim.UI
             {
                 _choosePointButton.onClick.AddListener(() => OnChoosePointClicked?.Invoke());
             }
-            // ПОДПИСЫВАЕМСЯ НА ИЗМЕНЕНИЕ ЗНАЧЕНИЯ В DROPDOWN
+
             if (_strategyDropdown != null)
                 _strategyDropdown.onValueChanged.AddListener((index) => OnStrategyChanged?.Invoke(index));
             
             if (_restartButton != null)
                 _restartButton.onClick.AddListener(() => OnRestartClicked?.Invoke());
 
-            // При старте игры обязательно прячем панель Game Over, если забыли выключить в инспекторе
             if (_gameOverPanel != null) 
                 _gameOverPanel.SetActive(false);
         
         }
-
-        // =========================================================
-        // ПУБЛИЧНЫЕ МЕТОДЫ ДЛЯ ОБНОВЛЕНИЯ ВИЗУАЛА (Дергает Presenter)
-        // =========================================================
 
         public void UpdateBattery(float percentage)
         {
@@ -109,10 +95,8 @@ namespace VacuumSim.UI
         {
             if (_pollutionText != null)
             {
-                // Переводим доли (0.2f) в понятные проценты (20%)
                 int percent = Mathf.RoundToInt(pollutionFraction * 100);
                 
-                // Можно добавить цветовую индикацию: если грязно - краснеет!
                 string colorHex = percent > 50 ? "#ff4d4d" : "#ffffff"; 
                 
                 _pollutionText.text = $"загрязнение комнаты: <color={colorHex}>{percent}%</color>";
@@ -121,7 +105,6 @@ namespace VacuumSim.UI
 
         private void OnDestroy()
         {
-            // Хороший тон - отписываться от кнопок при уничтожении Canvas
             _returnToBaseButton.onClick.RemoveAllListeners();
             _emptyBinButton.onClick.RemoveAllListeners();
             _choosePointButton.onClick.RemoveAllListeners();

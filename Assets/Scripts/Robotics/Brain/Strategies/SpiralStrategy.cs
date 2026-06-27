@@ -8,30 +8,27 @@ using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Robotics.Brain.Strategies
 {
-    // Наследуемся от базовой стратегии
     public class SpiralStrategy : BaseGridStrategy
     {
         private int _currentX;
         private int _currentY;
         
-        // Векторы направлений: Вверх, Вправо, Вниз, Влево (по часовой стрелке)
         private readonly Vector2Int[] _directions = {
             new Vector2Int(0, 1),
             new Vector2Int(1, 0),
             new Vector2Int(0, -1),
             new Vector2Int(-1, 0)
         };
-        private int _currentDirIndex = 0; // Начинаем движение "Вверх"
+        private int _currentDirIndex = 0;
 
-        // Конструктор передает зависимости в базовый класс
         public SpiralStrategy(
             IVacuumMotor motor, VacuumConfig config, 
             PathfindingGrid grid, Pathfinder pathfinder) 
             : base(motor, config, grid, pathfinder)
         {
+            
         }
 
-        // Реализуем только логику раскручивания спирали!
         public override async UniTask ExecuteAsync(CancellationToken token)
         {
             Debug.Log("<color=magenta>[Spiral] --- СТАРТ СПИРАЛЬНОЙ СТРАТЕГИИ ---</color>");
@@ -51,13 +48,11 @@ namespace VacuumSim.Robotics.Brain.Strategies
                 bool moveSuccessful = false;
                 int turnsAttempts = 0;
 
-                // Пытаемся сделать шаг. Если стена - поворачиваем на 90 градусов.
                 while (turnsAttempts < 4)
                 {
                     int nextX = _currentX + _directions[_currentDirIndex].x;
                     int nextY = _currentY + _directions[_currentDirIndex].y;
 
-                    // Вызов метода из базового класса!
                     if (IsValidWalkableAndDirty(nextX, nextY)) 
                     {
                         _currentX = nextX;
@@ -72,12 +67,10 @@ namespace VacuumSim.Robotics.Brain.Strategies
                     }
                 }
 
-                // Тупик (все 4 стороны заблокированы)
                 if (!moveSuccessful)
                 {
                     Debug.LogWarning($"<color=orange>[Spiral] Локальный тупик. Ищу новую зону через A*...</color>");
                     
-                    // Вызов метода из базового класса!
                     Node nextDirtyNode = FindNearestDirtyNode(); 
 
                     if (nextDirtyNode == null)
@@ -99,7 +92,6 @@ namespace VacuumSim.Robotics.Brain.Strategies
                         {
                             if (token.IsCancellationRequested) break;
                             
-                            // Вызов метода из базового класса!
                             await MoveToNodeAsync(pathNode.WorldPosition, token, isTransit: true); 
                         }
 
@@ -107,7 +99,7 @@ namespace VacuumSim.Robotics.Brain.Strategies
                         
                         _currentX = nextDirtyNode.GridX;
                         _currentY = nextDirtyNode.GridY;
-                        _currentDirIndex = 0; // Сбрасываем направление для новой спирали
+                        _currentDirIndex = 0;
                         continue;
                     }
                     else
@@ -117,10 +109,8 @@ namespace VacuumSim.Robotics.Brain.Strategies
                     }
                 }
 
-                // Едем в выбранную ячейку
                 Vector3 targetPos = _grid.GetNodeFromIndices(_currentX, _currentY).WorldPosition;
                 
-                // Вызов метода из базового класса!
                 await MoveToNodeAsync(targetPos, token, isTransit: false); 
             }
         }

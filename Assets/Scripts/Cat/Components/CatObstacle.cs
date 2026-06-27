@@ -13,23 +13,19 @@ namespace VacuumSim.Cat.Components
         private Node _lastOccupiedNode;
         private bool _isActive = true;
         
-        // Ссылка на физический коллайдер кота
         private Collider _collider;
 
         private void Awake()
         {
             _collider = GetComponent<Collider>();
             
-            // Прячемся от стартового сканирования сетки!
             if (_collider != null) _collider.enabled = false; 
         }
 
         private async void Start()
         {
-            // Ждем 5 кадров, чтобы PathfindingGrid гарантированно собрал статичную карту комнаты
             await UniTask.DelayFrame(5);
             
-            // Торжественно появляемся в физическом мире для сенсоров робота
             if (_collider != null) _collider.enabled = true;
         }
 

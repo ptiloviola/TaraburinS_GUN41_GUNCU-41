@@ -16,7 +16,6 @@ public class AStarTester : MonoBehaviour
 
     private void Start()
     {
-        // Пока без Zenject, просто инициализируем вручную для теста
         _pathfinder = new Pathfinder(Grid);
     }
 
@@ -24,7 +23,6 @@ public class AStarTester : MonoBehaviour
     {
         if (Seeker != null && Target != null && Grid != null)
         {
-            // Каждый кадр просим алгоритм перестроить путь
             Grid.CurrentPath = _pathfinder.FindPath(Seeker.position, Target.position);
         }
     }

@@ -33,7 +33,6 @@ namespace VacuumSim.UI
 
         private int _currentScore;
 
-        // Zenject внедряет все зависимости сюда, включая наш View со сцены
         public VacuumDashboardPresenter(
             SignalBus signalBus, 
             VacuumDashboardView view, 
@@ -60,32 +59,27 @@ namespace VacuumSim.UI
 
         public void Initialize()
         {
-            // 1. Подписываемся на Данные от систем пылесоса (Модели)
             _signalBus.Subscribe<BatteryStateSignal>(OnBatteryChanged);
             _signalBus.Subscribe<DustbinStateSignal>(OnDustbinChanged);
             _signalBus.Subscribe<TrashCollectedSignal>(OnTrashCollected);
 
             _signalBus.Subscribe<GameOverSignal>(OnGameOver);
 
-            // 2. Подписываемся на клики игрока из интерфейса (View)
             _view.OnReturnToBaseClicked += HandleReturnToBase;
             _view.OnEmptyBinClicked += HandleStartCleaning;
             _view.OnChoosePointClicked += HandleChoosePoint;
             _view.OnStrategyChanged += HandleStrategyChanged;
             _view.OnRestartClicked += HandleRestart;
 
-            // Задаем стартовое значение очков
             _view.UpdateScore(_currentScore);
             _view.UpdateDustbin(_dustbin.CurrentFill, _config.MaxDustbinCapacity);
             _view.UpdateBattery(_battery.CurrentCharge / _config.MaxBattery);
         }
         public void Tick()
         {
-            // Плавно и незаметно обновляем UI в реальном времени
             _view.UpdatePollution(_grid.GetDirtyPercentage());
         }
 
-        // --- РЕАКЦИИ НА ДАННЫЕ РОБОТА ---
         private void OnBatteryChanged(BatteryStateSignal signal)
         {
             _view.UpdateBattery(signal.Percentage);
@@ -98,13 +92,10 @@ namespace VacuumSim.UI
 
         private void OnTrashCollected(TrashCollectedSignal signal)
         {
-            // Берем очки прямо из типа мусора! (Убедись, что в TrashType есть поле Points)
-            // Если поля Points нет, можно пока сделать просто _currentScore += 10;
             _currentScore += signal.TrashData.Points; 
             _view.UpdateScore(_currentScore);
         }
 
-        // --- РЕАКЦИИ НА КЛИКИ ИГРОКА ---
         private void HandleReturnToBase()
         {
             Debug.Log("[UI] Вызвана команда возврата на базу!");
@@ -114,14 +105,12 @@ namespace VacuumSim.UI
         private void HandleStartCleaning()
         {
             Debug.Log("[UI] Вызвано возвращение к работе!");
-            // Дирижер напрямую дергает логику бака, потому что у него есть ссылка на интерфейс
             _brain.ChangeState(_cleaninState);
         }
 
         private void HandleChoosePoint()
         {
             Debug.Log("[UI] Едем туда!");
-            // Дирижер напрямую дергает логику бака, потому что у него есть ссылка на интерфейс
             _inputHandler.EnableTargetSelection();
         }
 
@@ -129,25 +118,19 @@ namespace VacuumSim.UI
         {
             Debug.Log($"[UI] Игрок переключил стратегию на индекс: {index}");
             
-            // 1. Меняем активный индекс
             _cleaninState.SetStrategy(index);
             
-            // 2. Если робот УЖЕ убирается прямо сейчас — перезапускаем его
             if (_brain.IsActiveState(_cleaninState))
             {
                 Debug.Log("[Presenter] Принудительный перезапуск текущей уборки с новой логикой!");
                 _brain.ChangeState(_cleaninState, forceRestart: true); 
             }
-            // Если он на базе или в ручном транзите - мы просто запомнили индекс, 
-            // и новая стратегия применится сама, когда он начнет уборку!
         }
 
         private void OnGameOver()
         {
-            // Жестко останавливаем всю физику и спавнеры мусора
             Time.timeScale = 0f; 
 
-            // Достаем старый рекорд (если его нет, вернется 0)
             int bestScore = PlayerPrefs.GetInt("BestVacuumScore", 0);
             bool isNewRecord = _currentScore > bestScore;
 
@@ -158,7 +141,6 @@ namespace VacuumSim.UI
                 PlayerPrefs.Save();
             }
 
-            // Передаем данные во View, чтобы он показал финальную панель
             _view.ShowGameOverScreen(_currentScore, isNewRecord);
         }
 
@@ -166,23 +148,19 @@ namespace VacuumSim.UI
         {
             Debug.Log("[Presenter] Игрок нажал рестарт. Перезапускаю симуляцию...");
             
-            // КРИТИЧЕСКИ ВАЖНО: возвращаем время в нормальный поток! 
-            // Иначе новая сцена загрузится на вечной паузе.
             Time.timeScale = 1f; 
 
-            // Перезагружаем текущую активную сцену
             int currentSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
             UnityEngine.SceneManagement.SceneManager.LoadScene(currentSceneIndex);
         }
 
         public void Dispose()
         {
-            // Отписка от сигналов шины
+
             _signalBus.Unsubscribe<BatteryStateSignal>(OnBatteryChanged);
             _signalBus.Unsubscribe<DustbinStateSignal>(OnDustbinChanged);
             _signalBus.Unsubscribe<TrashCollectedSignal>(OnTrashCollected);
 
-            // Отписка от событий View
             _view.OnReturnToBaseClicked -= HandleReturnToBase;
             _view.OnEmptyBinClicked -= HandleStartCleaning;
             _view.OnChoosePointClicked -= HandleChoosePoint;

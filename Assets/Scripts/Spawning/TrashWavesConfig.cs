@@ -5,14 +5,12 @@ using VacuumSim.Trash; // Чтобы видеть TrashType
 
 namespace VacuumSim.Spawning
 {
-    // 1. Режимы появления мусора
     public enum SpawnMode 
     { 
-        FixedInterval, // Строго через равные промежутки (например, каждые 2 секунды)
-        Randomized     // Случайно выплевывать мусор в течение времени волны
+        FixedInterval,
+        Randomized
     }
 
-    // 2. Задача спавна (одна строка в волне)
     [Serializable]
     public class TrashSpawnTask
     {
@@ -26,7 +24,6 @@ namespace VacuumSim.Spawning
         public SpawnMode Mode = SpawnMode.Randomized;
     }
 
-    // 3. Сама Волна
     [Serializable]
     public class TrashWave
     {
@@ -40,7 +37,6 @@ namespace VacuumSim.Spawning
         public List<TrashSpawnTask> SpawnTasks;
     }
 
-    // 4. Главный ассет уровня
     [CreateAssetMenu(fileName = "NewLevelWaves", menuName = "VacuumSim/Level Waves Config")]
     public class TrashWavesConfig : ScriptableObject
     {

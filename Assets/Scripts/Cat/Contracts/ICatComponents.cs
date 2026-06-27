@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Cat.Contracts
 {
@@ -26,6 +27,6 @@ namespace VacuumSim.Cat.Contracts
 
     public interface ICatMotor
     {
-        UniTask MoveAlongPathAsync(System.Collections.Generic.List<VacuumSim.Pathfinding.Node> path, float speed, float rotationSpeed, CancellationToken token);
+        UniTask MoveAlongPathAsync(System.Collections.Generic.List<Node> path, float speed, float rotationSpeed, CancellationToken token);
     }
 }

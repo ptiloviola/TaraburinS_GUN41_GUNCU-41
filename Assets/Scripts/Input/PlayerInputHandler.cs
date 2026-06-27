@@ -26,7 +26,6 @@ namespace VacuumSim.Input
 
         private void CreateMarker()
         {
-            // ТОТ САМЫЙ код из первого варианта, который работал!
             _markerInstance = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             Object.Destroy(_markerInstance.GetComponent<Collider>());
             _markerInstance.transform.localScale = new Vector3(0.8f, 0.01f, 0.8f); 
@@ -40,7 +39,7 @@ namespace VacuumSim.Input
         public void EnableTargetSelection()
         {
             _isWaitingForClick = true;
-            _frameWhenEnabled = Time.frameCount; // Защита от мгновенного клика
+            _frameWhenEnabled = Time.frameCount;
             
             _markerInstance.SetActive(true);
             SetMarkerColor(Color.yellow);
@@ -55,14 +54,11 @@ namespace VacuumSim.Input
 
             if (dynamicFloorPlane.Raycast(ray, out float distance))
             {
-                // Идеальная точка на плоскости
                 Vector3 hitPoint = ray.GetPoint(distance);
-                // Идеальная ячейка сетки
                 Node node = _grid.NodeFromWorldPoint(hitPoint);
 
                 if (node != null)
                 {
-                    // РАЗГАДКА ЗДЕСЬ: X и Z берем от ячейки (Снаппинг), а Y берем от плоскости!
                     _markerInstance.transform.position = new Vector3(node.WorldPosition.x, hitPoint.y + 1.2f, node.WorldPosition.z);
 
                     bool isValid = node.IsWalkable;
@@ -77,7 +73,7 @@ namespace VacuumSim.Input
                         {
                             _isWaitingForClick = false;
                             
-                            AnimateAndHideMarker().Forget(); // Та самая плавная анимация из 1 версии
+                            AnimateAndHideMarker().Forget();
                             _signalBus.Fire(new TargetPointSelectedSignal { Point = node.WorldPosition });
                         }
                     }

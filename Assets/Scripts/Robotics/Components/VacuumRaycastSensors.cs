@@ -32,14 +32,12 @@ namespace VacuumSim.Robotics.Components
 
         public bool IsObstacleRight() 
         {
-            // Поворачиваем вектор "вперед" на заданный угол вправо
             Vector3 direction = Quaternion.Euler(0, _config.SideAngle, 0) * transform.forward;
             return CheckDirection(direction, Color.yellow);
         }
 
         public bool IsObstacleLeft() 
         {
-            // Поворачиваем вектор "вперед" на заданный угол влево
             Vector3 direction = Quaternion.Euler(0, -_config.SideAngle, 0) * transform.forward;
             return CheckDirection(direction, Color.yellow);
         }
@@ -49,10 +47,8 @@ namespace VacuumSim.Robotics.Components
             Vector3 origin = transform.position + _originOffset;
             Ray ray = new Ray(origin, direction);
             
-            // Рисуем центральную ось луча
             Debug.DrawRay(ray.origin, ray.direction * _config.RayDistance, debugColor, 0.5f);
             
-            // Заменяем Raycast на SphereCast!
             if (Physics.SphereCast(ray, _config.SphereRadius, out RaycastHit hit, _config.RayDistance, _obstacleMask))
             {
                 Debug.Log($"[Sensors] SphereCast задел: '{hit.collider.name}' на дист {hit.distance}м", hit.collider.gameObject);
@@ -64,22 +60,19 @@ namespace VacuumSim.Robotics.Components
         #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            // Этот метод рисует линии в редакторе, когда ты кликаешь на робота
+
             Vector3 origin = transform.position + _originOffset;
             Vector3 forward = transform.forward;
             Vector3 right = Quaternion.Euler(0, _config.SideAngle, 0) * forward;
             Vector3 left = Quaternion.Euler(0, -_config.SideAngle, 0) * forward;
 
-            // Рисуем центральный сенсор (Красный)
             Gizmos.color = Color.red;
             Gizmos.DrawRay(origin, forward * _config.RayDistance);
 
-            // Рисуем боковые сенсоры (Желтые)
             Gizmos.color = Color.yellow;
             Gizmos.DrawRay(origin, right * _config.RayDistance);
             Gizmos.DrawRay(origin, left * _config.RayDistance);
 
-            // Рисуем "набалдашники" сфер, чтобы понимать ширину SphereCast
             Gizmos.DrawWireSphere(origin + forward * _config.RayDistance, _config.SphereRadius);
         }
         #endif

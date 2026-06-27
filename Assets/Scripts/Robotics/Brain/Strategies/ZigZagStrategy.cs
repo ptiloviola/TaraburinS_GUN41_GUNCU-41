@@ -8,22 +8,20 @@ using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Robotics.Brain.Strategies
 {
-    // Наследуемся от базовой стратегии
     public class ZigZagStrategy : BaseGridStrategy
     {
         private int _currentX;
         private int _currentY;
         private int _directionX = 1;
 
-        // Конструктор просто передает данные в базовый класс (base)
         public ZigZagStrategy(
             IVacuumMotor motor, VacuumConfig config, 
             PathfindingGrid grid, Pathfinder pathfinder) 
             : base(motor, config, grid, pathfinder)
         {
+            
         }
 
-        // Реализуем только логику змейки!
         public override async UniTask ExecuteAsync(CancellationToken token)
         {
             Debug.Log("<color=cyan>[ZigZag] --- СТАРТ СТРАТЕГИИ ---</color>");

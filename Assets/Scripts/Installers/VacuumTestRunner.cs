@@ -11,7 +11,6 @@ namespace VacuumSim.Testing
         private IVacuumBrain _brain;
         private CancellationTokenSource _cts;
 
-        // Zenject сам вызовет этот метод и передаст сюда готовый мозг
         [Inject]
         public void Construct(IVacuumBrain brain)
         {
@@ -22,14 +21,11 @@ namespace VacuumSim.Testing
         {
             _cts = new CancellationTokenSource();
             
-            // Скорость задаем пока жестко для теста.
-            // Вызываем Forget(), чтобы Unity не ругалась на не ожидаемую (unawaited) таску
             _brain.StartCleaningAsync(_cts.Token).Forget(); 
         }
 
         private void OnDestroy()
         {
-            // Архитектурная гигиена: всегда отменяем асинхронные задачи при выходе
             if (_cts != null)
             {
                 _cts.Cancel();

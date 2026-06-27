@@ -19,7 +19,6 @@ namespace VacuumSim.Spawning
         [Tooltip("Матрица навигации для обновления чистоты")]
         [SerializeField] private PathfindingGrid _grid;
 
-        // Токен для безопасной остановки асинхронных задач при выходе из игры
         private CancellationTokenSource _cts;
 
         private void Start()
@@ -31,9 +30,7 @@ namespace VacuumSim.Spawning
             }
 
             _cts = new CancellationTokenSource();
-            
-            // Запускаем бесконечный процесс волн и "забываем" (Forget) про него, 
-            // так как он работает в фоне
+        
             RunWavesAsync(_cts.Token).Forget();
         }
 
@@ -47,12 +44,10 @@ namespace VacuumSim.Spawning
                 {
                     Debug.Log($"[WaveManager] Подготовка к Волне {waveIndex}. Ждем {wave.DelayBeforeWave} сек...");
                     
-                    // Ждем задержку перед волной
                     await UniTask.Delay(TimeSpan.FromSeconds(wave.DelayBeforeWave), cancellationToken: token);
 
                     Debug.Log($"[WaveManager] --- ВОЛНА {waveIndex} НАЧАЛАСЬ! Длительность: {wave.Duration} сек ---");
                     
-                    // Запускаем спавн всех элементов волны и ждем её полного окончания
                     await SpawnWaveContentAsync(wave, token);
                     
                     waveIndex++;
@@ -70,16 +65,12 @@ namespace VacuumSim.Spawning
 
         private async UniTask SpawnWaveContentAsync(TrashWave wave, CancellationToken token)
         {
-            // Список задач, чтобы запустить их параллельно
             var spawnRoutines = new List<UniTask>();
 
             foreach (var spawnTask in wave.SpawnTasks)
             {
-                // Добавляем процесс спавна конкретного типа мусора в общий пул задач
                 spawnRoutines.Add(ExecuteSpawnTaskAsync(spawnTask, wave.Duration, token));
             }
-
-            // Ждем, пока ВСЕ задачи (бумажки, пыль и т.д.) не закончат спавниться
             await UniTask.WhenAll(spawnRoutines);
         }
 
@@ -89,7 +80,6 @@ namespace VacuumSim.Spawning
 
             if (task.Mode == SpawnMode.FixedInterval)
             {
-                // Строго через равные промежутки
                 float interval = duration / task.Amount;
                 for (int i = 0; i < task.Amount; i++)
                 {
@@ -101,13 +91,12 @@ namespace VacuumSim.Spawning
             }
             else if (task.Mode == SpawnMode.Randomized)
             {
-                // Генерируем случайные метки времени в пределах длительности волны
                 List<float> spawnTimes = new List<float>();
                 for (int i = 0; i < task.Amount; i++)
                 {
                     spawnTimes.Add(UnityEngine.Random.Range(0f, duration));
                 }
-                spawnTimes.Sort(); // Сортируем от меньшего к большему
+                spawnTimes.Sort();
 
                 float currentTime = 0f;
                 foreach (var timeTarget in spawnTimes)
@@ -125,21 +114,16 @@ namespace VacuumSim.Spawning
 
         private void SpawnTrash(TrashType trashType)
         {
-            // Делаем несколько попыток найти чистую точку. 
-            // Если комната завалена мебелью, луч может часто попадать в столы.
+
             const int MAX_ATTEMPTS = 10;
             
             for (int i = 0; i < MAX_ATTEMPTS; i++)
             {
                 if (_spawnArea.TryGetValidSpawnPoint(out Vector3 point))
                 {
-                    // Точка найдена! 
-                    // Чуть приподнимаем мусор над полом, чтобы он не застрял в текстурах
                     Vector3 spawnPos = point + new Vector3(0, 0.05f, 0);
                     
                     Instantiate(trashType.Prefab, spawnPos, Quaternion.identity);
-                    // --- ИНТЕГРАЦИЯ С ИИ ---
-                    // Находим ячейку, в которую упал мусор, и говорим роботу, что она грязная!
                     if (_grid != null)
                     {
                         Node dirtyNode = _grid.NodeFromWorldPoint(point);
@@ -150,7 +134,7 @@ namespace VacuumSim.Spawning
                             Debug.Log($"[WaveManager] Мусор испачкал ячейку [{dirtyNode.GridX}, {dirtyNode.GridY}]!");
                         }
                     }
-                    return; // Успешно создали, выходим из метода
+                    return;
                 }
             }
 
@@ -159,7 +143,6 @@ namespace VacuumSim.Spawning
 
         private void OnDestroy()
         {
-            // Обязательно глушим все асинхронные задачи при удалении объекта
             if (_cts != null)
             {
                 _cts.Cancel();

@@ -17,7 +17,7 @@ MonoBehaviour:
   _rayDistance: 3
   _sphereRadius: 0.4
   _sideAngle: 45
-  _intakeRadius: 1
+  _intakeRadius: 2
   MaxBattery: 200
   IdleDrainRate: 0.5
   MoveDrainRate: 2

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -8,7 +7,6 @@ using VacuumSim.Pathfinding;
 
 namespace VacuumSim.Robotics.Brain.Strategies
 {
-    // Абстрактный класс нельзя создать напрямую. Он служит только "чертежом" для других стратегий.
     public abstract class BaseGridStrategy : ICleaningStrategy
     {
         protected readonly IVacuumMotor _motor;
@@ -16,7 +14,6 @@ namespace VacuumSim.Robotics.Brain.Strategies
         protected readonly PathfindingGrid _grid;
         protected readonly Pathfinder _pathfinder;
 
-        // Конструктор базового класса забирает зависимости
         protected BaseGridStrategy(
             IVacuumMotor motor, 
             VacuumConfig config, 
@@ -29,10 +26,8 @@ namespace VacuumSim.Robotics.Brain.Strategies
             _pathfinder = pathfinder;
         }
 
-        // Этот метод ОБЯЗАНЫ реализовать наследники (сама уникальная логика стратегии)
         public abstract UniTask ExecuteAsync(CancellationToken token);
 
-        // --- ДАЛЕЕ ИДУТ ОБЩИЕ МЕТОДЫ, ДОСТУПНЫЕ ВСЕМ НАСЛЕДНИКАМ ---
 
         protected bool IsValidWalkableAndDirty(int x, int y)
         {
