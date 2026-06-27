@@ -122,8 +122,11 @@ namespace VacuumSim.Spawning
                 if (_spawnArea.TryGetValidSpawnPoint(out Vector3 point))
                 {
                     Vector3 spawnPos = point + new Vector3(0, 0.05f, 0);
+                    float randomYAngle = UnityEngine.Random.Range(0f, 360f);
                     
-                    Instantiate(trashType.Prefab, spawnPos, Quaternion.identity);
+                    Quaternion randomRotation = Quaternion.Euler(0f, randomYAngle, 0f);
+                    
+                    Instantiate(trashType.Prefab, spawnPos, randomRotation);
                     if (_grid != null)
                     {
                         Node dirtyNode = _grid.NodeFromWorldPoint(point);
