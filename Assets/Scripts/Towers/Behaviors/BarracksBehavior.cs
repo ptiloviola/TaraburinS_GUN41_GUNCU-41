@@ -3,7 +3,7 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Towers.Data.Modules;
 using Gameplay.Units;
-
+using Gameplay.Towers.Factories; // Подключаем пространство имен нашей новой фабрики
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -11,56 +11,30 @@ namespace Gameplay.Towers.Behaviors
     {
         private TowerFacade _facade;
         private BarracksModuleDescriptor _module;
-        private DefenderFacade.Pool _defenderPool;
-
-        // Заменяем инжект пула на инжект самого DI-контейнера
-        private DiContainer _container;
-        // Список живых бойцов, привязанных к этой казарме
+        
+        // Вместо DiContainer теперь инжектим конкретную фабрику
+        private DefenderFactory _defenderFactory;
+        
         private List<DefenderFacade> _activeDefenders = new List<DefenderFacade>();
-
         private float _respawnTimer;
         private Vector3 _rallyPoint;
 
-        // Zenject внедрит нам Пул защитников
         [Inject]
-        public void Construct(DiContainer container)
+        public void Construct(DefenderFactory defenderFactory)
         {
-            _container = container;
-            Debug.Log($"<color=yellow>[BarracksBehavior] Zenject внедрил контейнер в {gameObject.name}</color>");
+            _defenderFactory = defenderFactory;
         }
 
         public void Initialize(TowerFacade facade)
         {
-            Debug.Log($"<color=yellow>[BarracksBehavior] Старт Initialize на {gameObject.name}</color>");
             _facade = facade;
             _module = _facade.GetCurrentStats().Barracks;
-            if (_module == null || _module.DefenderData == null)
-            {
-                Debug.LogError($"[BarracksBehavior] На башне {_facade.name} нет модуля Barracks, но скрипт висит!");
-                return;
-            }
-
-            if (_module.DefenderData == null)
-            {
-                Debug.LogError($"[BarracksBehavior] ОШИБКА: Не назначен DefenderData в конфиге!");
-                return;
-            }
-
-            Debug.Log($"[BarracksBehavior] Пытаемся получить пул с ID: {_module.DefenderData.DefenderId}");
-
-
-            // НОВОЕ: Динамически получаем нужный пул по ID из конфига!
-            _defenderPool = _container.ResolveId<DefenderFacade.Pool>(_module.DefenderData.DefenderId);
-
-            // Устанавливаем точку сбора. Пока это просто точка перед башней.
-            // В будущем мы сделаем так, чтобы игрок мог кликать и менять ее позицию!
-            _rallyPoint = transform.position + transform.forward * (_module.RallyPointRadius * 0.5f);
-            // Сбрасываем таймер
-            _respawnTimer = _module.RespawnCooldown;
-            Debug.Log($"<color=green>[BarracksBehavior] Инициализация успешна! Таймер: {_respawnTimer}</color>");
-            // Если башня проапгрейдилась (Initialize вызвался повторно), 
-            // нам нужно обновить статы всем уже живым защитникам!
             
+            if (_module == null || _module.DefenderData == null) return;
+
+            _rallyPoint = transform.position + transform.forward * (_module.RallyPointRadius * 0.5f);
+            _respawnTimer = _module.RespawnCooldown;
+
             foreach (var defender in _activeDefenders)
             {
                 if (defender != null && defender.gameObject.activeInHierarchy)
@@ -73,9 +47,9 @@ namespace Gameplay.Towers.Behaviors
         public void Tick()
         {
             if (_module == null) return;
-            // Чистим список от "мертвых" или вернувшихся в пул солдат
-            _activeDefenders.RemoveAll(d => d == null || !d.gameObject.activeInHierarchy);
-            // Если гарнизон не полон — начинаем подготовку нового бойца
+            
+            // ЛИКВИДИРОВАНО: _activeDefenders.RemoveAll(...) - больше никаких просадок CPU!
+
             if (_activeDefenders.Count < _module.MaxDefenders)
             {
                 _respawnTimer -= Time.deltaTime;
@@ -86,57 +60,65 @@ namespace Gameplay.Towers.Behaviors
                 }
             }
         }
+
         private void SpawnDefender()
         {
-            Debug.Log("<color=magenta>[BarracksBehavior] ПОПЫТКА СПАВНА!</color>");
-            // 1. Просим Zenject выдать нам свободного человечка из пула
-            var defender = _defenderPool.Spawn();
-            // 1. Ищем безопасную точку на NavMesh (в радиусе 3 метров от башни)
+            // 1. Делегируем создание фабрике (никакого ResolveId прямо в классе!)
+            var defender = _defenderFactory.Create(_module.DefenderData.DefenderId);
+
             Vector3 desiredSpawnPos = transform.position + transform.forward * 2f;
             if (UnityEngine.AI.NavMesh.SamplePosition(desiredSpawnPos, out UnityEngine.AI.NavMeshHit hit, 3f, UnityEngine.AI.NavMesh.AllAreas))
             {
-                Debug.Log("<color=magenta>[BarracksBehavior] ПОПЫТКА defender.WarpTo(hit.position)</color>");
-                // 2. Безопасно телепортируем агента
                 defender.WarpTo(hit.position);
             }
             else
             {
-                Debug.Log("<color=magenta>[BarracksBehavior] ПОПЫТКА defender.WarpTo(transform.position</color>");
-                // Если рядом нет NavMesh (например, башня висит в воздухе), кидаем в центр
                 defender.WarpTo(transform.position); 
             }
-            // 3. Накатываем на него конфиг (скорость и т.д.)
+
             defender.InitConfig(_module.DefenderData);
-            // 4. Немного рандомизируем позицию точки сбора, чтобы они не слипались в одну кучу
-            Vector3 randomOffset = Random.insideUnitSphere * 1.5f;
-            randomOffset.y = 0; // Запрещаем им летать или проваливаться под землю
+
+            // ИСПРАВЛЕНИЕ МАТЕМАТИКИ: Используем 2D круг для плоской поверхности, чтобы точки распределялись равномерно
+            Vector2 rnd = Random.insideUnitCircle * 1.5f;
+            Vector3 randomOffset = new Vector3(rnd.x, 0, rnd.y);
             
-            // 5. Отдаем приказ бежать!
             defender.SendToRallyPoint(_rallyPoint + randomOffset);
 
-            // 6. Записываем в журнал учета
+            // 2. ПОДПИСКА НА СОБЫТИЕ: Слушаем, когда этот конкретный защитник умрет
+            defender.OnDespawned += HandleDefenderDespawned;
+
             _activeDefenders.Add(defender);
-            
-            Debug.Log($"<color=magenta>[BarracksBehavior] ЗАЩИТНИК ЗАСПАВНЕН! В строю: {_activeDefenders.Count}</color>");
         }
 
-        // Если башню продают или уничтожают, нужно убрать всех ее защитников с карты
+        // 3. ОБРАБОТЧИК СОБЫТИЯ
+        private void HandleDefenderDespawned(DefenderFacade defender)
+        {
+            // Всегда отписываемся от событий, чтобы Garbage Collector мог спокойно удалить объект
+            defender.OnDespawned -= HandleDefenderDespawned;
+            
+            // Удаляем конкретного бойца из списка
+            _activeDefenders.Remove(defender);
+        }
+
         private void OnDestroy()
         {
-            foreach (var defender in _activeDefenders)
+            // Чтобы безопасно очистить список и вызвать события, 
+            // идем по нему с конца (reverse for-loop)
+            for (int i = _activeDefenders.Count - 1; i >= 0; i--)
             {
-                if (defender != null && defender.gameObject.activeInHierarchy)
+                var defender = _activeDefenders[i];
+                if (defender != null)
                 {
-                    defender.Despawn();
+                    // Отписываемся, чтобы Despawn() не попытался снова удалить его из списка и не сломал цикл
+                    defender.OnDespawned -= HandleDefenderDespawned;
+                    
+                    if (defender.gameObject.activeInHierarchy)
+                    {
+                        defender.Despawn();
+                    }
                 }
             }
             _activeDefenders.Clear();
         }
-
-
-
-
-
     }
-
 }

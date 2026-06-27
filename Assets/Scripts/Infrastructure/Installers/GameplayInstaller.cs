@@ -13,6 +13,7 @@ using Gameplay.UI;
 using Gameplay.Enemies.Data;
 using Gameplay.Units;
 using Gameplay.Units.Data;
+using Gameplay.Towers.Factories;
 
 namespace Infrastructure.Installers
 {
@@ -116,6 +117,11 @@ namespace Infrastructure.Installers
                     }
                 }
             }
+
+            Container.Bind<DefenderFactory>().AsSingle();
+
+
+
             // Биндим сам реестр, чтобы WaveDirector мог его запросить
                 Container.BindInstance(_enemyRegistry).AsSingle();
                 Debug.Log("<color=green>[Zenject] Мульти-пулы для врагов успешно созданы из реестра!</color>");
@@ -169,6 +175,8 @@ namespace Infrastructure.Installers
             // Регистрируем фабрику UI-иконок
             Container.BindFactory<ForecastIconView, ForecastIconView.Factory>()
                  .FromComponentInNewPrefab(_forecastIconPrefab);
+
+
 
             
         }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 using Gameplay.Units.Data;
+using System;
 
 namespace Gameplay.Units
 {
@@ -19,6 +20,9 @@ namespace Gameplay.Units
         private DefenderConfig _config;
 
         public DefenderState CurrentState { get; private set; }
+
+        // Добавляем событие. Передаем самих себя, чтобы казарма знала, кого именно вычеркивать.
+        public event Action<DefenderFacade> OnDespawned;
 
         private void Awake()
         {
@@ -93,6 +97,8 @@ namespace Gameplay.Units
             {
                 _agent.enabled = false; // Обязательно выключаем агента перед возвратом в пул!
                 _pool.Despawn(this);
+                // Оповещаем всех подписчиков (казарму), что мы выбыли
+                OnDespawned?.Invoke(this);
             }
             else
             {
