@@ -3247,7 +3247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}
-  gridInteractorSettings:
+  placementSettings:
     GridLayerMask:
       serializedVersion: 2
       m_Bits: 256

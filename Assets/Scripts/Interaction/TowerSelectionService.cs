@@ -2,13 +2,17 @@ using UnityEngine;
 using System;
 using UnityEngine.EventSystems;
 using Zenject;
+using Gameplay.Towers;
 
-namespace Gameplay.Towers
+namespace Gameplay.Interaction
 {
     public class TowerSelectionService : ITickable
     {
         private readonly Camera _mainCamera;
         private readonly LayerMask _towerLayerMask;// Слой, на котором лежат башни
+
+        // НОВОЕ: Ссылка на систему постройки
+        private readonly TowerPlacementSystem _placementSystem;
 
         // События для UI контекстного меню
         public event Action<TowerFacade> OnTowerSelected;
@@ -16,15 +20,20 @@ namespace Gameplay.Towers
 
         public TowerFacade CurrentSelectedTower { get; private set; }
 
-        public TowerSelectionService(Camera mainCamera, LayerMask towerLayerMask)
+        public TowerSelectionService(Camera mainCamera, LayerMask towerLayerMask,
+            TowerPlacementSystem placementSystem)
         {
             _mainCamera = mainCamera;
             _towerLayerMask = towerLayerMask;
+            _placementSystem = placementSystem;
         }
 
         
         public void Tick()
         {
+            // НОВОЕ: ГЛАВНАЯ ЗАЩИТА! 
+            // Если игрок сейчас держит в руках башню для постройки — мы вообще не пытаемся никого выделять.
+            if (_placementSystem.IsBuildingMode) return;
             // Сброс выбора по ПКМ или Esc
             if (Input.GetMouseButton(1) || Input.GetKeyDown(KeyCode.Escape))
             {
@@ -45,10 +54,8 @@ namespace Gameplay.Towers
         private void HandleSelectionClick()
         {
             Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-            // Пускаем луч, ищем только объекты на слое башен
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, _towerLayerMask))
             {
-                // Если попали в объект башни
                 if (hit.collider.TryGetComponent(out TowerFacade clickedTower) ||
                 hit.collider.GetComponentInParent<TowerFacade>() != null)
                 {
@@ -59,8 +66,7 @@ namespace Gameplay.Towers
             }
             else
             {
-                // Если кликнули мимо (в землю) - сбрасываем выбор
-                // Но только если мы не находимся в режиме постройки (это мы свяжем позже)
+                // Теперь мы безопасно сбрасываем выбор, зная, что мы точно не в режиме постройки
                 Deselect();
             }
         }

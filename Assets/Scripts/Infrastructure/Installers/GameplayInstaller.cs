@@ -14,6 +14,7 @@ using Gameplay.Enemies.Data;
 using Gameplay.Units;
 using Gameplay.Units.Data;
 using Gameplay.Towers.Factories;
+using Gameplay.Interaction;
 
 namespace Infrastructure.Installers
 {
@@ -26,7 +27,7 @@ namespace Infrastructure.Installers
 
         [Header("Настройки систем")]
         // Появится в инспекторе инсталлера, сюда кидаем префаб и маску!
-        [SerializeField] private GridInteractor.Settings gridInteractorSettings;
+        [SerializeField] private TowerPlacementSystem.Settings placementSettings;
 
         [SerializeField] private KinematicProjectile _cannonballPrefab;
 
@@ -132,12 +133,19 @@ namespace Infrastructure.Installers
 
 
             Container.Bind<GridGenerator>().FromComponentInHierarchy().AsSingle();
+            
+            
             // 1. Биндим настройки
-            Container.BindInstance(gridInteractorSettings).IfNotBound();
+            Container.BindInstance(placementSettings).IfNotBound();
 
             // 2. Биндим сам интерактор к двум интерфейсам: 
             // как класс (если кто-то захочет его запросить) и как ITickable (чтобы работал Tick)
-            Container.BindInterfacesAndSelfTo<GridInteractor>().AsSingle();
+            // Container.BindInterfacesAndSelfTo<GridInteractor>().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<TowerPlacementSystem>().AsSingle();
+            Container.Bind<TowerFactory>().AsSingle();
+
+
 
             Container.BindMemoryPool<KinematicProjectile, KinematicProjectile.Pool>()
              .WithInitialSize(10)
@@ -175,6 +183,9 @@ namespace Infrastructure.Installers
             // Регистрируем фабрику UI-иконок
             Container.BindFactory<ForecastIconView, ForecastIconView.Factory>()
                  .FromComponentInNewPrefab(_forecastIconPrefab);
+
+
+            
 
 
 
