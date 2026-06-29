@@ -4,6 +4,7 @@ using Gameplay.Towers.Visuals;
 using Gameplay.Towers.Behaviors.Weapons;
 // НОВОЕ: Подключаем пространство имен стратегий прицеливания
 using Gameplay.Towers.Behaviors.Aiming;
+using Gameplay.Projectiles.Contracts;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -83,7 +84,8 @@ namespace Gameplay.Towers.Behaviors
                 // Стреляем, если прошла перезарядка И дуло смотрит на врага
                 if (_cooldownTimer <= 0f && IsFacingTarget())
                 {
-                    ExecuteShot(_currentStats.Damage);
+                    // ИСПРАВЛЕНО: Передаем весь объект _currentStats, а не только Damage
+                    ExecuteShot(_currentStats);
                     _cooldownTimer = _currentStats.Cooldown;
                 }
             }
@@ -142,13 +144,21 @@ namespace Gameplay.Towers.Behaviors
             return _aimStrategy.IsFacingTarget(_logicalRotator, _currentTarget);
         }
 
-        private void ExecuteShot(float damage)
+        private void ExecuteShot(AttackStats stats)
         {
             Debug.Log($"<color=red>[AttackBehavior] Выстрел по {_currentTarget.name}!</color>");
             Debug.DrawRay(_firePoint.position, _logicalRotator.forward * 5f, Color.red, 0.2f);
             
-            // Делегируем нанесение урона установленному оружию (Лазеру или Пушке)
-            _attackExecutor?.ExecuteAttack(_currentTarget, damage, _firePoint);
+            // ИСПРАВЛЕНО: ЗАЩИТА ОТ NULL
+            if (stats.PayloadStrategy == null)
+            {
+                Debug.LogError($"[AttackBehavior] КРИТИЧЕСКАЯ ОШИБКА: На башне {gameObject.name} не назначен PayloadStrategy! Закиньте ScriptableObject в поле AttackStats.");
+                return;
+            }
+            // 1. Просим конфиг собрать нам посылку
+            IProjectilePayload payload = stats.PayloadStrategy.CreatePayload(stats.Damage);
+            
+            _attackExecutor?.ExecuteAttack(_currentTarget, payload, _firePoint);
 
             // Передаем точные мировые координаты врага на момент выстрела
             _visuals?.PlayShootAnimation(_currentTarget.position);

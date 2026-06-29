@@ -1,20 +1,22 @@
 using Gameplay.Core;
 using UnityEngine;
+// НОВОЕ: Подключаем контракты
+using Gameplay.Projectiles.Contracts;
 
 namespace Gameplay.Towers.Behaviors.Weapons
 {
     public class HitscanExecutor : MonoBehaviour, IAttackExecutor
     {
-        public void ExecuteAttack(Transform target, float damage, Transform firePoint)
+        // ИСПРАВЛЕНО: Меняем float damage на IProjectilePayload payload
+        public void ExecuteAttack(Transform target, IProjectilePayload payload, Transform firePoint)
         {
-            // Здесь живет старая добрая логика мгновенного выстрела
             Debug.DrawRay(firePoint.position, firePoint.forward * 5f, Color.red, 0.2f);
             
-            // var damageable = target.GetComponent<IDamageable>();
-            var damageable = target.GetComponentInParent<IDamageable>();
-            if (damageable != null)
+            // Хитскан доставляет посылку мгновенно! Никаких полетов и снарядов.
+            if (payload != null)
             {
-                damageable.TakeDamage(damage);
+                // Применяем эффект прямо в координаты цели
+                payload.Apply(target, target.position);
             }
         }
     }

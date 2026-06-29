@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 4782509820292559778}
   - component: {fileID: 6079644463838951060}
   - component: {fileID: 449093194019658599}
-  - component: {fileID: 4721952518259150526}
+  - component: {fileID: -8929246832689151488}
+  - component: {fileID: 8131325737848135974}
   m_Layer: 7
   m_Name: cannonballPrefab
   m_TagString: Untagged
@@ -106,7 +107,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4721952518259150526
+--- !u!114 &-8929246832689151488
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,9 +116,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 3864712027790445405}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc84bd3199602e04c990f5cf43e944bb, type: 3}
+  m_Script: {fileID: 11500000, guid: f6d5d598e88d97648813041b22eb7e0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 15
   _hitDistance: 0.2
+--- !u!114 &8131325737848135974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3864712027790445405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d950901fd5634c24081b5c360df6e715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _targetOffset: {x: 0, y: 0.5, z: 0}

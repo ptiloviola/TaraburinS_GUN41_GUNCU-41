@@ -15,6 +15,7 @@ using Gameplay.Units;
 using Gameplay.Units.Data;
 using Gameplay.Towers.Factories;
 using Gameplay.Interaction;
+using Gameplay.Projectiles;
 
 namespace Infrastructure.Installers
 {
@@ -29,7 +30,7 @@ namespace Infrastructure.Installers
         // Появится в инспекторе инсталлера, сюда кидаем префаб и маску!
         [SerializeField] private TowerPlacementSystem.Settings placementSettings;
 
-        [SerializeField] private KinematicProjectile _cannonballPrefab;
+        [SerializeField] private ModularProjectile _cannonballPrefab;
 
         [Header("Конфиги и Данные")]
         [SerializeField] private TowerRegistry _towerRegistry; // Ссылка на наш каталог башен в инспекторе
@@ -147,7 +148,7 @@ namespace Infrastructure.Installers
 
 
 
-            Container.BindMemoryPool<KinematicProjectile, KinematicProjectile.Pool>()
+            Container.BindMemoryPool<ModularProjectile, ModularProjectile.Pool>()
              .WithInitialSize(10)
              .FromComponentInNewPrefab(_cannonballPrefab)
              .UnderTransformGroup("Projectiles");

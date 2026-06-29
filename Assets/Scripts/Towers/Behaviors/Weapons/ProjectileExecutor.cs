@@ -1,36 +1,43 @@
-
 using UnityEngine;
-using Gameplay.Towers.Behaviors.Weapons;
 using Zenject;
+using Gameplay.Towers.Behaviors.Weapons;
+using Gameplay.Projectiles; // Для доступа к ModularProjectile
+using Gameplay.Projectiles.Contracts; // Для доступа к IProjectilePayload
+// Подключаем папку с реализациями наших "посылок"
+using Gameplay.Projectiles.Payloads; 
 
-public class ProjectileExecutor : MonoBehaviour, IAttackExecutor
+namespace Gameplay.Towers.Behaviors.Weapons
 {
-    private KinematicProjectile.Pool _projectilePool;
-    [Inject]
-    public void Construct(KinematicProjectile.Pool projectilePool)
+    public class ProjectileExecutor : MonoBehaviour, IAttackExecutor
     {
-        _projectilePool = projectilePool;
-    }   
-
-
-    public void ExecuteAttack(Transform target, float damage, Transform firePoint)
-    {
-        if (_projectilePool == null)
+        // ТЕПЕРЬ ИСПОЛЬЗУЕМ ПУЛ НОВЫХ МОДУЛЬНЫХ СНАРЯДОВ
+        private ModularProjectile.Pool _projectilePool;
+        
+        [Inject]
+        public void Construct(ModularProjectile.Pool projectilePool)
         {
-            Debug.LogError("[ProjectileExecutor] Пул снарядов не установлен!");
-            return;
+            _projectilePool = projectilePool;
+        }   
+
+        public void ExecuteAttack(Transform target, IProjectilePayload payload, Transform firePoint)
+        {
+            if (_projectilePool == null)
+            {
+                Debug.LogError("[ProjectileExecutor] Пул снарядов не установлен в Zenject!");
+                return;
+            }
+
+            // 1. Достаем пустую оболочку (модульный снаряд) из пула
+            var projectile = _projectilePool.Spawn(); 
+            
+            // 2. Ставим снаряд точно в дуло пушки
+            projectile.transform.position = firePoint.position;
+            projectile.transform.rotation = firePoint.rotation;
+
+            // 3. УПАКОВКА: Создаем полезную нагрузку (Payload) с конкретным уроном.
+            // (Если ты назвал класс по-другому, например SingleTargetDamageEffect, измени название здесь)
+            // 4. ЗАПУСК: Отдаем снаряду цель, посылку и ссылку на его родной пул для возврата
+            projectile.Launch(target, payload, _projectilePool);
         }
-
-        // 1. Получаем ядро из пула (или создаем новое, если пул пуст)
-
-        var projectile = _projectilePool.Spawn(); 
-        // 2. Ставим его в дуло пушки
-        projectile.transform.position = firePoint.position;
-        projectile.transform.rotation = firePoint.rotation;
-
-        // 3. Передаем ему цель и приказ лететь
-        projectile.Launch(target, damage, _projectilePool);
-
     }
-
 }

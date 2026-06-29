@@ -1,7 +1,6 @@
 using UnityEngine;
 // Не забудь добавить этот using для доступа к снарядам:
-using Gameplay.Towers.Behaviors.Weapons;
-using Gameplay.Towers.Behaviors;
+using Gameplay.Projectiles;
 
 namespace Gameplay.Towers.Visuals
 {

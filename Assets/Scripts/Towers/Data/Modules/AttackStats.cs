@@ -1,3 +1,6 @@
+using UnityEngine;
+using Gameplay.Towers.Data.Payloads;
+
 namespace Gameplay.Towers.Data.Modules
 {
     [System.Serializable]
@@ -6,6 +9,11 @@ namespace Gameplay.Towers.Data.Modules
         public float Damage = 10f;
         public float Range = 3f;
         public float Cooldown = 1f;
+
+        // НОВОЕ: Теперь геймдизайнер в Инспекторе перетаскивает сюда 
+        // нужный SO (Яд, Огонь, Сплеш, Обычный урон)
+        [Header("Тип атаки")]
+        public PayloadConfig PayloadStrategy;
 
         public string GetStatsDescription()
         {

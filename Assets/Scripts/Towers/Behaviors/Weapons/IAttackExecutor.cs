@@ -1,10 +1,11 @@
 using UnityEngine;
+using Gameplay.Projectiles.Contracts;
 
 namespace Gameplay.Towers.Behaviors.Weapons
 {
     public interface IAttackExecutor
     {
-        // Передаем цель, урон и точку, откуда вылетает снаряд/луч
-        void ExecuteAttack(Transform target, float damage, Transform firePoint);
+        // Вместо float damage передаем готовую посылку!
+        void ExecuteAttack(Transform target, IProjectilePayload payload, Transform firePoint);
     }
 }

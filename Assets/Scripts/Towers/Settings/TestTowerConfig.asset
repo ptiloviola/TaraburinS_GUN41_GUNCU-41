@@ -22,10 +22,17 @@ MonoBehaviour:
       Damage: 3
       Range: 8
       Cooldown: 0.2
+      PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
+        type: 2}
     Aura:
       Radius: 0
       TickRate: 0
       SlowdownMultiplier: 0
+    Barracks:
+      DefenderData: {fileID: 0}
+      MaxDefenders: 3
+      RespawnCooldown: 5
+      RallyPointRadius: 5
   - UpgradeCost: 2
     VisualPrefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
       type: 3}
@@ -33,7 +40,14 @@ MonoBehaviour:
       Damage: 5
       Range: 10
       Cooldown: 0.125
+      PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
+        type: 2}
     Aura:
       Radius: 0
       TickRate: 0
       SlowdownMultiplier: 0
+    Barracks:
+      DefenderData: {fileID: 0}
+      MaxDefenders: 3
+      RespawnCooldown: 5
+      RallyPointRadius: 5
