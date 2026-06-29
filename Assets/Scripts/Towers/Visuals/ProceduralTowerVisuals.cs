@@ -1,11 +1,14 @@
 using UnityEngine;
 using DG.Tweening;
 using System;
+using Gameplay.Towers.Behaviors;
 
 namespace Gameplay.Towers.Visuals
 {
     public class ProceduralTowerVisuals : MonoBehaviour, ITowerVisuals
     {
+
+
         [Header("--- Ссылки на меши ---")]
         [SerializeField] private Transform _baseTransform;
         [SerializeField] private Transform _turretTransform;
@@ -68,6 +71,7 @@ namespace Gameplay.Towers.Visuals
         private float _targetYRotation;
 
         public event Action OnAttackImpact;
+        private AttackBehavior _attackBehavior;
 
         public void Initialize()
         {
@@ -96,6 +100,36 @@ namespace Gameplay.Towers.Visuals
             }
 
             ResetScaleToZero();
+        }
+
+        // Вместо метода Initialize, который дергала логика, 
+        // используем стандартные методы жизненного цикла Unity
+        private void Awake()
+        {
+            // Ищем логику на этом же префабе
+            _attackBehavior = GetComponentInParent<AttackBehavior>();
+            // ВОТ ОНО! Вызываем твой метод инициализации сами, при рождении объекта
+            Initialize();
+        }
+
+        private void OnEnable()
+        {
+            if (_attackBehavior != null)
+            {
+                // Подписываемся на события
+                _attackBehavior.OnBuildStarted += PlayBuildAnimation;
+                _attackBehavior.OnShotFired += PlayShootAnimation;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (_attackBehavior != null)
+            {
+                // Обязательно отписываемся, чтобы избежать утечек памяти!
+                _attackBehavior.OnBuildStarted -= PlayBuildAnimation;
+                _attackBehavior.OnShotFired -= PlayShootAnimation;
+            }
         }
 
         public void PlayBuildAnimation()

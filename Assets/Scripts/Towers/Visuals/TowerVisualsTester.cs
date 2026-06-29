@@ -1,6 +1,8 @@
 using UnityEngine;
-// Не забудь добавить этот using для доступа к снарядам:
 using Gameplay.Projectiles;
+// НОВОЕ: Подключаем контракты и полезные нагрузки для создания фиктивной посылки
+using Gameplay.Projectiles.Contracts;
+using Gameplay.Projectiles.Payloads;
 
 namespace Gameplay.Towers.Visuals
 {
@@ -21,20 +23,17 @@ namespace Gameplay.Towers.Visuals
         [SerializeField] private bool _triggerShoot;
         
         [Header("Тест Снарядов (Костыль без Zenject)")]
-        [SerializeField] private KinematicProjectile _projectilePrefab;
-        [SerializeField] private Transform _firePoint; // Откуда будет вылетать снаряд
+        [SerializeField] private ModularProjectile _projectilePrefab;
+        [SerializeField] private Transform _firePoint; 
 
         private void Start()
         {
             if (_visuals == null) _visuals = GetComponentInChildren<ProceduralTowerVisuals>();
             
-            // АВТОПОИСК РОТАТОРА ДЛЯ ТЕСТЕРА:
-            // Ищем его на том же уровне, где и в боевом коде
             if (_logicalRotator == null)
             {
                 _logicalRotator = transform.Find("Logical_Rotator");
             }
-            // Пытаемся автоматически найти FirePoint, если забыли назначить
             if (_firePoint == null && _logicalRotator != null)
             {
                 _firePoint = _logicalRotator.Find("FirePoint");
@@ -47,16 +46,12 @@ namespace Gameplay.Towers.Visuals
         {
             if (_visuals == null) return;
 
-            // ИСТИННАЯ СИМУЛЯЦИЯ:
-            // Если ротатор в префабе есть, мы крутим ЕГО (имитируем работу AttackBehavior).
-            // Визуалка в LateUpdate сама считает этот поворот, добавит офсет и развернет Turret!
             if (_logicalRotator != null)
             {
                 _logicalRotator.rotation = Quaternion.Euler(0, _rotationValue, 0);
             }
             else
             {
-                // Резервный ручной режим для "голых" визуальных моделей без логического слоя
                 _visuals.SetRotation(_rotationValue);
             }
 
@@ -70,29 +65,27 @@ namespace Gameplay.Towers.Visuals
             {
                 _triggerShoot = false;
                 
-                // 1. Вычисляем точку попадания (5 метров вперед по направлению дула)
                 Vector3 fakeTargetPos = _logicalRotator != null ? 
                     _logicalRotator.position + _logicalRotator.forward * 5f : 
                     transform.position + Vector3.forward * 5f;
                     
-                // 2. Запускаем визуал И передаем точку попадания (согласно интерфейсу)
                 _visuals.PlayShootAnimation(fakeTargetPos);
 
-                // 3. СПАВН СНАРЯДА (Если префаб назначен)
                 if (_projectilePrefab != null)
                 {
                     Transform spawnPoint = _firePoint != null ? _firePoint : _logicalRotator;
                     
-                    // Создаем временную невидимую цель по тем же координатам fakeTargetPos
                     GameObject fakeTargetObj = new GameObject("FakeTarget_Test");
                     fakeTargetObj.transform.position = fakeTargetPos;
-                    Destroy(fakeTargetObj, 2f); // Очищаем сцену через 2 секунды
+                    Destroy(fakeTargetObj, 2f); 
 
-                    // Создаем ядро (без пула)
                     var projectile = Instantiate(_projectilePrefab, spawnPoint.position, spawnPoint.rotation);
                     
-                    // Запускаем ядро лететь в невидимую цель (передаем null вместо пула)
-                    projectile.Launch(fakeTargetObj.transform, 0f, null);
+                    // ИСПРАВЛЕНО: Создаем фиктивную посылку с нулевым уроном для теста
+                    IProjectilePayload testPayload = new SingleTargetPayload(0f);
+                    
+                    // Запускаем ядро лететь в невидимую цель, передавая правильный интерфейс
+                    projectile.Launch(fakeTargetObj.transform, testPayload, null);
                 }
             }
         }

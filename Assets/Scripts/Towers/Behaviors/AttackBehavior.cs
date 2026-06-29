@@ -5,6 +5,7 @@ using Gameplay.Towers.Behaviors.Weapons;
 // НОВОЕ: Подключаем пространство имен стратегий прицеливания
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Projectiles.Contracts;
+using System;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -19,13 +20,16 @@ namespace Gameplay.Towers.Behaviors
         [SerializeField] private LayerMask _enemyLayerMask;
         [SerializeField] private float _turnSpeed = 10f;    // Скорость поворота
 
+        // НОВОЕ: События, на которые сможет подписаться визуал или звук!
+        public event Action OnBuildStarted;
+        public event Action<Vector3> OnShotFired;
+
         // Добавь это в начало класса, где объявляются переменные:
         private IAttackExecutor _attackExecutor;
         private IAimStrategy _aimStrategy; // НОВОЕ: Ссылка на стратегию прицеливания
 
 
         private TowerFacade _facade;
-        private ITowerVisuals _visuals;
 
         private Transform _currentTarget;
         private float _cooldownTimer;
@@ -39,15 +43,6 @@ namespace Gameplay.Towers.Behaviors
             _facade = facade;
             _cooldownTimer = 0f;
             _currentStats = _facade.GetCurrentStats().Attack;
-            _visuals = GetComponentInChildren<ITowerVisuals>();
-
-            _visuals?.Initialize();
-            if (_logicalRotator == null) _logicalRotator = transform;
-            if (_firePoint == null) _firePoint = _logicalRotator;
-
-            // 2. ЗАПУСКАЕМ АНИМАЦИЮ ПОЯВЛЕНИЯ!
-            // Теперь башня плавно вырастет из земли до размера (1,1,1)
-            _visuals?.PlayBuildAnimation();
 
             // Добавь это в метод Initialize():
             _attackExecutor = GetComponentInChildren<IAttackExecutor>();
@@ -61,6 +56,8 @@ namespace Gameplay.Towers.Behaviors
             {
                 Debug.LogError($"[AttackBehavior] На башне {gameObject.name} нет компонента IAimStrategy (Прицеливания)!");
             }
+            // Сообщаем всем подписчикам, что стройка началась
+            OnBuildStarted?.Invoke();
             
         }
 
@@ -160,8 +157,8 @@ namespace Gameplay.Towers.Behaviors
             
             _attackExecutor?.ExecuteAttack(_currentTarget, payload, _firePoint);
 
-            // Передаем точные мировые координаты врага на момент выстрела
-            _visuals?.PlayShootAnimation(_currentTarget.position);
+            // Сообщаем всем подписчикам (визуалу/звуку), что произошел выстрел
+            OnShotFired?.Invoke(_currentTarget.position);
         }
 
         // --- БЛОК ДЕБАГА И ВИЗУАЛИЗАЦИИ ---
