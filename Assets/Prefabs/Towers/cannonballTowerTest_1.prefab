@@ -9,8 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2013802512576192232}
-  - component: {fileID: 7606519097736120902}
   - component: {fileID: 8468681026833485568}
+  - component: {fileID: 560816281410731767}
+  - component: {fileID: 502628343501612847}
+  - component: {fileID: 8656887004606460776}
+  - component: {fileID: 1873286070362832462}
+  - component: {fileID: 7021062747609506856}
   m_Layer: 7
   m_Name: Visual_Root
   m_TagString: Untagged
@@ -35,38 +39,6 @@ Transform:
   - {fileID: 7879057351727019545}
   m_Father: {fileID: 2544779564035697183}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7606519097736120902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920876942324204923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 078716e3d862b614abe7d4e17c646255, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseTransform: {fileID: 239661865440609367}
-  _turretTransform: {fileID: 7879057351727019545}
-  _barrelTransforms:
-  - {fileID: 290366890347110676}
-  _logicalRotator: {fileID: 1355285404530712234}
-  _copyPitch: 0
-  _elevationPivot: {fileID: 0}
-  _localPitchAxis: {x: 0, y: 0, z: -1}
-  _rotationOffset: -90
-  _buildDuration: 0.5
-  _buildEase: 27
-  _shootDuration: 0.2
-  _recoilDistance: 0.4
-  _turretSquashY: 0.85
-  _recoilEase: 6
-  _barrelReturnEase: 6
-  _turretReturnEase: 6
-  _laserRenderer: {fileID: 0}
-  _laserMaxWidth: 0.3
-  _steamParticles: []
 --- !u!120 &8468681026833485568
 LineRenderer:
   serializedVersion: 2
@@ -171,6 +143,89 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &560816281410731767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920876942324204923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e90adc59076cd49b34aa6f17df3e10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &502628343501612847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920876942324204923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3f05380819835448d9473041e3c5c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _logicalRotator: {fileID: 0}
+  _turretTransform: {fileID: 0}
+  _rotationOffset: -90
+  _usePitch: 0
+  _elevationPivot: {fileID: 0}
+  _localPitchAxis: {x: 0, y: 0, z: -1}
+--- !u!114 &8656887004606460776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920876942324204923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc0d2440baa935a4ba52d0bee50b5b32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseTransform: {fileID: 239661865440609367}
+  _turretTransform: {fileID: 7879057351727019545}
+  _buildDuration: 0.5
+  _buildEase: 27
+--- !u!114 &1873286070362832462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920876942324204923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3f05380819835448d9473041e3c5c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _logicalRotator: {fileID: 1355285404530712234}
+  _turretTransform: {fileID: 7879057351727019545}
+  _rotationOffset: -90
+  _usePitch: 0
+  _elevationPivot: {fileID: 0}
+  _localPitchAxis: {x: 0, y: 0, z: -1}
+--- !u!114 &7021062747609506856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920876942324204923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c71dd3708027e445bbd641432451e2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _barrelTransforms:
+  - {fileID: 290366890347110676}
+  _muzzleFlashes: []
+  _shootDuration: 0.2
+  _recoilDistance: 0.4
+  _recoilEase: 6
+  _returnEase: 6
 --- !u!1 &1926724689136184970
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,10 +237,8 @@ GameObject:
   - component: {fileID: 2544779564035697183}
   - component: {fileID: 2919795509573063343}
   - component: {fileID: 8172699972568849139}
-  - component: {fileID: 135073954517548277}
   - component: {fileID: 7977650445509351927}
   - component: {fileID: 2592835290429401131}
-  - component: {fileID: 9018403315348128107}
   - component: {fileID: 1996542747888263960}
   - component: {fileID: -761134238866531938}
   - component: {fileID: 5741610501096224611}
@@ -246,25 +299,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: 19fd970d01f3eec4a96712905c13cca7, type: 2}
---- !u!114 &135073954517548277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1926724689136184970}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cba020d2881018549bbc23a2627853af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _visuals: {fileID: 7606519097736120902}
-  _logicalRotator: {fileID: 1355285404530712234}
-  _rotationValue: -17.4
-  _triggerBuild: 0
-  _triggerShoot: 0
-  _projectilePrefab: {fileID: 0}
-  _firePoint: {fileID: 0}
 --- !u!114 &7977650445509351927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,18 +324,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _verticalTolerance: 15
---- !u!114 &9018403315348128107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1926724689136184970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 384d6200d152a6846b67f7dc7279adf0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &1996542747888263960
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -1,6 +1,5 @@
 using UnityEngine;
 using Gameplay.Towers.Data.Modules;
-using Gameplay.Towers.Visuals;
 using Gameplay.Towers.Behaviors.Weapons;
 // НОВОЕ: Подключаем пространство имен стратегий прицеливания
 using Gameplay.Towers.Behaviors.Aiming;
