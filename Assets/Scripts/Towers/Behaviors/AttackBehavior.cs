@@ -5,6 +5,7 @@ using Gameplay.Towers.Behaviors.Weapons;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Projectiles.Contracts;
 using System;
+using Gameplay.Towers.Behaviors.Targeting;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -26,16 +27,13 @@ namespace Gameplay.Towers.Behaviors
         // Добавь это в начало класса, где объявляются переменные:
         private IAttackExecutor _attackExecutor;
         private IAimStrategy _aimStrategy; // НОВОЕ: Ссылка на стратегию прицеливания
+        private ITargetingStrategy _targetingStrategy; // НОВОЕ: Ссылка на радар
 
 
         private TowerFacade _facade;
-
         private Transform _currentTarget;
         private float _cooldownTimer;
-
         private AttackStats _currentStats;
-
-        private Collider[] _targetColliders = new Collider[20];
 
         public void Initialize(TowerFacade facade)
         {
@@ -55,6 +53,9 @@ namespace Gameplay.Towers.Behaviors
             {
                 Debug.LogError($"[AttackBehavior] На башне {gameObject.name} нет компонента IAimStrategy (Прицеливания)!");
             }
+            // Ищем радар
+            _targetingStrategy = GetComponentInChildren<ITargetingStrategy>();
+            if (_targetingStrategy == null) Debug.LogError($"[AttackBehavior] Нет ITargetingStrategy на {gameObject.name}");
             // Сообщаем всем подписчикам, что стройка началась
             OnBuildStarted?.Invoke();
             
@@ -62,14 +63,16 @@ namespace Gameplay.Towers.Behaviors
 
         public void Tick()
         {
-            if (_currentStats == null) return;
+            if (_currentStats == null || _targetingStrategy == null) return;
 
             _cooldownTimer -= Time.deltaTime;
 
-            // 1. Поиск цели (если нет текущей, или она выключена/умерла, или ушла слишком далеко)
-            if (!IsTargetValid(_currentStats.Range))
+
+
+            // 1. ПОИСК ЦЕЛИ (Делегируем Радару)
+            if (!_targetingStrategy.IsTargetValid(_currentTarget, _logicalRotator, _currentStats.Range, _aimStrategy))
             {
-                FindClosestTarget(_currentStats.Range);
+                _currentTarget = _targetingStrategy.FindTarget(_logicalRotator, _currentStats.Range, _enemyLayerMask, _aimStrategy);
             }
 
             // 2. Если цель есть — поворачиваемся и стреляем
@@ -88,44 +91,6 @@ namespace Gameplay.Towers.Behaviors
             
         }
 
-        private bool IsTargetValid(float range)
-        {
-            if (_currentTarget == null || !_currentTarget.gameObject.activeInHierarchy) return false;
-            
-            float sqrDistance = (_currentTarget.position - _logicalRotator.position).sqrMagnitude;
-            if (sqrDistance > (range * range)) return false;
-
-            // СБРОС ЦЕЛИ: Если враг вылетел за пределы нашего угла (например, резко взлетел вверх)
-            if (_aimStrategy != null && !_aimStrategy.CanAimAt(_logicalRotator, _currentTarget)) return false;
-
-            return true;
-        }
-
-        private void FindClosestTarget(float range)
-        {
-            _currentTarget = null;
-
-            int hitsCount = Physics.OverlapSphereNonAlloc(_logicalRotator.position, range, _targetColliders, _enemyLayerMask);
-            
-            float closestSqrDistance = Mathf.Infinity;
-
-            for (int i = 0; i < hitsCount; i++)
-            {
-                Collider hit = _targetColliders[i];
-                float sqrDistance = (hit.transform.position - _logicalRotator.position).sqrMagnitude;
-                
-                // Сначала проверяем дистанцию
-                if (sqrDistance < closestSqrDistance)
-                {
-                    // А ТЕПЕРЬ САМОЕ ГЛАВНОЕ: Проверяем, позволяет ли физический угол башни выстрелить туда
-                    if (_aimStrategy == null || _aimStrategy.CanAimAt(_logicalRotator, hit.transform))
-                    {
-                        closestSqrDistance = sqrDistance;
-                        _currentTarget = hit.transform;
-                    }
-                }
-            }
-        }
 
         // НОВОЕ: Делегируем поворот стратегии
         private void AimAtTarget()
