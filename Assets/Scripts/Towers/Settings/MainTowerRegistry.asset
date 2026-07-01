@@ -37,3 +37,9 @@ MonoBehaviour:
     Prefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
       type: 3}
     TowerConfig: {fileID: 11400000, guid: 589f190a8f9969e4c9a75b3bb9109201, type: 2}
+  - Cost: 12
+    SellRefundMultiplier: 0.106
+    Icon: {fileID: 21300000, guid: 54711a5a5c26ab346a090a7ea78573da, type: 3}
+    Prefab: {fileID: 1639526263182489211, guid: 80d9309e2f4898c4bb3b38eef8baf050,
+      type: 3}
+    TowerConfig: {fileID: 11400000, guid: afaf29af01e218a45927626ed112f50f, type: 2}

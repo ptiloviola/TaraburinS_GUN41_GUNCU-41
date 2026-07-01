@@ -3258,8 +3258,6 @@ MonoBehaviour:
     RadiusIndicatorPrefab: {fileID: 4508128813081476246, guid: 3908adae3b577e24ca0daeeb8d5e23de,
       type: 3}
     HeightOffset: 0.05
-  _cannonballPrefab: {fileID: -8929246832689151488, guid: b1577e7c0fd34324eaad8e1fcbb7514e,
-    type: 3}
   _towerRegistry: {fileID: 11400000, guid: ab8b36f6173127643b66457f9beb3d9d, type: 2}
   _towerLayerMask:
     serializedVersion: 2

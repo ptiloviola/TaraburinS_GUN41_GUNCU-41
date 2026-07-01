@@ -7,6 +7,8 @@ namespace Gameplay.Projectiles.Flight
     {
         [SerializeField] private Vector3 _targetOffset = new Vector3(0f, 0.5f, 0f);
 
+        public void Initialize(Transform p, Transform t) {}
+
         public bool ExecuteFlight(Transform projectile, Transform target, float speed, float hitDistance)
         {
             if (target == null) return false;

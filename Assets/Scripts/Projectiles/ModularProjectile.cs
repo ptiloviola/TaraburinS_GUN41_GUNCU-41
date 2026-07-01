@@ -52,6 +52,9 @@ namespace Gameplay.Projectiles
             _payload = payload;
             _pool = pool;
             _hasHit = false; 
+
+            // НОВОЕ: Говорим стратегии подготовиться к полету
+            _flightStrategy?.Initialize(transform, target);
         }
 
         private void Update()

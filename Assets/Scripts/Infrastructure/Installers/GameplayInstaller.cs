@@ -30,7 +30,6 @@ namespace Infrastructure.Installers
         // Появится в инспекторе инсталлера, сюда кидаем префаб и маску!
         [SerializeField] private TowerPlacementSystem.Settings placementSettings;
 
-        [SerializeField] private ModularProjectile _cannonballPrefab;
 
         [Header("Конфиги и Данные")]
         [SerializeField] private TowerRegistry _towerRegistry; // Ссылка на наш каталог башен в инспекторе
@@ -146,12 +145,6 @@ namespace Infrastructure.Installers
             Container.BindInterfacesAndSelfTo<TowerPlacementSystem>().AsSingle();
             Container.Bind<TowerFactory>().AsSingle();
 
-
-
-            Container.BindMemoryPool<ModularProjectile, ModularProjectile.Pool>()
-             .WithInitialSize(10)
-             .FromComponentInNewPrefab(_cannonballPrefab)
-             .UnderTransformGroup("Projectiles");
 
             Container.BindInstance(_towerRegistry).AsSingle();
 
