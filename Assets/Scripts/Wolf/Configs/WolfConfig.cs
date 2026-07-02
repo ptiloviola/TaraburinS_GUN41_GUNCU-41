@@ -36,6 +36,9 @@ namespace MeatMushrooms.Wolf.Configs
         public float TurnSmoothSpeed = 2f;
         public float MaxTurnAngle = 90f;
         public float StoppingDistance = 0.5f;
+        [Tooltip("Насколько сильно волк тормозит при крутом повороте (0 - не тормозит, 0.8 - почти останавливается)")]
+        [Range(0f, 0.9f)] 
+        public float TurnPenalty = 0.6f; // ДОБАВИЛИ
     }
 
     [Serializable]

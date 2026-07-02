@@ -14,6 +14,7 @@ namespace MeatMushrooms.Wolf.Components
         public bool IsStunned { get; private set; }
         public float CurrentTurn { get; private set; }
         public float CurrentSpeed => _agent.velocity.magnitude;
+        private float _targetBaseSpeed; // ДОБАВИЛИ: Запоминаем, какую скорость просил стейт
 
         [Inject]
         public void Construct(WolfConfig config)
@@ -46,14 +47,24 @@ namespace MeatMushrooms.Wolf.Components
                 {
                     float angle = Vector3.SignedAngle(transform.forward, desiredDirection, Vector3.up);
                     
-                    // Берем углы и скорости сглаживания из КОНФИГА
                     float targetTurn = Mathf.Clamp(angle / _config.Locomotion.MaxTurnAngle, -1f, 1f);
                     CurrentTurn = Mathf.Lerp(CurrentTurn, targetTurn, Time.deltaTime * _config.Locomotion.TurnSmoothSpeed);
+
+                    // --- НОВАЯ МАГИЯ ТОРМОЖЕНИЯ ---
+                    // Mathf.Abs убирает минус. Если CurrentTurn = -1 (влево) или 1 (вправо), модуль будет 1.
+                    // Если TurnPenalty в конфиге стоит 0.6, то при максимальном повороте скорость упадет на 60%.
+                    float speedMultiplier = 1f - (Mathf.Abs(CurrentTurn) * _config.Locomotion.TurnPenalty);
+                    
+                    // Применяем обрезанную скорость к агенту
+                    _agent.speed = _targetBaseSpeed * Mathf.Clamp01(speedMultiplier);
                 }
             }
             else
             {
                 CurrentTurn = Mathf.Lerp(CurrentTurn, 0f, Time.deltaTime * _config.Locomotion.TurnSmoothSpeed);
+                
+                // Возвращаем базовую скорость, если стоим или идем прямо
+                if (_agent != null) _agent.speed = _targetBaseSpeed; 
             }
         }
 
@@ -105,6 +116,7 @@ namespace MeatMushrooms.Wolf.Components
 
         public void SetSpeed(float newSpeed)
         {
+            _targetBaseSpeed = newSpeed;
             if (_agent != null) _agent.speed = newSpeed;
         }
     }
