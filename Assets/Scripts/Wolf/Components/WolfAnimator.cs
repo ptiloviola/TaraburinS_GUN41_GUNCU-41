@@ -14,6 +14,9 @@ namespace MeatMushrooms.Wolf.Components
         private static readonly int SnapTriggerHash = Animator.StringToHash("Aggro");
 
         private static readonly int TurnHash = Animator.StringToHash("Turn");
+        private static readonly int ShakeTriggerHash = Animator.StringToHash("Shake");
+        private static readonly int SleepTriggerHash = Animator.StringToHash("Sleep");
+        private static readonly int WakeUpTriggerHash = Animator.StringToHash("WakeUp");
 
         // Таймер для спама логами, чтобы не забить консоль
         private float _logTimer;
@@ -72,6 +75,9 @@ namespace MeatMushrooms.Wolf.Components
         {
             _animator?.SetTrigger(SnapTriggerHash);
         }
+        public void PlayShake() => _animator?.SetTrigger(ShakeTriggerHash);
+        public void PlaySleep() => _animator?.SetTrigger(SleepTriggerHash);
+        public void PlayWakeUp() => _animator?.SetTrigger(WakeUpTriggerHash);
 
     }
 }

@@ -97,8 +97,23 @@ namespace MeatMushrooms.Wolf.Configs
     {
         [Header("Оценка (Score)")]
         public float BaseScore = 40f;
-        [Tooltip("Сколько очков отнимается за каждую единицу голода")]
         public float HungerPenaltyMultiplier = 0.5f;
+        [Tooltip("Бонус к оценке, чтобы волк не просыпался от малейшего голода")]
+        public float StickyRestScoreBonus = 30f;
+
+        [Header("Поведение в покое (Стояние / Отряхивание)")]
+        public float MinIdleTime = 2f;
+        public float MaxIdleTime = 6f;
+        public float ShakeProbability = 0.3f; // 30% шанс отряхнуться
+        public float ShakeDuration = 2f;      // Время анимации отряхивания
+
+        [Header("Глубокий отдых (Пищевая кома)")]
+        [Tooltip("Сколько раз волк должен поесть, чтобы захотеть спать")]
+        public int MealsToSleep = 2; 
+        [Tooltip("За какое время (в секундах) нужно съесть эти порции")]
+        public float MealTimeWindow = 40f; 
+        public float RestDuration = 20f;
+        public float RetreatRadius = 5f;
     }
 
     #endregion

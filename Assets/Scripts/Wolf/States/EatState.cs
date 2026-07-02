@@ -81,6 +81,10 @@ namespace MeatMushrooms.Wolf.States
         public void Exit()
         {
             Debug.Log("[EatState] Волк закончил трапезу.");
+            
+            // Записываем, что волк только что поел
+            _stats.RecordMeal(); 
+            
             _locomotion.SetAvoidancePriority(50);
             _animator.PlayEatStop();
         }
