@@ -15,4 +15,4 @@ MonoBehaviour:
   Prefab: {fileID: 3594023817657269038, guid: d3d6cc4d8ec50d2479ac3f159c8cbe26, type: 3}
   MaxAromaRadius: 10
   AromaSpeed: 2
-  NutritionValue: 50
+  NutritionValue: 100

@@ -7,28 +7,26 @@ namespace MeatMushrooms.Wolf.Components
 {
     public class WolfBrain : IInitializable, ITickable
     {
-        private List<IWolfState> _availableStates;
+        private readonly List<IWolfState> _availableStates;
+        private readonly WolfStats _stats; // Добавили статы для отладки
         private IWolfState _currentState;
         
-        // Таймер, чтобы не пересчитывать желания каждый кадр (оптимизация)
         private float _thinkTimer;
-        private const float ThinkInterval = 0.5f; // Волк "думает" 2 раза в секунду
+        private const float ThinkInterval = 0.5f; 
 
+        // Обрати внимание: Zenject сам добавит сюда WolfStats, нам не нужно менять инсталлятор
         [Inject]
-        public WolfBrain()
+        public WolfBrain(List<IWolfState> availableStates, WolfStats stats)
         {
-            // Пока создаем пустой список. 
-            // Позже Zenject сам передаст сюда все готовые состояния (Idle, Wander, Eat).
-            _availableStates = new List<IWolfState>();
+            _availableStates = availableStates;
+            _stats = stats;
         }
 
         public void Initialize()
         {
-            // В будущем здесь мы зададим дефолтное состояние при спавне
             Debug.Log("[WolfBrain] Мозг волка запущен.");
         }
 
-        // Этот метод Zenject вызывает каждый кадр (замена Update)
         public void Tick()
         {
             _thinkTimer += Time.deltaTime;
@@ -36,10 +34,9 @@ namespace MeatMushrooms.Wolf.Components
             if (_thinkTimer >= ThinkInterval)
             {
                 _thinkTimer = 0f;
-                EvaluateStates(); // Пришло время подумать!
+                EvaluateStates();
             }
 
-            // Если состояние выбрано, выполняем его логику
             _currentState?.Tick();
         }
 
@@ -50,10 +47,14 @@ namespace MeatMushrooms.Wolf.Components
             IWolfState bestState = null;
             float highestScore = -1f;
 
-            // Опрашиваем все доступные состояния: кто наберет больше баллов?
+            // Строка телеметрии, которую мы будем собирать
+            string telemetry = $"[Brain] Голод: {_stats.Hunger:F1} | ";
+
             foreach (var state in _availableStates)
             {
                 float score = state.CalculateScore();
+                telemetry += $"{state.GetType().Name}: {score:F1} | ";
+                
                 if (score > highestScore)
                 {
                     highestScore = score;
@@ -61,7 +62,9 @@ namespace MeatMushrooms.Wolf.Components
                 }
             }
 
-            // Если победившее состояние отличается от текущего - переключаемся
+            // РАСКОММЕНТИРУЙ СТРОКУ НИЖЕ, чтобы видеть мысли волка в реальном времени!
+            Debug.Log(telemetry);
+
             if (bestState != null && bestState != _currentState)
             {
                 ChangeState(bestState);
@@ -71,14 +74,12 @@ namespace MeatMushrooms.Wolf.Components
         private void ChangeState(IWolfState newState)
         {
             _currentState?.Exit();
-            
             _currentState = newState;
             
-            _currentState?.Enter();
+            // Если тут произойдет ошибка, мы это увидим, так как лог перехода стоит ПЕРЕД методом Enter
+            Debug.Log($"[WolfBrain] ---> Переход в: {_currentState.GetType().Name}");
             
-            // Временно выводим в консоль, чтобы видеть, как меняются мысли волка
-            Debug.Log($"[WolfBrain] Переход в новое состояние: {_currentState.GetType().Name}");
+            _currentState?.Enter();
         }
     }
 }
-

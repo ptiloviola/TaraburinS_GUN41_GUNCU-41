@@ -5,7 +5,9 @@ namespace MeatMushrooms.Mushroom.Contracts
     public interface IEdible
     {
         float CurrentHealth { get; }
-        Transform Transform { get; } // Чтобы волк знал, к каким координатам бежать
-        void Consume(float amount);  // Метод откусывания
+        Transform Transform { get; }
+        
+        // Теперь метод возвращает количество полученной сытости
+        float Consume(float amount); 
     }
 }

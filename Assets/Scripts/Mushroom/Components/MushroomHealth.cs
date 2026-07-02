@@ -1,16 +1,13 @@
 using System;
 using MeatMushrooms.Mushroom.Configs;
-using MeatMushrooms.Mushroom.Contracts; // Подключили неймспейс
+using MeatMushrooms.Mushroom.Contracts;
 using UnityEngine;
 
 namespace MeatMushrooms.Mushroom.Components
 {
-    // Теперь класс реализует IEdible
     public class MushroomHealth : MonoBehaviour, IEdible 
     {
         public float CurrentHealth { get; private set; }
-        
-        // Реализация требования интерфейса (возвращаем свой же Transform)
         public Transform Transform => transform; 
 
         private Action _onDeathCallback;
@@ -18,21 +15,28 @@ namespace MeatMushrooms.Mushroom.Components
 
         public void Init(MushroomConfig config, Action onDeath)
         {
-            CurrentHealth = config.NutritionValue;
+            CurrentHealth = config.NutritionValue; // Вот они, наши 50 калорий из конфига!
             _onDeathCallback = onDeath;
             _isDead = false;
         }
 
-        public void Consume(float amount)
+        public float Consume(float amount)
         {
-            if (_isDead) return;
+            if (_isDead) return 0f;
 
-            CurrentHealth -= amount;
+            // Считаем, сколько реально удалось откусить (не больше, чем осталось здоровья)
+            float eatenAmount = Mathf.Min(amount, CurrentHealth);
+            
+            CurrentHealth -= eatenAmount;
+            
             if (CurrentHealth <= 0)
             {
                 _isDead = true;
                 _onDeathCallback?.Invoke();
             }
+            
+            // Возвращаем откушенный кусок волку
+            return eatenAmount; 
         }
     }
 }
