@@ -1,3 +1,6 @@
+using System;
+using Cysharp.Threading.Tasks;
+using MeatMushrooms.Wolf.Configs; // Обновленный неймспейс
 using UnityEngine;
 using Zenject;
 
@@ -7,16 +10,18 @@ namespace MeatMushrooms.Wolf.Components
     {
         private WolfAnimator _animator;
         private WolfStats _stats;
+        private WolfLocomotion _locomotion;
+        private WolfConfig _config;
         
-        // Таймер, чтобы волки не рычали каждый кадр как пулемет
         private float _cooldownTimer;
-        private const float Cooldown = 3f; 
 
         [Inject]
-        public void Construct(WolfAnimator animator, WolfStats stats)
+        public void Construct(WolfAnimator animator, WolfStats stats, WolfLocomotion locomotion, WolfConfig config)
         {
             _animator = animator;
             _stats = stats;
+            _locomotion = locomotion;
+            _config = config;
         }
 
         private void Update()
@@ -27,21 +32,34 @@ namespace MeatMushrooms.Wolf.Components
             }
         }
 
-        // Этот метод автоматически вызывает Unity, когда в нашу сферу-триггер кто-то входит
         private void OnTriggerEnter(Collider other)
         {
             if (_cooldownTimer > 0) return;
 
-            // Проверяем, волк ли это? (Ищем компонент WolfSocial на чужаке)
-            if (other.TryGetComponent(out WolfSocial otherWolf))
+            WolfSocial otherWolf = other.GetComponentInParent<WolfSocial>();
+            
+            if (otherWolf != null && otherWolf != this)
             {
-                // Если наш волк голоден (например, больше 50), он агрессивный и огрызается!
-                if (_stats.Hunger > 10f)
+                if (_stats.Hunger > _config.Social.AggroHungerThreshold)
                 {
-                    Debug.Log("[WolfSocial] Волк огрызается на сородича из-за еды!");
-                    _animator.PlayAggro();
-                    _cooldownTimer = Cooldown;
+                    Debug.Log($"[WolfSocial] {gameObject.name} агрессивно рычит на сородича!");
+                    ReactAsync().Forget(); 
                 }
+            }
+        }
+
+        private async UniTaskVoid ReactAsync()
+        {
+            _cooldownTimer = _config.Social.Cooldown;
+
+            _locomotion.SetStun(true);
+            _animator.PlayAggro();
+
+            await UniTask.Delay(TimeSpan.FromSeconds(_config.Social.StunDuration));
+
+            if (_locomotion != null)
+            {
+                _locomotion.SetStun(false);
             }
         }
     }

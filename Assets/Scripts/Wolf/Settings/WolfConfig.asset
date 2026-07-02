@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340404805e400bc4581be6131d25a3f2, type: 3}
+  m_Name: WolfConfig
+  m_EditorClassIdentifier: 
+  Stats:
+    MaxHealth: 100
+    MaxHunger: 100
+    HungerDepletionRate: 1
+  Locomotion:
+    WalkSpeed: 1
+    RunSpeed: 3.5
+    TurnSmoothSpeed: 2
+    MaxTurnAngle: 90
+    StoppingDistance: 0.5
+  Social:
+    AggroHungerThreshold: 10
+    Cooldown: 3
+    StunDuration: 1
+  Wander:
+    BaseScore: 20
+    HungerMultiplier: 0.4
+    WanderRadius: 15
+    MinWaitTime: 1
+    MaxWaitTime: 3
+    ObstacleWaitTime: 1
+  Hunt:
+    MinHungerToHunt: 30
+    DistanceToSwitchToEat: 2.5
+    BaseScore: 50
+    HungerMultiplier: 0.4
+  Eat:
+    MaxDistanceToEat: 2.5
+    BaseScore: 100
+    BiteInterval: 1
+    BiteDamage: 25
+    RotationSpeed: 5
+  Idle:
+    BaseScore: 40
+    HungerPenaltyMultiplier: 0.5

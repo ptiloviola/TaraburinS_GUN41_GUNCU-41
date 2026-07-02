@@ -1,43 +1,80 @@
+using MeatMushrooms.Wolf.Configs;
 using UnityEngine;
 using UnityEngine.AI;
+using Zenject;
 
 namespace MeatMushrooms.Wolf.Components
 {
-    // Гарантирует, что Unity не даст удалить NavMeshAgent с префаба
     [RequireComponent(typeof(NavMeshAgent))] 
     public class WolfLocomotion : MonoBehaviour
     {
         private NavMeshAgent _agent;
+        private WolfConfig _config; // Ссылка на конфиг
         
-        // Возвращает текущую физическую скорость волка (от 0 до значения Speed в NavMeshAgent)
+        public bool IsStunned { get; private set; }
+        public float CurrentTurn { get; private set; }
         public float CurrentSpeed => _agent.velocity.magnitude;
+
+        [Inject]
+        public void Construct(WolfConfig config)
+        {
+            _config = config;
+        }
 
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
         }
 
-        // Команда идти в точку
+        private void Start()
+        {
+            // Применяем стартовые настройки из конфига
+            if (_agent != null && _config != null)
+            {
+                _agent.stoppingDistance = _config.Locomotion.StoppingDistance;
+                _agent.angularSpeed = 50f; // Можно тоже вынести в конфиг!
+            }
+        }
+
+        private void Update()
+        {
+            if (_agent.hasPath && !IsStunned)
+            {
+                Vector3 desiredDirection = _agent.desiredVelocity.normalized;
+                
+                if (desiredDirection != Vector3.zero)
+                {
+                    float angle = Vector3.SignedAngle(transform.forward, desiredDirection, Vector3.up);
+                    
+                    // Берем углы и скорости сглаживания из КОНФИГА
+                    float targetTurn = Mathf.Clamp(angle / _config.Locomotion.MaxTurnAngle, -1f, 1f);
+                    CurrentTurn = Mathf.Lerp(CurrentTurn, targetTurn, Time.deltaTime * _config.Locomotion.TurnSmoothSpeed);
+                }
+            }
+            else
+            {
+                CurrentTurn = Mathf.Lerp(CurrentTurn, 0f, Time.deltaTime * _config.Locomotion.TurnSmoothSpeed);
+            }
+        }
+
         public void MoveTo(Vector3 targetPosition)
         {
+            if (IsStunned) return;
             _agent.isStopped = false;
             _agent.SetDestination(targetPosition);
         }
 
-        // Команда остановиться
         public void Stop()
         {
             if (_agent.isActiveAndEnabled && _agent.isOnNavMesh)
             {
                 _agent.isStopped = true;
-                _agent.velocity = Vector3.zero; // Гасим инерцию
+                _agent.velocity = Vector3.zero; 
             }
         }
 
-        // Удобный метод для состояний, чтобы понять, пришли мы или нет
         public bool HasReachedDestination()
         {
-            // Проверяем, не в процессе ли мы расчета пути, и достигли ли дистанции остановки
             if (!_agent.pathPending)
             {
                 if (_agent.remainingDistance <= _agent.stoppingDistance)
@@ -51,10 +88,24 @@ namespace MeatMushrooms.Wolf.Components
             return false;
         }
 
-        // Этот метод мы будем использовать позже, чтобы волки толкались у еды
         public void SetAvoidancePriority(int priority)
         {
-            _agent.avoidancePriority = priority;
+            if (_agent != null) _agent.avoidancePriority = priority;
+        }
+        
+        public void SetStun(bool isStunned)
+        {
+            IsStunned = isStunned;
+            if (_agent != null && _agent.isOnNavMesh)
+            {
+                _agent.isStopped = isStunned; 
+                if (isStunned) _agent.velocity = Vector3.zero; 
+            }
+        }
+
+        public void SetSpeed(float newSpeed)
+        {
+            if (_agent != null) _agent.speed = newSpeed;
         }
     }
 }

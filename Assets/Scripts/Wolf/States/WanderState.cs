@@ -1,5 +1,6 @@
 using MeatMushrooms.Wolf.Components;
 using MeatMushrooms.Wolf.Contracts;
+using MeatMushrooms.Wolf.Configs; // Подключаем конфиг
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,79 +10,75 @@ namespace MeatMushrooms.Wolf.States
     {
         private readonly WolfStats _stats;
         private readonly WolfLocomotion _locomotion;
+        private readonly WolfConfig _config; // Инжектим конфиг
         
-        private const float WanderRadius = 15f; // Радиус поиска случайной точки
-        private bool _isWaiting; // Флаг для небольшой паузы между перебежками
+        private bool _isWaiting; 
         private float _waitTimer;
 
-        // Zenject автоматически передаст сюда и Статы, и Локомоцию (которую мы забиндили через FromComponentOnRoot)
-        public WanderState(WolfStats stats, WolfLocomotion locomotion)
+        // Zenject внедряет все зависимости
+        public WanderState(WolfStats stats, WolfLocomotion locomotion, WolfConfig config)
         {
             _stats = stats;
             _locomotion = locomotion;
+            _config = config;
         }
 
         public float CalculateScore()
         {
-            // Базовое желание размять лапы = 20 (чтобы не падать в ноль).
-            // Но чем сильнее голод, тем яростнее волк ищет еду (прибавляем до 40 сверху).
-            return 20f + (_stats.Hunger * 0.4f); 
+            // Формула теперь настраивается из Инспектора!
+            return _config.Wander.BaseScore + (_stats.Hunger * _config.Wander.HungerMultiplier); 
         }
 
         public void Enter()
         {
             Debug.Log("[WanderState] Волк начал блуждание.");
+            // Берем скорость шага из базовых настроек ходовой
+            _locomotion.SetSpeed(_config.Locomotion.WalkSpeed);
             _isWaiting = false;
             SetNewRandomDestination();
         }
 
         public void Tick()
         {
-            // Если волк сейчас стоит и ждет (например, принюхивается)
             if (_isWaiting)
             {
                 _waitTimer -= Time.deltaTime;
                 if (_waitTimer <= 0)
                 {
                     _isWaiting = false;
-                    SetNewRandomDestination(); // Ждать закончили, идем в новую точку
+                    SetNewRandomDestination(); 
                 }
-                return; // Выходим из Tick, чтобы не проверять движение
+                return; 
             }
 
-            // Проверяем, дошел ли волк до цели
             if (_locomotion.HasReachedDestination())
             {
-                // Останавливаемся и стоим от 1 до 3 секунд перед следующим шагом
                 _locomotion.Stop();
                 _isWaiting = true;
-                _waitTimer = Random.Range(1f, 3f);
+                // Берем тайминги отдыха из конфига
+                _waitTimer = Random.Range(_config.Wander.MinWaitTime, _config.Wander.MaxWaitTime);
             }
         }
 
         public void Exit()
         {
-            Debug.Log("[WanderState] Волк прекратил блуждание.");
-            _locomotion.Stop(); // Обязательно тормозим волка при смене состояния!
+            _locomotion.Stop(); 
         }
 
-        // Метод поиска случайной точки на NavMesh
         private void SetNewRandomDestination()
         {
-            // Берем случайную точку в сфере вокруг текущей позиции волка
-            Vector3 randomDirection = Random.insideUnitSphere * WanderRadius;
+            // Берем радиус из конфига
+            Vector3 randomDirection = Random.insideUnitSphere * _config.Wander.WanderRadius;
             randomDirection += _locomotion.transform.position;
 
-            // Спрашиваем NavMesh, есть ли рядом с этой случайной точкой проходимая зона
-            if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, WanderRadius, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, _config.Wander.WanderRadius, NavMesh.AllAreas))
             {
                 _locomotion.MoveTo(hit.position);
             }
             else
             {
-                // Если точка оказалась внутри камня, просто ждем секунду и пробуем снова
                 _isWaiting = true;
-                _waitTimer = 1f;
+                _waitTimer = _config.Wander.ObstacleWaitTime;
             }
         }
     }

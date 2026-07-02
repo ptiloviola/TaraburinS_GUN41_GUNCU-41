@@ -1,4 +1,5 @@
 using MeatMushrooms.Wolf.Components;
+using MeatMushrooms.Wolf.Configs; // Обновленный неймспейс
 using MeatMushrooms.Wolf.Contracts;
 using UnityEngine;
 
@@ -7,31 +8,27 @@ namespace MeatMushrooms.Wolf.States
     public class IdleState : IWolfState
     {
         private readonly WolfStats _stats;
+        private readonly WolfConfig _config;
 
-        public IdleState(WolfStats stats)
+        public IdleState(WolfStats stats, WolfConfig config)
         {
             _stats = stats;
+            _config = config;
         }
 
         public float CalculateScore()
         {
-            // Если волк ОЧЕНЬ голоден (больше 80), он не хочет отдыхать (оценка 0).
-            // Если он сыт (голод 0), оценка максимальная для отдыха (например, 40).
-            float score = 40f - (_stats.Hunger * 0.5f); 
-            
-            // Защита от отрицательных значений
+            float score = _config.Idle.BaseScore - (_stats.Hunger * _config.Idle.HungerPenaltyMultiplier); 
             return Mathf.Max(0, score); 
         }
 
         public void Enter()
         {
             Debug.Log("[IdleState] Волк лег отдыхать.");
-            // Здесь мы будем запускать анимацию Wait_Random
         }
 
         public void Tick()
         {
-            // Волк просто дышит и переваривает еду
         }
 
         public void Exit()

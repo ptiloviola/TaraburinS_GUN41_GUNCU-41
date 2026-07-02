@@ -13,6 +13,8 @@ namespace MeatMushrooms.Wolf.Components
 
         private static readonly int SnapTriggerHash = Animator.StringToHash("Aggro");
 
+        private static readonly int TurnHash = Animator.StringToHash("Turn");
+
         // Таймер для спама логами, чтобы не забить консоль
         private float _logTimer;
 
@@ -41,6 +43,7 @@ namespace MeatMushrooms.Wolf.Components
             
             // Отправляем скорость в Аниматор
             _animator.SetFloat(SpeedHash, currentSpeed);
+            _animator.SetFloat(TurnHash, _locomotion.CurrentTurn);
 
             // ДАТЧИК 2: Какую скорость мы отправляем? (Пишем в лог раз в секунду)
             _logTimer += Time.deltaTime;

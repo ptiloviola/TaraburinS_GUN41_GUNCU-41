@@ -83,7 +83,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 3347607914543377807, guid: bb705aba4854de64f9f05623422759ee, type: 3}
     m_Threshold: 1.5
-    m_Position: {x: 0, y: 0}
+    m_Position: {x: 0, y: 3.5}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
@@ -91,18 +91,50 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 4278218768131200271, guid: bb705aba4854de64f9f05623422759ee, type: 3}
     m_Threshold: 3.5
-    m_Position: {x: 0, y: 0}
+    m_Position: {x: 0, y: 1.5}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
-  m_BlendParameter: Speed
+  - serializedVersion: 2
+    m_Motion: {fileID: -6847009767922943439, guid: bb705aba4854de64f9f05623422759ee, type: 3}
+    m_Threshold: 5.5
+    m_Position: {x: -2, y: 1.5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: Speed
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 9181679501742095225, guid: bb705aba4854de64f9f05623422759ee, type: 3}
+    m_Threshold: 7.5
+    m_Position: {x: 2, y: 1.5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: Speed
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: -5119520790500937865, guid: bb705aba4854de64f9f05623422759ee, type: 3}
+    m_Threshold: 9.5
+    m_Position: {x: -7, y: 3.5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: Speed
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 7237970729261603006, guid: bb705aba4854de64f9f05623422759ee, type: 3}
+    m_Threshold: 11.5
+    m_Position: {x: 7, y: 3.5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: Speed
+    m_Mirror: 0
+  m_BlendParameter: Turn
   m_BlendParameterY: Speed
   m_MinThreshold: 0
-  m_MaxThreshold: 3.5
+  m_MaxThreshold: 11.5
   m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
-  m_BlendType: 0
+  m_BlendType: 2
 --- !u!1102 &-3708112211323293846
 AnimatorState:
   serializedVersion: 6
@@ -159,6 +191,12 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   - m_Name: Aggro
     m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: Turn
+    m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
