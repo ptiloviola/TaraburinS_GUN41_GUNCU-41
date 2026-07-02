@@ -11,6 +11,8 @@ namespace MeatMushrooms.Wolf.Components
         private static readonly int EatTriggerHash = Animator.StringToHash("EatStart");
         private static readonly int StopEatTriggerHash = Animator.StringToHash("EatStop");
 
+        private static readonly int SnapTriggerHash = Animator.StringToHash("Aggro");
+
         // Таймер для спама логами, чтобы не забить консоль
         private float _logTimer;
 
@@ -60,5 +62,13 @@ namespace MeatMushrooms.Wolf.Components
             Debug.Log("[WolfAnimator] Отправлен триггер EatStop");
             _animator?.SetTrigger(StopEatTriggerHash);
         }
+
+
+
+        public void PlayAggro()
+        {
+            _animator?.SetTrigger(SnapTriggerHash);
+        }
+
     }
 }
