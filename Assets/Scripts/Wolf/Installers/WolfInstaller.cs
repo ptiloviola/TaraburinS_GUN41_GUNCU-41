@@ -12,6 +12,7 @@ namespace MeatMushrooms.Wolf.Installers
             // --- 1. Компоненты на самом GameObject ---
             Container.Bind<WolfLocomotion>().FromComponentOnRoot().AsSingle();
             Container.Bind<WolfSenses>().FromComponentOnRoot().AsSingle();
+            Container.Bind<WolfAnimator>().FromComponentOnRoot().AsSingle();
 
             // --- 2. Чистые C# классы ---
             Container.BindInterfacesAndSelfTo<WolfStats>().AsSingle();

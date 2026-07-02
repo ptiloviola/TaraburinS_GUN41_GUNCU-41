@@ -8,6 +8,9 @@ namespace MeatMushrooms.Wolf.Components
     public class WolfLocomotion : MonoBehaviour
     {
         private NavMeshAgent _agent;
+        
+        // Возвращает текущую физическую скорость волка (от 0 до значения Speed в NavMeshAgent)
+        public float CurrentSpeed => _agent.velocity.magnitude;
 
         private void Awake()
         {
