@@ -23,6 +23,9 @@ namespace MeatMushrooms.Player.Components
         private float _verticalVelocity;
         private const float Gravity = -9.81f;
 
+        // Внутри PlayerController.cs добавь публичное свойство:
+        public SphereCollider NoiseRadar => _noiseRadar;
+
         private static readonly int SpeedHash = Animator.StringToHash("Speed");
 
         private void Awake()

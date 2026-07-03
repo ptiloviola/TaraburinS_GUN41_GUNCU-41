@@ -3,6 +3,7 @@ using MeatMushrooms.Mushroom.Configs;
 using MeatMushrooms.Mushroom.Signals;
 using UnityEngine;
 using Zenject;
+using MeatMushrooms.Player.Components;
 
 namespace MeatMushrooms.Core.Installers
 {
@@ -11,6 +12,8 @@ namespace MeatMushrooms.Core.Installers
         [Header("Configs")]
         [SerializeField] private MushroomConfig _mushroomConfig;
         [SerializeField] private MushroomSpawnerConfig _spawnerConfig;
+        // В инсталляторе (потребуется добавить using MeatMushrooms.Player.Components;)
+        [SerializeField] private PlayerController _playerInstance; // Перетащи Шапочку со сцены сюда в Инспекторе!
 
         public override void InstallBindings()
         {
@@ -27,6 +30,9 @@ namespace MeatMushrooms.Core.Installers
             // BindInterfacesTo означает, что Zenject найдет у MushroomSpawner 
             // интерфейсы IInitializable и IDisposable и вызовет их в нужный момент.
             Container.BindInterfacesTo<MushroomSpawner>().AsSingle();
+
+            // Говорим Zenject'у запомнить Шапочку
+            Container.Bind<PlayerController>().FromInstance(_playerInstance).AsSingle();
         }
     }
 }

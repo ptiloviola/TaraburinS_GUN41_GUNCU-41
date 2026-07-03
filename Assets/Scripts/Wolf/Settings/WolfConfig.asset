@@ -27,6 +27,20 @@ MonoBehaviour:
     AggroHungerThreshold: 80
     Cooldown: 3
     StunDuration: 2
+  Perception:
+    SightDistance: 12
+    SightAngle: 90
+    ObstacleMask:
+      serializedVersion: 2
+      m_Bits: 128
+    PlayerMask:
+      serializedVersion: 2
+      m_Bits: 256
+    SuspicionBuildRate: 20
+    SuspicionDecayRate: 10
+    HungerThreshold: 50
+    HungrySuspicionMultiplier: 1.5
+    EatingDistractionMultiplier: 0.2
   Wander:
     BaseScore: 20
     HungerMultiplier: 0.4
@@ -65,3 +79,9 @@ MonoBehaviour:
     HearRadius: 35
     Cooldown: 30
     SpontaneousChance: 0.944
+  Investigate:
+    NoticeThreshold: 30
+    MoveThreshold: 60
+    BaseScore: 65
+    TrotSpeed: 2.5
+    LookAroundTime: 4

@@ -22,6 +22,10 @@ namespace MeatMushrooms.Wolf.Components
         private static readonly int HowlTriggerHash = Animator.StringToHash("Howl");
         private static readonly int StopHowlTriggerHash = Animator.StringToHash("StopHowl");
 
+        private static readonly int NoticeTriggerHash = Animator.StringToHash("Notice");
+        private static readonly int TrotTriggerHash = Animator.StringToHash("Trot");
+        private static readonly int StopInvestigateTriggerHash = Animator.StringToHash("StopInvestigate");
+
         // Таймер для спама логами, чтобы не забить консоль
         private float _logTimer;
 
@@ -87,6 +91,10 @@ namespace MeatMushrooms.Wolf.Components
         // Новые методы для воя
         public void PlayHowl() => _animator?.SetTrigger(HowlTriggerHash);
         public void StopHowl() => _animator?.SetTrigger(StopHowlTriggerHash);
+
+        public void PlayNotice() => _animator?.SetTrigger(NoticeTriggerHash);
+        public void PlayTrot() => _animator?.SetTrigger(TrotTriggerHash);
+        public void StopInvestigate() => _animator?.SetTrigger(StopInvestigateTriggerHash);
 
     }
 }

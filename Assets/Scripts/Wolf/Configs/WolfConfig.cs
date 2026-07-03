@@ -10,6 +10,7 @@ namespace MeatMushrooms.Wolf.Configs
         public StatsConfig Stats;
         public LocomotionConfig Locomotion;
         public SocialConfig Social;
+        public PerceptionConfig Perception;
 
         [Header("Настройки ИИ (Utility Scores)")]
         public WanderConfig Wander;
@@ -17,6 +18,8 @@ namespace MeatMushrooms.Wolf.Configs
         public EatConfig Eat;
         public IdleConfig Idle;
         public HowlConfig Howl;
+        
+        public InvestigateConfig Investigate;
     }
 
     #region Базовые системы (Физиология и Движение)
@@ -49,6 +52,29 @@ namespace MeatMushrooms.Wolf.Configs
         public float AggroHungerThreshold = 10f;
         public float Cooldown = 3f;
         public float StunDuration = 1f;
+    }
+
+    [Serializable]
+    public class PerceptionConfig
+    {
+        [Header("Зрение")]
+        public float SightDistance = 12f;
+        [Range(10f, 180f)]
+        public float SightAngle = 90f; 
+        public LayerMask ObstacleMask; 
+        public LayerMask PlayerMask;   
+
+        [Header("Слух и Подозрение")]
+        public float SuspicionBuildRate = 20f; 
+        public float SuspicionDecayRate = 10f; 
+        
+        [Header("Модификаторы голода и отвлечения")]
+        [Tooltip("Порог голода, после которого волк становится бдительнее")]
+        public float HungerThreshold = 50f;
+        [Tooltip("Во сколько раз быстрее копится подозрение у голодного волка")]
+        public float HungrySuspicionMultiplier = 1.5f;
+        [Tooltip("Штраф к слуху, когда волк занят едой (от 0 до 1)")]
+        public float EatingDistractionMultiplier = 0.2f; 
     }
     
     #endregion
@@ -140,6 +166,31 @@ namespace MeatMushrooms.Wolf.Configs
         [Range(0f, 1f)] 
         public float SpontaneousChance = 0.05f; // 5% шанс каждую секунду
     }
+
+    [Serializable]
+    public class InvestigateConfig
+    {
+        [Header("Условия (Ступени подозрения)")]
+        [Tooltip("1 ступень (замирает и слушает)")]
+        public float NoticeThreshold = 30f; 
+        
+        [Tooltip("2 ступень (идет к источнику шума)")]
+        public float MoveThreshold = 60f;   
+        
+        public float BaseScore = 65f;
+
+        [Header("Поведение")]
+        [Tooltip("Скорость ходьбы к источнику")]
+        public float TrotSpeed = 2.5f;
+        
+        [Tooltip("Сколько секунд осматривается на месте")]
+        public float LookAroundTime = 4f;
+    }
+    
+
+    
+
+    
 
     #endregion
 }
