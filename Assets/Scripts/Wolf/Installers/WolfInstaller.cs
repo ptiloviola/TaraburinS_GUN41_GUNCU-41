@@ -27,6 +27,8 @@ namespace MeatMushrooms.Wolf.Installers
             Container.Bind<IWolfState>().To<WanderState>().AsSingle();
             Container.Bind<IWolfState>().To<HuntFoodState>().AsSingle();
             Container.Bind<IWolfState>().To<EatState>().AsSingle();
+            Container.Bind<IWolfState>().To<HowlState>().AsSingle();
+  
 
             Container.Bind<WolfSocial>().FromComponentOnRoot().AsSingle();
 

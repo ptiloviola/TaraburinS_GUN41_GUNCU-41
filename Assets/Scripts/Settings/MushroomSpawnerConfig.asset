@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d6dab650418f45479580cbe9b46a502, type: 3}
   m_Name: MushroomSpawnerConfig
   m_EditorClassIdentifier: 
-  SpawnInterval: 10
-  MaxMushroomsOnMap: 10
+  SpawnInterval: 7
+  MaxMushroomsOnMap: 25
   SpawnAreaRadius: 20

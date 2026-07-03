@@ -22,10 +22,11 @@ MonoBehaviour:
     TurnSmoothSpeed: 2
     MaxTurnAngle: 90
     StoppingDistance: 0.5
+    TurnPenalty: 0.86
   Social:
-    AggroHungerThreshold: 10
+    AggroHungerThreshold: 80
     Cooldown: 3
-    StunDuration: 1
+    StunDuration: 2
   Wander:
     BaseScore: 20
     HungerMultiplier: 0.4
@@ -47,3 +48,20 @@ MonoBehaviour:
   Idle:
     BaseScore: 40
     HungerPenaltyMultiplier: 0.5
+    StickyRestScoreBonus: 30
+    MinIdleTime: 2
+    MaxIdleTime: 6
+    ShakeProbability: 0.3
+    ShakeDuration: 2
+    MealsToSleep: 2
+    MealTimeWindow: 40
+    RestDuration: 20
+    RetreatRadius: 5
+  Howl:
+    MaxHungerToHowl: 100
+    SpontaneousScore: 60
+    JoinHowlScore: 80
+    HowlDuration: 5
+    HearRadius: 35
+    Cooldown: 30
+    SpontaneousChance: 0.944

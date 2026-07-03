@@ -16,6 +16,7 @@ namespace MeatMushrooms.Wolf.Configs
         public HuntConfig Hunt;
         public EatConfig Eat;
         public IdleConfig Idle;
+        public HowlConfig Howl;
     }
 
     #region Базовые системы (Физиология и Движение)
@@ -117,6 +118,27 @@ namespace MeatMushrooms.Wolf.Configs
         public float MealTimeWindow = 40f; 
         public float RestDuration = 20f;
         public float RetreatRadius = 5f;
+    }
+
+    [Serializable]
+    public class HowlConfig
+    {
+        [Header("Условия")]
+        [Tooltip("Слишком голодные волки не воют")]
+        public float MaxHungerToHowl = 40f; 
+        
+        [Header("Оценка (Score)")]
+        public float SpontaneousScore = 60f; // Приоритет, если решил завыть сам
+        public float JoinHowlScore = 80f;    // Приоритет, если услышал другого
+
+        [Header("Поведение")]
+        public float HowlDuration = 5f;
+        public float HearRadius = 15f;       // Тот самый "радар воя"
+        public float Cooldown = 30f;         // Чтобы не выли без остановки
+        
+        [Tooltip("Шанс завыть самому (проверяется каждую секунду)")]
+        [Range(0f, 1f)] 
+        public float SpontaneousChance = 0.05f; // 5% шанс каждую секунду
     }
 
     #endregion

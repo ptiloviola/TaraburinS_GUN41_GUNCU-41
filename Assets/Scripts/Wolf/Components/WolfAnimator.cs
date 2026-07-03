@@ -17,6 +17,10 @@ namespace MeatMushrooms.Wolf.Components
         private static readonly int ShakeTriggerHash = Animator.StringToHash("Shake");
         private static readonly int SleepTriggerHash = Animator.StringToHash("Sleep");
         private static readonly int WakeUpTriggerHash = Animator.StringToHash("WakeUp");
+        // Добавь это к остальным хэшам
+        // Добавляем хэши для триггеров
+        private static readonly int HowlTriggerHash = Animator.StringToHash("Howl");
+        private static readonly int StopHowlTriggerHash = Animator.StringToHash("StopHowl");
 
         // Таймер для спама логами, чтобы не забить консоль
         private float _logTimer;
@@ -78,6 +82,11 @@ namespace MeatMushrooms.Wolf.Components
         public void PlayShake() => _animator?.SetTrigger(ShakeTriggerHash);
         public void PlaySleep() => _animator?.SetTrigger(SleepTriggerHash);
         public void PlayWakeUp() => _animator?.SetTrigger(WakeUpTriggerHash);
+
+        // Добавь это к остальным методам
+        // Новые методы для воя
+        public void PlayHowl() => _animator?.SetTrigger(HowlTriggerHash);
+        public void StopHowl() => _animator?.SetTrigger(StopHowlTriggerHash);
 
     }
 }
