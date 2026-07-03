@@ -14,9 +14,11 @@ namespace MeatMushrooms.Wolf.States
 
         private InvestigatePhase _currentPhase;
         private Vector3 _lockedTargetPosition;
-        private float _lookAroundTimer;
+        private float _actionTimer; 
+        private bool _isActive; // Флаг залипания стейта
 
-        // Внутренние стадии нашего поиска
+        private const float ListeningDuration = 2.5f; // Волк будет прислушиваться ровно 2.5 секунды
+
         private enum InvestigatePhase
         {
             Listening,
@@ -34,23 +36,30 @@ namespace MeatMushrooms.Wolf.States
 
         public float CalculateScore()
         {
-            // Теперь стейт просыпается уже на первой ступени (NoticeThreshold)
-            if (_perception.CurrentSuspicion < _config.Investigate.NoticeThreshold)
+            // Если логика внутри Tick решила, что всё чисто, она обнулит Suspicion.
+            // Только в этом случае мы отдаем управление мозгу.
+            if (_perception.CurrentSuspicion <= 0f) return 0f;
+
+            // Если мы еще НЕ в стейте, проверяем порог входа (1 ступень)
+            if (!_isActive && _perception.CurrentSuspicion < _config.Investigate.NoticeThreshold)
             {
                 return 0f;
             }
 
+            // ЗАЛИПАНИЕ: Если мы уже активны, мы держим очки высокими, даже если подозрение слегка упало
             return _config.Investigate.BaseScore + (_perception.CurrentSuspicion * 0.5f);
         }
 
         public void Enter()
         {
-            Debug.Log($"<color=yellow>[Investigate]</color> 🐺 Волк {_locomotion.gameObject.name} что-то услышал! (1 ступень)");
-            
-            // Начинаем всегда со слушания
+            _isActive = true;
             _currentPhase = InvestigatePhase.Listening;
+            _actionTimer = ListeningDuration; 
+            
             _locomotion.Stop();
             _animator.PlayNotice(); 
+            
+            Debug.Log($"<color=yellow>[Investigate]</color> 🐺 Волк напряг уши! (Таймер пошел)");
         }
 
         public void Tick()
@@ -58,42 +67,43 @@ namespace MeatMushrooms.Wolf.States
             switch (_currentPhase)
             {
                 case InvestigatePhase.Listening:
-                    // Если подозрение пробивает вторую ступень, переходим к движению
+                    // Если Шапочка продолжает шуметь, переходим ко 2 ступени ДО окончания таймера
                     if (_perception.CurrentSuspicion >= _config.Investigate.MoveThreshold)
                     {
-                        Debug.Log($"<color=yellow>[Investigate]</color> Шум подтвердился! Волк идет проверять. (2 ступень)");
-                        
                         _currentPhase = InvestigatePhase.Trotting;
-                        
-                        // ФИКСИРУЕМ ТОЧКУ: Волк пойдет именно туда, где был шум в эту секунду
                         _lockedTargetPosition = _perception.LastKnownPosition; 
                         
                         _locomotion.SetSpeed(_config.Investigate.TrotSpeed);
-                        _locomotion.MoveTo(_lockedTargetPosition);
+                        _locomotion.MoveTo(_lockedTargetPosition); // Используем твой MoveTo!
                         _animator.PlayTrot();
+                        break;
+                    }
+
+                    // Ждем, пока волк вслушивается
+                    _actionTimer -= Time.deltaTime;
+                    if (_actionTimer <= 0)
+                    {
+                        // Время вышло. Шум не усилился. Ложная тревога.
+                        // Это сбросит Score в 0 при следующем кадре!
+                        _perception.ClearSuspicion(); 
                     }
                     break;
 
                 case InvestigatePhase.Trotting:
                     if (_locomotion.HasReachedDestination())
                     {
-                        Debug.Log($"<color=yellow>[Investigate]</color> Волк на точке. Осматривается.");
-                        
                         _currentPhase = InvestigatePhase.LookingAround;
-                        _lookAroundTimer = _config.Investigate.LookAroundTime;
-                        _locomotion.Stop();
+                        _actionTimer = _config.Investigate.LookAroundTime;
                         
-                        // Снова включаем анимацию "Прислушиваюсь", пока он стоит на точке
+                        _locomotion.Stop();
                         _animator.PlayNotice(); 
                     }
                     break;
 
                 case InvestigatePhase.LookingAround:
-                    _lookAroundTimer -= Time.deltaTime;
-                    
-                    if (_lookAroundTimer <= 0)
+                    _actionTimer -= Time.deltaTime;
+                    if (_actionTimer <= 0)
                     {
-                        Debug.Log($"<color=yellow>[Investigate]</color> Никого нет. Возвращаюсь к делам.");
                         _perception.ClearSuspicion(); 
                     }
                     break;
@@ -102,9 +112,9 @@ namespace MeatMushrooms.Wolf.States
 
         public void Exit()
         {
-            // Возвращаем дефолтные настройки
-            _locomotion.SetSpeed(3.5f); // Или скорость из конфига Wander
-            _animator.StopInvestigate(); // Возвращает Аниматор в норму
+            _isActive = false;
+            _locomotion.SetSpeed(3.5f); 
+            _animator.StopInvestigate(); 
         }
     }
 }

@@ -26,6 +26,9 @@ namespace MeatMushrooms.Player.Components
         // Внутри PlayerController.cs добавь публичное свойство:
         public SphereCollider NoiseRadar => _noiseRadar;
 
+        public System.Action OnDeath;
+        public bool IsDead { get; private set; }
+
         private static readonly int SpeedHash = Animator.StringToHash("Speed");
 
         private void Awake()
@@ -53,6 +56,7 @@ namespace MeatMushrooms.Player.Components
 
         private void HandleMovementAndNoise()
         {
+            if (IsDead) return;
             Vector2 input = _moveAction.ReadValue<Vector2>();
             bool isRunning = _runAction.IsPressed();
 
@@ -123,6 +127,29 @@ namespace MeatMushrooms.Player.Components
         public void PlayFootstepRunSound()
         {
             Debug.Log("[Player] ГРОМКИЙ БЕГ!");
+        }
+
+        // Метод, который вызовет волк при укусе
+        public void Kill()
+        {
+            if (IsDead) return;
+            IsDead = true;
+            
+            // Останавливаем контроллер
+            _currentSpeed = 0f;
+            _animator.SetFloat(SpeedHash, 0f);
+            
+            Debug.Log("<color=red><b>ВЫ МЕРТВЫ! Игра окончена.</b></color>");
+            OnDeath?.Invoke(); // Вызываем событие для UI
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (_noiseRadar != null)
+            {
+                Gizmos.color = new Color(0f, 1f, 1f, 0.3f); // Полупрозрачный голубой
+                Gizmos.DrawSphere(transform.position, _noiseRadar.radius);
+            }
         }
     }
 }

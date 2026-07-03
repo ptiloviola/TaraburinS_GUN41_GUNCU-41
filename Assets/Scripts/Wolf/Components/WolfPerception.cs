@@ -92,5 +92,15 @@ namespace MeatMushrooms.Wolf.Components
         {
             CurrentSuspicion = 0f;
         }
+
+        // Метод, который вызовет другой волк при обнаружении
+        public void ReceiveAlert(Vector3 targetPosition)
+        {
+            // Мгновенно накидываем подозрение (чтобы перебить текущие дела)
+            CurrentSuspicion = Mathf.Clamp(CurrentSuspicion + 40f, 0f, 100f);
+            
+            // Волк узнает, где видели Шапочку, даже не видя её сам!
+            LastKnownPosition = targetPosition;
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace MeatMushrooms.Wolf.Configs
         public HowlConfig Howl;
         
         public InvestigateConfig Investigate;
+        public ChaseConfig Chase;
     }
 
     #region Базовые системы (Физиология и Движение)
@@ -185,6 +186,18 @@ namespace MeatMushrooms.Wolf.Configs
         
         [Tooltip("Сколько секунд осматривается на месте")]
         public float LookAroundTime = 4f;
+    }
+
+    [Serializable]
+    public class ChaseConfig
+    {
+        [Header("Погоня и Атака")]
+        public float ChaseSpeed = 6f; // Скорость бега за Шапочкой
+        public float AttackDistance = 1.2f; // Дистанция укуса
+        
+        [Header("Стайный зов")]
+        public float AlertRadius = 25f; // Радиус, в котором волки услышат боевой клич
+        public float HowlDuration = 2f; // Сколько секунд волк воет перед рывком
     }
     
 

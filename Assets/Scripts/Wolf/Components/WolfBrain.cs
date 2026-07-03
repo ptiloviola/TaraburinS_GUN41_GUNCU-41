@@ -8,18 +8,20 @@ namespace MeatMushrooms.Wolf.Components
     public class WolfBrain : IInitializable, ITickable
     {
         private readonly List<IWolfState> _availableStates;
-        private readonly WolfStats _stats; // Добавили статы для отладки
         private IWolfState _currentState;
         
         private float _thinkTimer;
         private const float ThinkInterval = 0.5f; 
 
-        // Обрати внимание: Zenject сам добавит сюда WolfStats, нам не нужно менять инсталлятор
+        // ПУБЛИЧНЫЕ СВОЙСТВА ДЛЯ ДЕБАГГЕРА
+        public string CurrentStateName => _currentState != null ? _currentState.GetType().Name : "Initializing...";
+        public Dictionary<string, float> StateScores { get; private set; } = new Dictionary<string, float>();
+
+        // Убрали WolfStats, так как мозгу они не нужны
         [Inject]
-        public WolfBrain(List<IWolfState> availableStates, WolfStats stats)
+        public WolfBrain(List<IWolfState> availableStates)
         {
             _availableStates = availableStates;
-            _stats = stats;
         }
 
         public void Initialize()
@@ -47,13 +49,12 @@ namespace MeatMushrooms.Wolf.Components
             IWolfState bestState = null;
             float highestScore = -1f;
 
-            // Строка телеметрии, которую мы будем собирать
-            string telemetry = $"[Brain] Голод: {_stats.Hunger:F1} | ";
-
             foreach (var state in _availableStates)
             {
                 float score = state.CalculateScore();
-                telemetry += $"{state.GetType().Name}: {score:F1} | ";
+                
+                // Сохраняем очки в словарь (без создания мусорных строк)
+                StateScores[state.GetType().Name] = score;
                 
                 if (score > highestScore)
                 {
@@ -61,9 +62,6 @@ namespace MeatMushrooms.Wolf.Components
                     bestState = state;
                 }
             }
-
-            // РАСКОММЕНТИРУЙ СТРОКУ НИЖЕ, чтобы видеть мысли волка в реальном времени!
-            Debug.Log(telemetry);
 
             if (bestState != null && bestState != _currentState)
             {
@@ -76,8 +74,8 @@ namespace MeatMushrooms.Wolf.Components
             _currentState?.Exit();
             _currentState = newState;
             
-            // Если тут произойдет ошибка, мы это увидим, так как лог перехода стоит ПЕРЕД методом Enter
-            Debug.Log($"[WolfBrain] ---> Переход в: {_currentState.GetType().Name}");
+            // Оставляем только этот лог, чтобы видеть факт перехода в консоли
+            Debug.Log($"<color=magenta>[WolfBrain]</color> Волк перешел в: {_currentState.GetType().Name}");
             
             _currentState?.Enter();
         }

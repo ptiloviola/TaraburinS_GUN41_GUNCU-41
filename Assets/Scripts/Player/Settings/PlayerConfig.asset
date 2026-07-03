@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f2b4b2ddb43c164eabc5a8382a5975b, type: 3}
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
-  WalkSpeed: 1
+  WalkSpeed: 1.5
   RunSpeed: 7
   RotationSmoothTime: 0.1
   IdleNoise: 0
-  WalkNoise: 3
-  RunNoise: 15
+  WalkNoise: 7
+  RunNoise: 25

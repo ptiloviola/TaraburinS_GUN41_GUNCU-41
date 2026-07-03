@@ -37,7 +37,7 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 256
     SuspicionBuildRate: 20
-    SuspicionDecayRate: 10
+    SuspicionDecayRate: 3
     HungerThreshold: 50
     HungrySuspicionMultiplier: 1.5
     EatingDistractionMultiplier: 0.2
@@ -85,3 +85,8 @@ MonoBehaviour:
     BaseScore: 65
     TrotSpeed: 2.5
     LookAroundTime: 4
+  Chase:
+    ChaseSpeed: 6
+    AttackDistance: 2
+    AlertRadius: 25
+    HowlDuration: 2
