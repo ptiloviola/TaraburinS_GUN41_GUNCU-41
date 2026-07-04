@@ -7,6 +7,7 @@ using UnityEngine;
 using MeatMushrooms.Wolf.DebugTools;
 using MeatMushrooms.Player;
 using MeatMushrooms.Player.Components;
+using MeatMushrooms.Wolf.Signals;
 
 namespace MeatMushrooms.Wolf.Installers
 {
@@ -17,6 +18,16 @@ namespace MeatMushrooms.Wolf.Installers
         [Inject] private PlayerRegistry _playerRegistry;
         public override void InstallBindings()
         {
+
+            Container.Bind<WolfEventBus>().AsSingle();
+
+            Container.DeclareSignal<WolfHowlSignal>();
+            Container.DeclareSignal<WolfCombatGrowlSignal>();
+            Container.DeclareSignal<WolfLowGrowlSignal>();
+            Container.DeclareSignal<WolfEatSignal>();
+
+
+
             Container.Bind<PlayerController>().FromInstance(_playerRegistry.Player).AsSingle();
             Container.BindInstance(_wolfConfig).AsSingle();
             // --- 1. Компоненты на самом GameObject ---

@@ -4,6 +4,7 @@ using MeatMushrooms.Wolf.Configs;
 using MeatMushrooms.Wolf.Contracts;
 using UnityEngine;
 
+
 namespace MeatMushrooms.Wolf.States
 {
     public class ChaseState : IWolfState
@@ -17,6 +18,7 @@ namespace MeatMushrooms.Wolf.States
         private ChasePhase _currentPhase;
         private float _actionTimer;
         private bool _isActive;
+        private readonly WolfEventBus _eventBus;
 
         private enum ChasePhase
         {
@@ -25,13 +27,15 @@ namespace MeatMushrooms.Wolf.States
             Attacking
         }
 
-        public ChaseState(WolfLocomotion locomotion, WolfAnimator animator, WolfPerception perception, WolfConfig config, PlayerController player)
+        public ChaseState(WolfLocomotion locomotion, WolfAnimator animator, WolfPerception perception, 
+            WolfConfig config, PlayerController player, WolfEventBus eventBus)
         {
             _locomotion = locomotion;
             _animator = animator;
             _perception = perception;
             _config = config;
-            _player = player; // Zenject сам найдет Шапочку и передаст сюда
+            _player = player;
+            _eventBus = eventBus;
         }
 
         public float CalculateScore()
@@ -55,7 +59,9 @@ namespace MeatMushrooms.Wolf.States
             _locomotion.Stop();
             
             // Используем анимацию обычного воя для старта
-            _animator.PlayHowl(); 
+            _animator.PlayHowl();
+            _eventBus.FireHowl();
+
             
             Debug.Log($"<color=red>[Chase]</color> 🐺 Волк {_locomotion.gameObject.name} ЗАМЕТИЛ ИГРОКА! Поднимает тревогу!");
 

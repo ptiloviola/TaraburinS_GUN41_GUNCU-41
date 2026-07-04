@@ -3,6 +3,7 @@ using MeatMushrooms.Wolf.Configs;
 using MeatMushrooms.Wolf.Contracts;
 using UnityEngine;
 
+
 namespace MeatMushrooms.Wolf.States
 {
     public class HowlState : IWolfState
@@ -12,6 +13,7 @@ namespace MeatMushrooms.Wolf.States
         private readonly WolfAnimator _animator;
         private readonly WolfSocial _social;
         private readonly WolfConfig _config;
+        
 
         private float _timer;
         private float _nextHowlTime; // Заменили таймер на абсолютное время
@@ -19,8 +21,10 @@ namespace MeatMushrooms.Wolf.States
         
         private bool _wantsToHowlSpontaneously;
         private string _wolfName; 
+        private readonly WolfEventBus _eventBus;
 
-        public HowlState(WolfStats stats, WolfLocomotion locomotion, WolfAnimator animator, WolfSocial social, WolfConfig config)
+        public HowlState(WolfStats stats, WolfLocomotion locomotion, 
+            WolfAnimator animator, WolfSocial social, WolfConfig config, WolfEventBus eventBus)
         {
             _stats = stats;
             _locomotion = locomotion;
@@ -28,6 +32,7 @@ namespace MeatMushrooms.Wolf.States
             _social = social;
             _config = config;
             _wolfName = _locomotion.gameObject.name;
+            _eventBus = eventBus;
         }
 
         public float CalculateScore()
@@ -66,6 +71,7 @@ namespace MeatMushrooms.Wolf.States
             Debug.Log($"<color=cyan>[HowlState]</color> 🐺 <b>{_wolfName}</b> НАЧАЛ ВЫТЬ!");
             _locomotion.Stop();
             _animator.PlayHowl();
+            _eventBus.FireHowl();
             
             _social.IsHowling = true; 
             _wantsToHowlSpontaneously = false; 
