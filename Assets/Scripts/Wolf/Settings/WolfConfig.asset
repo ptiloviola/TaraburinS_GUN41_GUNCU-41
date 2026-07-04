@@ -86,7 +86,7 @@ MonoBehaviour:
     TrotSpeed: 2.5
     LookAroundTime: 4
   Chase:
-    ChaseSpeed: 6
-    AttackDistance: 2
+    ChaseSpeed: 8
+    AttackDistance: 4
     AlertRadius: 25
     HowlDuration: 2
