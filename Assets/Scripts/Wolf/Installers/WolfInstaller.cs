@@ -5,6 +5,8 @@ using Zenject;
 using MeatMushrooms.Wolf.Configs;
 using UnityEngine;
 using MeatMushrooms.Wolf.DebugTools;
+using MeatMushrooms.Player;
+using MeatMushrooms.Player.Components;
 
 namespace MeatMushrooms.Wolf.Installers
 {
@@ -12,8 +14,10 @@ namespace MeatMushrooms.Wolf.Installers
     {
         // 1. Поле для нашего конфига
         [SerializeField] private WolfConfig _wolfConfig;
+        [Inject] private PlayerRegistry _playerRegistry;
         public override void InstallBindings()
         {
+            Container.Bind<PlayerController>().FromInstance(_playerRegistry.Player).AsSingle();
             Container.BindInstance(_wolfConfig).AsSingle();
             // --- 1. Компоненты на самом GameObject ---
             Container.Bind<WolfLocomotion>().FromComponentOnRoot().AsSingle();

@@ -1,31 +1,52 @@
-using MeatMushrooms.Player.Components;
+using MeatMushrooms.Player;
 using UnityEngine;
-
+using Zenject;
 
 namespace MeatMushrooms.UI
 {
     public class GameOverScreen : MonoBehaviour
     {
-        [SerializeField] private PlayerController _player;
+        [Inject] private PlayerRegistry _playerRegistry; // Получаем доступ к реестру
         [SerializeField] private GameObject _deathPanel;
 
-        private void OnEnable() => _player.OnDeath += ShowGameOver;
-        private void OnDisable() => _player.OnDeath -= ShowGameOver;
-
-        private void ShowGameOver()
-    {
-        Debug.Log("<color=cyan>[GameOverScreen]</color> Сигнал о смерти получен менеджером!");
-        
-        if (_deathPanel == null)
+        private void Start()
         {
-            Debug.LogError("<color=red>[GameOverScreen]</color> ОШИБКА: Панель смерти не назначена в Инспекторе!");
-            return;
+            // Подписываемся на появление Шапочки
+            _playerRegistry.OnPlayerSpawned += HookUpPlayerEvents;
+            
+            // Если Шапочка УЖЕ заспавнилась к этому моменту (страховка)
+            if (_playerRegistry.Player != null)
+            {
+                HookUpPlayerEvents();
+            }
         }
 
-        _deathPanel.SetActive(true);
-        Debug.Log($"<color=cyan>[GameOverScreen]</color> Панель активирована. Ее состояние: {_deathPanel.activeInHierarchy}");
-        
-        Time.timeScale = 0f; 
-    }
+        private void HookUpPlayerEvents()
+        {
+            // Теперь смело подписываемся на ее смерть
+            _playerRegistry.Player.OnDeath += ShowGameOver;
+        }
+
+        private void ShowGameOver()
+        {
+            if (_deathPanel != null)
+            {
+                _deathPanel.SetActive(true);
+                Time.timeScale = 0f; // Замораживаем игру
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Отписываемся, чтобы избежать утечек памяти
+            if (_playerRegistry != null)
+            {
+                _playerRegistry.OnPlayerSpawned -= HookUpPlayerEvents;
+                if (_playerRegistry.Player != null)
+                {
+                    _playerRegistry.Player.OnDeath -= ShowGameOver;
+                }
+            }
+        }
     }
 }

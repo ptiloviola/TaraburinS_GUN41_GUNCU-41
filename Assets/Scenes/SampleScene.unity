@@ -294,6 +294,7 @@ MonoBehaviour:
   ObstacleMask:
     serializedVersion: 2
     m_Bits: 128
+  MainCamera: {fileID: 963194229}
 --- !u!4 &379333430
 Transform:
   m_ObjectHideFlags: 0
@@ -602,7 +603,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4312fb472ba1da6459d174d7ac2cec2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
   _deathPanel: {fileID: 1750521502}
 --- !u!4 &816678260
 Transform:
@@ -710,6 +710,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -791,6 +792,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 49.94, y: 180, z: 0}
+--- !u!114 &963194229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c0f04ab92526ee4cae49d51c26483e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Config: {fileID: 11400000, guid: ed6932331c26e60469c1f2cd858ffa07, type: 2}
 --- !u!1 &1195437467
 GameObject:
   m_ObjectHideFlags: 0
@@ -905,7 +919,7 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 192
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1

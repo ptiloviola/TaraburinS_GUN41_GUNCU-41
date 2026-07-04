@@ -4,6 +4,7 @@ using MeatMushrooms.Mushroom.Signals;
 using UnityEngine;
 using Zenject;
 using MeatMushrooms.Player.Components;
+using MeatMushrooms.Player;
 
 namespace MeatMushrooms.Core.Installers
 {
@@ -32,7 +33,8 @@ namespace MeatMushrooms.Core.Installers
             Container.BindInterfacesTo<MushroomSpawner>().AsSingle();
 
             // Говорим Zenject'у запомнить Шапочку
-            Container.Bind<PlayerController>().FromInstance(_playerInstance).AsSingle();
+            // Container.Bind<PlayerController>().FromInstance(_playerInstance).AsSingle();
+            Container.Bind<PlayerRegistry>().AsSingle();
         }
     }
 }

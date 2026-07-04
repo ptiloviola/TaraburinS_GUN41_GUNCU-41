@@ -2,6 +2,8 @@ using UnityEngine;
 using Unity.AI.Navigation;
 using Zenject;
 using System.Collections.Generic;
+using MeatMushrooms.Player;
+using MeatMushrooms.Player.Components;
 
 namespace MeatMushrooms.Environment
 {
@@ -21,7 +23,11 @@ namespace MeatMushrooms.Environment
         public float ObstacleCheckRadius = 1.5f; // Чтобы деревья не слипались
         public LayerMask ObstacleMask; // Наш слой Obstacle из прошлых уроков
 
+        [Header("Камера")]
+        public CameraSystem.CameraController MainCamera; // Ссылка на наш новый скрипт
+
         [Inject] private DiContainer _container;
+        [Inject] private PlayerRegistry _playerRegistry;
 
 
         private void Start()
@@ -160,13 +166,19 @@ namespace MeatMushrooms.Environment
         {
             Vector3 centerPos = GroundMeshFilter.transform.position;
 
-            // --- 1. СПАВН ШАПОЧКИ (В самом низу карты: Z = -Radius) ---
-            // Отступаем 20% от края, чтобы она не появилась прямо в текстуре границы
+            // --- 1. СПАВН ШАПОЧКИ ---
             Vector3 playerRayStart = centerPos + new Vector3(0, 50f, -Config.MapRadius * 0.8f);
             if (Physics.Raycast(playerRayStart, Vector3.down, out RaycastHit playerHit, 100f))
             {
-                // Используем Zenject для спавна!
-                _container.InstantiatePrefab(Config.PlayerPrefab, playerHit.point, Quaternion.Euler(0, 0, 0), null);
+                GameObject playerInstance = _container.InstantiatePrefab(Config.PlayerPrefab, playerHit.point, Quaternion.Euler(0, 0, 0), null);
+                
+                // РЕГИСТРИРУЕМ ШАПОЧКУ В ГЛОБАЛЬНОЙ БАЗЕ!
+                _playerRegistry.Register(playerInstance.GetComponent<PlayerController>());
+
+                if (MainCamera != null)
+                {
+                    MainCamera.SetTarget(playerInstance.transform);
+                }
             }
 
             // --- 2. СПАВН ВЫХОДА (В самом верху карты: Z = +Radius) ---

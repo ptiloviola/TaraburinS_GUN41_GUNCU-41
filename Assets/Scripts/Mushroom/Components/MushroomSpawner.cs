@@ -20,6 +20,8 @@ namespace MeatMushrooms.Mushroom.Components
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private int _currentMushroomCount = 0;
 
+        int _groundLayerMask = LayerMask.GetMask("Ground");
+
         [Inject]
         public MushroomSpawner(
             SignalBus signalBus, 
@@ -69,7 +71,7 @@ namespace MeatMushrooms.Mushroom.Components
             Vector3 rayStartPos = new Vector3(randomCircle.x, 100f, randomCircle.y);
 
             // Проверка 1: Куда летит луч?
-            if (Physics.Raycast(rayStartPos, Vector3.down, out RaycastHit hit, 200f))
+            if (Physics.Raycast(rayStartPos, Vector3.down, out RaycastHit hit, 200f, _groundLayerMask))
             {
                 // Если луч во что-то попал, мы увидим имя этого объекта в консоли
                 Debug.Log($"[Spawner Debug] 1. Луч попал в объект: '{hit.collider.name}' на позиции {hit.point}");
