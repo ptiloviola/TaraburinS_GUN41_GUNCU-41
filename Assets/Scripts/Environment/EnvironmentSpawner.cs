@@ -4,6 +4,7 @@ using Zenject;
 using System.Collections.Generic;
 using MeatMushrooms.Player;
 using MeatMushrooms.Player.Components;
+using MeatMushrooms.Core;
 
 namespace MeatMushrooms.Environment
 {
@@ -29,78 +30,76 @@ namespace MeatMushrooms.Environment
         [Inject] private DiContainer _container;
         [Inject] private PlayerRegistry _playerRegistry;
 
+        // Считаем прогрессию сложности (Уровень 1 дает бонус 0, Уровень 2 дает бонус 1 и т.д.)
+        private int _levelBonus => GameSession.CurrentLevel - 1;
+        
+        // Чистая математика, полностью управляемая из Инспектора:
+        private float _currentRadius => Config.MapRadius + (_levelBonus * Config.RadiusIncrement);
+        private int _currentTrees => Config.TreeCount + (_levelBonus * Config.TreeIncrement);
+        private int _currentRocks => Config.RockCount + (_levelBonus * Config.RockIncrement);
+        private int _currentWolves => Config.WolfCount + (_levelBonus * Config.WolfIncrement);
 
         private void Start()
         {
             ResizeGround();     // 1. Растягиваем землю под размер уровня
             GenerateTerrain();  // 2. Искривляем рельеф
             SpawnObstacles();   // 3. Рассаживаем лес
-            BakeNavMesh();
-            SpawnCharacters();
+            BakeNavMesh();      // 4. Запекаем пути
+            SpawnCharacters();  // 5. Выпускаем актеров
         }
 
         private void GenerateTerrain()
         {
             if (GroundMeshFilter == null) return;
 
-            // Берем меш земли (копию, чтобы не сломать исходный ассет)
             Mesh mesh = GroundMeshFilter.mesh; 
             Vector3[] vertices = mesh.vertices;
 
-            // Случайное смещение "карты высот", чтобы каждая поляна была уникальной
             float offsetX = Random.Range(0f, 9999f);
             float offsetZ = Random.Range(0f, 9999f);
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                // Переводим локальные координаты в глобальные
                 Vector3 worldPoint = GroundMeshFilter.transform.TransformPoint(vertices[i]);
                 
                 float xCoord = worldPoint.x / NoiseScale + offsetX;
                 float zCoord = worldPoint.z / NoiseScale + offsetZ;
                 
-                // Шум Перлина возвращает значение от 0 до 1
                 float y = Mathf.PerlinNoise(xCoord, zCoord) * HeightMultiplier;
                 
                 vertices[i].y = y;
             }
 
-            // Применяем новые вершины
             mesh.vertices = vertices;
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
             
-            // ОБЯЗАТЕЛЬНО обновляем физический коллайдер, чтобы волки ходили по холмам, а не под ними
             MeshCollider col = GroundMeshFilter.GetComponent<MeshCollider>();
             if (col != null) col.sharedMesh = mesh;
         }
 
         private void SpawnObstacles()
         {
-            // 1. ДЕРЕВЬЯ: 80% по периметру (густо), 20% в центре (редко)
-            int perimeterTrees = Mathf.RoundToInt(Config.TreeCount * 0.8f);
-            int centerTrees = Config.TreeCount - perimeterTrees;
+            // Используем _currentTrees вместо Config.TreeCount
+            int perimeterTrees = Mathf.RoundToInt(_currentTrees * 0.8f);
+            int centerTrees = _currentTrees - perimeterTrees;
             
-            // Периметр: от 70% до 100% радиуса карты
-            SpawnObjects(Config.TreePrefabs, perimeterTrees, Config.MapRadius * 0.7f, Config.MapRadius);
-            // Центр: от 2 метров до 70% радиуса
-            SpawnObjects(Config.TreePrefabs, centerTrees, 2f, Config.MapRadius * 0.7f);
+            // Используем _currentRadius вместо Config.MapRadius
+            SpawnObjects(Config.TreePrefabs, perimeterTrees, _currentRadius * 0.7f, _currentRadius);
+            SpawnObjects(Config.TreePrefabs, centerTrees, 2f, _currentRadius * 0.7f);
 
-            // 2. КАМНИ: 80% в центре (густо), 20% по краям (редко)
-            int centerRocks = Mathf.RoundToInt(Config.RockCount * 0.8f);
-            int perimeterRocks = Config.RockCount - centerRocks;
+            // Используем _currentRocks
+            int centerRocks = Mathf.RoundToInt(_currentRocks * 0.8f);
+            int perimeterRocks = _currentRocks - centerRocks;
             
-            // Центр для камней: от 2 метров до 50% радиуса
-            SpawnObjects(Config.RockPrefabs, centerRocks, 2f, Config.MapRadius * 0.5f);
-            // Периметр для камней
-            SpawnObjects(Config.RockPrefabs, perimeterRocks, Config.MapRadius * 0.5f, Config.MapRadius);
+            SpawnObjects(Config.RockPrefabs, centerRocks, 2f, _currentRadius * 0.5f);
+            SpawnObjects(Config.RockPrefabs, perimeterRocks, _currentRadius * 0.5f, _currentRadius);
         }
 
         private void SpawnObjects(GameObject[] prefabs, int count, float minRadius, float maxRadius)
         {
             if (prefabs == null || prefabs.Length == 0 || GroundMeshFilter == null) return;
 
-            // ИСПРАВЛЕНИЕ БАГА: Теперь мы точно берем центр нашей земли, где бы она ни находилась
             Vector3 centerPos = GroundMeshFilter.transform.position; 
 
             int spawned = 0;
@@ -111,11 +110,8 @@ namespace MeatMushrooms.Environment
                 attempts++;
                 
                 Vector2 randomCircle = Random.insideUnitCircle.normalized * Random.Range(minRadius, maxRadius);
-                
-                // Прибавляем координаты центра земли и поднимаем луч повыше (на 50 метров)
                 Vector3 raycastStart = centerPos + new Vector3(randomCircle.x, 50f, randomCircle.y);
 
-                // Пускаем луч на 100 метров вниз
                 if (Physics.Raycast(raycastStart, Vector3.down, out RaycastHit hit, 100f))
                 {
                     Vector3 spawnPos = hit.point;
@@ -138,21 +134,18 @@ namespace MeatMushrooms.Environment
         {
             if (GroundMeshFilter == null) return;
 
-            // Считаем нужный масштаб на основе радиуса из конфига
-            // Формула: (Радиус * 2) / 10
-            float scaleFactor = (Config.MapRadius * 2f) / 10f;
+            // Используем _currentRadius для расчета нового масштаба арены
+            float scaleFactor = (_currentRadius * 2f) / 10f;
 
-            // Применяем масштаб к Plane. 
-            // ВАЖНО: Ось Y оставляем равной 1, иначе наши сгенерированные холмы растянутся в гигантские скалы!
             GroundMeshFilter.transform.localScale = new Vector3(scaleFactor, 1f, scaleFactor);
             
             Debug.Log($"<color=green>[EnvironmentSpawner]</color> Земля масштабирована. Новый Scale: {scaleFactor}");
         }
+
         private void BakeNavMesh()
         {
             if (NavSurface != null)
             {
-                // Эта команда сканирует все объекты слоев Ground и Obstacle и строит синюю сетку
                 NavSurface.BuildNavMesh();
                 Debug.Log("<color=cyan>[EnvironmentSpawner]</color> NavMesh успешно сгенерирован для новой поляны!");
             }
@@ -166,13 +159,12 @@ namespace MeatMushrooms.Environment
         {
             Vector3 centerPos = GroundMeshFilter.transform.position;
 
-            // --- 1. СПАВН ШАПОЧКИ ---
-            Vector3 playerRayStart = centerPos + new Vector3(0, 50f, -Config.MapRadius * 0.8f);
+            // --- 1. СПАВН ШАПОЧКИ (на краю текущего радиуса) ---
+            Vector3 playerRayStart = centerPos + new Vector3(0, 50f, -_currentRadius * 0.8f);
             if (Physics.Raycast(playerRayStart, Vector3.down, out RaycastHit playerHit, 100f))
             {
                 GameObject playerInstance = _container.InstantiatePrefab(Config.PlayerPrefab, playerHit.point, Quaternion.Euler(0, 0, 0), null);
                 
-                // РЕГИСТРИРУЕМ ШАПОЧКУ В ГЛОБАЛЬНОЙ БАЗЕ!
                 _playerRegistry.Register(playerInstance.GetComponent<PlayerController>());
 
                 if (MainCamera != null)
@@ -181,31 +173,29 @@ namespace MeatMushrooms.Environment
                 }
             }
 
-            // --- 2. СПАВН ВЫХОДА (В самом верху карты: Z = +Radius) ---
-            Vector3 exitRayStart = centerPos + new Vector3(0, 50f, Config.MapRadius * 0.8f);
+            // --- 2. СПАВН ВЫХОДА (на противоположном краю текущего радиуса) ---
+            Vector3 exitRayStart = centerPos + new Vector3(0, 50f, _currentRadius * 0.8f);
             if (Physics.Raycast(exitRayStart, Vector3.down, out RaycastHit exitHit, 100f))
             {
-                // Выход не использует Zenject, спавним обычным Instantiate
                 Instantiate(Config.ExitPrefab, exitHit.point, Quaternion.identity, transform);
             }
 
-            // --- 3. СПАВН ВОЛКОВ (В центре карты, в радиусе 40% от размера поляны) ---
+            // --- 3. СПАВН ВОЛКОВ ---
             int spawnedWolves = 0;
             int attempts = 0;
-            List<Vector3> wolfPositions = new List<Vector3>(); // Запоминаем, где стоят волки
+            List<Vector3> wolfPositions = new List<Vector3>();
 
-            while (spawnedWolves < Config.WolfCount && attempts < 100)
+            // Используем _currentWolves и даем больше попыток генератору на поиск места
+            while (spawnedWolves < _currentWolves && attempts < _currentWolves * 20)
             {
                 attempts++;
-                Vector2 randomCircle = Random.insideUnitCircle * (Config.MapRadius * 0.4f);
+                Vector2 randomCircle = Random.insideUnitCircle * (_currentRadius * 0.4f);
                 Vector3 rayStart = centerPos + new Vector3(randomCircle.x, 50f, randomCircle.y);
 
                 if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 100f))
                 {
-                    // Проверяем, нет ли здесь камня или дерева
                     if (!Physics.CheckSphere(hit.point, ObstacleCheckRadius, ObstacleMask))
                     {
-                        // Проверяем, не слишком ли близко к другому волку (минимум 3 метра)
                         bool isTooClose = false;
                         foreach (var wPos in wolfPositions)
                         {
@@ -218,7 +208,6 @@ namespace MeatMushrooms.Environment
 
                         if (!isTooClose)
                         {
-                            // Спавним волка через Zenject
                             _container.InstantiatePrefab(Config.WolfPrefab, hit.point, Quaternion.identity, null);
                             
                             wolfPositions.Add(hit.point);
@@ -230,8 +219,5 @@ namespace MeatMushrooms.Environment
             
             Debug.Log($"<color=magenta>[Spawner]</color> Заспавнено {spawnedWolves} волков, Шапочка и Выход.");
         }
-
-
-
     }
 }
