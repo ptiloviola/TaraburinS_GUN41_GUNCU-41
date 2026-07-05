@@ -165,7 +165,7 @@ namespace MeatMushrooms.Environment
             {
                 GameObject playerInstance = _container.InstantiatePrefab(Config.PlayerPrefab, playerHit.point, Quaternion.Euler(0, 0, 0), null);
                 
-                _playerRegistry.Register(playerInstance.GetComponent<PlayerController>());
+                _playerRegistry.Register(playerInstance);
 
                 if (MainCamera != null)
                 {

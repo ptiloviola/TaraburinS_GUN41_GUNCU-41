@@ -1507,9 +1507,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HowlClips:
   - {fileID: 8300000, guid: 2d845dbc34deb9b4d8b039c6d0161623, type: 3}
-  CombatGrowlClips: []
+  CombatGrowlClips:
+  - {fileID: 8300000, guid: 75534d5f43a0fe14bbff3bdd544b79f3, type: 3}
   LowGrowlClips: []
-  EatClips: []
+  EatClips:
+  - {fileID: 8300000, guid: 4d92a533c01b8d84b80f7742c7e6099d, type: 3}
 --- !u!114 &8419019985137159001
 MonoBehaviour:
   m_ObjectHideFlags: 0

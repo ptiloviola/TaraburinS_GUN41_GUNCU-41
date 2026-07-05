@@ -1,3 +1,4 @@
+using UnityEngine;
 using MeatMushrooms.Player.Components;
 using System;
 
@@ -5,15 +6,22 @@ namespace MeatMushrooms.Player
 {
     public class PlayerRegistry
     {
-        public PlayerController Player { get; private set; }
+        // Кэшированные ссылки на все важные модули Шапочки
+        public PlayerController Controller { get; private set; }
+        public PlayerHealth Health { get; private set; }
+        public PlayerStealth Stealth { get; private set; }
         
-        // Событие, оповещающее о спавне игрока
         public event Action OnPlayerSpawned;
 
-        public void Register(PlayerController player)
+        // Передаем сюда весь объект при спавне
+        public void Register(GameObject playerInstance)
         {
-            Player = player;
-            OnPlayerSpawned?.Invoke(); // Вызываем событие при регистрации
+            // Делаем GetComponent РОВНО ОДИН РАЗ за всю игру!
+            Controller = playerInstance.GetComponent<PlayerController>();
+            Health = playerInstance.GetComponent<PlayerHealth>();
+            Stealth = playerInstance.GetComponent<PlayerStealth>();
+            
+            OnPlayerSpawned?.Invoke(); 
         }
     }
 }

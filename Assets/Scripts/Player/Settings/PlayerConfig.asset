@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
   WalkSpeed: 1.5
-  RunSpeed: 7
+  RunSpeed: 4
   RotationSmoothTime: 0.1
   IdleNoise: 0
   WalkNoise: 7

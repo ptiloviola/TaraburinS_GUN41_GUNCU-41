@@ -2,6 +2,7 @@ using MeatMushrooms.Player.Components; // Не забудь namespace игрок
 using MeatMushrooms.Wolf.Configs;
 using UnityEngine;
 using Zenject;
+using MeatMushrooms.Player;
 
 namespace MeatMushrooms.Wolf.Components
 {
@@ -11,7 +12,7 @@ namespace MeatMushrooms.Wolf.Components
         private WolfStats _stats;
         
         // Ссылки на игрока (теперь они заполнятся автоматически!)
-        private PlayerController _player; 
+        private PlayerRegistry _playerRegistry;
 
         public float CurrentSuspicion { get; private set; }
         public Vector3 LastKnownPosition { get; private set; }
@@ -20,11 +21,11 @@ namespace MeatMushrooms.Wolf.Components
 
         // Zenject сам найдет PlayerController и вставит его сюда
         [Inject]
-        public void Construct(WolfConfig config, WolfStats stats, PlayerController player)
+        public void Construct(WolfConfig config, WolfStats stats, PlayerRegistry playerRegistry)
         {
             _config = config;
             _stats = stats;
-            _player = player; // Сохраняем ссылку на Шапочку
+            _playerRegistry = playerRegistry;
         }
 
         private void Update()
@@ -37,10 +38,10 @@ namespace MeatMushrooms.Wolf.Components
 
         private void ProcessHearing()
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
+            float distanceToPlayer = Vector3.Distance(transform.position, _playerRegistry.Controller.transform.position) - _playerRegistry.Stealth.NoiseRadar.radius;
 
             // Обращаемся к радару напрямую через наше новое свойство
-            if (distanceToPlayer <= _player.NoiseRadar.radius)
+            if (distanceToPlayer <= _playerRegistry.Stealth.NoiseRadar.radius)
             {
                 float buildRate = _config.Perception.SuspicionBuildRate * Time.deltaTime;
                 
@@ -51,7 +52,7 @@ namespace MeatMushrooms.Wolf.Components
                     buildRate *= _config.Perception.EatingDistractionMultiplier;
 
                 CurrentSuspicion = Mathf.Clamp(CurrentSuspicion + buildRate, 0f, 100f);
-                LastKnownPosition = _player.transform.position;
+                LastKnownPosition = _playerRegistry.Controller.transform.position;
             }
             else
             {
@@ -66,8 +67,8 @@ namespace MeatMushrooms.Wolf.Components
         {
             IsTargetInSight = false;
 
-            Vector3 dirToPlayer = (_player.transform.position - transform.position).normalized;
-            float distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
+            Vector3 dirToPlayer = (_playerRegistry.Controller.transform.position - transform.position).normalized;
+            float distanceToPlayer = Vector3.Distance(transform.position, _playerRegistry.Controller.transform.position);
 
             if (distanceToPlayer > _config.Perception.SightDistance) return;
 
@@ -83,7 +84,7 @@ namespace MeatMushrooms.Wolf.Components
                 {
                     IsTargetInSight = true;
                     CurrentSuspicion = 100f; 
-                    LastKnownPosition = _player.transform.position;
+                    LastKnownPosition = _playerRegistry.Controller.transform.position;
                 }
             }
         }

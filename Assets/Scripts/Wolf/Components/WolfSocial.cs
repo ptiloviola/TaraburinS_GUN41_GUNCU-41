@@ -15,6 +15,8 @@ namespace MeatMushrooms.Wolf.Components
         
         private float _cooldownTimer;
 
+        private WolfEventBus _eventBus;
+
         
 
         // ПУБЛИЧНЫЙ ФЛАГ: Этот волк уже начал рычать?
@@ -22,12 +24,14 @@ namespace MeatMushrooms.Wolf.Components
         public bool IsHowling { get; set; } // ДОБАВИЛИ ФЛАГ ВОЯ
 
         [Inject]
-        public void Construct(WolfAnimator animator, WolfStats stats, WolfLocomotion locomotion, WolfConfig config)
+        public void Construct(WolfAnimator animator, WolfStats stats, 
+            WolfLocomotion locomotion, WolfConfig config, WolfEventBus eventBus)
         {
             _animator = animator;
             _stats = stats;
             _locomotion = locomotion;
             _config = config;
+            _eventBus = eventBus;
         }
 
         private void Start()
@@ -106,6 +110,7 @@ namespace MeatMushrooms.Wolf.Components
         {
             _locomotion.SetStun(true);
             _animator.PlayAggro(); 
+            _eventBus.FireCombatGrowl();
 
             await UniTask.Delay(TimeSpan.FromSeconds(_config.Social.StunDuration));
 

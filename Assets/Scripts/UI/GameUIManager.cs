@@ -5,6 +5,7 @@ using MeatMushrooms.Player;
 using MeatMushrooms.Environment;
 using MeatMushrooms.Core;
 using Zenject;
+using MeatMushrooms.Player.Components;
 
 namespace MeatMushrooms.UI
 {
@@ -28,12 +29,15 @@ namespace MeatMushrooms.UI
 
             // Подписки
             _playerRegistry.OnPlayerSpawned += HookUpPlayerEvents;
-            if (_playerRegistry.Player != null) HookUpPlayerEvents();
+            if (_playerRegistry.Health != null) 
+            {
+                HookUpPlayerEvents();
+            }
 
             ExitZone.OnLevelCompleted += ShowVictory;
         }
 
-        private void HookUpPlayerEvents() => _playerRegistry.Player.OnDeath += ShowGameOver;
+        private void HookUpPlayerEvents() => _playerRegistry.Health.OnDeath += ShowGameOver;
 
         private void ShowGameOver()
         {
@@ -69,7 +73,10 @@ namespace MeatMushrooms.UI
             if (_playerRegistry != null)
             {
                 _playerRegistry.OnPlayerSpawned -= HookUpPlayerEvents;
-                if (_playerRegistry.Player != null) _playerRegistry.Player.OnDeath -= ShowGameOver;
+                if (_playerRegistry.Health != null) 
+                {
+                    _playerRegistry.Health.OnDeath -= ShowGameOver;
+                }
             }
         }
     }

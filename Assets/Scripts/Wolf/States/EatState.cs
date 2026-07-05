@@ -16,14 +16,17 @@ namespace MeatMushrooms.Wolf.States
         
         private IEdible _targetFood;
         private float _biteTimer;
+        private readonly WolfEventBus _eventBus;
 
-        public EatState(WolfStats stats, WolfLocomotion locomotion, WolfSenses senses, WolfAnimator animator, WolfConfig config)
+        public EatState(WolfStats stats, WolfLocomotion locomotion, WolfSenses senses, 
+            WolfAnimator animator, WolfConfig config,  WolfEventBus eventBus)
         {
             _stats = stats;
             _locomotion = locomotion;
             _senses = senses;
             _animator = animator;
             _config = config;
+            _eventBus = eventBus;
         }
 
         public float CalculateScore()
@@ -48,6 +51,7 @@ namespace MeatMushrooms.Wolf.States
             _locomotion.SetAvoidancePriority(10); 
             
             _animator.PlayEatStart();
+            _eventBus.FireEat();
             
             _biteTimer = _config.Eat.BiteInterval;
         }
