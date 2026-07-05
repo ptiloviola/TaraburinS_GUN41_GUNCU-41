@@ -16,10 +16,13 @@ MonoBehaviour:
   TreeCount: 40
   RockCount: 15
   WolfCount: 3
+  MushroomCount: 10
   RadiusIncrement: 2
   TreeIncrement: 5
   RockIncrement: 3
   WolfIncrement: 2
+  MushroomIncrement: 4
+  WolfLayout: 1
   PlayerPrefab: {fileID: 4534859285139422002, guid: 5830414be2ff3c04893a6495263cba60, type: 3}
   WolfPrefab: {fileID: 6871804681052448093, guid: d3b169c45c108e047b197449928d56e1, type: 3}
   ExitPrefab: {fileID: 3865069398905378938, guid: b57d4ead893775d41a9f3485b5850c0e, type: 3}

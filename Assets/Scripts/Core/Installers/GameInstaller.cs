@@ -5,6 +5,7 @@ using UnityEngine;
 using Zenject;
 using MeatMushrooms.Player.Components;
 using MeatMushrooms.Player;
+using MeatMushrooms.Environment;
 
 namespace MeatMushrooms.Core.Installers
 {
@@ -14,7 +15,8 @@ namespace MeatMushrooms.Core.Installers
         [SerializeField] private MushroomConfig _mushroomConfig;
         [SerializeField] private MushroomSpawnerConfig _spawnerConfig;
         // В инсталляторе (потребуется добавить using MeatMushrooms.Player.Components;)
-        [SerializeField] private PlayerController _playerInstance; // Перетащи Шапочку со сцены сюда в Инспекторе!
+        [SerializeField] private PlayerController _playerInstance; 
+        [SerializeField] private StageConfig _stageConfig;// Перетащи Шапочку со сцены сюда в Инспекторе!
 
         public override void InstallBindings()
         {
@@ -26,6 +28,8 @@ namespace MeatMushrooms.Core.Installers
             // 2. Биндим конфиги по отдельности
             Container.BindInstance(_mushroomConfig).IfNotBound();
             Container.BindInstance(_spawnerConfig).IfNotBound();
+            Container.BindInstance(_stageConfig).IfNotBound();
+
 
             // 3. РЕГИСТРАЦИЯ СПАВНЕРА (добавили)
             // BindInterfacesTo означает, что Zenject найдет у MushroomSpawner 

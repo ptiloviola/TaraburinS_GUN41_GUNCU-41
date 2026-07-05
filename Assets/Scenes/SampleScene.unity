@@ -1238,7 +1238,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mushroomConfig: {fileID: 11400000, guid: 679e603fe94a8a34f8d1681d50cbb968, type: 2}
   _spawnerConfig: {fileID: 11400000, guid: 157fc78905576fb40ab8554fd250bb8e, type: 2}
-  _playerInstance: {fileID: 0}
+  _playerInstance: {fileID: 2515070727100003481, guid: 5830414be2ff3c04893a6495263cba60, type: 3}
+  _stageConfig: {fileID: 11400000, guid: ccf405ef0f5bd0f4b8d769aac73468fe, type: 2}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

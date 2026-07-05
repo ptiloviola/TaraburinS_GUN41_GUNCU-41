@@ -2,25 +2,32 @@ using UnityEngine;
 
 namespace MeatMushrooms.Environment
 {
+    // Перечисление для выбора расстановки волков в Инспекторе
+    public enum WolfSpawnLayout
+    {
+        CenterCircle,      // По кругу в центре
+        LineAcrossMap      // "Заградительная линия" по всей ширине карты
+    }
+
     [CreateAssetMenu(fileName = "StageConfig", menuName = "MeatMushrooms/Stage Config")]
     public class StageConfig : ScriptableObject
     {
-        [Header("Стартовые размеры (Уровень 1)")]
+        [Header("Стартовые параметры (Уровень 1)")]
         public float MapRadius = 25f;
-
-        [Header("Стартовые препятствия")]
         public int TreeCount = 40;
         public int RockCount = 15;
-        
-        [Header("Стартовые враги")]
         public int WolfCount = 3;
+        public int MushroomCount = 10; // Стартовые грибы!
 
-        // --- НОВЫЙ БЛОК ДЛЯ ГЕЙМДИЗАЙНЕРА ---
-        [Header("Прогрессия сложности (Прибавка за каждый уровень)")]
-        public float RadiusIncrement = 5f;  // На сколько метров растет карта
-        public int TreeIncrement = 10;      // Сколько деревьев добавляется
-        public int RockIncrement = 3;       // Сколько камней добавляется
-        public int WolfIncrement = 1;       // На сколько растет стая
+        [Header("Прогрессия сложности (Прибавка за уровень)")]
+        public float RadiusIncrement = 5f;
+        public int TreeIncrement = 10;
+        public int RockIncrement = 3;
+        public int WolfIncrement = 1;
+        public int MushroomIncrement = 4; // Сколько грибов добавляется с каждым уровнем
+
+        [Header("Настройки ИИ")]
+        public WolfSpawnLayout WolfLayout = WolfSpawnLayout.CenterCircle; // Выбор стратегии
 
         [Header("Префабы")]
         public GameObject PlayerPrefab;

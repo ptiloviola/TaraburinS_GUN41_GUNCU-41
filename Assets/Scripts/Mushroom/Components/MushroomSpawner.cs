@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 using Random = UnityEngine.Random;
+using MeatMushrooms.Environment; // Обязательно для StageConfig
+using MeatMushrooms.Core;        // Обязательно для GameSession
 
 namespace MeatMushrooms.Mushroom.Components
 {
@@ -16,29 +18,36 @@ namespace MeatMushrooms.Mushroom.Components
         private readonly MushroomSpawnerConfig _spawnerConfig;
         private readonly MushroomConfig _mushroomConfig;
         private readonly IInstantiator _instantiator;
+        private readonly StageConfig _stageConfig; // Ссылка на глобальный конфиг уровня
         
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private int _currentMushroomCount = 0;
 
         int _groundLayerMask = LayerMask.GetMask("Ground");
 
+        // --- ДИНАМИЧЕСКИЕ ПАРАМЕТРЫ ПРОГРЕССИИ ---
+        private int _levelBonus => GameSession.CurrentLevel - 1;
+        private int _maxMushroomsOnMap => _stageConfig.MushroomCount + (_levelBonus * _stageConfig.MushroomIncrement);
+        private float _currentSpawnRadius => (_stageConfig.MapRadius + (_levelBonus * _stageConfig.RadiusIncrement)) * 0.9f;
+
         [Inject]
         public MushroomSpawner(
             SignalBus signalBus, 
             MushroomSpawnerConfig spawnerConfig, 
             MushroomConfig mushroomConfig, 
-            IInstantiator instantiator)
+            IInstantiator instantiator,
+            StageConfig stageConfig) // Инжектим StageConfig через конструктор
         {
             _signalBus = signalBus;
             _spawnerConfig = spawnerConfig;
             _mushroomConfig = mushroomConfig;
             _instantiator = instantiator;
+            _stageConfig = stageConfig;
         }
 
         public void Initialize()
         {
-            // Лог для проверки: вообще запускает ли Zenject наш спавнер?
-            Debug.Log("[MushroomSpawner] Сигнал от Zenject получен. Спавнер успешно запущен!");
+            Debug.Log($"[MushroomSpawner] Запущен! Лимит грибов: {_maxMushroomsOnMap}, Радиус: {_currentSpawnRadius}");
             
             _signalBus.Subscribe<MushroomDestroyedSignal>(OnMushroomDestroyed);
             SpawnRoutine(_cts.Token).Forget();
@@ -48,12 +57,13 @@ namespace MeatMushrooms.Mushroom.Components
         {
             while (!token.IsCancellationRequested)
             {
-                // Ждем заданный интервал перед попыткой спавна
+                // Берем интервал из старого локального конфига
                 await UniTask.Delay(TimeSpan.FromSeconds(_spawnerConfig.SpawnInterval), cancellationToken: token);
 
-                if (_currentMushroomCount >= _spawnerConfig.MaxMushroomsOnMap)
+                // Используем динамический лимит
+                if (_currentMushroomCount >= _maxMushroomsOnMap)
                 {
-                    continue; // Пропускаем цикл, если грибов уже слишком много
+                    continue; 
                 }
 
                 if (TryFindSpawnPosition(out Vector3 spawnPos))
@@ -67,32 +77,17 @@ namespace MeatMushrooms.Mushroom.Components
         {
             validPosition = Vector3.zero;
 
-            Vector2 randomCircle = Random.insideUnitCircle * _spawnerConfig.SpawnAreaRadius;
+            // Используем динамический радиус поиска
+            Vector2 randomCircle = Random.insideUnitCircle * _currentSpawnRadius;
             Vector3 rayStartPos = new Vector3(randomCircle.x, 100f, randomCircle.y);
 
-            // Проверка 1: Куда летит луч?
             if (Physics.Raycast(rayStartPos, Vector3.down, out RaycastHit hit, 200f, _groundLayerMask))
             {
-                // Если луч во что-то попал, мы увидим имя этого объекта в консоли
-                Debug.Log($"[Spawner Debug] 1. Луч попал в объект: '{hit.collider.name}' на позиции {hit.point}");
-
-                // Проверка 2: Есть ли тут NavMesh?
-                // Увеличим радиус поиска с 1 метра до 5 метров для теста
                 if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, 5f, NavMesh.AllAreas))
                 {
                     validPosition = navHit.position;
                     return true;
                 }
-                else
-                {
-                    // Если этот лог сработал, значит земля есть, а NavMesh на ней нет
-                    Debug.LogWarning($"[Spawner Debug] 2. В точке {hit.point} под объектом '{hit.collider.name}' НЕ НАЙДЕН запеченный NavMesh!");
-                }
-            }
-            else
-            {
-                // Если этот лог сработал, значит луч пролетел мимо всей твоей графики в бездну
-                Debug.LogWarning($"[Spawner Debug] 1. Луч с позиции {rayStartPos} пролетел мимо и ни во что не попал!");
             }
             
             return false;
@@ -106,7 +101,6 @@ namespace MeatMushrooms.Mushroom.Components
             {
                 entity.Init(_mushroomConfig, _signalBus);
                 
-                // Передаем интерфейсы в сигнал!
                 _signalBus.Fire(new MushroomSpawnedSignal 
                 { 
                     EdibleComponent = entity.Health, 
@@ -115,7 +109,8 @@ namespace MeatMushrooms.Mushroom.Components
             }
 
             _currentMushroomCount++;
-            Debug.Log($"[MushroomSpawner] Гриб вырос! Всего на поляне: {_currentMushroomCount}");
+            // Можно убрать или оставить лог, если он не спамит
+            // Debug.Log($"[MushroomSpawner] Гриб вырос! Всего на поляне: {_currentMushroomCount}");
         }
 
         private void OnMushroomDestroyed(MushroomDestroyedSignal signal)
