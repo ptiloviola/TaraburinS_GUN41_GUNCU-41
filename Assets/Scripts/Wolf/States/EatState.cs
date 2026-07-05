@@ -1,6 +1,6 @@
 using MeatMushrooms.Mushroom.Contracts;
 using MeatMushrooms.Wolf.Components;
-using MeatMushrooms.Wolf.Configs; // Обновленный неймспейс
+using MeatMushrooms.Wolf.Configs;
 using MeatMushrooms.Wolf.Contracts;
 using UnityEngine;
 
@@ -86,7 +86,6 @@ namespace MeatMushrooms.Wolf.States
         {
             Debug.Log("[EatState] Волк закончил трапезу.");
             
-            // Записываем, что волк только что поел
             _stats.RecordMeal(); 
             
             _locomotion.SetAvoidancePriority(50);

@@ -7,8 +7,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 using Random = UnityEngine.Random;
-using MeatMushrooms.Environment; // Обязательно для StageConfig
-using MeatMushrooms.Core;        // Обязательно для GameSession
+using MeatMushrooms.Environment;
+using MeatMushrooms.Core;
 
 namespace MeatMushrooms.Mushroom.Components
 {
@@ -18,14 +18,13 @@ namespace MeatMushrooms.Mushroom.Components
         private readonly MushroomSpawnerConfig _spawnerConfig;
         private readonly MushroomConfig _mushroomConfig;
         private readonly IInstantiator _instantiator;
-        private readonly StageConfig _stageConfig; // Ссылка на глобальный конфиг уровня
+        private readonly StageConfig _stageConfig;
         
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private int _currentMushroomCount = 0;
 
         int _groundLayerMask = LayerMask.GetMask("Ground");
 
-        // --- ДИНАМИЧЕСКИЕ ПАРАМЕТРЫ ПРОГРЕССИИ ---
         private int _levelBonus => GameSession.CurrentLevel - 1;
         private int _maxMushroomsOnMap => _stageConfig.MushroomCount + (_levelBonus * _stageConfig.MushroomIncrement);
         private float _currentSpawnRadius => (_stageConfig.MapRadius + (_levelBonus * _stageConfig.RadiusIncrement)) * 0.9f;
@@ -36,7 +35,7 @@ namespace MeatMushrooms.Mushroom.Components
             MushroomSpawnerConfig spawnerConfig, 
             MushroomConfig mushroomConfig, 
             IInstantiator instantiator,
-            StageConfig stageConfig) // Инжектим StageConfig через конструктор
+            StageConfig stageConfig)
         {
             _signalBus = signalBus;
             _spawnerConfig = spawnerConfig;
@@ -57,10 +56,9 @@ namespace MeatMushrooms.Mushroom.Components
         {
             while (!token.IsCancellationRequested)
             {
-                // Берем интервал из старого локального конфига
+
                 await UniTask.Delay(TimeSpan.FromSeconds(_spawnerConfig.SpawnInterval), cancellationToken: token);
 
-                // Используем динамический лимит
                 if (_currentMushroomCount >= _maxMushroomsOnMap)
                 {
                     continue; 
@@ -77,7 +75,6 @@ namespace MeatMushrooms.Mushroom.Components
         {
             validPosition = Vector3.zero;
 
-            // Используем динамический радиус поиска
             Vector2 randomCircle = Random.insideUnitCircle * _currentSpawnRadius;
             Vector3 rayStartPos = new Vector3(randomCircle.x, 100f, randomCircle.y);
 
@@ -109,8 +106,6 @@ namespace MeatMushrooms.Mushroom.Components
             }
 
             _currentMushroomCount++;
-            // Можно убрать или оставить лог, если он не спамит
-            // Debug.Log($"[MushroomSpawner] Гриб вырос! Всего на поляне: {_currentMushroomCount}");
         }
 
         private void OnMushroomDestroyed(MushroomDestroyedSignal signal)

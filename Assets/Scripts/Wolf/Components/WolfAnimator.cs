@@ -17,8 +17,6 @@ namespace MeatMushrooms.Wolf.Components
         private static readonly int ShakeTriggerHash = Animator.StringToHash("Shake");
         private static readonly int SleepTriggerHash = Animator.StringToHash("Sleep");
         private static readonly int WakeUpTriggerHash = Animator.StringToHash("WakeUp");
-        // Добавь это к остальным хэшам
-        // Добавляем хэши для триггеров
         private static readonly int HowlTriggerHash = Animator.StringToHash("Howl");
         private static readonly int StopHowlTriggerHash = Animator.StringToHash("StopHowl");
 
@@ -29,16 +27,13 @@ namespace MeatMushrooms.Wolf.Components
         private static readonly int ChaseTriggerHash = Animator.StringToHash("Chase");
         private static readonly int AttackTriggerHash = Animator.StringToHash("Attack");
 
-        // Таймер для спама логами, чтобы не забить консоль
         private float _logTimer;
 
         private void Awake()
         {
-            // Ищем Аниматор в дочерних объектах
             _animator = GetComponentInChildren<Animator>();
             _locomotion = GetComponent<WolfLocomotion>(); 
 
-            // ДАТЧИК 1: Нашли ли мы Аниматор?
             if (_animator == null)
             {
                 Debug.LogError("[WolfAnimator] ОШИБКА: Компонент Animator не найден в дочерних объектах!");
@@ -55,16 +50,13 @@ namespace MeatMushrooms.Wolf.Components
 
             float currentSpeed = _locomotion.CurrentSpeed;
             
-            // Отправляем скорость в Аниматор
             _animator.SetFloat(SpeedHash, currentSpeed);
             _animator.SetFloat(TurnHash, _locomotion.CurrentTurn);
 
-            // ДАТЧИК 2: Какую скорость мы отправляем? (Пишем в лог раз в секунду)
             _logTimer += Time.deltaTime;
             if (_logTimer >= 1f)
             {
                 _logTimer = 0f;
-                // Debug.Log($"[WolfAnimator] Передаем скорость: {currentSpeed:F2}. Состояние Аниматора: {_animator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion")}");
             }
         }
 
@@ -89,9 +81,6 @@ namespace MeatMushrooms.Wolf.Components
         public void PlayShake() => _animator?.SetTrigger(ShakeTriggerHash);
         public void PlaySleep() => _animator?.SetTrigger(SleepTriggerHash);
         public void PlayWakeUp() => _animator?.SetTrigger(WakeUpTriggerHash);
-
-        // Добавь это к остальным методам
-        // Новые методы для воя
         public void PlayHowl() => _animator?.SetTrigger(HowlTriggerHash);
         public void StopHowl() => _animator?.SetTrigger(StopHowlTriggerHash);
 

@@ -6,13 +6,12 @@ namespace MeatMushrooms.Mushroom.Configs
     public class MushroomSpawnerConfig : ScriptableObject
     {
         [Header("Timing")]
-        public float SpawnInterval = 5f; // Как часто пытаемся заспавнить
+        public float SpawnInterval = 5f;
         
         [Header("Limits")]
-        public int MaxMushroomsOnMap = 15; // Лимит, чтобы не забить всю поляну
+        public int MaxMushroomsOnMap = 15;
         
         [Header("Placement")]
-        public float SpawnAreaRadius = 20f; // Зона поиска случайной точки
-        // Позже мы добавим сюда слой NavMesh, чтобы спавнер проверял доступность точки
+        public float SpawnAreaRadius = 20f;
     }
 }

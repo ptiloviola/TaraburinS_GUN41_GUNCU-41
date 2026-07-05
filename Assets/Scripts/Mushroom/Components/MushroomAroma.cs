@@ -1,10 +1,9 @@
 using MeatMushrooms.Mushroom.Configs;
-using MeatMushrooms.Mushroom.Contracts; // Подключили
+using MeatMushrooms.Mushroom.Contracts;
 using UnityEngine;
 
 namespace MeatMushrooms.Mushroom.Components
 {
-    // Реализуем IHasAroma
     public class MushroomAroma : MonoBehaviour, IHasAroma
     {
         private float _maxRadius;
@@ -12,7 +11,6 @@ namespace MeatMushrooms.Mushroom.Components
         
         public float CurrentRadius { get; private set; }
         
-        // Реализация требования
         public Transform Transform => transform;
 
         public void Init(MushroomConfig config)

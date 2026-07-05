@@ -9,10 +9,10 @@ namespace MeatMushrooms.Mushroom.Configs
         public GameObject Prefab;
         
         [Header("Aroma System")]
-        public float MaxAromaRadius = 10f; // До куда доходит запах
-        public float AromaSpeed = 2f;      // Как быстро запах распространяется
+        public float MaxAromaRadius = 10f;
+        public float AromaSpeed = 2f;
         
         [Header("Stats")]
-        public float NutritionValue = 50f; // Насколько гриб утоляет голод
+        public float NutritionValue = 50f;
     }
 }

@@ -3,9 +3,8 @@ using Unity.AI.Navigation;
 using Zenject;
 using System.Collections.Generic;
 using MeatMushrooms.Player;
-using MeatMushrooms.Player.Components;
 using MeatMushrooms.Core;
-using MeatMushrooms.Environment.Strategies; // <-- ДОБАВЛЕНО ДЛЯ ФАБРИКИ
+using MeatMushrooms.Environment.Strategies;
 
 namespace MeatMushrooms.Environment
 {
@@ -154,7 +153,6 @@ namespace MeatMushrooms.Environment
         {
             Vector3 centerPos = GroundMeshFilter.transform.position;
 
-            // --- 1. СПАВН ШАПОЧКИ ---
             Vector3 playerRayStart = centerPos + new Vector3(0, 50f, -_currentRadius * 0.8f);
             if (Physics.Raycast(playerRayStart, Vector3.down, out RaycastHit playerHit, 100f))
             {
@@ -168,26 +166,22 @@ namespace MeatMushrooms.Environment
                 }
             }
 
-            // --- 2. СПАВН ВЫХОДА ---
             Vector3 exitRayStart = centerPos + new Vector3(0, 50f, _currentRadius * 0.8f);
             if (Physics.Raycast(exitRayStart, Vector3.down, out RaycastHit exitHit, 100f))
             {
                 Instantiate(Config.ExitPrefab, exitHit.point, Quaternion.identity, transform);
             }
 
-            // --- 3. СПАВН ВОЛКОВ (ОБНОВЛЕНО С ФАБРИКОЙ) ---
             int spawnedWolves = 0;
             int attempts = 0;
             List<Vector3> wolfPositions = new List<Vector3>();
 
-            // Запрашиваем стратегию у нашей фабрики один раз перед циклом
             IWolfSpawnStrategy spawnStrategy = WolfSpawnStrategyFactory.Create(Config.WolfLayout);
 
             while (spawnedWolves < _currentWolves && attempts < _currentWolves * 25)
             {
                 attempts++;
                 
-                // Стратегия сама рассчитывает начальную точку луча
                 Vector3 rayStart = spawnStrategy.GetSpawnRaycastPosition(centerPos, _currentRadius);
 
                 if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 100f))
@@ -197,7 +191,7 @@ namespace MeatMushrooms.Environment
                         bool isTooClose = false;
                         foreach (var wPos in wolfPositions)
                         {
-                            if (Vector3.Distance(hit.point, wPos) < 4f) // Увеличена дистанция, чтобы волки не толкались в шеренге
+                            if (Vector3.Distance(hit.point, wPos) < 4f)
                             {
                                 isTooClose = true;
                                 break;
@@ -206,7 +200,6 @@ namespace MeatMushrooms.Environment
 
                         if (!isTooClose)
                         {
-                            // Случайный поворот вокруг своей оси
                             Quaternion randomWolfRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
                             
                             _container.InstantiatePrefab(Config.WolfPrefab, hit.point, randomWolfRotation, null);

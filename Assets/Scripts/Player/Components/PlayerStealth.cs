@@ -10,7 +10,6 @@ namespace MeatMushrooms.Player.Components
 
         public SphereCollider NoiseRadar => _noiseRadar;
 
-        // Метод, который будет вызывать Мозг при движении
         public void UpdateNoiseLevel(bool isMoving, bool isRunning)
         {
             if (!isMoving)

@@ -7,7 +7,6 @@ namespace MeatMushrooms.Mushroom.Contracts
         float CurrentHealth { get; }
         Transform Transform { get; }
         
-        // Теперь метод возвращает количество полученной сытости
         float Consume(float amount); 
     }
 }

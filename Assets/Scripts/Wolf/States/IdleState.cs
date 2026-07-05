@@ -32,7 +32,6 @@ namespace MeatMushrooms.Wolf.States
         {
             float score = _config.Idle.BaseScore - (_stats.Hunger * _config.Idle.HungerPenaltyMultiplier); 
             
-            // Если волк уже спит, добавляем бонус "липкости", чтобы он не вскакивал сразу
             if (_subState == SubState.Resting || _subState == SubState.MovingToRest)
             {
                 score += _config.Idle.StickyRestScoreBonus;
@@ -45,7 +44,7 @@ namespace MeatMushrooms.Wolf.States
         {
             Debug.Log("[IdleState] Волк перешел в состояние покоя.");
             _locomotion.SetSpeed(_config.Locomotion.WalkSpeed);
-            _subState = SubState.Deciding; // При входе сразу решаем, что делать
+            _subState = SubState.Deciding;
         }
 
         public void Tick()
@@ -61,7 +60,7 @@ namespace MeatMushrooms.Wolf.States
                     _timer -= Time.deltaTime;
                     if (_timer <= 0) 
                     {
-                        _subState = SubState.Deciding; // Время вышло, решаем заново
+                        _subState = SubState.Deciding;
                     }
                     break;
 
@@ -80,7 +79,7 @@ namespace MeatMushrooms.Wolf.States
                     if (_timer <= 0)
                     {
                         _animator.PlayWakeUp();
-                        _subState = SubState.Deciding; // Выспался, возвращаемся к обычному простою
+                        _subState = SubState.Deciding;
                     }
                     break;
             }
@@ -90,26 +89,22 @@ namespace MeatMushrooms.Wolf.States
         {
             Debug.Log("[IdleState] Волк выходит из покоя.");
             
-            // Если мы спали, блокируем агента на время анимации подъема
             if (_subState == SubState.Resting)
             {
-                WakeUpAsync().Forget(); // Запускаем асинхронно и забываем
+                WakeUpAsync().Forget();
             }
             
             _locomotion.Stop();
         }
 
-        // Асинхронный процесс пробуждения
         private async UniTaskVoid WakeUpAsync()
         {
-            // 1. Блокируем ноги
+
             _locomotion.SetStun(true);
             _animator.PlayWakeUp();
 
-            // 2. Ждем, пока анимация вставания закончится (подбери секунды под свою анимацию)
             await UniTask.Delay(TimeSpan.FromSeconds(1.5f));
 
-            // 3. Отпускаем ноги - теперь волк побежит к грибу стоя!
             if (_locomotion != null)
             {
                 _locomotion.SetStun(false);
@@ -118,7 +113,6 @@ namespace MeatMushrooms.Wolf.States
 
         private void DecideNextAction()
         {
-            // ИСПРАВЛЕНИЕ: Вместо проверки голода, спрашиваем про пищевую кому
             if (_stats.IsFoodComa(_config.Idle.MealsToSleep, _config.Idle.MealTimeWindow))
             {
                 Vector3 retreatPoint = GetRetreatPoint();
@@ -127,7 +121,6 @@ namespace MeatMushrooms.Wolf.States
                 return;
             }
 
-            // 2. Бросаем кубик на отряхивание
             if (UnityEngine.Random.value <= _config.Idle.ShakeProbability)
             {
                 _animator.PlayShake();
@@ -136,14 +129,12 @@ namespace MeatMushrooms.Wolf.States
                 return;
             }
 
-            // 3. Иначе просто стоим
             _timer = UnityEngine.Random.Range(_config.Idle.MinIdleTime, _config.Idle.MaxIdleTime);
             _subState = SubState.Standing;
         }
 
         private Vector3 GetRetreatPoint()
         {
-            // Ищем случайную точку неподалеку, чтобы отойти перед сном
             Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * _config.Idle.RetreatRadius;
             randomDirection += _locomotion.transform.position;
 
@@ -151,7 +142,7 @@ namespace MeatMushrooms.Wolf.States
             {
                 return hit.position;
             }
-            return _locomotion.transform.position; // Если не нашли, спим прямо тут
+            return _locomotion.transform.position;
         }
     }
 }

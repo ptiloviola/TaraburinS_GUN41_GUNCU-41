@@ -19,9 +19,8 @@ namespace MeatMushrooms.Wolf.Components
 
         
 
-        // ПУБЛИЧНЫЙ ФЛАГ: Этот волк уже начал рычать?
         public bool IsReacting { get; private set; }
-        public bool IsHowling { get; set; } // ДОБАВИЛИ ФЛАГ ВОЯ
+        public bool IsHowling { get; set; }
 
         [Inject]
         public void Construct(WolfAnimator animator, WolfStats stats, 
@@ -47,56 +46,42 @@ namespace MeatMushrooms.Wolf.Components
             }
         }
 
-        // ИСПОЛЬЗУЕМ STAY для сканирования внутри радара
         private void OnTriggerStay(Collider other)
         {
-            // Если я сам на кулдауне или УЖЕ рычу — игнорирую всех
             if (_cooldownTimer > 0 || IsReacting) return;
 
             WolfSocial otherWolf = other.GetComponentInParent<WolfSocial>();
             
             if (otherWolf != null && otherWolf != this)
             {
-                // ПРОВЕРКА НА ДОМИНАНТА: Если сородич успел начать рычать первым, я пасую
                 if (otherWolf.IsReacting) return;
 
                 if (_stats.Hunger > _config.Social.AggroHungerThreshold)
                 {
                     Debug.Log($"[WolfSocial] {gameObject.name} доминирует над {otherWolf.gameObject.name}!");
-                    
-                    // Я первый! Перехватываю инициативу
                     InitiateAggression(otherWolf); 
                 }
             }
         }
 
-        // Мы стали инициатором грызни
         private void InitiateAggression(WolfSocial targetWolf)
         {
-            IsReacting = true; // Занимаем флаг, чтобы второй нас не перебил
+            IsReacting = true;
             _cooldownTimer = _config.Social.Cooldown;
-
-            // Заставляем ВТОРОГО волка испуганно застыть 
             targetWolf.GetIntimidated(_config.Social.StunDuration);
-
-            // Сами рычим
             ReactAsync().Forget();
         }
 
-        // Этот метод вызывает Волк-Агрессор у Волка-Жертвы
         public void GetIntimidated(float duration)
         {
-            // Вешаем жертве кулдаун, чтобы она не огрызнулась в ответ сразу после стана
             _cooldownTimer = _config.Social.Cooldown; 
             IntimidateAsync(duration).Forget();
         }
 
-        // Асинхронный стан для испугавшегося волка
         private async UniTaskVoid IntimidateAsync(float duration)
         {
             _locomotion.SetStun(true);
             
-            // Ждем окончание стана (Аниматор сам поставит волка в позу A Wait из-за нулевой скорости)
             await UniTask.Delay(TimeSpan.FromSeconds(duration));
 
             if (_locomotion != null)
@@ -105,7 +90,6 @@ namespace MeatMushrooms.Wolf.Components
             }
         }
 
-        // Асинхронный рык для волка-доминанта
         private async UniTaskVoid ReactAsync()
         {
             _locomotion.SetStun(true);
@@ -119,7 +103,7 @@ namespace MeatMushrooms.Wolf.Components
                 _locomotion.SetStun(false);
             }
 
-            IsReacting = false; // Освобождаем флаг после того, как прорычались
+            IsReacting = false;
         }
     }
 }

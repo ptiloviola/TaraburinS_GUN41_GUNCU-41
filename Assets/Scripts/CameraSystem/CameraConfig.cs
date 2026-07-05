@@ -6,8 +6,8 @@ namespace MeatMushrooms.CameraSystem
     public class CameraConfig : ScriptableObject
     {
         [Header("Слежение за игроком")]
-        public Vector3 FollowOffset = new Vector3(0f, 10f, -8f); // Камера высоко и сзади
-        public float PitchAngle = 50f; // Угол наклона вниз
-        public float FollowSpeed = 5f; // Плавность следования
+        public Vector3 FollowOffset = new Vector3(0f, 10f, -8f);
+        public float PitchAngle = 50f;
+        public float FollowSpeed = 5f;
     }
 }

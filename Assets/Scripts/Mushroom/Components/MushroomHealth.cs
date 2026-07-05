@@ -15,7 +15,7 @@ namespace MeatMushrooms.Mushroom.Components
 
         public void Init(MushroomConfig config, Action onDeath)
         {
-            CurrentHealth = config.NutritionValue; // Вот они, наши 50 калорий из конфига!
+            CurrentHealth = config.NutritionValue;
             _onDeathCallback = onDeath;
             _isDead = false;
         }
@@ -24,18 +24,14 @@ namespace MeatMushrooms.Mushroom.Components
         {
             if (_isDead) return 0f;
 
-            // Считаем, сколько реально удалось откусить (не больше, чем осталось здоровья)
             float eatenAmount = Mathf.Min(amount, CurrentHealth);
-            
             CurrentHealth -= eatenAmount;
-            
             if (CurrentHealth <= 0)
             {
                 _isDead = true;
                 _onDeathCallback?.Invoke();
             }
             
-            // Возвращаем откушенный кусок волку
             return eatenAmount; 
         }
     }

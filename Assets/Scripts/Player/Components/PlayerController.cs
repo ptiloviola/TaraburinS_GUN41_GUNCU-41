@@ -47,7 +47,6 @@ namespace MeatMushrooms.Player.Components
 
         private void Update()
         {
-            // Если мертвы - игнорируем любые команды
             if (_health.IsDead)
             {
                 StopMovement();
@@ -63,11 +62,9 @@ namespace MeatMushrooms.Player.Components
             bool isRunning = _runAction.IsPressed();
             bool isMoving = input.magnitude >= 0.1f;
 
-            // 1. Гравитация
             _verticalVelocity = _controller.isGrounded ? -2f : _verticalVelocity + (Gravity * Time.deltaTime);
             Vector3 movement = Vector3.zero;
 
-            // 2. Движение
             if (isMoving)
             {
                 Vector3 camForward = _mainCamera != null ? _mainCamera.forward : Vector3.forward;
@@ -97,11 +94,9 @@ namespace MeatMushrooms.Player.Components
                 _currentSpeed = Mathf.Lerp(_currentSpeed, 0f, Time.deltaTime * 10f);
             }
 
-            // 3. Обновляем соседей (Стелс и Аниматор)
             _stealth.UpdateNoiseLevel(isMoving, isRunning);
             _animator.SetFloat(SpeedHash, _currentSpeed);
 
-            // 4. Применяем движение
             movement.y = _verticalVelocity;
             _controller.Move(movement * Time.deltaTime);
         }

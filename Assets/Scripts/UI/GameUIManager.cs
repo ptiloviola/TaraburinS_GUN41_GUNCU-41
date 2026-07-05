@@ -1,11 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // Для работы с современным текстом
+using TMPro;
 using MeatMushrooms.Player;
 using MeatMushrooms.Environment;
 using MeatMushrooms.Core;
 using Zenject;
-using MeatMushrooms.Player.Components;
 
 namespace MeatMushrooms.UI
 {
@@ -23,11 +22,9 @@ namespace MeatMushrooms.UI
 
         private void Start()
         {
-            // Выводим инфу о поляне
             if (LevelText != null) LevelText.text = $"Поляна: {GameSession.CurrentLevel}";
             if (HighScoreText != null) HighScoreText.text = $"Рекорд: {PlayerPrefs.GetInt("HighScore", 1)}";
 
-            // Подписки
             _playerRegistry.OnPlayerSpawned += HookUpPlayerEvents;
             if (_playerRegistry.Health != null) 
             {
@@ -49,14 +46,13 @@ namespace MeatMushrooms.UI
         {
             if (VictoryPanel != null) VictoryPanel.SetActive(true);
             Time.timeScale = 0f;
-            GameSession.CompleteLevel(); // Обновляем счетчик для следующей загрузки
+            GameSession.CompleteLevel();
         }
 
-        // --- МЕТОДЫ ДЛЯ КНОПОК UI ---
 
         public void RestartGame()
         {
-            Time.timeScale = 1f; // ОБЯЗАТЕЛЬНО возвращаем время!
+            Time.timeScale = 1f;
             GameSession.Reset();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }

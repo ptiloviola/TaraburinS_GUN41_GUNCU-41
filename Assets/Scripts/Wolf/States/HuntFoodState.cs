@@ -1,6 +1,6 @@
 using MeatMushrooms.Mushroom.Contracts;
 using MeatMushrooms.Wolf.Components;
-using MeatMushrooms.Wolf.Configs; // Обновленный неймспейс
+using MeatMushrooms.Wolf.Configs;
 using MeatMushrooms.Wolf.Contracts;
 using UnityEngine;
 

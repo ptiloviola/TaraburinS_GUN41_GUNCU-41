@@ -13,11 +13,9 @@ namespace MeatMushrooms.Wolf.Components
         private float _thinkTimer;
         private const float ThinkInterval = 0.5f; 
 
-        // ПУБЛИЧНЫЕ СВОЙСТВА ДЛЯ ДЕБАГГЕРА
         public string CurrentStateName => _currentState != null ? _currentState.GetType().Name : "Initializing...";
         public Dictionary<string, float> StateScores { get; private set; } = new Dictionary<string, float>();
 
-        // Убрали WolfStats, так как мозгу они не нужны
         [Inject]
         public WolfBrain(List<IWolfState> availableStates)
         {
@@ -53,7 +51,6 @@ namespace MeatMushrooms.Wolf.Components
             {
                 float score = state.CalculateScore();
                 
-                // Сохраняем очки в словарь (без создания мусорных строк)
                 StateScores[state.GetType().Name] = score;
                 
                 if (score > highestScore)
@@ -73,8 +70,6 @@ namespace MeatMushrooms.Wolf.Components
         {
             _currentState?.Exit();
             _currentState = newState;
-            
-            // Оставляем только этот лог, чтобы видеть факт перехода в консоли
             Debug.Log($"<color=magenta>[WolfBrain]</color> Волк перешел в: {_currentState.GetType().Name}");
             
             _currentState?.Enter();

@@ -1,4 +1,3 @@
-using MeatMushrooms.Player.Components;
 using MeatMushrooms.Wolf.Components;
 using MeatMushrooms.Wolf.Configs;
 using MeatMushrooms.Wolf.Contracts;
@@ -13,7 +12,7 @@ namespace MeatMushrooms.Wolf.States
         private readonly WolfAnimator _animator;
         private readonly WolfPerception _perception;
         private readonly WolfConfig _config;
-        private readonly PlayerRegistry _playerRegistry; // Наш реестр
+        private readonly PlayerRegistry _playerRegistry;
         private readonly WolfEventBus _eventBus;
 
         private ChasePhase _currentPhase;
@@ -71,7 +70,6 @@ namespace MeatMushrooms.Wolf.States
 
         public void Tick()
         {
-            // ИСПРАВЛЕНИЕ 1: Обращаемся к здоровью через реестр
             if (_playerRegistry.Health.IsDead)
             {
                 _locomotion.Stop();
@@ -95,7 +93,6 @@ namespace MeatMushrooms.Wolf.States
 
                     Vector3 wolfPos = _locomotion.transform.position;
                     
-                    // ИСПРАВЛЕНИЕ 2: Берем трансформ Шапочки из её контроллера
                     Vector3 playerPos = _playerRegistry.Controller.transform.position;
                     
                     wolfPos.y = 0f;
@@ -108,8 +105,7 @@ namespace MeatMushrooms.Wolf.States
                         _currentPhase = ChasePhase.Attacking;
                         _locomotion.Stop();
                         _animator.PlayAttack();
-                        
-                        // ИСПРАВЛЕНИЕ 3: Вызываем Kill у компонента здоровья
+                    
                         _playerRegistry.Health.Kill();
                         break;
                     }
@@ -126,7 +122,7 @@ namespace MeatMushrooms.Wolf.States
         public void Exit()
         {
             _isActive = false;
-            _locomotion.SetSpeed(3.5f); // Возвращаем скорость к дефолтной для патруля
+            _locomotion.SetSpeed(3.5f);
         }
     }
 }

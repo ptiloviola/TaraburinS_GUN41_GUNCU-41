@@ -14,12 +14,9 @@ namespace MeatMushrooms.Player.Components
         private void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
-            // Шаги Шапочки лучше сделать 2D-звуком (spatialBlend = 0), 
-            // так как камера всегда висит над ней, и позиционирование звука в ушах нам не так важно
             _audioSource.spatialBlend = 0f; 
         }
 
-        // ВАЖНО: Эти методы должны быть public. Их будет вызывать сам Аниматор Unity!
         public void PlayFootstepWalkSound()
         {
             PlayRandomClip(WalkSteps, 0.9f, 1.1f, 0.5f);
@@ -27,7 +24,6 @@ namespace MeatMushrooms.Player.Components
 
         public void PlayFootstepRunSound()
         {
-            // Бег звучит чуть быстрее, выше и громче
             PlayRandomClip(RunSteps, 0.95f, 1.2f, 0.8f);
         }
 

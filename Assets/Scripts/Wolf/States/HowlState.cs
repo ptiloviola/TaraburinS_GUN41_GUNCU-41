@@ -16,7 +16,7 @@ namespace MeatMushrooms.Wolf.States
         
 
         private float _timer;
-        private float _nextHowlTime; // Заменили таймер на абсолютное время
+        private float _nextHowlTime;
         private float _lastCheckTime;
         
         private bool _wantsToHowlSpontaneously;
@@ -37,16 +37,12 @@ namespace MeatMushrooms.Wolf.States
 
         public float CalculateScore()
         {
-            // ЗАЩИТА: Если мы уже воем, держим абсолютный приоритет, чтобы мозг нас не прервал!
             if (_timer > 0) return 1000f;
 
-            // Проверяем кулдаун через абсолютное время
             if (Time.time < _nextHowlTime) return 0f;
 
-            // Если слишком голодны - не до песен
             if (_stats.Hunger > _config.Howl.MaxHungerToHowl) return 0f;
 
-            // Радар (раз в секунду)
             if (Time.time - _lastCheckTime > 1f)
             {
                 _lastCheckTime = Time.time;
@@ -76,7 +72,7 @@ namespace MeatMushrooms.Wolf.States
             _social.IsHowling = true; 
             _wantsToHowlSpontaneously = false; 
             
-            _timer = _config.Howl.HowlDuration; // Запускаем таймер воя
+            _timer = _config.Howl.HowlDuration;
         }
 
         public void Tick()
@@ -84,7 +80,6 @@ namespace MeatMushrooms.Wolf.States
             if (_timer > 0)
             {
                 _timer -= Time.deltaTime;
-                // Когда таймер станет <= 0, в следующий вызов CalculateScore вернет 0, и мозг нас переключит
             }
         }
 
@@ -93,7 +88,7 @@ namespace MeatMushrooms.Wolf.States
             Debug.Log($"<color=orange>[HowlState]</color> 💤 <b>{_wolfName}</b> закончил выть.");
             
             _social.IsHowling = false; 
-            _nextHowlTime = Time.time + _config.Howl.Cooldown; // Устанавливаем время следующего возможного воя
+            _nextHowlTime = Time.time + _config.Howl.Cooldown;
             
             _animator.StopHowl(); 
         }

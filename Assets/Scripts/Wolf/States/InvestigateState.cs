@@ -15,9 +15,9 @@ namespace MeatMushrooms.Wolf.States
         private InvestigatePhase _currentPhase;
         private Vector3 _lockedTargetPosition;
         private float _actionTimer; 
-        private bool _isActive; // Флаг залипания стейта
+        private bool _isActive;
 
-        private const float ListeningDuration = 2.5f; // Волк будет прислушиваться ровно 2.5 секунды
+        private const float ListeningDuration = 2.5f;
 
         private enum InvestigatePhase
         {
@@ -36,17 +36,14 @@ namespace MeatMushrooms.Wolf.States
 
         public float CalculateScore()
         {
-            // Если логика внутри Tick решила, что всё чисто, она обнулит Suspicion.
-            // Только в этом случае мы отдаем управление мозгу.
+
             if (_perception.CurrentSuspicion <= 0f) return 0f;
 
-            // Если мы еще НЕ в стейте, проверяем порог входа (1 ступень)
             if (!_isActive && _perception.CurrentSuspicion < _config.Investigate.NoticeThreshold)
             {
                 return 0f;
             }
 
-            // ЗАЛИПАНИЕ: Если мы уже активны, мы держим очки высокими, даже если подозрение слегка упало
             return _config.Investigate.BaseScore + (_perception.CurrentSuspicion * 0.5f);
         }
 
@@ -67,24 +64,20 @@ namespace MeatMushrooms.Wolf.States
             switch (_currentPhase)
             {
                 case InvestigatePhase.Listening:
-                    // Если Шапочка продолжает шуметь, переходим ко 2 ступени ДО окончания таймера
                     if (_perception.CurrentSuspicion >= _config.Investigate.MoveThreshold)
                     {
                         _currentPhase = InvestigatePhase.Trotting;
                         _lockedTargetPosition = _perception.LastKnownPosition; 
                         
                         _locomotion.SetSpeed(_config.Investigate.TrotSpeed);
-                        _locomotion.MoveTo(_lockedTargetPosition); // Используем твой MoveTo!
+                        _locomotion.MoveTo(_lockedTargetPosition);
                         _animator.PlayTrot();
                         break;
                     }
 
-                    // Ждем, пока волк вслушивается
                     _actionTimer -= Time.deltaTime;
                     if (_actionTimer <= 0)
                     {
-                        // Время вышло. Шум не усилился. Ложная тревога.
-                        // Это сбросит Score в 0 при следующем кадре!
                         _perception.ClearSuspicion(); 
                     }
                     break;

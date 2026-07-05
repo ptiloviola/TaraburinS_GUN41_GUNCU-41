@@ -1,4 +1,4 @@
-using MeatMushrooms.Player.Components; // Не забудь namespace игрока
+using MeatMushrooms.Player.Components;
 using MeatMushrooms.Wolf.Configs;
 using UnityEngine;
 using Zenject;
@@ -11,7 +11,6 @@ namespace MeatMushrooms.Wolf.Components
         private WolfConfig _config;
         private WolfStats _stats;
         
-        // Ссылки на игрока (теперь они заполнятся автоматически!)
         private PlayerRegistry _playerRegistry;
 
         public float CurrentSuspicion { get; private set; }
@@ -19,7 +18,6 @@ namespace MeatMushrooms.Wolf.Components
         public bool IsTargetInSight { get; private set; }
         public bool IsEating { get; set; }
 
-        // Zenject сам найдет PlayerController и вставит его сюда
         [Inject]
         public void Construct(WolfConfig config, WolfStats stats, PlayerRegistry playerRegistry)
         {
@@ -30,8 +28,6 @@ namespace MeatMushrooms.Wolf.Components
 
         private void Update()
         {
-            // Теперь нам не нужно проверять _playerTransform == null, 
-            // Zenject гарантирует, что игрок тут есть.
             ProcessHearing();
             ProcessVision();
         }
@@ -40,7 +36,6 @@ namespace MeatMushrooms.Wolf.Components
         {
             float distanceToPlayer = Vector3.Distance(transform.position, _playerRegistry.Controller.transform.position) - _playerRegistry.Stealth.NoiseRadar.radius;
 
-            // Обращаемся к радару напрямую через наше новое свойство
             if (distanceToPlayer <= _playerRegistry.Stealth.NoiseRadar.radius)
             {
                 float buildRate = _config.Perception.SuspicionBuildRate * Time.deltaTime;
@@ -77,7 +72,6 @@ namespace MeatMushrooms.Wolf.Components
 
             LayerMask combinedMask = _config.Perception.PlayerMask | _config.Perception.ObstacleMask;
             
-            // Чуть приподнимаем точку, откуда пускаем луч, чтобы не стрелять из пяток волка
             if (Physics.Raycast(transform.position + Vector3.up * 0.5f, dirToPlayer, out RaycastHit hit, distanceToPlayer, combinedMask))
             {
                 if ((_config.Perception.PlayerMask.value & (1 << hit.collider.gameObject.layer)) > 0)
@@ -94,13 +88,10 @@ namespace MeatMushrooms.Wolf.Components
             CurrentSuspicion = 0f;
         }
 
-        // Метод, который вызовет другой волк при обнаружении
         public void ReceiveAlert(Vector3 targetPosition)
         {
-            // Мгновенно накидываем подозрение (чтобы перебить текущие дела)
             CurrentSuspicion = Mathf.Clamp(CurrentSuspicion + 40f, 0f, 100f);
             
-            // Волк узнает, где видели Шапочку, даже не видя её сам!
             LastKnownPosition = targetPosition;
         }
     }

@@ -43,7 +43,7 @@ namespace MeatMushrooms.Wolf.Configs
         public float StoppingDistance = 0.5f;
         [Tooltip("Насколько сильно волк тормозит при крутом повороте (0 - не тормозит, 0.8 - почти останавливается)")]
         [Range(0f, 0.9f)] 
-        public float TurnPenalty = 0.6f; // ДОБАВИЛИ
+        public float TurnPenalty = 0.6f;
     }
 
     [Serializable]
@@ -112,10 +112,10 @@ namespace MeatMushrooms.Wolf.Configs
     public class EatConfig
     {
         [Header("Условия")]
-        public float MaxDistanceToEat = 2.5f; // Синхронизируем с HuntConfig
+        public float MaxDistanceToEat = 2.5f;
 
         [Header("Оценка (Score)")]
-        public float BaseScore = 100f; // Абсолютный приоритет, если еда в радиусе
+        public float BaseScore = 100f;
 
         [Header("Поведение")]
         public float BiteInterval = 1f;
@@ -135,8 +135,8 @@ namespace MeatMushrooms.Wolf.Configs
         [Header("Поведение в покое (Стояние / Отряхивание)")]
         public float MinIdleTime = 2f;
         public float MaxIdleTime = 6f;
-        public float ShakeProbability = 0.3f; // 30% шанс отряхнуться
-        public float ShakeDuration = 2f;      // Время анимации отряхивания
+        public float ShakeProbability = 0.3f;
+        public float ShakeDuration = 2f;
 
         [Header("Глубокий отдых (Пищевая кома)")]
         [Tooltip("Сколько раз волк должен поесть, чтобы захотеть спать")]
@@ -155,17 +155,17 @@ namespace MeatMushrooms.Wolf.Configs
         public float MaxHungerToHowl = 40f; 
         
         [Header("Оценка (Score)")]
-        public float SpontaneousScore = 60f; // Приоритет, если решил завыть сам
-        public float JoinHowlScore = 80f;    // Приоритет, если услышал другого
+        public float SpontaneousScore = 60f;
+        public float JoinHowlScore = 80f;
 
         [Header("Поведение")]
         public float HowlDuration = 5f;
-        public float HearRadius = 15f;       // Тот самый "радар воя"
-        public float Cooldown = 30f;         // Чтобы не выли без остановки
+        public float HearRadius = 15f;
+        public float Cooldown = 30f;
         
         [Tooltip("Шанс завыть самому (проверяется каждую секунду)")]
         [Range(0f, 1f)] 
-        public float SpontaneousChance = 0.05f; // 5% шанс каждую секунду
+        public float SpontaneousChance = 0.05f;
     }
 
     [Serializable]
@@ -192,17 +192,13 @@ namespace MeatMushrooms.Wolf.Configs
     public class ChaseConfig
     {
         [Header("Погоня и Атака")]
-        public float ChaseSpeed = 6f; // Скорость бега за Шапочкой
-        public float AttackDistance = 1.2f; // Дистанция укуса
+        public float ChaseSpeed = 6f;
+        public float AttackDistance = 1.2f;
         
         [Header("Стайный зов")]
-        public float AlertRadius = 25f; // Радиус, в котором волки услышат боевой клич
-        public float HowlDuration = 2f; // Сколько секунд волк воет перед рывком
+        public float AlertRadius = 25f;
+        public float HowlDuration = 2f;
     }
-    
-
-    
-
     
 
     #endregion

@@ -9,12 +9,12 @@ namespace MeatMushrooms.Wolf.Components
     public class WolfLocomotion : MonoBehaviour
     {
         private NavMeshAgent _agent;
-        private WolfConfig _config; // Ссылка на конфиг
+        private WolfConfig _config;
         
         public bool IsStunned { get; private set; }
         public float CurrentTurn { get; private set; }
         public float CurrentSpeed => _agent.velocity.magnitude;
-        private float _targetBaseSpeed; // ДОБАВИЛИ: Запоминаем, какую скорость просил стейт
+        private float _targetBaseSpeed;
 
         [Inject]
         public void Construct(WolfConfig config)
@@ -29,11 +29,11 @@ namespace MeatMushrooms.Wolf.Components
 
         private void Start()
         {
-            // Применяем стартовые настройки из конфига
+
             if (_agent != null && _config != null)
             {
                 _agent.stoppingDistance = _config.Locomotion.StoppingDistance;
-                _agent.angularSpeed = 50f; // Можно тоже вынести в конфиг!
+                _agent.angularSpeed = 50f;
             }
         }
 
@@ -50,20 +50,14 @@ namespace MeatMushrooms.Wolf.Components
                     float targetTurn = Mathf.Clamp(angle / _config.Locomotion.MaxTurnAngle, -1f, 1f);
                     CurrentTurn = Mathf.Lerp(CurrentTurn, targetTurn, Time.deltaTime * _config.Locomotion.TurnSmoothSpeed);
 
-                    // --- НОВАЯ МАГИЯ ТОРМОЖЕНИЯ ---
-                    // Mathf.Abs убирает минус. Если CurrentTurn = -1 (влево) или 1 (вправо), модуль будет 1.
-                    // Если TurnPenalty в конфиге стоит 0.6, то при максимальном повороте скорость упадет на 60%.
                     float speedMultiplier = 1f - (Mathf.Abs(CurrentTurn) * _config.Locomotion.TurnPenalty);
                     
-                    // Применяем обрезанную скорость к агенту
                     _agent.speed = _targetBaseSpeed * Mathf.Clamp01(speedMultiplier);
                 }
             }
             else
             {
                 CurrentTurn = Mathf.Lerp(CurrentTurn, 0f, Time.deltaTime * _config.Locomotion.TurnSmoothSpeed);
-                
-                // Возвращаем базовую скорость, если стоим или идем прямо
                 if (_agent != null) _agent.speed = _targetBaseSpeed; 
             }
         }

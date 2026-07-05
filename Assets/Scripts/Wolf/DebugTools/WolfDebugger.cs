@@ -27,23 +27,18 @@ namespace MeatMushrooms.Wolf.DebugTools
         {
             if (_cam == null || _brain == null || _perception == null) return;
 
-            // Точка над головой волка
             Vector3 worldPos = transform.position + Vector3.up * 2.5f;
             Vector3 screenPos = _cam.WorldToScreenPoint(worldPos);
 
-            // Если волк за спиной - не рисуем
             if (screenPos.z < 0) return;
 
-            // Собираем телеметрию
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"<color=#00FF00><b>[{_brain.CurrentStateName}]</b></color>");
             sb.AppendLine($"Suspicion: <b>{_perception.CurrentSuspicion:F1}</b>");
             sb.AppendLine("--- Scores ---");
             
-            // Выводим все состояния из мозга
             foreach (var kvp in _brain.StateScores)
             {
-                // Подсвечиваем текущий стейт желтым, остальные серым
                 if (kvp.Key == _brain.CurrentStateName)
                     sb.AppendLine($"<color=yellow>{kvp.Key}: {kvp.Value:F1}</color>");
                 else
@@ -57,14 +52,11 @@ namespace MeatMushrooms.Wolf.DebugTools
             style.fontSize = 14;
             style.alignment = TextAnchor.UpperCenter;
 
-            // Вычисляем прямоугольник для текста
             Rect rect = new Rect(screenPos.x - 100, Screen.height - screenPos.y - 100, 200, 200);
             
-            // Тень для читаемости на любом фоне
             style.normal.textColor = Color.black;
             GUI.Label(new Rect(rect.x + 1, rect.y + 1, rect.width, rect.height), debugText, style);
             
-            // Основной текст
             style.normal.textColor = Color.white;
             GUI.Label(rect, debugText, style);
         }

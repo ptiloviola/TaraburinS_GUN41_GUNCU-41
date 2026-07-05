@@ -13,7 +13,7 @@ namespace MeatMushrooms.Wolf.Components
         public AudioClip[] EatClips;
 
         private AudioSource _audioSource;
-        private WolfEventBus _eventBus; // Наша новая шина
+        private WolfEventBus _eventBus;
 
         [Inject]
         private void Construct(WolfEventBus eventBus)
@@ -30,7 +30,6 @@ namespace MeatMushrooms.Wolf.Components
         private void OnEnable()
         {
             if (_eventBus == null) return;
-            // ПОДПИСЫВАЕМСЯ
             _eventBus.OnHowl += PlayHowl;
             _eventBus.OnCombatGrowl += PlayCombatGrowl;
             _eventBus.OnLowGrowl += PlayLowGrowl;
@@ -40,7 +39,6 @@ namespace MeatMushrooms.Wolf.Components
         private void OnDisable()
         {
             if (_eventBus == null) return;
-            // ОТПИСЫВАЕМСЯ
             _eventBus.OnHowl -= PlayHowl;
             _eventBus.OnCombatGrowl -= PlayCombatGrowl;
             _eventBus.OnLowGrowl -= PlayLowGrowl;
