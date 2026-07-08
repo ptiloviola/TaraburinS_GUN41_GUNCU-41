@@ -7,13 +7,19 @@ public class PlayerFPS_NewInput : MonoBehaviour
     [Header("Настройки FPS")]
     public float walkSpeed = 5f;
     public float lookSensitivity = 0.2f;
-    public Camera playerCam;
+
+    [SerializeField]
+    private Camera _playerCam;
 
     [Header("Прицел (UI)")]
-    public RectTransform crosshair; // Сюда перетащим нашу картинку
-    public float normalSize = 20f;  // Обычный размер
-    public float aimSize = 8f;      // Размер при прицеливании (зуме)
-    public float fireExpansion = 30f; // Насколько сильно расширяется при выстреле
+    [SerializeField]
+    private RectTransform _crosshair; // Сюда перетащим нашу картинку
+    [SerializeField]
+    private float _normalSize = 20f;  // Обычный размер
+    [SerializeField]
+    private float _aimSize = 8f;      // Размер при прицеливании (зуме)
+    [SerializeField]
+    private float _fireExpansion = 30f; // Насколько сильно расширяется при выстреле
 
     private CharacterController _controller;
     private float _xRotation = 0f;
@@ -24,8 +30,8 @@ public class PlayerFPS_NewInput : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked; 
-        _normalFOV = playerCam.fieldOfView;
-        _currentCrosshairSize = normalSize;
+        _normalFOV = _playerCam.fieldOfView;
+        _currentCrosshairSize = _normalSize;
     }
 
     private void Update()
@@ -47,7 +53,7 @@ public class PlayerFPS_NewInput : MonoBehaviour
         _xRotation -= mouseY;
         _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
         
-        playerCam.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
+        _playerCam.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
     }
 
@@ -71,11 +77,11 @@ public class PlayerFPS_NewInput : MonoBehaviour
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             // Резко "взрываем" размер прицела, имитируя отдачу/разброс
-            _currentCrosshairSize += fireExpansion;
+            _currentCrosshairSize += _fireExpansion;
             
             Debug.Log("Выстрел!");
 
-            Ray ray = playerCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            Ray ray = _playerCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             if (Physics.Raycast(ray, out RaycastHit hit, 100f))
             {
                 if (hit.collider.TryGetComponent<EnemyRoamer>(out var enemy))
@@ -88,11 +94,11 @@ public class PlayerFPS_NewInput : MonoBehaviour
         // Прицеливание (Зум)
         if (Mouse.current.rightButton.isPressed)
         {
-            playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, 40f, 10f * Time.deltaTime);
+            _playerCam.fieldOfView = Mathf.Lerp(_playerCam.fieldOfView, 40f, 10f * Time.deltaTime);
         }
         else
         {
-            playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, _normalFOV, 10f * Time.deltaTime);
+            _playerCam.fieldOfView = Mathf.Lerp(_playerCam.fieldOfView, _normalFOV, 10f * Time.deltaTime);
         }
 
         if (Keyboard.current.rKey.wasPressedThisFrame) Debug.Log("Перезарядка!"); 
@@ -100,15 +106,15 @@ public class PlayerFPS_NewInput : MonoBehaviour
 
     private void UpdateCrosshair()
     {
-        if (crosshair == null) return;
+        if (_crosshair == null) return;
 
         // 1. Определяем, к какому размеру прицел должен стремиться сейчас
-        float targetSize = Mouse.current.rightButton.isPressed ? aimSize : normalSize;
+        float targetSize = Mouse.current.rightButton.isPressed ? _aimSize : _normalSize;
 
         // 2. Плавно "сдуваем" или "расширяем" прицел к этому целевому размеру
         _currentCrosshairSize = Mathf.Lerp(_currentCrosshairSize, targetSize, 10f * Time.deltaTime);
 
         // 3. Применяем расчеты к UI картинке
-        crosshair.sizeDelta = new Vector2(_currentCrosshairSize, _currentCrosshairSize);
+        _crosshair.sizeDelta = new Vector2(_currentCrosshairSize, _currentCrosshairSize);
     }
 }

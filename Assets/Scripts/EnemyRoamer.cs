@@ -5,7 +5,10 @@ using UnityEngine.AI;
 public class EnemyRoamer : MonoBehaviour
 {
     private NavMeshAgent _agent;
-    public float roamRadius = 10f; // Радиус поиска новой точки
+
+
+    [SerializeField]
+    private float _roamRadius = 10f; // Радиус поиска новой точки
 
     private void Start()
     {
@@ -25,11 +28,11 @@ public class EnemyRoamer : MonoBehaviour
     private void GoToRandomPoint()
     {
         // Берем случайную точку в сфере вокруг врага
-        Vector3 randomDirection = Random.insideUnitSphere * roamRadius;
+        Vector3 randomDirection = Random.insideUnitSphere * _roamRadius;
         randomDirection += transform.position;
         
         // Ищем ближайшую точку на NavMesh
-        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, roamRadius, 1))
+        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, _roamRadius, 1))
         {
             _agent.SetDestination(hit.position);
         }
