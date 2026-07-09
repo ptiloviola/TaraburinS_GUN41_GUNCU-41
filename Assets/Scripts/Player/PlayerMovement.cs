@@ -1,15 +1,16 @@
 using UnityEngine;
+using Player.Config;
 namespace Player
 {
     public class PlayerMovement
     {
         private readonly CharacterController _controller;
         private readonly Transform _playerTransform;
-        private readonly PlayerConfig _config;
+        private readonly MovementConfig _config;
         
         private float _velocityY;
 
-        public PlayerMovement(CharacterController controller, Transform transform, PlayerConfig config)
+        public PlayerMovement(CharacterController controller, Transform transform, MovementConfig config)
         {
             _controller = controller;
             _playerTransform = transform;

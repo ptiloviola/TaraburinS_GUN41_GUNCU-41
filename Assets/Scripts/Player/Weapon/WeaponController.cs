@@ -2,18 +2,21 @@ using UnityEngine;
 using Infrastructure.Interfaces;
 using Services;
 using DG.Tweening;
+using System;
+using Player.Weapon.Config;
 namespace Player.Weapon
 {
-    public class WeaponController
+    public class WeaponController: IDisposable
     {
         private readonly IWeaponView _view;
         private readonly ICrosshairView _crosshair;
         private readonly IShooter _shooter;
         private readonly IImpactHandler _impactHandler;
         private readonly AudioService _audioService;
-        private readonly PlayerConfig _config;
+        private readonly RangedWeaponConfig _config;
         private readonly AudioSource _audioSource;
         private readonly Transform _firePoint;
+        private readonly IInputProvider _input;
 
         private int _currentAmmo;
         private float _lastFireTime;
@@ -28,7 +31,8 @@ namespace Player.Weapon
             AudioService audioService, 
             AudioSource audioSource,
             Transform firePoint,
-            PlayerConfig config)
+            RangedWeaponConfig config,
+            IInputProvider input)
         {
             _view = view;
             _crosshair = crosshair;
@@ -38,8 +42,13 @@ namespace Player.Weapon
             _audioSource = audioSource;
             _firePoint = firePoint;
             _config = config;
-
             _currentAmmo = _config.maxAmmo;
+            _input = input;
+
+            // Оружие само подписывается на кнопки!
+            _input.OnFireStarted += Fire;
+            _input.OnReloadStarted += Reload;
+            _input.OnAimChanged += ToggleAim;
         }
 
         public void PlayBobbing(bool isMoving) => _view.PlayBobbing(isMoving, _isAiming);
@@ -86,6 +95,21 @@ namespace Player.Weapon
                 _currentAmmo = _config.maxAmmo;
                 _isReloading = false;
             }, false);
+        }
+
+        public void Tick()
+        {
+            // Оружие само решает, качаться ему или нет, опрашивая интерфейс
+            bool isMoving = _input.MoveInput.sqrMagnitude > 0.01f;
+            _view.PlayBobbing(isMoving, _isAiming);
+        }
+
+        // Отписываемся от событий, чтобы не было утечек памяти
+        public void Dispose()
+        {
+            _input.OnFireStarted -= Fire;
+            _input.OnReloadStarted -= Reload;
+            _input.OnAimChanged -= ToggleAim;
         }
     }
 }

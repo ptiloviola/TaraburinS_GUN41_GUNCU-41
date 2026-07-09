@@ -1,14 +1,15 @@
 using UnityEngine;
 using DG.Tweening;
 using Infrastructure.Interfaces;
+using Player.Weapon.Config;
 namespace Player.UI
 {
     public class CrosshairUiView : ICrosshairView
     {
         private readonly RectTransform _crosshairUi;
-        private readonly PlayerConfig _config;
+        private readonly RangedWeaponConfig _config;
 
-        public CrosshairUiView(RectTransform crosshairUi, PlayerConfig config)
+        public CrosshairUiView(RectTransform crosshairUi, RangedWeaponConfig config)
         {
             _crosshairUi = crosshairUi;
             _config = config;

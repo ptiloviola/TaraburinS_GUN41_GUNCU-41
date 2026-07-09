@@ -2,15 +2,16 @@ using UnityEngine;
 using DG.Tweening;
 using Infrastructure.Interfaces;
 using Services;
+using Player.Weapon.Config;
 
 namespace Player.Weapon.Effects
 {
     public class PaintballImpactHandler : IImpactHandler
     {
-        private readonly PlayerConfig _config;
+        private readonly RangedWeaponConfig _config;
         private readonly AudioService _audioService;
 
-        public PaintballImpactHandler(PlayerConfig config, AudioService audioService)
+        public PaintballImpactHandler(RangedWeaponConfig config, AudioService audioService)
         {
             _config = config;
             _audioService = audioService;

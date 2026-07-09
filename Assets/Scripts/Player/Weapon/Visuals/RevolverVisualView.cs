@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using Infrastructure.Interfaces;
+using Player.Weapon.Config;
 namespace Player.Weapon.Visuals
 {
     public class RevolverVisualView : IWeaponView
@@ -10,11 +11,16 @@ namespace Player.Weapon.Visuals
         private readonly Transform _cylinder;
         private readonly Transform _hammer;
         private readonly Transform _trigger;
-        private readonly PlayerConfig _config;
+        private readonly RangedWeaponConfig _config;
 
         private Tween _bobbingTween;
 
-        public RevolverVisualView(Transform weaponRoot, Transform visualsRoot, Transform cylinder, Transform hammer, Transform trigger, PlayerConfig config)
+        public RevolverVisualView(Transform weaponRoot, 
+            Transform visualsRoot, 
+            Transform cylinder, 
+            Transform hammer, 
+            Transform trigger, 
+            RangedWeaponConfig config)
         {
             _weaponRoot = weaponRoot;
             _visualsRoot = visualsRoot;

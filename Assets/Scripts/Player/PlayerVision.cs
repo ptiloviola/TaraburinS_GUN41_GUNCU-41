@@ -1,21 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Enemy; // Подключаем неймспейс врага, чтобы видеть EnemyFacade
+using Infrastructure.Interfaces; // ДОБАВЛЕНО: Подключаем наши интерфейсы-контракты
+using Player.Config;
+
 namespace Player
 {
     public class PlayerVision
     {
         private readonly Transform _eyesTransform;
-        private readonly PlayerConfig _config;
+        private readonly RadarConfig _config;
         
-        // Храним врагов, которые СЕЙЧАС в зоне видимости
+        // Храним коллайдеры, которые СЕЙЧАС в зоне видимости
         private readonly HashSet<Collider> _visibleEnemies = new HashSet<Collider>();
         
         // Массив-буфер для физики (чтобы не выделять память каждый кадр)
-        // 20 означает, что радар может засечь до 20 врагов одновременно
         private readonly Collider[] _hitColliders = new Collider[20]; 
 
-        public PlayerVision(Transform eyesTransform, PlayerConfig config)
+        public PlayerVision(Transform eyesTransform, RadarConfig config)
         {
             _eyesTransform = eyesTransform;
             _config = config;
@@ -23,7 +24,7 @@ namespace Player
 
         public void Tick()
         {
-            // 1. Ищем всех на слое врагов в радиусе sightRadius
+            // 1. Ищем всех на слое врагов (EnemyRadar) в радиусе sightRadius
             int count = Physics.OverlapSphereNonAlloc(
                 _eyesTransform.position, 
                 _config.sightRadius, 
@@ -44,25 +45,30 @@ namespace Player
                 {
                     _visibleEnemies.Add(col);
                     
-                    // Пытаемся получить Фасад и говорим ему "Проявись!"
-                    if (col.TryGetComponent(out EnemyFacade enemy))
+                    // ИЗМЕНЕНИЕ ЗДЕСЬ: Ищем любой объект, реализующий интерфейс IVisibleTarget
+                    IVisibleTarget visibleTarget = col.GetComponentInParent<IVisibleTarget>();
+                    if (visibleTarget != null)
                     {
-                        enemy.SetVisibility(true);
+                        visibleTarget.SetVisibility(true);
                     }
                 }
             }
 
             // 2. Чистим список от тех, кто ушел из радиуса радара
-            // RemoveWhere проходит по коллекции и удаляет то, что попадает под условие
             _visibleEnemies.RemoveWhere(col => 
             {
                 // Если коллайдер из старого списка НЕ найден в текущем кадре
                 if (!currentFrameEnemies.Contains(col))
                 {
                     // Значит, он вышел из зоны. Говорим "Спрячься!"
-                    if (col != null && col.TryGetComponent(out EnemyFacade enemy))
+                    if (col != null)
                     {
-                        enemy.SetVisibility(false);
+                        // ИЗМЕНЕНИЕ ЗДЕСЬ: Снова обращаемся через интерфейс
+                        IVisibleTarget visibleTarget = col.GetComponentInParent<IVisibleTarget>();
+                        if (visibleTarget != null)
+                        {
+                            visibleTarget.SetVisibility(false);
+                        }
                     }
                     return true; // Команда для RemoveWhere: "Удаляй из списка"
                 }

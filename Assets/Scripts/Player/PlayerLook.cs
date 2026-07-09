@@ -1,4 +1,5 @@
 using UnityEngine;
+using Player.Config;
 namespace Player
 {
 
@@ -6,11 +7,11 @@ namespace Player
     {
         private readonly Transform _playerBody;
         private readonly Transform _cameraTransform;
-        private readonly PlayerConfig _config;
+        private readonly MovementConfig _config;
         
         private float _xRotation = 0f;
 
-        public PlayerLook(Transform playerBody, Transform cameraTransform, PlayerConfig config)
+        public PlayerLook(Transform playerBody, Transform cameraTransform, MovementConfig config)
         {
             _playerBody = playerBody;
             _cameraTransform = cameraTransform;
