@@ -1,10 +1,11 @@
 using UnityEngine;
+using Infrastructure.Interfaces;
 
 namespace Enemy
 {
     
     [RequireComponent(typeof(EnemyMover))]
-    public class EnemyFacade : MonoBehaviour
+    public class EnemyFacade : MonoBehaviour, IDamageable
     {
         private EnemyAnimator _animator;
         [Header("Settings")]
@@ -25,6 +26,8 @@ namespace Enemy
         {
             // Запускаем логику
             _mover.StartWandering();
+            // Прячем врага на старте (он проявится, только если игрок рядом)
+            _animator.SetInvisibleInstant();
         }
 
         private void Update()
@@ -33,6 +36,19 @@ namespace Enemy
             float currentYRotation = transform.eulerAngles.y; // Берем текущий угол поворота агента
             
             _animator.UpdateAnimation(speed, currentYRotation);
+        }
+        // Этот метод будет вызывать PlayerVision
+        public void SetVisibility(bool isVisible)
+        {
+            _animator.AnimateVisibility(isVisible);
+        }
+
+        // ДОБАВЛЯЕМ ЭТОТ БЛОК:
+        // Вызывается из RevolverController при попадании шарика
+        public void TakeDamage(int amount, Vector3 hitPoint)
+        {
+            _animator.PlayHitReaction();
+            Debug.Log($"Снеговик получил {amount} урона в точку {hitPoint}!");
         }
     }
 }

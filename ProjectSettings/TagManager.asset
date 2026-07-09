@@ -13,9 +13,9 @@ TagManager:
   - UI
   - Target
   - Obstacle
-  - 
-  - 
-  - 
+  - Enemy
+  - Player
+  - EnemyRadar
   - 
   - 
   - 

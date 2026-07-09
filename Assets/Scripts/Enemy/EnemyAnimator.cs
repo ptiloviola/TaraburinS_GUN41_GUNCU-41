@@ -133,5 +133,39 @@ namespace Enemy
                 ).SetDelay(delay);
             }
         }
+
+        // Внутри EnemyAnimator.cs:
+
+        public void AnimateVisibility(bool isVisible)
+        {
+            // Убиваем предыдущую анимацию масштаба, если она не успела закончиться
+            visualsRoot.DOKill(complete: true);
+
+            float targetScale = isVisible ? 1f : 0f;
+            float duration = 0.5f;
+            
+            // Если появляемся - пружиним (OutBack). Если исчезаем - втягиваемся (InBack)
+            Ease easeType = isVisible ? Ease.OutBack : Ease.InBack;
+
+            visualsRoot.DOScale(targetScale, duration).SetEase(easeType);
+        }
+
+        // Полезно добавить метод для мгновенного скрытия при старте игры
+        public void SetInvisibleInstant()
+        {
+            visualsRoot.localScale = Vector3.zero;
+        }
+
+        public void PlayHitReaction()
+        {
+            // Завершаем предыдущие анимации масштаба (например, если он только что появился из-под земли)
+            visualsRoot.DOKill(complete: true);
+            
+            // Эффект удара: снеговик резко сплющивается по Y и раздается вширь по X/Z, 
+            // а затем пружинисто возвращается в норму.
+            visualsRoot.DOPunchScale(new Vector3(0.3f, -0.3f, 0.3f), 0.4f, vibrato: 5, elasticity: 0.5f)
+                .OnComplete(() => visualsRoot.localScale = Vector3.one); // Гарантируем, что он вернет нормальный размер
+        }
+
     }
 }
