@@ -10,6 +10,7 @@ using Player.Weapon;
 using Player.Input;
 using Player.Config;
 using Player.Weapon.Config;
+using Player.Audio;
 
 namespace Player
 {
@@ -34,6 +35,7 @@ namespace Player
 
         [Header("Audio")]
         [SerializeField] private AudioMixerGroup _sfxGroup;
+        [SerializeField] private AudioSource _playerSoundSource;
 
         [Header("UI References")]
         [SerializeField] private RectTransform _crosshairUi;
@@ -47,6 +49,7 @@ namespace Player
         private AudioSource _audioSource;
         private AudioService _audioService;
         private IInputProvider _input;
+        private PlayerFootsteps _footsteps;
 
         private void Awake()
         {
@@ -71,6 +74,7 @@ namespace Player
             _movement = new PlayerMovement(_characterController, transform, _movementConfig);
             _look = new PlayerLook(transform, _cameraTransform, _movementConfig); // Предполагается, что настройки чувствительности мыши теперь в MovementConfig
             _vision = new PlayerVision(_cameraTransform, _radarConfig);
+            _footsteps = new PlayerFootsteps(_playerSoundSource, _characterController, _input);
         }
 
         private void Update()
@@ -80,6 +84,7 @@ namespace Player
             _look.Tick(_input.LookInput, Time.deltaTime);
             _vision.Tick();
             _weapon.Tick();
+            _footsteps.Tick();
         }
 
         private void OnDestroy()

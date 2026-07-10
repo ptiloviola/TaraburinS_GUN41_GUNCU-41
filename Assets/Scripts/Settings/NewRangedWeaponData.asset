@@ -27,9 +27,9 @@ MonoBehaviour:
   aimReticleSize: {x: 25, y: 25}
   hipPosition: {x: 0.3, y: -0.2, z: 0.5}
   aimPosition: {x: 0, y: -0.2, z: 0.4}
-  recoilKickback: {x: 0, y: 0, z: 0}
-  recoilRotation: {x: 0, y: 0, z: 0}
-  recoilDuration: 0.1
+  recoilKickback: {x: 0, y: 0.02, z: -0.25}
+  recoilRotation: {x: -35, y: 0, z: 5}
+  recoilDuration: 0.15
   triggerPullRotation: {x: 0, y: 0, z: 0}
   hammerStrikeRotation: {x: 0, y: 0, z: 0}
   cylinderStepRotation: {x: 0, y: 0, z: 0}
