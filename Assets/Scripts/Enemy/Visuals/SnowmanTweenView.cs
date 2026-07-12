@@ -8,8 +8,8 @@ namespace Enemy.Visuals
     public class SnowmanTweenView : MonoBehaviour, IEnemyView
     {
         [Header("References")]
-        [SerializeField] private Transform visualsRoot;
-        [SerializeField] private Transform[] bodyParts;
+        [SerializeField] private Transform _visualsRoot;
+        [SerializeField] private Transform[] _bodyParts;
 
         private EnemyConfig _config;
         private AudioSource _audioSource;
@@ -24,7 +24,7 @@ namespace Enemy.Visuals
             _audioSource = GetComponent<AudioSource>();
             _audioSource.spatialBlend = 1f;
             
-            visualsRoot.localScale = Vector3.zero;
+            _visualsRoot.localScale = Vector3.zero;
         }
 
         public void Initialize(Color tintColor) { }
@@ -55,6 +55,7 @@ namespace Enemy.Visuals
                     float tiltDirection = Mathf.Sign(turnDelta);
                     Vector3 turnForce = new Vector3(0, 0, _config.turnTiltAngle * tiltDirection);
                     ApplyImpulse(turnForce);
+                    // виртуальный твин-таймер, ждем заданное время, вызываем колл-бек
                     DOVirtual.DelayedCall(_config.inertiaDuration, () => _isTurningTweenActive = false);
                 }
             }
@@ -63,51 +64,64 @@ namespace Enemy.Visuals
 
         public void PlayHitReaction()
         {
-            visualsRoot.DOKill(complete: true);
-            visualsRoot.DOPunchScale(new Vector3(0.3f, -0.3f, 0.3f), 0.4f, 5, 0.5f)
-                .OnComplete(() => visualsRoot.localScale = Vector3.one);
+            // прерываем текущие твины на объекте, предварительно завершая их
+            _visualsRoot.DOKill(complete: true);
+            // упругая деформация, сбрасываем масштаб после завершения
+            _visualsRoot.DOPunchScale(new Vector3(0.3f, -0.3f, 0.3f), 0.4f, 5, 0.5f)
+                .OnComplete(() => _visualsRoot.localScale = Vector3.one);
         }
 
         public void PlayDeathEffect()
         {
-            visualsRoot.DOKill();
-            visualsRoot.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack);
+            
+            _visualsRoot.DOKill();
+            _visualsRoot.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack);
         }
 
         public void SetVisibility(bool isVisible)
         {
-            visualsRoot.DOKill(complete: true);
+            _visualsRoot.DOKill(complete: true);
             float targetScale = isVisible ? 1f : 0f;
+            // выбираем кривую интерполяции
             Ease easeType = isVisible ? Ease.OutBack : Ease.InBack;
-            visualsRoot.DOScale(targetScale, 0.5f).SetEase(easeType);
+            // плавно масштабируем объект в зависимости от выбранно кривой
+            _visualsRoot.DOScale(targetScale, 0.5f).SetEase(easeType);
         }
 
         private void StartHopping()
         {
-            float startY = visualsRoot.localPosition.y;
+            float startY = _visualsRoot.localPosition.y;
+            // создаем последовательность твинов
             Sequence hopSeq = DOTween.Sequence();
-            hopSeq.Append(visualsRoot.DOLocalMoveY(startY + _config.hopHeight, _config.hopDuration).SetEase(Ease.OutQuad));
-            hopSeq.Append(visualsRoot.DOLocalMoveY(startY, _config.hopDuration).SetEase(Ease.InQuad));
+            // добавляем анимации в очередб
+            hopSeq.Append(_visualsRoot.DOLocalMoveY(startY + _config.hopHeight, _config.hopDuration).SetEase(Ease.OutQuad));
+            hopSeq.Append(_visualsRoot.DOLocalMoveY(startY, _config.hopDuration).SetEase(Ease.InQuad));
+            // вставляем вызов колл-бека в таймлайн последовательности
             hopSeq.AppendCallback(() => {
                 if (_config.hopSound != null) _audioSource.PlayOneShot(_config.hopSound);
             });
+            // зацикливаем последовательность
             hopSeq.SetLoops(-1);
+            // сохраняем ссылку на последовательность, чтобы остановить её в StopHopping()
             _hopTween = hopSeq;
         }
 
         private void StopHopping()
         {
             _hopTween?.Kill();
-            visualsRoot.DOLocalMoveY(0f, 0.2f).SetEase(Ease.OutBounce);
+            //плавно возвращаем объект на уровень замли
+            _visualsRoot.DOLocalMoveY(0f, 0.2f).SetEase(Ease.OutBounce);
         }
 
         private void ApplyImpulse(Vector3 baseForce)
         {
-            for (int i = 0; i < bodyParts.Length; i++)
+            for (int i = 0; i < _bodyParts.Length; i++)
             {
-                bodyParts[i].DOKill(complete: true);
+                _bodyParts[i].DOKill(complete: true);
                 Vector3 appliedForce = baseForce * (1f + (i * 0.4f));
-                bodyParts[i].DOPunchRotation(appliedForce, _config.inertiaDuration, _config.inertiaVibrato, _config.inertiaElasticity)
+                // наносим вращательный удар по углам Эйлера
+                _bodyParts[i].DOPunchRotation(appliedForce, _config.inertiaDuration, _config.inertiaVibrato, _config.inertiaElasticity)
+                    // делаем каскадный эффект: каждая следующая часть начинает отклоняться чуть позже
                     .SetDelay(i * _config.impulseDelayStep);
             }
         }

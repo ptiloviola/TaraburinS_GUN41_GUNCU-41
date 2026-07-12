@@ -7291,8 +7291,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e583dd1ba163684b8e35db5b818511a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualsRoot: {fileID: 1424632262}
-  bodyParts:
+  _visualsRoot: {fileID: 1424632262}
+  _bodyParts:
   - {fileID: 1400253456}
   - {fileID: 282871671}
   - {fileID: 392855667}
