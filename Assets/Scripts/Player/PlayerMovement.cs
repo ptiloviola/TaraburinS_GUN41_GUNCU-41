@@ -19,13 +19,13 @@ namespace Player
 
         public void Tick(Vector2 inputDirection, float deltaTime)
         {
-            // Локальное движение (учитывает, куда повернут игрок)
+
             Vector3 move = _playerTransform.right * inputDirection.x + _playerTransform.forward * inputDirection.y;
             
-            // Гравитация
+
             if (_controller.isGrounded && _velocityY < 0)
             {
-                _velocityY = -2f; // Небольшой прижим к полу
+                _velocityY = -2f;
             }
             _velocityY += _config.gravity * deltaTime;
 

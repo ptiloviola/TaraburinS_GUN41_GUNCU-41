@@ -15,15 +15,15 @@ namespace Enemy.Config
         public float hopDuration = 0.2f;
         
         [Header("Inertia & Physics")]
-        public Vector3 startImpulse = new Vector3(-20f, 0, 0); // Наклон назад при старте
-        public Vector3 stopImpulse = new Vector3(25f, 0, 0);  // Наклон вперед при остановке
-        public float turnTiltAngle = 15f;                     // Угол крена при повороте (ось Z)
+        public Vector3 startImpulse = new Vector3(-20f, 0, 0);
+        public Vector3 stopImpulse = new Vector3(25f, 0, 0);
+        public float turnTiltAngle = 15f;
         
         [Space]
-        public float inertiaDuration = 0.5f;                  // Время затухания колебаний
-        public int inertiaVibrato = 4;                        // Количество покачиваний
-        [Range(0f, 1f)] public float inertiaElasticity = 0.6f;// Пружинистость
-        public float impulseDelayStep = 0.08f;                // Задержка импульса между шарами
+        public float inertiaDuration = 0.5f;
+        public int inertiaVibrato = 4;
+        [Range(0f, 1f)] public float inertiaElasticity = 0.6f;
+        public float impulseDelayStep = 0.08f;
         
         [Header("Combat")]
         public int maxHealth = 100;

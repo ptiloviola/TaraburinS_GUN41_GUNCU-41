@@ -15,10 +15,8 @@ namespace Player.Audio
             _input = input;
         }
 
-        // Вызывается каждый кадр из PlayerController
         public void Tick()
         {
-            // Логика определения шагов теперь инкапсулирована здесь
             bool isWalking = _input.MoveInput.sqrMagnitude > 0.01f && _controller.isGrounded;
 
             if (isWalking)

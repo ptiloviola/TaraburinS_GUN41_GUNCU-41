@@ -45,7 +45,6 @@ namespace Player.Weapon
             _currentAmmo = _config.maxAmmo;
             _input = input;
 
-            // Оружие само подписывается на кнопки!
             _input.OnFireStarted += Fire;
             _input.OnReloadStarted += Reload;
             _input.OnAimChanged += ToggleAim;
@@ -73,10 +72,8 @@ namespace Player.Weapon
 
             float currentSpread = _isAiming ? _config.aimSpread : _config.hipSpread;
             
-            // Считаем физику
             _shooter.TryShot(currentSpread, _config.shootMask, out RaycastHit hit, out Vector3 targetPoint);
             
-            // Передаем результат фабрике эффектов
             _impactHandler.HandleImpact(_firePoint.position, targetPoint, hit.collider, hit.normal);
         }
 
@@ -99,12 +96,10 @@ namespace Player.Weapon
 
         public void Tick()
         {
-            // Оружие само решает, качаться ему или нет, опрашивая интерфейс
             bool isMoving = _input.MoveInput.sqrMagnitude > 0.01f;
             _view.PlayBobbing(isMoving, _isAiming);
         }
 
-        // Отписываемся от событий, чтобы не было утечек памяти
         public void Dispose()
         {
             _input.OnFireStarted -= Fire;

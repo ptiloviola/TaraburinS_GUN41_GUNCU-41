@@ -21,10 +21,8 @@ namespace Player.Weapon.Effects
         {
             if (_config.paintballPrefab == null) return;
 
-            // Спавним шарик
             GameObject ball = Object.Instantiate(_config.paintballPrefab, startPoint, Quaternion.identity);
 
-            // Анимируем полет по дуге через DOTween
             ball.transform.DOJump(targetPoint, _config.jumpPower, 1, _config.bulletDuration)
                 .SetEase(Ease.Linear)
                 .OnComplete(() => ProcessCollision(ball, targetCollider, targetPoint, hitNormal));
@@ -43,7 +41,6 @@ namespace Player.Weapon.Effects
 
             if (damageable != null)
             {
-                // Попали во врага/бочку/коробку
                 damageable.TakeDamage(1, hitPoint);
                 _audioService.PlaySoundAtPoint(_config.hitSound, hitPoint, randomizePitch: true);
                 SpawnSplatParticles(hitPoint, hitNormal, targetCollider.transform.root, paintColor);
@@ -51,7 +48,6 @@ namespace Player.Weapon.Effects
             }
             else
             {
-                // Попали в статичную стену
                 ball.transform.SetParent(targetCollider.transform, true);
                 ball.transform.up = hitNormal;
                 ball.transform.DOScale(new Vector3(0.25f, 0.01f, 0.25f), 0.05f).SetEase(Ease.OutQuad);

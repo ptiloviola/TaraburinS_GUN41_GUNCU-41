@@ -24,10 +24,9 @@ namespace Enemy.Visuals
             _audioSource = GetComponent<AudioSource>();
             _audioSource.spatialBlend = 1f;
             
-            visualsRoot.localScale = Vector3.zero; // Мгновенно скрываем при старте
+            visualsRoot.localScale = Vector3.zero;
         }
 
-        // Реализация интерфейса (пустая заглушка, если цвет не нужен конкретно этому врагу)
         public void Initialize(Color tintColor) { }
 
         public void UpdateMoveAnimation(float speed, float rotationY)

@@ -64,14 +64,13 @@ namespace Player.Weapon.Visuals
 
         public void PlayFireAnimation()
         {
-            // Анимация отдачи ствола
+
             Sequence recoilSeq = DOTween.Sequence();
             recoilSeq.Append(_visualsRoot.DOLocalMove(_config.recoilKickback, _config.recoilDuration).SetEase(Ease.OutExpo));
             recoilSeq.Join(_visualsRoot.DOLocalRotate(_config.recoilRotation, _config.recoilDuration).SetEase(Ease.OutExpo));
             recoilSeq.Append(_visualsRoot.DOLocalMove(Vector3.zero, _config.recoilDuration * 2f).SetEase(Ease.InOutQuad));
             recoilSeq.Join(_visualsRoot.DOLocalRotate(Vector3.zero, _config.recoilDuration * 2f).SetEase(Ease.InOutQuad));
 
-            // Анимация внутренних шестеренок механики
             Sequence mechSeq = DOTween.Sequence();
             mechSeq.Append(_trigger.DOLocalRotate(_config.triggerPullRotation, 0.05f, RotateMode.LocalAxisAdd));
             mechSeq.Join(_hammer.DOLocalRotate(_config.hammerStrikeRotation, 0.05f, RotateMode.LocalAxisAdd));

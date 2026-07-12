@@ -1,7 +1,3 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
-using Infrastructure.Interfaces;
-using System;
 namespace Player.Input
 {
     using UnityEngine;
@@ -33,7 +29,6 @@ namespace Player.Input
             fireAction.action.Enable();
             reloadAction.action.Enable();
 
-            // Транслируем события Unity Input System в наши чистые C# события
             fireAction.action.started += _ => OnFireStarted?.Invoke();
             reloadAction.action.started += _ => OnReloadStarted?.Invoke();
             aimAction.action.started += _ => OnAimChanged?.Invoke(true);

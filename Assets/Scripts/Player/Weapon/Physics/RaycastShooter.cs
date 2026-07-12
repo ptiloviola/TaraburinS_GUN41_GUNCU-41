@@ -15,7 +15,6 @@ namespace Player.Weapon.Physics
         {
             Vector2 spreadOffset = Random.insideUnitCircle * spread;
             
-            // Магия: расчет идет относительно направления камеры, класс оружия про это не знает
             Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f + spreadOffset.x, 0.5f + spreadOffset.y, 0f));
 
             if (UnityEngine.Physics.Raycast(ray, out hitInfo, 100f, mask))
