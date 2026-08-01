@@ -1,4 +1,5 @@
 using Zenject;
+using TpsShooter.Player;
 
 namespace TpsShooter.Infrastructure
 {
@@ -6,7 +7,12 @@ namespace TpsShooter.Infrastructure
     {
         public override void InstallBindings()
         {
-            // Здесь будем биндить локальные для сцены классы
+            // Ищем компонент PlayerFacade на текущей сцене и регистрируем его как синглтон для этого уровня.
+            // .NonLazy() заставляет Zenject сразу же инициализировать этот объект и вызвать метод Construct.
+            Container.Bind<PlayerFacade>()
+                     .FromComponentInHierarchy()
+                     .AsSingle()
+                     .NonLazy();
         }
     }
 }
