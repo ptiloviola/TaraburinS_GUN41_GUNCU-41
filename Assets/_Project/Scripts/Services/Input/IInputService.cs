@@ -9,6 +9,7 @@ namespace TpsShooter.Services.Input
         Vector2 LookAxis { get; }
         bool IsFiring { get; }
         bool IsAiming { get; }
+        bool IsRunning { get; }
         
         event Action OnJump;
         event Action OnReload;

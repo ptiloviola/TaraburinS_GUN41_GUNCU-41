@@ -26,13 +26,20 @@ namespace TpsShooter.Player.Core
 
         protected void ApplyGravity(float deltaTime)
         {
-            if (Ctx.Controller.isGrounded && Ctx.Velocity.y < 0)
+            // 1. Применяем гравитацию
+            Ctx.Velocity.y += Ctx.Config.Gravity * deltaTime;
+
+            // 2. Сбрасываем накопленную гравитацию, если мы на земле (чтобы не проваливаться)
+            if (Ctx.GroundSensor.IsGrounded && Ctx.Velocity.y < 0)
             {
-                Ctx.Velocity.y = -2f;
+                Ctx.Velocity.y = -2f; // Небольшой минус нужен, чтобы контроллер всегда "прилипал" к полу
             }
 
-            Ctx.Velocity.y += Ctx.Config.Gravity * deltaTime;
-            Ctx.Controller.Move(Vector3.up * (Ctx.Velocity.y * deltaTime));
+            // 3. Двигаем капсулу по вертикали
+            Ctx.Controller.Move(Ctx.Velocity * deltaTime);
+
+            // 4. ЖЕСТКАЯ СИНХРОНИЗАЦИЯ С АНИМАТОРОМ
+            Ctx.Animator.SetBool("IsGrounded", Ctx.GroundSensor.IsGrounded);
         }
     }
 }

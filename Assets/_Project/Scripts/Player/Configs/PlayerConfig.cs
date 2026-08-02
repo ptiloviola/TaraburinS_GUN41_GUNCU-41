@@ -7,6 +7,7 @@ namespace TpsShooter.Player.Configs
     {
         [Header("Movement")]
         public float MoveSpeed = 5f;
+        public float RunSpeed = 8f; // <-- ДОБАВЛЕНО: Скорость бега
         public float AimMoveSpeed = 2.5f; // При прицеливании ходим медленнее
         public float RotationSmoothTime = 0.1f;
         

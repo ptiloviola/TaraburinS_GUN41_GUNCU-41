@@ -13,6 +13,9 @@ namespace TpsShooter.Services.Input
         public bool IsFiring => _input.Player.Fire.IsPressed();
         public bool IsAiming => _input.Player.Aim.IsPressed();
 
+        public bool IsRunning => _input.Player.Run.IsPressed();
+        
+
         public event Action OnJump;
         public event Action OnReload;
         public event Action OnMelee;

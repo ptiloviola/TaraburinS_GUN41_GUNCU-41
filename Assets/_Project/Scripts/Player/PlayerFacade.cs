@@ -20,6 +20,7 @@ namespace TpsShooter.Player
             _inputService = inputService;
             Transform camTransform = Camera.main != null ? Camera.main.transform : null;
             var groundSensor = new GroundSensor(transform, config);
+            Animator animator = GetComponentInChildren<Animator>();
 
             _context = new PlayerContext(
                 GetComponent<CharacterController>(),
@@ -27,7 +28,8 @@ namespace TpsShooter.Player
                 camTransform,
                 config,
                 inputService,
-                groundSensor // Передаем сенсор в контекст
+                groundSensor,
+                animator // Передаем сенсор в контекст
             );
 
             _stateMachine = new PlayerStateMachine();

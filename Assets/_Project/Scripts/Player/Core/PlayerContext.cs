@@ -17,6 +17,7 @@ namespace TpsShooter.Player.Core
         public Vector3 Velocity; 
         public float CurrentRotationVelocity;
         public readonly GroundSensor GroundSensor;
+        public readonly Animator Animator;
 
         public PlayerContext(
             CharacterController controller, 
@@ -24,7 +25,8 @@ namespace TpsShooter.Player.Core
             Transform cameraTransform, 
             PlayerConfig config, 
             IInputService input,
-            GroundSensor groundSensor)
+            GroundSensor groundSensor,
+            Animator animator)
         {
             Controller = controller;
             Transform = transform;
@@ -32,6 +34,7 @@ namespace TpsShooter.Player.Core
             Config = config;
             Input = input;
             GroundSensor = groundSensor;
+            Animator = animator;
         }
     }
 }
