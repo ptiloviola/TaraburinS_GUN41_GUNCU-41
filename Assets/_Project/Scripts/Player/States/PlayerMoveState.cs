@@ -34,6 +34,12 @@ namespace TpsShooter.Player.States
                 StateMachine.SwitchState<PlayerIdleState>();
                 return;
             }
+
+            if (Ctx.Input.IsAiming)
+            {
+                StateMachine.SwitchState<PlayerAimState>();
+                return;
+            }
             
             // --- ПОВОРОТ КАПСУЛЫ ЗА КАМЕРОЙ ---
             float targetAngle = Ctx.CameraTransform.eulerAngles.y;

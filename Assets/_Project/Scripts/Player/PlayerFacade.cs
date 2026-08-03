@@ -13,6 +13,8 @@ namespace TpsShooter.Player
         private PlayerStateMachine _stateMachine;
         private PlayerContext _context;
         private IInputService _inputService;
+        [SerializeField] private Cinemachine.CinemachineFreeLook _normalCamera;
+        [SerializeField] private Cinemachine.CinemachineFreeLook _aimCamera;
 
         [Inject]
         public void Construct(IInputService inputService, PlayerConfig config)
@@ -29,7 +31,10 @@ namespace TpsShooter.Player
                 config,
                 inputService,
                 groundSensor,
-                animator // Передаем сенсор в контекст
+                animator,
+                this,
+                _normalCamera,
+                _aimCamera
             );
 
             _stateMachine = new PlayerStateMachine();
