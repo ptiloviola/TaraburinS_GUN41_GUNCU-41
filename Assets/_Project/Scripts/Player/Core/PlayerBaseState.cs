@@ -40,6 +40,8 @@ namespace TpsShooter.Player.Core
 
             // 4. ЖЕСТКАЯ СИНХРОНИЗАЦИЯ С АНИМАТОРОМ
             Ctx.Animator.SetBool("IsGrounded", Ctx.GroundSensor.IsGrounded);
+            // Если игрок жмет WASD (длина вектора ввода больше 0), IsMoving будет true
+            Ctx.Animator.SetBool("IsMoving", Ctx.Input.MoveAxis.sqrMagnitude > 0.01f);
         }
     }
 }
