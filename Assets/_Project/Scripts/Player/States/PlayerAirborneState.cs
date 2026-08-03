@@ -26,7 +26,7 @@ namespace TpsShooter.Player.States
             Vector2 input = Ctx.Input.MoveAxis;
 
             // --- УПРАВЛЕНИЕ В ВОЗДУХЕ ---
-            if (input.sqrMagnitude > 0.01f)
+            if (input.sqrMagnitude > InputThreshold)
             {
                 // Позволяем игроку поворачиваться за камерой в прыжке
                 float targetAngle = Ctx.CameraTransform.eulerAngles.y;

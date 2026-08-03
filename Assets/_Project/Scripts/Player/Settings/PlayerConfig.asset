@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
   MoveSpeed: 5
+  RunSpeed: 10
   AimMoveSpeed: 2.5
   RotationSmoothTime: 0.1
   Gravity: -15
-  JumpHeight: 1.2
+  JumpHeight: 2
   GroundMask:
     serializedVersion: 2
     m_Bits: 64
   GroundCheckRadius: 0.28
   GroundCheckDistance: 0.15
+  AimFov: 25
+  AimOffset: {x: 0.6, y: 0.1, z: 0}
+  AimSensitivityMultiplier: 0.4
+  CameraTransitionSpeed: 10
+  AimLayerTransitionDuration: 0.2

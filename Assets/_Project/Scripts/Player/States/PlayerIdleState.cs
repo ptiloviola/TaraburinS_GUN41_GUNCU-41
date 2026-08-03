@@ -5,8 +5,6 @@ namespace TpsShooter.Player.States
 {
     public class PlayerIdleState : PlayerBaseState
     {
-        private static readonly int MoveXHash = Animator.StringToHash("MoveX");
-        private static readonly int MoveYHash = Animator.StringToHash("MoveY");
         private static readonly int JumpTriggerHash = Animator.StringToHash("Jump");
         private static readonly int TurnHash = Animator.StringToHash("Turn");
         public PlayerIdleState(PlayerContext context, PlayerStateMachine stateMachine) 
@@ -57,7 +55,7 @@ namespace TpsShooter.Player.States
                 return;
             }
 
-            if (Ctx.Input.MoveAxis.sqrMagnitude > 0.01f)
+            if (Ctx.Input.MoveAxis.sqrMagnitude > InputThreshold)
             {
                 StateMachine.SwitchState<PlayerMoveState>();
                 return;
