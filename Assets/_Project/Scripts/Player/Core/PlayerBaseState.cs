@@ -9,6 +9,7 @@ namespace TpsShooter.Player.Core
         protected static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
         protected static readonly int MoveXHash = Animator.StringToHash("MoveX");
         protected static readonly int MoveYHash = Animator.StringToHash("MoveY");
+        protected static readonly int IsCrouchingHash = Animator.StringToHash("IsCrouching");
 
         // --- Избавляемся от магических чисел ---
         protected const float StickToGroundVelocity = -2f; // Скорость прилипания к полу

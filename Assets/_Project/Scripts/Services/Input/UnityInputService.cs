@@ -14,6 +14,7 @@ namespace TpsShooter.Services.Input
         public bool IsAiming => _input.Player.Aim.IsPressed();
 
         public bool IsRunning => _input.Player.Run.IsPressed();
+        public bool IsCrouching => _input.Player.Crouch.IsPressed();
         
 
         public event Action OnJump;

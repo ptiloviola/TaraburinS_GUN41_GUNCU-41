@@ -17,14 +17,19 @@ MonoBehaviour:
   AimMoveSpeed: 2.5
   RotationSmoothTime: 0.1
   Gravity: -15
-  JumpHeight: 2
+  JumpHeight: 3
   GroundMask:
     serializedVersion: 2
     m_Bits: 64
   GroundCheckRadius: 0.28
   GroundCheckDistance: 0.15
-  AimFov: 25
-  AimOffset: {x: 0.6, y: 0.1, z: 0}
-  AimSensitivityMultiplier: 0.4
+  AimFov: 20
+  AimOffset: {x: 1, y: 0.1, z: 0}
+  AimSensitivityMultiplier: 0.532
   CameraTransitionSpeed: 10
   AimLayerTransitionDuration: 0.2
+  CrouchSpeed: 2
+  CrouchHeight: 1
+  NormalHeight: 2
+  NormalCameraHeight: 1.5
+  CrouchCameraHeight: 0.9

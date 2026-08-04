@@ -78,6 +78,11 @@ namespace TpsShooter.Player.States
                 StateMachine.SwitchState<PlayerAimState>();
                 return;
             }
+            if (Ctx.Input.IsCrouching)
+            {
+                StateMachine.SwitchState<PlayerCrouchState>();
+                return;
+            }
         }
 
         public override void HandleJump()

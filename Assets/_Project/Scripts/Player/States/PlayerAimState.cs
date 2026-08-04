@@ -1,24 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using TpsShooter.Player.Core;
-using Cinemachine;
 
 namespace TpsShooter.Player.States
 {
     public class PlayerAimState : PlayerBaseState
     {
-        // --- СТРОГОЕ ТЗ: Никаких строк, только хэши ---
         private static readonly int IsAimingHash = Animator.StringToHash("IsAiming");
-        
-        // Магическое число заменено на константу (или можно тоже вынести в Config)
         private const int UpperBodyLayerIndex = 1;
-
-        private float _normalFov;
-        private Vector3 _normalOffset;
-        private float _normalXSpeed;
-        private float _normalYSpeed;
-
-        private CinemachineComposer _middleRigComposer;
 
         public PlayerAimState(PlayerContext context, PlayerStateMachine stateMachine) 
             : base(context, stateMachine) { }
@@ -28,20 +17,11 @@ namespace TpsShooter.Player.States
             base.Enter();
             
             Ctx.Animator.SetBool(IsAimingHash, true);
+            
+            // Командуем камере перейти в режим прицеливания
+            Ctx.CameraController.SetAiming(true);
+            
             Ctx.MonoBehaviour.StartCoroutine(LerpLayerWeight(1f, Ctx.Config.AimLayerTransitionDuration));
-
-            if (_middleRigComposer == null)
-                _middleRigComposer = Ctx.Camera.GetRig(1).GetCinemachineComponent<CinemachineComposer>();
-
-            _normalFov = Ctx.Camera.m_Lens.FieldOfView;
-            _normalOffset = _middleRigComposer.m_TrackedObjectOffset;
-            _normalXSpeed = Ctx.Camera.m_XAxis.m_MaxSpeed;
-            _normalYSpeed = Ctx.Camera.m_YAxis.m_MaxSpeed;
-
-            // Используем множитель из ScriptableObject
-            Ctx.Camera.m_XAxis.m_MaxSpeed = _normalXSpeed * Ctx.Config.AimSensitivityMultiplier;
-            Ctx.Camera.m_YAxis.m_MaxSpeed = _normalYSpeed * Ctx.Config.AimSensitivityMultiplier;
-            // Плавное включение веса IK
             Ctx.MonoBehaviour.StartCoroutine(LerpRigWeight(1f, Ctx.Config.AimLayerTransitionDuration));
         }
 
@@ -49,44 +29,52 @@ namespace TpsShooter.Player.States
         {
             base.Tick(deltaTime); 
 
+            // --- 1. ЛОГИКА ПРИСЕДА В ПРИЦЕЛИВАНИИ ---
+            bool isCrouching = Ctx.Input.IsCrouching;
+            
+            Ctx.Animator.SetBool(IsCrouchingHash, isCrouching);
+            
+            // Командуем камере опуститься или подняться
+            Ctx.CameraController.SetCrouching(isCrouching);
+
+            float targetHeight = isCrouching ? Ctx.Config.CrouchHeight : Ctx.Config.NormalHeight;
+            Ctx.Controller.height = targetHeight;
+            Ctx.Controller.center = new Vector3(0f, targetHeight / 2f, 0f);
+
+            float currentSpeed = isCrouching ? Ctx.Config.CrouchSpeed : Ctx.Config.AimMoveSpeed;
+
+            // --- 2. МАТЕМАТИКА ДВИЖЕНИЯ ---
             Vector2 input = Ctx.Input.MoveAxis;
 
-            // Используем закэшированные хэши
             Ctx.Animator.SetFloat(MoveXHash, input.x, 0.1f, deltaTime);
             Ctx.Animator.SetFloat(MoveYHash, input.y, 0.1f, deltaTime);
             Ctx.Animator.SetBool(IsMovingHash, input.sqrMagnitude > 0.01f);
-
-            // Плавное изменение камеры через настройки из Config
-            Ctx.Camera.m_Lens.FieldOfView = Mathf.Lerp(
-                Ctx.Camera.m_Lens.FieldOfView, 
-                Ctx.Config.AimFov, 
-                deltaTime * Ctx.Config.CameraTransitionSpeed
-            );
-            
-            _middleRigComposer.m_TrackedObjectOffset = Vector3.Lerp(
-                _middleRigComposer.m_TrackedObjectOffset, 
-                Ctx.Config.AimOffset, 
-                deltaTime * Ctx.Config.CameraTransitionSpeed
-            );
 
             float targetAngle = Ctx.CameraTransform.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(Ctx.Transform.eulerAngles.y, targetAngle, ref Ctx.CurrentRotationVelocity, 0.02f);
             Ctx.Transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
             Vector3 moveDir = Ctx.Transform.right * input.x + Ctx.Transform.forward * input.y;
-            Ctx.Controller.Move(moveDir.normalized * (Ctx.Config.AimMoveSpeed * deltaTime));
+            Ctx.Controller.Move(moveDir.normalized * (currentSpeed * deltaTime));
 
-            // --- МАГИЯ IK: Двигаем цель за камерой ---
-            // Отступаем 50 метров вперед от центра камеры
+            // --- 3. МАГИЯ IK ---
             Vector3 aimPosition = Ctx.CameraTransform.position + Ctx.CameraTransform.forward * 50f;
             Ctx.AimTarget.position = aimPosition;
 
+            // --- 4. ЛОГИКА ВЫХОДА ИЗ ПРИЦЕЛИВАНИЯ ---
             if (!Ctx.Input.IsAiming)
             {
-                if (input.sqrMagnitude > 0.01f)
-                    StateMachine.SwitchState<PlayerMoveState>();
+                if (isCrouching)
+                {
+                    StateMachine.SwitchState<PlayerCrouchState>();
+                }
                 else
-                    StateMachine.SwitchState<PlayerIdleState>();
+                {
+                    if (input.sqrMagnitude > 0.01f)
+                        StateMachine.SwitchState<PlayerMoveState>();
+                    else
+                        StateMachine.SwitchState<PlayerIdleState>();
+                }
             }
         }
 
@@ -95,13 +83,11 @@ namespace TpsShooter.Player.States
             base.Exit();
             
             Ctx.Animator.SetBool(IsAimingHash, false);
+            
+            // Возвращаем камеру в нормальный режим
+            Ctx.CameraController.SetAiming(false);
+            
             Ctx.MonoBehaviour.StartCoroutine(LerpLayerWeight(0f, Ctx.Config.AimLayerTransitionDuration));
-            
-            Ctx.Camera.m_XAxis.m_MaxSpeed = _normalXSpeed;
-            Ctx.Camera.m_YAxis.m_MaxSpeed = _normalYSpeed;
-            
-            Ctx.MonoBehaviour.StartCoroutine(ResetCameraLerp());
-            // Плавное отключение IK при выходе из прицеливания
             Ctx.MonoBehaviour.StartCoroutine(LerpRigWeight(0f, Ctx.Config.AimLayerTransitionDuration));
         }
 
@@ -118,7 +104,6 @@ namespace TpsShooter.Player.States
             Ctx.Animator.SetLayerWeight(UpperBodyLayerIndex, targetWeight);
         }
 
-        // Новая корутина для плавного включения/отключения доворота корпуса
         private IEnumerator LerpRigWeight(float targetWeight, float duration)
         {
             float startWeight = Ctx.WeaponRig.weight;
@@ -130,30 +115,6 @@ namespace TpsShooter.Player.States
                 yield return null; 
             }
             Ctx.WeaponRig.weight = targetWeight;
-        }
-
-
-
-        private IEnumerator ResetCameraLerp()
-        {
-            float time = 0;
-            // Возврат камеры делаем чуть дольше/мягче, опираясь на тот же конфиг
-            float duration = Ctx.Config.AimLayerTransitionDuration + 0.05f; 
-            
-            float startFov = Ctx.Camera.m_Lens.FieldOfView;
-            Vector3 startOffset = _middleRigComposer.m_TrackedObjectOffset;
-
-            while (time < duration)
-            {
-                Ctx.Camera.m_Lens.FieldOfView = Mathf.Lerp(startFov, _normalFov, time / duration);
-                _middleRigComposer.m_TrackedObjectOffset = Vector3.Lerp(startOffset, _normalOffset, time / duration);
-                
-                time += Time.deltaTime;
-                yield return null;
-            }
-
-            Ctx.Camera.m_Lens.FieldOfView = _normalFov;
-            _middleRigComposer.m_TrackedObjectOffset = _normalOffset;
         }
     }
 }

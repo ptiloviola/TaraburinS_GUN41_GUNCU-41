@@ -1601,6 +1601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _normalCamera: {fileID: 744955725}
+  _cameraTarget: {fileID: 325291343}
   _aimTarget: {fileID: 1182717013}
   _weaponRig: {fileID: 1402012286}
 --- !u!1 &2075079434

@@ -4,6 +4,7 @@ using TpsShooter.Services.Input;
 using TpsShooter.Player.States;
 using TpsShooter.Player.Core;
 using TpsShooter.Player.Configs;
+using TpsShooter.Player.Camera;
 
 namespace TpsShooter.Player
 {
@@ -14,16 +15,21 @@ namespace TpsShooter.Player
         private PlayerContext _context;
         private IInputService _inputService;
         [SerializeField] private Cinemachine.CinemachineFreeLook _normalCamera;
+        [SerializeField] private Transform _cameraTarget;
         [SerializeField] private Transform _aimTarget;
         [SerializeField] private UnityEngine.Animations.Rigging.Rig _weaponRig;
+
+        private PlayerCameraController _cameraController;
 
         [Inject]
         public void Construct(IInputService inputService, PlayerConfig config)
         {
             _inputService = inputService;
-            Transform camTransform = Camera.main != null ? Camera.main.transform : null;
+            Transform camTransform = UnityEngine.Camera.main != null ? UnityEngine.Camera.main.transform : null;
             var groundSensor = new GroundSensor(transform, config);
             Animator animator = GetComponentInChildren<Animator>();
+            // 1. Создаем наш контроллер камеры (без MonoBehaviour!)
+            _cameraController = new PlayerCameraController(config, _cameraTarget, _normalCamera);
 
             _context = new PlayerContext(
                 GetComponent<CharacterController>(),
@@ -34,7 +40,7 @@ namespace TpsShooter.Player
                 groundSensor,
                 animator,
                 this,
-                _normalCamera,
+                _cameraController,
                 _aimTarget,
                 _weaponRig
 
@@ -47,8 +53,10 @@ namespace TpsShooter.Player
             _stateMachine.AddState(new PlayerMoveState(_context, _stateMachine));
             _stateMachine.AddState(new PlayerAimState(_context, _stateMachine));
             _stateMachine.AddState(new PlayerAirborneState(_context, _stateMachine));
+            _stateMachine.AddState(new PlayerCrouchState(_context, _stateMachine));
             
             _stateMachine.SwitchState<PlayerIdleState>();
+
         }
 
         private void OnEnable()
@@ -65,9 +73,14 @@ namespace TpsShooter.Player
 
         private void Update()
         {
-            _context.GroundSensor.Tick(); // Сенсор обновил данные
-            // Знак вопроса означает: "вызывай Tick только если _stateMachine не равен null"
-            _stateMachine?.Tick(Time.deltaTime);
+            float deltaTime = Time.deltaTime;
+
+            _context.GroundSensor.Tick(); 
+            
+            // 3. Обновляем контроллер камеры каждый кадр
+            _cameraController?.Tick(deltaTime);
+
+            _stateMachine?.Tick(deltaTime);
         }
 
         private void OnJump()

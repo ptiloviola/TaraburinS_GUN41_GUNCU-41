@@ -38,6 +38,23 @@ namespace TpsShooter.Player.Configs
         [Tooltip("Время плавного поднятия/опускания рук с оружием")]
         public float AimLayerTransitionDuration = 0.2f;
 
+        [Header("Crouch Settings")]
+        [Tooltip("Скорость передвижения в приседе")]
+        public float CrouchSpeed = 2f;
+
+        [Tooltip("Высота CharacterController в приседе")]
+        public float CrouchHeight = 1f;
+
+        [Tooltip("Обычная высота CharacterController")]
+        public float NormalHeight = 2f;
+
+        [Header("Camera Crouch Settings")]
+        [Tooltip("Нормальная высота объекта CameraTarget (по оси Y)")]
+        public float NormalCameraHeight = 1.5f; 
+
+        [Tooltip("Высота CameraTarget в приседе")]
+        public float CrouchCameraHeight = 0.9f;
+
 
     }
 }
