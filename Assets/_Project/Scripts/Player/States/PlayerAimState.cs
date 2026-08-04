@@ -41,6 +41,8 @@ namespace TpsShooter.Player.States
             // Используем множитель из ScriptableObject
             Ctx.Camera.m_XAxis.m_MaxSpeed = _normalXSpeed * Ctx.Config.AimSensitivityMultiplier;
             Ctx.Camera.m_YAxis.m_MaxSpeed = _normalYSpeed * Ctx.Config.AimSensitivityMultiplier;
+            // Плавное включение веса IK
+            Ctx.MonoBehaviour.StartCoroutine(LerpRigWeight(1f, Ctx.Config.AimLayerTransitionDuration));
         }
 
         public override void Tick(float deltaTime)
@@ -74,6 +76,11 @@ namespace TpsShooter.Player.States
             Vector3 moveDir = Ctx.Transform.right * input.x + Ctx.Transform.forward * input.y;
             Ctx.Controller.Move(moveDir.normalized * (Ctx.Config.AimMoveSpeed * deltaTime));
 
+            // --- МАГИЯ IK: Двигаем цель за камерой ---
+            // Отступаем 50 метров вперед от центра камеры
+            Vector3 aimPosition = Ctx.CameraTransform.position + Ctx.CameraTransform.forward * 50f;
+            Ctx.AimTarget.position = aimPosition;
+
             if (!Ctx.Input.IsAiming)
             {
                 if (input.sqrMagnitude > 0.01f)
@@ -94,6 +101,8 @@ namespace TpsShooter.Player.States
             Ctx.Camera.m_YAxis.m_MaxSpeed = _normalYSpeed;
             
             Ctx.MonoBehaviour.StartCoroutine(ResetCameraLerp());
+            // Плавное отключение IK при выходе из прицеливания
+            Ctx.MonoBehaviour.StartCoroutine(LerpRigWeight(0f, Ctx.Config.AimLayerTransitionDuration));
         }
 
         private IEnumerator LerpLayerWeight(float targetWeight, float duration)
@@ -108,6 +117,22 @@ namespace TpsShooter.Player.States
             }
             Ctx.Animator.SetLayerWeight(UpperBodyLayerIndex, targetWeight);
         }
+
+        // Новая корутина для плавного включения/отключения доворота корпуса
+        private IEnumerator LerpRigWeight(float targetWeight, float duration)
+        {
+            float startWeight = Ctx.WeaponRig.weight;
+            float time = 0;
+            while (time < duration)
+            {
+                Ctx.WeaponRig.weight = Mathf.Lerp(startWeight, targetWeight, time / duration);
+                time += Time.deltaTime;
+                yield return null; 
+            }
+            Ctx.WeaponRig.weight = targetWeight;
+        }
+
+
 
         private IEnumerator ResetCameraLerp()
         {

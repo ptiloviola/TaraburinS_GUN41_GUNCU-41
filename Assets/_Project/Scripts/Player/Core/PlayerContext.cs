@@ -2,6 +2,7 @@ using UnityEngine;
 using TpsShooter.Services.Input;
 using Cinemachine;
 using TpsShooter.Player.Configs;
+using UnityEngine.Animations.Rigging;
 
 namespace TpsShooter.Player.Core
 {
@@ -21,6 +22,8 @@ namespace TpsShooter.Player.Core
         public readonly Animator Animator;
         public readonly MonoBehaviour MonoBehaviour;
         public readonly CinemachineFreeLook Camera;
+        public readonly Transform AimTarget;
+        public readonly Rig WeaponRig;
 
         public PlayerContext(
             CharacterController controller, 
@@ -31,7 +34,9 @@ namespace TpsShooter.Player.Core
             GroundSensor groundSensor,
             Animator animator,
             MonoBehaviour monoBehaviour,
-            CinemachineFreeLook normalCam)
+            CinemachineFreeLook normalCam,
+            Transform aimTarget,
+            Rig weaponRig)
         {
             Controller = controller;
             Transform = transform;
@@ -42,6 +47,8 @@ namespace TpsShooter.Player.Core
             Animator = animator;
             MonoBehaviour = monoBehaviour;
             Camera = normalCam;
+            AimTarget = aimTarget;
+            WeaponRig = weaponRig;
         }
     }
 }

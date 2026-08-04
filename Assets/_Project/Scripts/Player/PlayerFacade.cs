@@ -14,6 +14,8 @@ namespace TpsShooter.Player
         private PlayerContext _context;
         private IInputService _inputService;
         [SerializeField] private Cinemachine.CinemachineFreeLook _normalCamera;
+        [SerializeField] private Transform _aimTarget;
+        [SerializeField] private UnityEngine.Animations.Rigging.Rig _weaponRig;
 
         [Inject]
         public void Construct(IInputService inputService, PlayerConfig config)
@@ -32,7 +34,9 @@ namespace TpsShooter.Player
                 groundSensor,
                 animator,
                 this,
-                _normalCamera
+                _normalCamera,
+                _aimTarget,
+                _weaponRig
 
             );
 
