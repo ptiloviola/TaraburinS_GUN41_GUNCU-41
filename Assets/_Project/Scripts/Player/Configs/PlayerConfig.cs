@@ -55,6 +55,13 @@ namespace TpsShooter.Player.Configs
         [Tooltip("Высота CameraTarget в приседе")]
         public float CrouchCameraHeight = 0.9f;
 
+        [Header("Roll Settings")]
+        [Tooltip("Скорость смещения капсулы во время переката")]
+        public float RollSpeed = 7f;
+
+        [Tooltip("Длительность переката в секундах (подгоняется под длину анимации)")]
+        public float RollDuration = 0.75f;
+
 
     }
 }

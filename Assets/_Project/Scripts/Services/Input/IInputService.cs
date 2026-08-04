@@ -11,6 +11,7 @@ namespace TpsShooter.Services.Input
         bool IsAiming { get; }
         bool IsRunning { get; }
         bool IsCrouching { get; }
+        bool IsRollTriggered { get; }
         
         event Action OnJump;
         event Action OnReload;

@@ -54,6 +54,7 @@ namespace TpsShooter.Player
             _stateMachine.AddState(new PlayerAimState(_context, _stateMachine));
             _stateMachine.AddState(new PlayerAirborneState(_context, _stateMachine));
             _stateMachine.AddState(new PlayerCrouchState(_context, _stateMachine));
+            _stateMachine.AddState(new PlayerRollState(_context, _stateMachine));
             
             _stateMachine.SwitchState<PlayerIdleState>();
 

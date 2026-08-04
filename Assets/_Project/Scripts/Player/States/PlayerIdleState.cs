@@ -14,6 +14,12 @@ namespace TpsShooter.Player.States
         {
             base.Tick(deltaTime);
 
+            if (Ctx.Input.IsRollTriggered)
+            {
+                StateMachine.SwitchState<PlayerRollState>();
+                return;
+            }
+
             // 1. Плавный сброс скорости движения
             Ctx.Animator.SetFloat(MoveXHash, 0f, 0.1f, deltaTime);
             Ctx.Animator.SetFloat(MoveYHash, 0f, 0.1f, deltaTime);

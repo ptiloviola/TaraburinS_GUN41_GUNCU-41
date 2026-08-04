@@ -33,3 +33,5 @@ MonoBehaviour:
   NormalHeight: 2
   NormalCameraHeight: 1.5
   CrouchCameraHeight: 0.9
+  RollSpeed: 7
+  RollDuration: 1

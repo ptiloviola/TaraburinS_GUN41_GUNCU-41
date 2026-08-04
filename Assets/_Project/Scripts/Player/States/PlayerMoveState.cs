@@ -14,6 +14,12 @@ namespace TpsShooter.Player.States
         public override void Tick(float deltaTime)
         {
             base.Tick(deltaTime);
+            
+            if (Ctx.Input.IsRollTriggered)
+            {
+                StateMachine.SwitchState<PlayerRollState>();
+                return;
+            }
 
             Vector2 input = Ctx.Input.MoveAxis;
             
