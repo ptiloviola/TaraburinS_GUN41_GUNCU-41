@@ -6,6 +6,8 @@ using TpsShooter.Player.Core;
 using TpsShooter.Player.Configs;
 using TpsShooter.Player.Camera;
 using TpsShooter.Player.Weapons;
+using TpsShooter.Weapons;
+
 
 namespace TpsShooter.Player
 {
@@ -28,6 +30,10 @@ namespace TpsShooter.Player
         [SerializeField] private Transform _weaponHandSocket;
         [SerializeField] private Transform _weaponBackSocket1;
         [SerializeField] private Transform _weaponBackSocket2;
+        [SerializeField] private Transform _leftHandIkTarget;
+
+        [Header("Test Spawning")]
+        [SerializeField] private WeaponBase _testPistolPrefab;
 
         private PlayerCameraController _cameraController;
         private PlayerWeaponController _weaponController;
@@ -48,7 +54,8 @@ namespace TpsShooter.Player
                 _weaponHandSocket, 
                 _weaponBackSocket1, 
                 _weaponBackSocket2, 
-                animator
+                animator, 
+                _leftHandIkTarget
             );
 
             // 2. Упаковываем всё в Контекст
@@ -78,6 +85,15 @@ namespace TpsShooter.Player
             _stateMachine.AddState(new PlayerRollState(_context, _stateMachine));
             
             _stateMachine.SwitchState<PlayerIdleState>();
+            // НОВЫЙ ВЫЗОВ: Спавним оружие при старте игры!
+            if (_testPistolPrefab != null)
+            {
+                _weaponController.TestEquipWeapon(_testPistolPrefab);
+            }
+            else
+            {
+                Debug.LogWarning("Test Pistol Prefab is not assigned in PlayerFacade!");
+            }
         }
 
         private void OnEnable()
