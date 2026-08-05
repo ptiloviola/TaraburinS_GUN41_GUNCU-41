@@ -61,7 +61,7 @@ namespace TpsShooter.Player.States
             Ctx.Animator.SetFloat(MoveXHash, animX, 0.1f, deltaTime);
             Ctx.Animator.SetFloat(MoveYHash, animZ, 0.1f, deltaTime);
 
-            if (Ctx.Input.IsAiming)
+            if (Ctx.Input.IsAiming && Ctx.WeaponController.IsArmed)
             {
                 StateMachine.SwitchState<PlayerAimState>();
                 return;

@@ -29,6 +29,11 @@ namespace TpsShooter.Player.Core
         public virtual void Tick(float deltaTime) 
         {
             ApplyGravity(deltaTime);
+            // Проверка кнопки переключения оружия
+            if (Ctx.Input.IsWeaponToggleTriggered)
+            {
+                Ctx.WeaponController.ToggleWeapon();
+            }
         }
         
         public virtual void Exit() { }

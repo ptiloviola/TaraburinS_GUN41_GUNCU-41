@@ -79,7 +79,7 @@ namespace TpsShooter.Player.States
                 return; // Важно прерывать выполнение после переключения
             }
 
-            if (Ctx.Input.IsAiming)
+            if (Ctx.Input.IsAiming && Ctx.WeaponController.IsArmed)
             {
                 StateMachine.SwitchState<PlayerAimState>();
                 return;

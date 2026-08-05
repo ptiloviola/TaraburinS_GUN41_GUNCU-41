@@ -18,6 +18,10 @@ namespace TpsShooter.Services.Input
 
         public bool IsRollTriggered => _input.Player.Roll.IsPressed();
 
+        //WeaponTest
+
+        public bool IsWeaponToggleTriggered => _input.Player.WeaponTest.WasPressedThisFrame();
+
         public event Action OnJump;
         public event Action OnReload;
         public event Action OnMelee;

@@ -5,6 +5,7 @@ using TpsShooter.Player.States;
 using TpsShooter.Player.Core;
 using TpsShooter.Player.Configs;
 using TpsShooter.Player.Camera;
+using TpsShooter.Player.Weapons;
 
 namespace TpsShooter.Player
 {
@@ -14,12 +15,22 @@ namespace TpsShooter.Player
         private PlayerStateMachine _stateMachine;
         private PlayerContext _context;
         private IInputService _inputService;
+        
+        [Header("Camera Settings")]
         [SerializeField] private Cinemachine.CinemachineFreeLook _normalCamera;
         [SerializeField] private Transform _cameraTarget;
+        
+        [Header("Weapon & Rigging Settings")]
         [SerializeField] private Transform _aimTarget;
         [SerializeField] private UnityEngine.Animations.Rigging.Rig _weaponRig;
+        
+        // Добавляем наши новые сокеты для оружия
+        [SerializeField] private Transform _weaponHandSocket;
+        [SerializeField] private Transform _weaponBackSocket1;
+        [SerializeField] private Transform _weaponBackSocket2;
 
         private PlayerCameraController _cameraController;
+        private PlayerWeaponController _weaponController;
 
         [Inject]
         public void Construct(IInputService inputService, PlayerConfig config)
@@ -28,9 +39,19 @@ namespace TpsShooter.Player
             Transform camTransform = UnityEngine.Camera.main != null ? UnityEngine.Camera.main.transform : null;
             var groundSensor = new GroundSensor(transform, config);
             Animator animator = GetComponentInChildren<Animator>();
-            // 1. Создаем наш контроллер камеры (без MonoBehaviour!)
+            
+            // 1. Создаем наши контроллеры (без MonoBehaviour!)
             _cameraController = new PlayerCameraController(config, _cameraTarget, _normalCamera);
+            
+            // Создаем контроллер оружия, передавая this как MonoBehaviour для запуска корутин
+            _weaponController = new PlayerWeaponController(
+                _weaponHandSocket, 
+                _weaponBackSocket1, 
+                _weaponBackSocket2, 
+                animator
+            );
 
+            // 2. Упаковываем всё в Контекст
             _context = new PlayerContext(
                 GetComponent<CharacterController>(),
                 transform,
@@ -42,8 +63,8 @@ namespace TpsShooter.Player
                 this,
                 _cameraController,
                 _aimTarget,
-                _weaponRig
-
+                _weaponRig,
+                _weaponController // <-- Добавили контроллер оружия в конец
             );
 
             _stateMachine = new PlayerStateMachine();
@@ -57,7 +78,6 @@ namespace TpsShooter.Player
             _stateMachine.AddState(new PlayerRollState(_context, _stateMachine));
             
             _stateMachine.SwitchState<PlayerIdleState>();
-
         }
 
         private void OnEnable()
@@ -78,7 +98,6 @@ namespace TpsShooter.Player
 
             _context.GroundSensor.Tick(); 
             
-            // 3. Обновляем контроллер камеры каждый кадр
             _cameraController?.Tick(deltaTime);
 
             _stateMachine?.Tick(deltaTime);
@@ -88,10 +107,10 @@ namespace TpsShooter.Player
         {
             _stateMachine.HandleJump();
         }
+        
         #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            // Рисуем красную сферу там же, где ее создает наш CheckSphere
             Gizmos.color = Color.red;
             Vector3 spherePosition = transform.position + (Vector3.up * 0.1f);
             Gizmos.DrawWireSphere(spherePosition, 0.2f);
