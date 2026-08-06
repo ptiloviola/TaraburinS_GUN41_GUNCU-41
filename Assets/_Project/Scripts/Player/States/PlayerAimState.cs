@@ -29,7 +29,7 @@ namespace TpsShooter.Player.States
         {
             base.Tick(deltaTime); 
 
-            // --- 1. ЛОГИКА ПРИСЕДА В ПРИЦЕЛИВАНИИ ---
+            // --- 2. ЛОГИКА ПРИСЕДА В ПРИЦЕЛИВАНИИ ---
             bool isCrouching = Ctx.Input.IsCrouching;
             
             Ctx.Animator.SetBool(IsCrouchingHash, isCrouching);
@@ -43,7 +43,7 @@ namespace TpsShooter.Player.States
 
             float currentSpeed = isCrouching ? Ctx.Config.CrouchSpeed : Ctx.Config.AimMoveSpeed;
 
-            // --- 2. МАТЕМАТИКА ДВИЖЕНИЯ ---
+            // --- 3. МАТЕМАТИКА ДВИЖЕНИЯ ---
             Vector2 input = Ctx.Input.MoveAxis;
 
             Ctx.Animator.SetFloat(MoveXHash, input.x, 0.1f, deltaTime);
@@ -57,11 +57,11 @@ namespace TpsShooter.Player.States
             Vector3 moveDir = Ctx.Transform.right * input.x + Ctx.Transform.forward * input.y;
             Ctx.Controller.Move(moveDir.normalized * (currentSpeed * deltaTime));
 
-            // --- 3. МАГИЯ IK ---
+            // --- 4. МАГИЯ IK ---
             Vector3 aimPosition = Ctx.CameraTransform.position + Ctx.CameraTransform.forward * 50f;
             Ctx.AimTarget.position = aimPosition;
 
-            // --- 4. ЛОГИКА ВЫХОДА ИЗ ПРИЦЕЛИВАНИЯ ---
+            // --- 5. ЛОГИКА ВЫХОДА ИЗ ПРИЦЕЛИВАНИЯ ---
             if (!Ctx.Input.IsAiming)
             {
                 if (isCrouching)
@@ -90,6 +90,7 @@ namespace TpsShooter.Player.States
             Ctx.MonoBehaviour.StartCoroutine(LerpLayerWeight(0f, Ctx.Config.AimLayerTransitionDuration));
             Ctx.MonoBehaviour.StartCoroutine(LerpRigWeight(0f, Ctx.Config.AimLayerTransitionDuration));
         }
+
 
         private IEnumerator LerpLayerWeight(float targetWeight, float duration)
         {

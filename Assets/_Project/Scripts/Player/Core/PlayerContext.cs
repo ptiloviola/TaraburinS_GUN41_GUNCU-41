@@ -28,6 +28,7 @@ namespace TpsShooter.Player.Core
         public readonly Rig WeaponRig;
 
         public readonly PlayerWeaponController WeaponController;
+        public readonly WeaponInventory WeaponInventory;
         
 
         public PlayerContext(
@@ -42,7 +43,8 @@ namespace TpsShooter.Player.Core
             PlayerCameraController cameraController,
             Transform aimTarget,
             Rig weaponRig,
-            PlayerWeaponController weaponController)
+            PlayerWeaponController weaponController,
+            WeaponInventory weaponInventory)
         {
             Controller = controller;
             Transform = transform;
@@ -56,6 +58,7 @@ namespace TpsShooter.Player.Core
             AimTarget = aimTarget;
             WeaponRig = weaponRig;
             WeaponController = weaponController;
+            WeaponInventory = weaponInventory;
         }
     }
 }

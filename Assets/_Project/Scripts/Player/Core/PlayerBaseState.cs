@@ -32,8 +32,11 @@ namespace TpsShooter.Player.Core
             // Проверка кнопки переключения оружия
             if (Ctx.Input.IsWeaponToggleTriggered)
             {
-                Ctx.WeaponController.ToggleWeapon();
+                Ctx.WeaponInventory.ToggleNextWeapon(); // ТЕПЕРЬ ВСЁ ЧИСТО
             }
+            // Эта логика теперь выполняется КАЖДЫЙ кадр в ЛЮБОМ состоянии, 
+            // которое вызывает base.Tick(deltaTime);
+            HandleShooting();
         }
         
         public virtual void Exit() { }
@@ -59,6 +62,36 @@ namespace TpsShooter.Player.Core
             
             // Проверка ввода через константу
             Ctx.Animator.SetBool(IsMovingHash, Ctx.Input.MoveAxis.sqrMagnitude > InputThreshold);
+        }
+
+        // Делаем метод виртуальным, чтобы наследники могли его запретить
+        protected virtual void HandleShooting()
+        {
+            // 1. Проверяем инпут и наличие оружия
+            if (!Ctx.Input.IsFiring || Ctx.WeaponInventory.CurrentWeapon == null) 
+                return;
+
+            // 2. Ищем точку прицеливания от камеры
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            Ray cameraRay = UnityEngine.Camera.main.ScreenPointToRay(screenCenter);
+            Vector3 targetPoint;
+
+            // ВАЖНО: Камера не должна попадать лучом в самого игрока (иначе мы будем стрелять себе в затылок).
+            // В идеале тут нужен LayerMask, исключающий слой Player. 
+            // Пока берем все слои кроме IgnoreRaycast.
+            int mask = ~LayerMask.GetMask("Ignore Raycast", "Player");
+
+            if (Physics.Raycast(cameraRay, out RaycastHit hit, 1000f, mask))
+            {
+                targetPoint = hit.point;
+            }
+            else
+            {
+                targetPoint = cameraRay.GetPoint(1000f);
+            }
+
+            // 3. Отдаем команду пушке
+            Ctx.WeaponInventory.CurrentWeapon.TryFire(targetPoint);
         }
     }
 }

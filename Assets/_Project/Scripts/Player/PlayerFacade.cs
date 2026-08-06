@@ -6,8 +6,6 @@ using TpsShooter.Player.Core;
 using TpsShooter.Player.Configs;
 using TpsShooter.Player.Camera;
 using TpsShooter.Player.Weapons;
-using TpsShooter.Weapons;
-
 
 namespace TpsShooter.Player
 {
@@ -26,39 +24,54 @@ namespace TpsShooter.Player
         [SerializeField] private Transform _aimTarget;
         [SerializeField] private UnityEngine.Animations.Rigging.Rig _weaponRig;
         
-        // Добавляем наши новые сокеты для оружия
         [SerializeField] private Transform _weaponHandSocket;
         [SerializeField] private Transform _weaponBackSocket1;
         [SerializeField] private Transform _weaponBackSocket2;
         [SerializeField] private Transform _leftHandIkTarget;
 
-        [Header("Test Spawning")]
-        [SerializeField] private WeaponBase _testPistolPrefab;
-
         private PlayerCameraController _cameraController;
         private PlayerWeaponController _weaponController;
+        private WeaponInventory _weaponInventory;
+        
+        // Добавили поле для нашего нового сенсора
+        private PlayerInteractionSensor _interactionSensor;
 
         [Inject]
-        public void Construct(IInputService inputService, PlayerConfig config)
+        public void Construct(IInputService inputService, PlayerConfig config, IInstantiator instantiator)
         {
             _inputService = inputService;
             Transform camTransform = UnityEngine.Camera.main != null ? UnityEngine.Camera.main.transform : null;
             var groundSensor = new GroundSensor(transform, config);
             Animator animator = GetComponentInChildren<Animator>();
             
-            // 1. Создаем наши контроллеры (без MonoBehaviour!)
             _cameraController = new PlayerCameraController(config, _cameraTarget, _normalCamera);
             
-            // Создаем контроллер оружия, передавая this как MonoBehaviour для запуска корутин
+            // ИСПРАВЛЕНИЕ 1: Передаем _weaponRig последним аргументом
             _weaponController = new PlayerWeaponController(
                 _weaponHandSocket, 
                 _weaponBackSocket1, 
                 _weaponBackSocket2, 
                 animator, 
-                _leftHandIkTarget
+                _leftHandIkTarget,
+                _weaponRig
             );
 
-            // 2. Упаковываем всё в Контекст
+            // 1. Создаем сервис анимации переходов (передаем this, так как Фасад - это MonoBehaviour)
+            WeaponTransitionService transitionService = new WeaponTransitionService(this);
+
+            // 2. Создаем Инвентарь, прокидываем в него сервис переходов
+            _weaponInventory = new WeaponInventory(
+                instantiator,
+                _weaponController,
+                transitionService,
+                _weaponHandSocket,
+                _weaponBackSocket1,
+                _weaponBackSocket2
+            );
+
+            // 3. Создаем сенсор подбора (чистый C#-класс)
+            _interactionSensor = new PlayerInteractionSensor(transform, _weaponInventory);
+
             _context = new PlayerContext(
                 GetComponent<CharacterController>(),
                 transform,
@@ -71,12 +84,12 @@ namespace TpsShooter.Player
                 _cameraController,
                 _aimTarget,
                 _weaponRig,
-                _weaponController // <-- Добавили контроллер оружия в конец
+                _weaponController,
+                _weaponInventory
             );
 
             _stateMachine = new PlayerStateMachine();
             
-            // Регистрируем все возможные состояния
             _stateMachine.AddState(new PlayerIdleState(_context, _stateMachine));
             _stateMachine.AddState(new PlayerMoveState(_context, _stateMachine));
             _stateMachine.AddState(new PlayerAimState(_context, _stateMachine));
@@ -85,43 +98,52 @@ namespace TpsShooter.Player
             _stateMachine.AddState(new PlayerRollState(_context, _stateMachine));
             
             _stateMachine.SwitchState<PlayerIdleState>();
-            // НОВЫЙ ВЫЗОВ: Спавним оружие при старте игры!
-            if (_testPistolPrefab != null)
-            {
-                _weaponController.TestEquipWeapon(_testPistolPrefab);
-            }
-            else
-            {
-                Debug.LogWarning("Test Pistol Prefab is not assigned in PlayerFacade!");
-            }
+            
+            // Тестовый спавн полностью удален! Теперь оружие берем только с пола.
         }
 
         private void OnEnable()
         {
             if (_inputService != null)
+            {
                 _inputService.OnJump += OnJump;
+                _inputService.OnReload += OnReload;
+            }
         }
 
         private void OnDisable()
         {
             if (_inputService != null)
+            {
                 _inputService.OnJump -= OnJump;
+                _inputService.OnReload -= OnReload;
+            }
         }
 
         private void Update()
         {
             float deltaTime = Time.deltaTime;
-
+            
             _context.GroundSensor.Tick(); 
             
-            _cameraController?.Tick(deltaTime);
+            // Вызываем проверку физики подбора каждый кадр
+            _interactionSensor?.Tick();
 
+            // ИСПРАВЛЕНИЕ 2: Вызываем Tick у контроллера оружия, чтобы работала IK левой руки
+            _weaponController?.Tick(deltaTime);
+            
+            _cameraController?.Tick(deltaTime);
             _stateMachine?.Tick(deltaTime);
         }
 
-        private void OnJump()
+        private void OnJump() => _stateMachine.HandleJump();
+        
+        private void OnReload()
         {
-            _stateMachine.HandleJump();
+            if (_weaponInventory != null && _weaponInventory.CurrentWeapon != null)
+            {
+                _weaponInventory.CurrentWeapon.Reload();
+            }
         }
         
         #if UNITY_EDITOR

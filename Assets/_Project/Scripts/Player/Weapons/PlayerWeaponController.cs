@@ -1,5 +1,6 @@
 using UnityEngine;
-using TpsShooter.Weapons;
+using UnityEngine.Animations.Rigging;
+using TpsShooter.Weapons.Core;
 
 namespace TpsShooter.Player.Weapons
 {
@@ -10,59 +11,63 @@ namespace TpsShooter.Player.Weapons
         private readonly Transform _backSocket2;
         private readonly Animator _animator;
         private readonly Transform _leftHandIkTarget;
+        private readonly Rig _weaponRig;
         
         private static readonly int IsArmedHash = Animator.StringToHash("IsArmed");
 
-        private IWeapon[] _weapons = new IWeapon[3];
-        private int _currentWeaponIndex = -1; 
-
         public WeaponBase CurrentWeapon { get; private set; }
-        
-        // Добавили публичное свойство, чтобы другие стейты (например, AimState) могли знать, есть ли в руках пушка
         public bool IsArmed { get; private set; } = false; 
 
         public PlayerWeaponController(Transform handSocket, Transform backSocket1, 
-            Transform backSocket2, Animator animator, Transform leftHandIkTarget)
+            Transform backSocket2, Animator animator, Transform leftHandIkTarget, Rig weaponRig)
         {
             _handSocket = handSocket;
             _backSocket1 = backSocket1;
             _backSocket2 = backSocket2;
             _animator = animator;
-            
-            _animator.SetBool(IsArmedHash, IsArmed);
             _leftHandIkTarget = leftHandIkTarget;
-        }
-
-        public void ToggleWeapon()
-        {
-            IsArmed = !IsArmed;
+            _weaponRig = weaponRig;
+            
             _animator.SetBool(IsArmedHash, IsArmed);
-            
-            // TODO: Физическое перемещение префаба оружия между сокетами
+            if (_weaponRig != null) _weaponRig.weight = 0f;
         }
 
-        // Временный метод для теста: спавним префаб прямо в руку
-        public void TestEquipWeapon(WeaponBase weaponPrefab)
+        public void OnWeaponEquipped(WeaponBase newWeapon)
         {
-            if (CurrentWeapon != null)
-                Object.Destroy(CurrentWeapon.gameObject); // Для теста удаляем старое
-
-            // Создаем пушку на сцене
-            CurrentWeapon = Object.Instantiate(weaponPrefab);
-            
-            // Сажаем в правый сокет (поворот и позицию подгонишь в инспекторе оружия)
-            CurrentWeapon.SetParent(_handSocket, Vector3.zero, Vector3.zero);
-            CurrentWeapon.Initialize();
-
+            CurrentWeapon = newWeapon;
             IsArmed = true;
             _animator.SetBool(IsArmedHash, IsArmed);
+            
+            // Больше никаких SetParent! Мы просто запомнили текущую пушку.
+        }
 
-            // МАГИЯ IK: Привязываем таргет левой руки к точке на самом оружии!
+        // НОВЫЙ МЕТОД: Автономное управление руками
+        public void Tick(float deltaTime)
+        {
+            // Если без оружия — плавно выключаем Риг
+            if (!IsArmed || CurrentWeapon == null)
+            {
+                if (_weaponRig != null) 
+                    _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, 0f, deltaTime * 10f);
+                return;
+            }
+
+            // Если у пушки есть точка хвата (винтовка, дробовик)
             if (CurrentWeapon.LeftHandGripPoint != null && _leftHandIkTarget != null)
             {
-                _leftHandIkTarget.SetParent(CurrentWeapon.LeftHandGripPoint);
-                _leftHandIkTarget.localPosition = Vector3.zero;
-                // _leftHandIkTarget.localRotation = Quaternion.identity;
+                // 1. Математически привязываем таргет к цевью (без изменения иерархии)
+                _leftHandIkTarget.position = CurrentWeapon.LeftHandGripPoint.position;
+                _leftHandIkTarget.rotation = CurrentWeapon.LeftHandGripPoint.rotation;
+
+                // 2. Плавно включаем IK. Никакие стейты больше не могут его сбить!
+                if (_weaponRig != null) 
+                    _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, 1f, deltaTime * 10f);
+            }
+            else
+            {
+                // Если хвата нет (пистолет) — выключаем левую руку
+                if (_weaponRig != null) 
+                    _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, 0f, deltaTime * 10f);
             }
         }
     }

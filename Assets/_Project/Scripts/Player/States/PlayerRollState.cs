@@ -79,6 +79,13 @@ namespace TpsShooter.Player.States
             }
         }
 
+        protected override void HandleShooting()
+        {
+            // Игрок кувыркается, стрелять нельзя!
+        }
+
+
+
         public override void Exit()
         {
             base.Exit();

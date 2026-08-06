@@ -14,7 +14,7 @@ namespace TpsShooter.Player.States
         {
             base.Enter();
             // Запускаем триггер анимации прыжка только один раз при входе
-            Ctx.Animator.SetTrigger(JumpHash);
+            // Ctx.Animator.SetTrigger(JumpHash);
             // Принудительно говорим аниматору, что мы в воздухе
             Ctx.Animator.SetBool("IsGrounded", false); 
         }
