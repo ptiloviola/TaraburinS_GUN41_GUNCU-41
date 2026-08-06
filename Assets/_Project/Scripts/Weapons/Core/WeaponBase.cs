@@ -8,6 +8,10 @@ namespace TpsShooter.Weapons.Core
         [SerializeField] protected Transform _muzzlePoint; // Точка вылета пули/луча
         [SerializeField] public Transform LeftHandGripPoint; // Для нашего IK
 
+        [Header("Aiming Offsets (ADS)")]
+        public Vector3 AimPositionOffset;
+        public Vector3 AimRotationOffset;
+
         protected WeaponConfig _config;
         protected int _currentAmmoInClip;
         protected int _currentReserveAmmo;

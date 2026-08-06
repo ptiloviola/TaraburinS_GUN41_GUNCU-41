@@ -279,6 +279,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _muzzlePoint: {fileID: 8979236926369127974}
   LeftHandGripPoint: {fileID: 5673310857916542389}
+  AimPositionOffset: {x: -0.12, y: -0.109, z: -0.056}
+  AimRotationOffset: {x: -66, y: 32, z: 10}
 --- !u!1 &7368348636836081839
 GameObject:
   m_ObjectHideFlags: 0

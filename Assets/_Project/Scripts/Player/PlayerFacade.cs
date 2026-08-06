@@ -6,6 +6,7 @@ using TpsShooter.Player.Core;
 using TpsShooter.Player.Configs;
 using TpsShooter.Player.Camera;
 using TpsShooter.Player.Weapons;
+using UnityEngine.Animations.Rigging;
 
 namespace TpsShooter.Player
 {
@@ -23,6 +24,7 @@ namespace TpsShooter.Player
         [Header("Weapon & Rigging Settings")]
         [SerializeField] private Transform _aimTarget;
         [SerializeField] private UnityEngine.Animations.Rigging.Rig _weaponRig;
+        [SerializeField] private TwoBoneIKConstraint _leftHandIK;
         
         [SerializeField] private Transform _weaponHandSocket;
         [SerializeField] private Transform _weaponBackSocket1;
@@ -46,14 +48,15 @@ namespace TpsShooter.Player
             
             _cameraController = new PlayerCameraController(config, _cameraTarget, _normalCamera);
             
-            // ИСПРАВЛЕНИЕ 1: Передаем _weaponRig последним аргументом
+            // Контроллер теперь принимает ровно 7 аргументов
             _weaponController = new PlayerWeaponController(
                 _weaponHandSocket, 
                 _weaponBackSocket1, 
                 _weaponBackSocket2, 
                 animator, 
                 _leftHandIkTarget,
-                _weaponRig
+                _weaponRig,
+                _leftHandIK 
             );
 
             // 1. Создаем сервис анимации переходов (передаем this, так как Фасад - это MonoBehaviour)

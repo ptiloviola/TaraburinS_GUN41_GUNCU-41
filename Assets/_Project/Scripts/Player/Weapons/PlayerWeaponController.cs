@@ -12,14 +12,23 @@ namespace TpsShooter.Player.Weapons
         private readonly Animator _animator;
         private readonly Transform _leftHandIkTarget;
         private readonly Rig _weaponRig;
+        private readonly TwoBoneIKConstraint _leftHandIK;
         
         private static readonly int IsArmedHash = Animator.StringToHash("IsArmed");
+        private const int UpperBodyLayerIndex = 1; // Индекс слоя прицеливания в Аниматоре
 
         public WeaponBase CurrentWeapon { get; private set; }
         public bool IsArmed { get; private set; } = false; 
+        public bool IsAiming { get; private set; } = false;
 
-        public PlayerWeaponController(Transform handSocket, Transform backSocket1, 
-            Transform backSocket2, Animator animator, Transform leftHandIkTarget, Rig weaponRig)
+        public PlayerWeaponController(
+            Transform handSocket, 
+            Transform backSocket1, 
+            Transform backSocket2, 
+            Animator animator, 
+            Transform leftHandIkTarget, 
+            Rig weaponRig, 
+            TwoBoneIKConstraint leftHandIK) 
         {
             _handSocket = handSocket;
             _backSocket1 = backSocket1;
@@ -27,9 +36,12 @@ namespace TpsShooter.Player.Weapons
             _animator = animator;
             _leftHandIkTarget = leftHandIkTarget;
             _weaponRig = weaponRig;
+            _leftHandIK = leftHandIK;
             
             _animator.SetBool(IsArmedHash, IsArmed);
+            
             if (_weaponRig != null) _weaponRig.weight = 0f;
+            if (_leftHandIK != null) _leftHandIK.weight = 0f;
         }
 
         public void OnWeaponEquipped(WeaponBase newWeapon)
@@ -37,37 +49,65 @@ namespace TpsShooter.Player.Weapons
             CurrentWeapon = newWeapon;
             IsArmed = true;
             _animator.SetBool(IsArmedHash, IsArmed);
-            
-            // Больше никаких SetParent! Мы просто запомнили текущую пушку.
         }
 
-        // НОВЫЙ МЕТОД: Автономное управление руками
+        public void SetAiming(bool isAiming)
+        {
+            IsAiming = isAiming;
+        }
+
         public void Tick(float deltaTime)
         {
-            // Если без оружия — плавно выключаем Риг
-            if (!IsArmed || CurrentWeapon == null)
+            // 1. Вычисляем целевой вес
+            float targetAimWeight = (IsArmed && IsAiming) ? 1f : 0f;
+            float lerpSpeed = deltaTime * 15f;
+
+            // 2. Слои Аниматора
+            float currentLayerWeight = _animator.GetLayerWeight(UpperBodyLayerIndex);
+            _animator.SetLayerWeight(UpperBodyLayerIndex, Mathf.Lerp(currentLayerWeight, targetAimWeight, lerpSpeed));
+
+            // 3. Поворот спины
+            if (_weaponRig != null) 
             {
-                if (_weaponRig != null) 
-                    _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, 0f, deltaTime * 10f);
+                _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, targetAimWeight, lerpSpeed);
+            }
+
+            // --- НОВЫЙ БЛОК: СМЕЩЕНИЕ ОРУЖИЯ (ADS OFFSET) ---
+            if (IsArmed && CurrentWeapon != null)
+            {
+                Transform weaponTransform = CurrentWeapon.transform;
+                
+                if (IsAiming)
+                {
+                    // Плавно сдвигаем к заданным координатам прицела
+                    weaponTransform.localPosition = Vector3.Lerp(weaponTransform.localPosition, CurrentWeapon.AimPositionOffset, lerpSpeed);
+                    weaponTransform.localRotation = Quaternion.Slerp(weaponTransform.localRotation, Quaternion.Euler(CurrentWeapon.AimRotationOffset), lerpSpeed);
+                }
+                else
+                {
+                    // Плавно возвращаем в нули (стандартное положение в руке)
+                    weaponTransform.localPosition = Vector3.Lerp(weaponTransform.localPosition, Vector3.zero, lerpSpeed);
+                    weaponTransform.localRotation = Quaternion.Slerp(weaponTransform.localRotation, Quaternion.identity, lerpSpeed);
+                }
+            }
+            // ------------------------------------------------
+
+            // 4. Левая рука (только в режиме прицеливания)
+            if (!IsArmed || CurrentWeapon == null || CurrentWeapon.LeftHandGripPoint == null)
+            {
+                if (_leftHandIK != null) _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, 0f, lerpSpeed);
                 return;
             }
 
-            // Если у пушки есть точка хвата (винтовка, дробовик)
-            if (CurrentWeapon.LeftHandGripPoint != null && _leftHandIkTarget != null)
+            // Магнитим таргет к точке на пушке каждый кадр
+            if (_leftHandIkTarget != null)
             {
-                // 1. Математически привязываем таргет к цевью (без изменения иерархии)
                 _leftHandIkTarget.position = CurrentWeapon.LeftHandGripPoint.position;
                 _leftHandIkTarget.rotation = CurrentWeapon.LeftHandGripPoint.rotation;
-
-                // 2. Плавно включаем IK. Никакие стейты больше не могут его сбить!
-                if (_weaponRig != null) 
-                    _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, 1f, deltaTime * 10f);
-            }
-            else
-            {
-                // Если хвата нет (пистолет) — выключаем левую руку
-                if (_weaponRig != null) 
-                    _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, 0f, deltaTime * 10f);
+                
+                // ВАЖНО: Включаем вес IK только когда целимся (targetAimWeight)
+                if (_leftHandIK != null) 
+                    _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, targetAimWeight, lerpSpeed);
             }
         }
     }
