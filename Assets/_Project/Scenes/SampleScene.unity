@@ -613,9 +613,9 @@ MonoBehaviour:
   - {fileID: 871343632}
   - {fileID: 141451784}
   _pistolConfig: {fileID: 11400000, guid: 54f1ae56c4ab9364c88e3d0b719ce14e, type: 2}
-  _pistolPrefab: {fileID: 2733863130325073017, guid: 24cc68cd54d4c1f4fae67b69b5519f49, type: 3}
-  _rifleConfig: {fileID: 11400000, guid: 54f1ae56c4ab9364c88e3d0b719ce14e, type: 2}
-  _riflePrefab: {fileID: 2274352330117907947, guid: 334a83b6c7b82ba499eca17a97783def, type: 3}
+  _pistolPrefab: {fileID: 8272612338521340879, guid: 24cc68cd54d4c1f4fae67b69b5519f49, type: 3}
+  _rifleConfig: {fileID: 11400000, guid: 207a76246b5128045a6fcf4b68edbac5, type: 2}
+  _riflePrefab: {fileID: 2407257601844311330, guid: 334a83b6c7b82ba499eca17a97783def, type: 3}
 --- !u!4 &472249225
 Transform:
   m_ObjectHideFlags: 0

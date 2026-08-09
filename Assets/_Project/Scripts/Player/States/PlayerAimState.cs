@@ -15,7 +15,7 @@ namespace TpsShooter.Player.States
             base.Enter();
             Ctx.Animator.SetBool(IsAimingHash, true);
             Ctx.CameraController.SetAiming(true);
-            Ctx.WeaponController.SetAiming(true); // Контроллер сам плавно поднимет веса
+            Ctx.WeaponController.SetAiming(true); 
         }
 
         public override void Tick(float deltaTime)
@@ -45,9 +45,6 @@ namespace TpsShooter.Player.States
             Vector3 moveDir = Ctx.Transform.right * input.x + Ctx.Transform.forward * input.y;
             Ctx.Controller.Move(moveDir.normalized * (currentSpeed * deltaTime));
 
-            // ЖЕЛЕЗОБЕТОННЫЙ ПРИЦЕЛ: Строго по центру камеры, никаких лучей.
-            Ctx.AimTarget.position = Ctx.CameraTransform.position + Ctx.CameraTransform.forward * 50f;
-
             // Выход из прицеливания
             if (!Ctx.Input.IsAiming)
             {
@@ -62,7 +59,7 @@ namespace TpsShooter.Player.States
             base.Exit();
             Ctx.Animator.SetBool(IsAimingHash, false);
             Ctx.CameraController.SetAiming(false);
-            Ctx.WeaponController.SetAiming(false); // Контроллер сам плавно опустит веса
+            Ctx.WeaponController.SetAiming(false); 
         }
     }
 }

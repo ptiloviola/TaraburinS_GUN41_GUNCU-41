@@ -91,8 +91,10 @@ namespace TpsShooter.Player.Weapons
 
         private void PutWeaponOnBack(WeaponBase weapon, int slotNumber)
         {
-            Transform targetSocket = slotNumber % 2 == 0 ? _backSocket2 : _backSocket1;
+            // Четко привязываем индекс слота к нужному сокету
+            Transform targetSocket = slotNumber == 0 ? _backSocket1 : _backSocket2;
             _transitionService.MoveWeaponToSocket(weapon.transform, targetSocket, TransitionDuration);
+            
         }
 
         public void ToggleNextWeapon()

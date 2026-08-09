@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using TpsShooter.Weapons.Core;
+using TpsShooter.Services.Input; // Обязательно подключаем инпут
 
 namespace TpsShooter.Player.Weapons
 {
@@ -14,8 +15,13 @@ namespace TpsShooter.Player.Weapons
         private readonly Rig _weaponRig;
         private readonly TwoBoneIKConstraint _leftHandIK;
         
+        // Новые зависимости для стрельбы
+        private readonly IInputService _inputService;
+        private readonly Transform _cameraTransform;
+        private readonly Transform _aimTarget;
+        
         private static readonly int IsArmedHash = Animator.StringToHash("IsArmed");
-        private const int UpperBodyLayerIndex = 1; // Индекс слоя прицеливания в Аниматоре
+        private const int UpperBodyLayerIndex = 1;
 
         public WeaponBase CurrentWeapon { get; private set; }
         public bool IsArmed { get; private set; } = false; 
@@ -28,7 +34,10 @@ namespace TpsShooter.Player.Weapons
             Animator animator, 
             Transform leftHandIkTarget, 
             Rig weaponRig, 
-            TwoBoneIKConstraint leftHandIK) 
+            TwoBoneIKConstraint leftHandIK,
+            IInputService inputService,       // + Инпут
+            Transform cameraTransform,        // + Камера
+            Transform aimTarget)              // + Таргет
         {
             _handSocket = handSocket;
             _backSocket1 = backSocket1;
@@ -37,6 +46,10 @@ namespace TpsShooter.Player.Weapons
             _leftHandIkTarget = leftHandIkTarget;
             _weaponRig = weaponRig;
             _leftHandIK = leftHandIK;
+            
+            _inputService = inputService;
+            _cameraTransform = cameraTransform;
+            _aimTarget = aimTarget;
             
             _animator.SetBool(IsArmedHash, IsArmed);
             
@@ -58,54 +71,67 @@ namespace TpsShooter.Player.Weapons
 
         public void Tick(float deltaTime)
         {
-            // 1. Вычисляем целевой вес
+            // --- 1. ГЛОБАЛЬНЫЙ ПРИЦЕЛ И СТРЕЛЬБА ---
+            if (_cameraTransform != null && _aimTarget != null)
+            {
+                // Точка прицела всегда в 50 метрах по центру экрана, в любом стейте
+                _aimTarget.position = _cameraTransform.position + _cameraTransform.forward * 50f;
+            }
+
+            // Стрельба (убедись, что переменная в IInputService называется IsFiring)
+            if (IsArmed && CurrentWeapon != null && _inputService != null)
+            {
+                if (_inputService.IsFiring)
+                {
+                    Debug.Log("<color=green>[INPUT]</color> Кнопка стрельбы зажата!"); // <--- Добавили лог
+                    CurrentWeapon.TryFire(_aimTarget.position);
+                }
+            }
+            // ---------------------------------------
+
+            // 2. Вычисляем целевой вес для анимаций прицеливания
             float targetAimWeight = (IsArmed && IsAiming) ? 1f : 0f;
             float lerpSpeed = deltaTime * 15f;
 
-            // 2. Слои Аниматора
+            // 3. Слои Аниматора
             float currentLayerWeight = _animator.GetLayerWeight(UpperBodyLayerIndex);
             _animator.SetLayerWeight(UpperBodyLayerIndex, Mathf.Lerp(currentLayerWeight, targetAimWeight, lerpSpeed));
 
-            // 3. Поворот спины
+            // 4. Поворот спины
             if (_weaponRig != null) 
             {
                 _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, targetAimWeight, lerpSpeed);
             }
 
-            // --- НОВЫЙ БЛОК: СМЕЩЕНИЕ ОРУЖИЯ (ADS OFFSET) ---
+            // 5. Смещение оружия (ADS OFFSET)
             if (IsArmed && CurrentWeapon != null)
             {
                 Transform weaponTransform = CurrentWeapon.transform;
                 
                 if (IsAiming)
                 {
-                    // Плавно сдвигаем к заданным координатам прицела
                     weaponTransform.localPosition = Vector3.Lerp(weaponTransform.localPosition, CurrentWeapon.AimPositionOffset, lerpSpeed);
                     weaponTransform.localRotation = Quaternion.Slerp(weaponTransform.localRotation, Quaternion.Euler(CurrentWeapon.AimRotationOffset), lerpSpeed);
                 }
                 else
                 {
-                    // Плавно возвращаем в нули (стандартное положение в руке)
                     weaponTransform.localPosition = Vector3.Lerp(weaponTransform.localPosition, Vector3.zero, lerpSpeed);
                     weaponTransform.localRotation = Quaternion.Slerp(weaponTransform.localRotation, Quaternion.identity, lerpSpeed);
                 }
             }
-            // ------------------------------------------------
 
-            // 4. Левая рука (только в режиме прицеливания)
+            // 6. Левая рука
             if (!IsArmed || CurrentWeapon == null || CurrentWeapon.LeftHandGripPoint == null)
             {
                 if (_leftHandIK != null) _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, 0f, lerpSpeed);
                 return;
             }
 
-            // Магнитим таргет к точке на пушке каждый кадр
             if (_leftHandIkTarget != null)
             {
                 _leftHandIkTarget.position = CurrentWeapon.LeftHandGripPoint.position;
                 _leftHandIkTarget.rotation = CurrentWeapon.LeftHandGripPoint.rotation;
                 
-                // ВАЖНО: Включаем вес IK только когда целимся (targetAimWeight)
                 if (_leftHandIK != null) 
                     _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, targetAimWeight, lerpSpeed);
             }

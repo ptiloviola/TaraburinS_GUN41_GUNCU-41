@@ -325,7 +325,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 200783140952910565}
-  - component: {fileID: 2274352330117907947}
+  - component: {fileID: 2407257601844311330}
   m_Layer: 0
   m_Name: weapon_assault_rifle
   m_TagString: Untagged
@@ -349,7 +349,7 @@ Transform:
   - {fileID: 2532933305196051048}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2274352330117907947
+--- !u!114 &2407257601844311330
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -358,13 +358,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 5211561850677571299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d85d53f79700f94b94e06f51bee1ff1, type: 3}
+  m_Script: {fileID: 11500000, guid: b4031e9213e291c4db9cbce25f74f0a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _muzzlePoint: {fileID: 8793715827344310800}
   LeftHandGripPoint: {fileID: 3887591025349361116}
   AimPositionOffset: {x: -0.3, y: -0.2, z: -0.1}
   AimRotationOffset: {x: -60, y: 25, z: 0}
+  _startingConfig: {fileID: 11400000, guid: 207a76246b5128045a6fcf4b68edbac5, type: 2}
 --- !u!1 &8162160465280128302
 GameObject:
   m_ObjectHideFlags: 0

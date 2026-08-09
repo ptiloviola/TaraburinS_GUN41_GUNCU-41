@@ -56,7 +56,10 @@ namespace TpsShooter.Player
                 animator, 
                 _leftHandIkTarget,
                 _weaponRig,
-                _leftHandIK 
+                _leftHandIK,
+                inputService,        // Передаем инпут
+                camTransform,        // Передаем камеру
+                _aimTarget          // Передаем таргет
             );
 
             // 1. Создаем сервис анимации переходов (передаем this, так как Фасад - это MonoBehaviour)

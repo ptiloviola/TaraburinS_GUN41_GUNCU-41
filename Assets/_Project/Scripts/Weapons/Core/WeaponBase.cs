@@ -5,55 +5,72 @@ namespace TpsShooter.Weapons.Core
 {
     public abstract class WeaponBase : MonoBehaviour, IWeapon
     {
-        [SerializeField] protected Transform _muzzlePoint; // Точка вылета пули/луча
-        [SerializeField] public Transform LeftHandGripPoint; // Для нашего IK
+        [SerializeField] protected Transform _muzzlePoint;
+        public Transform LeftHandGripPoint;
 
         [Header("Aiming Offsets (ADS)")]
         public Vector3 AimPositionOffset;
         public Vector3 AimRotationOffset;
+
+        [Header("Weapon Configuration")]
+        [SerializeField] private WeaponConfig _startingConfig; 
 
         protected WeaponConfig _config;
         protected int _currentAmmoInClip;
         protected int _currentReserveAmmo;
         protected float _lastFireTime;
 
+        private void Awake()
+        {
+            if (_startingConfig != null)
+            {
+                Initialize(_startingConfig);
+            }
+        }
+
         public virtual void Initialize(WeaponConfig config)
         {
             _config = config;
             _currentAmmoInClip = config.AmmoPerClip;
             _currentReserveAmmo = config.MaxReserveAmmo;
+            Debug.Log($"[WeaponBase] Оружие {gameObject.name} инициализировано! Патронов: {_currentAmmoInClip}");
         }
 
-        // Этот метод дергает игрок или ИИ
         public void TryFire(Vector3 targetPoint)
         {
-            // Проверка кулдауна (скорострельности)
-            if (Time.time - _lastFireTime < _config.FireRate) return;
+            if (_config == null)
+            {
+                Debug.LogError($"[WeaponBase] ОШИБКА! В пушке {gameObject.name} нет конфига!");
+                return;
+            }
 
-            // Проверка патронов
+            if (Time.time - _lastFireTime < _config.FireRate) 
+            {
+                return; 
+            }
+
             if (_currentAmmoInClip <= 0)
             {
+                Debug.LogWarning($"[WeaponBase] Нет патронов в {gameObject.name}!");
                 PlayEmptySound();
                 return;
             }
 
+            Debug.Log($"[WeaponBase] TryFire прошел все проверки! Стреляем!");
+            
             _currentAmmoInClip--;
             _lastFireTime = Time.time;
 
             PlayFireVfx();
             PlayFireSound();
 
-            // Вызываем специфичную механику выстрела у наследников!
             PerformFire(targetPoint); 
         }
 
         public virtual void Reload()
         {
-            if (_currentAmmoInClip == _config.AmmoPerClip || _currentReserveAmmo <= 0)
-            {
-                Debug.Log("[WeaponBase] Перезарядка невозможна (полный магазин или нет запаса).");
-                return;
-            }
+            if (_config == null) return;
+            if (_currentAmmoInClip == _config.AmmoPerClip || _currentReserveAmmo <= 0) return;
 
             int ammoNeeded = _config.AmmoPerClip - _currentAmmoInClip;
             int ammoToReload = Mathf.Min(ammoNeeded, _currentReserveAmmo);
@@ -62,23 +79,23 @@ namespace TpsShooter.Weapons.Core
             _currentReserveAmmo -= ammoToReload;
 
             Debug.Log($"[WeaponBase] Перезарядка! В магазине: {_currentAmmoInClip}, в запасе: {_currentReserveAmmo}");
+            PlayReloadSound();
         }
 
-        public bool IsClipEmpty() => _currentAmmoInClip <= 0;
+        public bool IsClipEmpty() 
+        {
+            return _currentAmmoInClip <= 0;
+        }
 
-        // АБСТРАКТНЫЙ МЕТОД: Наследники обязаны реализовать механику урона
         protected abstract void PerformFire(Vector3 targetPoint);
 
-        private void PlayFireVfx()
-        {
-            if (_config.MuzzleFlashPrefab != null && _muzzlePoint != null)
-            {
-                // Позже заменим на PoolManager.Spawn()
-                Instantiate(_config.MuzzleFlashPrefab, _muzzlePoint.position, _muzzlePoint.rotation);
-            }
+        // --- Заглушки под будущий PoolManager ---
+        protected virtual void PlayFireVfx() 
+        { 
+            // Позже тут будет: PoolManager.Spawn(_config.MuzzleFlashPrefab, _muzzlePoint.position, ...);
         }
-
-        private void PlayFireSound() { /* Заглушка для AudioSource */ }
-        private void PlayEmptySound() { /* Заглушка для AudioSource */ }
+        protected virtual void PlayFireSound() { }
+        protected virtual void PlayEmptySound() { }
+        protected virtual void PlayReloadSound() { }
     }
 }
