@@ -1,5 +1,7 @@
 using UnityEngine;
 using TpsShooter.Weapons.Configs;
+using Zenject; // Добавь сверху
+using TpsShooter.Effects; // Добавь сверху
 
 namespace TpsShooter.Weapons.Core
 {
@@ -19,6 +21,12 @@ namespace TpsShooter.Weapons.Core
         protected int _currentAmmoInClip;
         protected int _currentReserveAmmo;
         protected float _lastFireTime;
+        protected float _currentSpread; // Защищенное поле для внутренних расчетов
+        public float CurrentSpread => _currentSpread; // Публичный геттер для UI прицела
+
+        public WeaponConfig Config => _config;
+
+        [Inject] protected DecalManager _decalManager;
 
         private void Awake()
         {

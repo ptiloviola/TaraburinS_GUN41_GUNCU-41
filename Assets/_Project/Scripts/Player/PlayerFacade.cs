@@ -38,6 +38,17 @@ namespace TpsShooter.Player
         // Добавили поле для нашего нового сенсора
         private PlayerInteractionSensor _interactionSensor;
 
+        // Добавляем публичный геттер в PlayerFacade:
+        public float CurrentWeaponSpread 
+        {
+            get 
+            {
+                if (_weaponController != null && _weaponController.CurrentWeapon != null)
+                    return _weaponController.CurrentWeapon.CurrentSpread;
+                return 0f;
+            }
+        }
+
         [Inject]
         public void Construct(IInputService inputService, PlayerConfig config, IInstantiator instantiator)
         {

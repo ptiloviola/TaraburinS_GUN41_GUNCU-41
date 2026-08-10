@@ -1,5 +1,6 @@
 using Zenject;
 using TpsShooter.Player;
+using TpsShooter.Effects;
 
 namespace TpsShooter.Infrastructure
 {
@@ -13,6 +14,7 @@ namespace TpsShooter.Infrastructure
                      .FromComponentInHierarchy()
                      .AsSingle()
                      .NonLazy();
+            Container.Bind<DecalManager>().FromComponentInHierarchy().AsSingle();
         }
     }
 }

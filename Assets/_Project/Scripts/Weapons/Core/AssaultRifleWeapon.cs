@@ -5,15 +5,15 @@ namespace TpsShooter.Weapons.Core
 {
     public class AssaultRifleWeapon : WeaponBase
     {
-        private float _currentSpread = 0f;
+        // ЗДЕСЬ БОЛЬШЕ НЕТ ОБЪЯВЛЕНИЯ _currentSpread! Мы берем его из WeaponBase.
 
         private void Update()
         {
             if (_config == null) return;
 
-            // Восстановление прицела, если с момента последнего выстрела прошло больше времени, чем FireRate
             if (Time.time - _lastFireTime > _config.FireRate)
             {
+                // Используем унаследованное поле _currentSpread
                 _currentSpread = Mathf.MoveTowards(_currentSpread, _config.BaseSpread, _config.SpreadRecoveryRate * Time.deltaTime);
             }
         }
@@ -22,37 +22,42 @@ namespace TpsShooter.Weapons.Core
         {
             Vector3 direction = (targetPoint - _muzzlePoint.position).normalized;
 
-            // 1. Применяем текущий разброс
             if (_currentSpread > 0f)
             {
                 direction += Random.insideUnitSphere * _currentSpread;
                 direction.Normalize();
             }
 
-            // 2. Пускаем луч
             if (Physics.Raycast(_muzzlePoint.position, direction, out RaycastHit hit, _config.Range, _config.HitMask))
             {
                 Debug.Log($"[AssaultRifle] Попали в: {hit.collider.name}");
+                
+#if UNITY_EDITOR
+                Debug.DrawLine(_muzzlePoint.position, hit.point, Color.green, 2f);
+#endif
                 
                 if (hit.collider.TryGetComponent(out IDamageable target))
                 {
                     target.TakeDamage(_config.Damage);
                 }
-                // Заглушка: Спавн декали
+
+                // --- БЛОК: СПАВН ДЕКАЛИ ---
+                if (_decalManager != null)
+                {
+                    _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
+                }
+            }
+            else
+            {
+#if UNITY_EDITOR
+                Debug.DrawLine(_muzzlePoint.position, _muzzlePoint.position + direction * _config.Range, Color.red, 2f);
+#endif
             }
 
-            // 3. Увеличиваем разброс для следующего выстрела (штраф за зажим)
             _currentSpread = Mathf.Min(_currentSpread + _config.SpreadIncreaseRate, _config.MaxSpread);
-
-            // 4. Заглушка для отдачи
-            ApplyCameraRecoil();
-        }
-
-        private void ApplyCameraRecoil()
-        {
-            // Здесь мы будем вызывать событие или дергать интерфейс контроллера камеры, 
-            // передавая ему _config.RecoilForce, чтобы камеру дернуло вверх.
-            // Например: OnRecoilTriggered?.Invoke(_config.RecoilForce);
+            
+            // Заглушка для отдачи
+            // ApplyCameraRecoil();
         }
     }
 }

@@ -22,6 +22,9 @@ namespace TpsShooter.Weapons.Configs
         public float Damage = 10f;
         public float Range = 100f; // Дальность
 
+        [Header("Firing Mode")]
+        public bool IsAutomatic = true; // True для винтовки, False для пистолета
+
         [Header("Ammo & Magazine")]
         public int AmmoPerClip = 30; // Магазин
         public int MaxReserveAmmo = 90; // Запас
@@ -56,5 +59,7 @@ namespace TpsShooter.Weapons.Configs
         public AudioClip FireSound;
         public AudioClip EmptyClickSound;
         public AudioClip[] ReloadSounds; // Массив для многофазной перезарядки (щелчок -> затвор)
+
+
     }
 }

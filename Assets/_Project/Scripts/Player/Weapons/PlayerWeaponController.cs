@@ -27,6 +27,8 @@ namespace TpsShooter.Player.Weapons
         public bool IsArmed { get; private set; } = false; 
         public bool IsAiming { get; private set; } = false;
 
+        private bool _wasFiring = false;
+
         public PlayerWeaponController(
             Transform handSocket, 
             Transform backSocket1, 
@@ -74,16 +76,35 @@ namespace TpsShooter.Player.Weapons
             // --- 1. ГЛОБАЛЬНЫЙ ПРИЦЕЛ И СТРЕЛЬБА ---
             if (_cameraTransform != null && _aimTarget != null)
             {
-                // Точка прицела всегда в 50 метрах по центру экрана, в любом стейте
-                _aimTarget.position = _cameraTransform.position + _cameraTransform.forward * 50f;
+                // По умолчанию цель далеко впереди
+                Vector3 finalTargetPosition = _cameraTransform.position + _cameraTransform.forward * 50f;
+
+                // УМНОЕ ПРИЦЕЛИВАНИЕ ИЗ КАМЕРЫ:
+                // Если мы вооружены, пускаем луч из камеры, чтобы узнать, на что реально смотрит крестик
+                if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
+                {
+                    if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out RaycastHit camHit, 100f, CurrentWeapon.Config.HitMask))
+                    {
+                        finalTargetPosition = camHit.point; // Крестик смотрит прямо на объект!
+                    }
+                }
+
+                _aimTarget.position = finalTargetPosition;
             }
 
-            // Стрельба (убедись, что переменная в IInputService называется IsFiring)
-            if (IsArmed && CurrentWeapon != null && _inputService != null)
+            // Обработка инпута (Edge Detection)
+            bool isFiringNow = _inputService != null && _inputService.IsFiring;
+            bool isTriggerPulled = isFiringNow && !_wasFiring; // Срабатывает только в 1-й кадр клика
+            _wasFiring = isFiringNow; // Запоминаем для следующего кадра
+
+            if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
             {
-                if (_inputService.IsFiring)
+                // Если автомат - реагируем на удержание (isFiringNow)
+                // Если пистолет - только на свежий клик (isTriggerPulled)
+                bool canFire = CurrentWeapon.Config.IsAutomatic ? isFiringNow : isTriggerPulled;
+                
+                if (canFire)
                 {
-                    Debug.Log("<color=green>[INPUT]</color> Кнопка стрельбы зажата!"); // <--- Добавили лог
                     CurrentWeapon.TryFire(_aimTarget.position);
                 }
             }

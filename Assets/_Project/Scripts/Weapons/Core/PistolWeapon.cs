@@ -11,13 +11,27 @@ namespace TpsShooter.Weapons.Core
 
             if (Physics.Raycast(_muzzlePoint.position, direction, out RaycastHit hit, _config.Range, _config.HitMask))
             {
-                Debug.Log($"[Pistol] Попали в: {hit.collider.name}");
-                
+#if UNITY_EDITOR
+                Debug.DrawLine(_muzzlePoint.position, hit.point, Color.green, 2f);
+#endif
                 if (hit.collider.TryGetComponent(out IDamageable target))
                 {
                     target.TakeDamage(_config.Damage);
                 }
-                // Заглушка: Спавн декали попадания через PoolManager
+
+                // --- БЛОК: СПАВН ДЕКАЛИ ---
+                // --- БЛОК: СПАВН ДЕКАЛИ ---
+                if (_decalManager != null)
+                {
+                    _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
+                }
+            }
+            else
+            {
+#if UNITY_EDITOR
+                // --- ВИЗУАЛЬНЫЙ ДЕБАГ (КРАСНЫЙ ЛУЧ - ПРОМАХ) ---
+                Debug.DrawLine(_muzzlePoint.position, _muzzlePoint.position + direction * _config.Range, Color.red, 2f);
+#endif
             }
         }
 
