@@ -96,9 +96,36 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "WeaponTest",
+                    "name": "ScrollWeapon",
+                    "type": "Value",
+                    "id": "ff1e976d-b474-4dce-ab1d-c2cd2345da35",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Weapon1",
                     "type": "Button",
                     "id": "881a7062-115b-4aad-9869-6a0de63c9f91",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Weapon2",
+                    "type": "Button",
+                    "id": "61dcb794-7b02-4013-88a4-37a4ec38ce6c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Weapon3",
+                    "type": "Button",
+                    "id": "fcea0b57-4720-4c8b-b2c1-ce63e3b81506",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -262,12 +289,45 @@
                 },
                 {
                     "name": "",
+                    "id": "a0ae5e6f-370a-4a88-be78-a1a33417d689",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ScrollWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "805ff40d-b0e5-49ff-a5f2-9783273b3b1a",
                     "path": "<Keyboard>/1",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "WeaponTest",
+                    "action": "Weapon1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5df54323-35c9-4e7d-a80c-3ffdc364362a",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Weapon2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "05e1b2c3-be1b-4d58-a4a8-367bbe9db919",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Weapon3",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -118,9 +118,36 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""WeaponTest"",
+                    ""name"": ""ScrollWeapon"",
+                    ""type"": ""Value"",
+                    ""id"": ""ff1e976d-b474-4dce-ab1d-c2cd2345da35"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Weapon1"",
                     ""type"": ""Button"",
                     ""id"": ""881a7062-115b-4aad-9869-6a0de63c9f91"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Weapon2"",
+                    ""type"": ""Button"",
+                    ""id"": ""61dcb794-7b02-4013-88a4-37a4ec38ce6c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Weapon3"",
+                    ""type"": ""Button"",
+                    ""id"": ""fcea0b57-4720-4c8b-b2c1-ce63e3b81506"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -284,12 +311,45 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""a0ae5e6f-370a-4a88-be78-a1a33417d689"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""805ff40d-b0e5-49ff-a5f2-9783273b3b1a"",
                     ""path"": ""<Keyboard>/1"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""WeaponTest"",
+                    ""action"": ""Weapon1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5df54323-35c9-4e7d-a80c-3ffdc364362a"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Weapon2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""05e1b2c3-be1b-4d58-a4a8-367bbe9db919"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Weapon3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -310,7 +370,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_Roll = m_Player.FindAction("Roll", throwIfNotFound: true);
-        m_Player_WeaponTest = m_Player.FindAction("WeaponTest", throwIfNotFound: true);
+        m_Player_ScrollWeapon = m_Player.FindAction("ScrollWeapon", throwIfNotFound: true);
+        m_Player_Weapon1 = m_Player.FindAction("Weapon1", throwIfNotFound: true);
+        m_Player_Weapon2 = m_Player.FindAction("Weapon2", throwIfNotFound: true);
+        m_Player_Weapon3 = m_Player.FindAction("Weapon3", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -382,7 +445,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Run;
     private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_Roll;
-    private readonly InputAction m_Player_WeaponTest;
+    private readonly InputAction m_Player_ScrollWeapon;
+    private readonly InputAction m_Player_Weapon1;
+    private readonly InputAction m_Player_Weapon2;
+    private readonly InputAction m_Player_Weapon3;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -397,7 +463,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Run => m_Wrapper.m_Player_Run;
         public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
         public InputAction @Roll => m_Wrapper.m_Player_Roll;
-        public InputAction @WeaponTest => m_Wrapper.m_Player_WeaponTest;
+        public InputAction @ScrollWeapon => m_Wrapper.m_Player_ScrollWeapon;
+        public InputAction @Weapon1 => m_Wrapper.m_Player_Weapon1;
+        public InputAction @Weapon2 => m_Wrapper.m_Player_Weapon2;
+        public InputAction @Weapon3 => m_Wrapper.m_Player_Weapon3;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -437,9 +506,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Roll.started += instance.OnRoll;
             @Roll.performed += instance.OnRoll;
             @Roll.canceled += instance.OnRoll;
-            @WeaponTest.started += instance.OnWeaponTest;
-            @WeaponTest.performed += instance.OnWeaponTest;
-            @WeaponTest.canceled += instance.OnWeaponTest;
+            @ScrollWeapon.started += instance.OnScrollWeapon;
+            @ScrollWeapon.performed += instance.OnScrollWeapon;
+            @ScrollWeapon.canceled += instance.OnScrollWeapon;
+            @Weapon1.started += instance.OnWeapon1;
+            @Weapon1.performed += instance.OnWeapon1;
+            @Weapon1.canceled += instance.OnWeapon1;
+            @Weapon2.started += instance.OnWeapon2;
+            @Weapon2.performed += instance.OnWeapon2;
+            @Weapon2.canceled += instance.OnWeapon2;
+            @Weapon3.started += instance.OnWeapon3;
+            @Weapon3.performed += instance.OnWeapon3;
+            @Weapon3.canceled += instance.OnWeapon3;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -474,9 +552,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Roll.started -= instance.OnRoll;
             @Roll.performed -= instance.OnRoll;
             @Roll.canceled -= instance.OnRoll;
-            @WeaponTest.started -= instance.OnWeaponTest;
-            @WeaponTest.performed -= instance.OnWeaponTest;
-            @WeaponTest.canceled -= instance.OnWeaponTest;
+            @ScrollWeapon.started -= instance.OnScrollWeapon;
+            @ScrollWeapon.performed -= instance.OnScrollWeapon;
+            @ScrollWeapon.canceled -= instance.OnScrollWeapon;
+            @Weapon1.started -= instance.OnWeapon1;
+            @Weapon1.performed -= instance.OnWeapon1;
+            @Weapon1.canceled -= instance.OnWeapon1;
+            @Weapon2.started -= instance.OnWeapon2;
+            @Weapon2.performed -= instance.OnWeapon2;
+            @Weapon2.canceled -= instance.OnWeapon2;
+            @Weapon3.started -= instance.OnWeapon3;
+            @Weapon3.performed -= instance.OnWeapon3;
+            @Weapon3.canceled -= instance.OnWeapon3;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -506,6 +593,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnRun(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnRoll(InputAction.CallbackContext context);
-        void OnWeaponTest(InputAction.CallbackContext context);
+        void OnScrollWeapon(InputAction.CallbackContext context);
+        void OnWeapon1(InputAction.CallbackContext context);
+        void OnWeapon2(InputAction.CallbackContext context);
+        void OnWeapon3(InputAction.CallbackContext context);
     }
 }

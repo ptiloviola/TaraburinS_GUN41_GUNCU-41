@@ -81,6 +81,7 @@ namespace TpsShooter.Player
                 instantiator,
                 _weaponController,
                 transitionService,
+                inputService, // <--- Теперь передаем инпут сюда!
                 _weaponHandSocket,
                 _weaponBackSocket1,
                 _weaponBackSocket2

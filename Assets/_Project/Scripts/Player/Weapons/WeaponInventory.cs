@@ -1,16 +1,19 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using TpsShooter.Weapons.Core;
 using TpsShooter.Weapons.Configs;
+using TpsShooter.Services.Input;
 
 namespace TpsShooter.Player.Weapons
 {
-    public class WeaponInventory
+    public class WeaponInventory : IDisposable
     {
         private readonly IInstantiator _instantiator;
         private readonly PlayerWeaponController _weaponController;
-        private readonly WeaponTransitionService _transitionService; // Наш новый сервис
+        private readonly WeaponTransitionService _transitionService;
+        private readonly IInputService _inputService;
         
         private readonly Transform _handSocket;
         private readonly Transform _backSocket1;
@@ -18,14 +21,18 @@ namespace TpsShooter.Player.Weapons
 
         private readonly List<WeaponBase> _weapons = new List<WeaponBase>();
         private int _currentWeaponIndex = -1;
-        private const float TransitionDuration = 0.35f; // Время анимации переброса
+        private const float TransitionDuration = 0.35f; 
+        
+        private const int MaxWeapons = 2; // Жесткий лимит!
+        private bool _isTransitioning = false; 
 
         public WeaponBase CurrentWeapon { get; private set; }
 
         public WeaponInventory(
             IInstantiator instantiator,
             PlayerWeaponController weaponController,
-            WeaponTransitionService transitionService, // Добавили в конструктор
+            WeaponTransitionService transitionService,
+            IInputService inputService,
             Transform handSocket,
             Transform backSocket1,
             Transform backSocket2)
@@ -33,80 +40,88 @@ namespace TpsShooter.Player.Weapons
             _instantiator = instantiator;
             _weaponController = weaponController;
             _transitionService = transitionService;
+            _inputService = inputService;
             _handSocket = handSocket;
             _backSocket1 = backSocket1;
             _backSocket2 = backSocket2;
+
+            _inputService.OnWeaponSelect += EquipWeapon;
+            _inputService.OnWeaponScroll += HandleScroll;
         }
 
-        // Добавили worldPosition, чтобы пушка летела оттуда, где лежала
         public void AddWeapon(WeaponBase weaponPrefab, WeaponConfig config, Vector3 worldPosition)
         {
-            if (_weapons.Count >= 3)
+            if (_weapons.Count >= MaxWeapons)
             {
-                Debug.LogWarning("Инвентарь полон!");
-                return;
+                Debug.LogWarning("[Inventory] Инвентарь полон! 2 пушки уже есть.");
+                // В будущем здесь мы вызовем метод DropCurrentWeapon(), чтобы выбросить старую пушку на землю
+                return; 
             }
 
             WeaponBase newWeapon = _instantiator.InstantiatePrefabForComponent<WeaponBase>(weaponPrefab.gameObject);
             newWeapon.Initialize(config);
             
-            // Ставим пушку туда, где был пикап
             newWeapon.transform.position = worldPosition; 
             newWeapon.transform.rotation = Quaternion.identity;
             
             _weapons.Add(newWeapon);
+            int newWeaponIndex = _weapons.Count - 1;
 
-            if (_weapons.Count == 1)
+            if (_weapons.Count == 1) 
             {
-                // Если это первая пушка, летим сразу в руку
                 EquipWeapon(0);
             }
-            else
+            else 
             {
-                // Если рука занята, пушка летит за спину
-                PutWeaponOnBack(newWeapon, _weapons.Count);
+                // Жестко отправляем на спину в соответствующий индекс-слот
+                PutWeaponOnBack(newWeapon, newWeaponIndex); 
             }
         }
 
         public void EquipWeapon(int index)
         {
-            if (index < 0 || index >= _weapons.Count || index == _currentWeaponIndex) return;
+            if (index < 0 || index >= _weapons.Count || index == _currentWeaponIndex || _isTransitioning) return;
 
-            // Если в руках что-то есть, плавно убираем за спину
+            _isTransitioning = true;
+
             if (CurrentWeapon != null)
             {
-                PutWeaponOnBack(CurrentWeapon, _currentWeaponIndex + 1);
+                PutWeaponOnBack(CurrentWeapon, _currentWeaponIndex);
             }
 
             _currentWeaponIndex = index;
             CurrentWeapon = _weapons[_currentWeaponIndex];
 
-            // Плавно достаем новое оружие в руку
             _transitionService.MoveWeaponToSocket(CurrentWeapon.transform, _handSocket, TransitionDuration, () =>
             {
-                // Оповещаем контроллер (чтобы левая рука прилипла через IK) ТОЛЬКО когда пушка долетела!
                 _weaponController.OnWeaponEquipped(CurrentWeapon);
+                _isTransitioning = false; 
             });
         }
 
         private void PutWeaponOnBack(WeaponBase weapon, int slotNumber)
         {
-            // Четко привязываем индекс слота к нужному сокету
+            // Жесткая привязка: 0 = Сокет 1 (например, для винтовки), 1 = Сокет 2 (например, на поясе для пистолета)
             Transform targetSocket = slotNumber == 0 ? _backSocket1 : _backSocket2;
             _transitionService.MoveWeaponToSocket(weapon.transform, targetSocket, TransitionDuration);
-            
         }
 
-        public void ToggleNextWeapon()
+        private void HandleScroll(int direction)
         {
-            // Если пушек нет или она всего одна — переключать нечего
-            if (_weapons.Count <= 1) return;
+            if (_weapons.Count <= 1 || _isTransitioning) return;
 
-            // Считаем индекс следующего оружия по кругу
-            int nextIndex = (_currentWeaponIndex + 1) % _weapons.Count;
-            
-            // Вызываем уже готовый метод экипировки
+            int nextIndex = _currentWeaponIndex + direction;
+
+            if (nextIndex >= _weapons.Count) nextIndex = 0;
+            else if (nextIndex < 0) nextIndex = _weapons.Count - 1;
+
             EquipWeapon(nextIndex);
+        }
+
+        public void Dispose()
+        {
+            _inputService.OnWeaponSelect -= EquipWeapon;
+            _inputService.OnWeaponScroll -= HandleScroll;
         }
     }
 }
