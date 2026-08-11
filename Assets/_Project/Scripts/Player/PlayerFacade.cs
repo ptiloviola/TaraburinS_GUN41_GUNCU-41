@@ -50,6 +50,7 @@ namespace TpsShooter.Player
                 return 0f;
             }
         }
+        public WeaponInventory WeaponInventory => _weaponInventory;
 
         [Inject]
         public void Construct(IInputService inputService, PlayerConfig config, IInstantiator instantiator)
@@ -72,7 +73,7 @@ namespace TpsShooter.Player
                 _weaponController, transitionService, inputService, transform, 
                 _weaponHandSocket, _weaponBackSocket1, _weaponBackSocket2);
 
-            _interactionSensor = new PlayerInteractionSensor(transform, _weaponInventory);
+            _interactionSensor = new PlayerInteractionSensor(transform);
 
             // --- ИНИЦИАЛИЗАЦИЯ БЛИЖНЕГО БОЯ ---
             _meleeController = new PlayerMeleeController(animator, transform);
