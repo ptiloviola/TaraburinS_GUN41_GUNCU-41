@@ -21,6 +21,7 @@ namespace TpsShooter.Player.Weapons
         private readonly Transform _aimTarget;
         
         private static readonly int IsArmedHash = Animator.StringToHash("IsArmed");
+        private static readonly int MeleePunchStateHash = Animator.StringToHash("MeleePunch");
         private const int UpperBodyLayerIndex = 1;
 
         public WeaponBase CurrentWeapon { get; private set; }
@@ -71,54 +72,52 @@ namespace TpsShooter.Player.Weapons
             IsAiming = isAiming;
         }
 
-        public void Tick(float deltaTime)
+public void Tick(float deltaTime)
         {
             // --- 1. ГЛОБАЛЬНЫЙ ПРИЦЕЛ И СТРЕЛЬБА ---
             if (_cameraTransform != null && _aimTarget != null)
             {
-                // По умолчанию цель далеко впереди
                 Vector3 finalTargetPosition = _cameraTransform.position + _cameraTransform.forward * 50f;
 
-                // УМНОЕ ПРИЦЕЛИВАНИЕ ИЗ КАМЕРЫ:
-                // Если мы вооружены, пускаем луч из камеры, чтобы узнать, на что реально смотрит крестик
                 if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
                 {
                     if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out RaycastHit camHit, 100f, CurrentWeapon.Config.HitMask))
                     {
-                        finalTargetPosition = camHit.point; // Крестик смотрит прямо на объект!
+                        finalTargetPosition = camHit.point; 
                     }
                 }
-
                 _aimTarget.position = finalTargetPosition;
             }
 
-            // Обработка инпута (Edge Detection)
             bool isFiringNow = _inputService != null && _inputService.IsFiring;
             bool isTriggerPulled = isFiringNow && !_wasFiring; 
             _wasFiring = isFiringNow; 
 
             if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
             {
-                bool isAuto = CurrentWeapon.Config.IsAutomatic;
-                bool canFire = isAuto ? isFiringNow : isTriggerPulled;
-                
+                bool canFire = CurrentWeapon.Config.IsAutomatic ? isFiringNow : isTriggerPulled;
                 if (canFire)
                 {
-                    // --- ДЕТЕКТИВНЫЙ ЛОГ ---
-                    Debug.Log($"<color=magenta>[DEBUG]</color> Стреляем! isAuto={isAuto} | isTriggerPulled={isTriggerPulled}");
-                    
                     CurrentWeapon.TryFire(_aimTarget.position);
                 }
             }
-            // ---------------------------------------
 
-            // 2. Вычисляем целевой вес для анимаций прицеливания
+            // --- 2. ВЫЧИСЛЕНИЕ ВЕСОВ (ИСПРАВЛЕНО ДЛЯ MELEE) ---
+            
+            // Проверяем, проигрывается ли сейчас анимация удара (по нашему хэшу)
+            bool isMeleeing = _animator.GetCurrentAnimatorStateInfo(UpperBodyLayerIndex).shortNameHash == MeleePunchStateHash;
+
+            // Вес слоя: 1, если целимся ИЛИ если бьем
+            float targetLayerWeight = (IsArmed && IsAiming) || isMeleeing ? 1f : 0f;
+            
+            // Вес прицеливания (для спины и рук): 1, только если целимся
             float targetAimWeight = (IsArmed && IsAiming) ? 1f : 0f;
+            
             float lerpSpeed = deltaTime * 15f;
 
-            // 3. Слои Аниматора
+            // 3. Слои Аниматора (теперь слой включается во время удара!)
             float currentLayerWeight = _animator.GetLayerWeight(UpperBodyLayerIndex);
-            _animator.SetLayerWeight(UpperBodyLayerIndex, Mathf.Lerp(currentLayerWeight, targetAimWeight, lerpSpeed));
+            _animator.SetLayerWeight(UpperBodyLayerIndex, Mathf.Lerp(currentLayerWeight, targetLayerWeight, lerpSpeed));
 
             // 4. Поворот спины
             if (_weaponRig != null) 
@@ -130,7 +129,6 @@ namespace TpsShooter.Player.Weapons
             if (IsArmed && CurrentWeapon != null)
             {
                 Transform weaponTransform = CurrentWeapon.transform;
-                
                 if (IsAiming)
                 {
                     weaponTransform.localPosition = Vector3.Lerp(weaponTransform.localPosition, CurrentWeapon.AimPositionOffset, lerpSpeed);
@@ -156,7 +154,11 @@ namespace TpsShooter.Player.Weapons
                 _leftHandIkTarget.rotation = CurrentWeapon.LeftHandGripPoint.rotation;
                 
                 if (_leftHandIK != null) 
-                    _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, targetAimWeight, lerpSpeed);
+                {
+                    // Если бьем - отпускаем левую руку (вес 0)
+                    float leftHandTargetWeight = (targetAimWeight > 0f && !isMeleeing) ? 1f : 0f;
+                    _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, leftHandTargetWeight, lerpSpeed * 2f);
+                }
             }
         }
     }
