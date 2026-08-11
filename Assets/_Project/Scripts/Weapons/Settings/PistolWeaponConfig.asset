@@ -30,7 +30,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   MuzzleFlashPrefab: {fileID: 0}
-  DefaultDecalPrefab: {fileID: 7880165934403104407, guid: 1a614a5c783f65245a2eed956f6e8d97, type: 3}
   TracerPrefab: {fileID: 0}
   ShellCasingPrefab: {fileID: 0}
   SmokePrefab: {fileID: 0}

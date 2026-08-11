@@ -1,4 +1,5 @@
 using UnityEngine;
+using Zenject; // <--- Добавили Zenject
 using TpsShooter.Interactables;
 using TpsShooter.Weapons.Configs;
 using TpsShooter.Weapons.Core;
@@ -20,6 +21,15 @@ namespace TpsShooter.Environment
         [SerializeField] private WeaponConfig _rifleConfig;
         [SerializeField] private WeaponBase _riflePrefab;
 
+        private IInstantiator _instantiator;
+
+        // Zenject сам вызовет этот метод при старте сцены и передаст инстанциатор
+        [Inject]
+        public void Construct(IInstantiator instantiator)
+        {
+            _instantiator = instantiator;
+        }
+
         private void Start()
         {
             SpawnInitialWeapons();
@@ -27,7 +37,7 @@ namespace TpsShooter.Environment
 
         private void SpawnInitialWeapons()
         {
-            if (_spawnPoints.Length < 2) return;
+            if (_spawnPoints == null || _spawnPoints.Length < 2) return;
 
             SpawnWeapon(_pistolConfig, _pistolPrefab, _spawnPoints[0]);
             SpawnWeapon(_rifleConfig, _riflePrefab, _spawnPoints[1]);
@@ -35,20 +45,18 @@ namespace TpsShooter.Environment
 
         private void SpawnWeapon(WeaponConfig config, WeaponBase weaponPrefab, Transform spawnPoint)
         {
-            // 1. Создаем корневой триггер
-            WeaponPickup pickup = Instantiate(_basePickupPrefab, spawnPoint.position, spawnPoint.rotation);
+            // 1. Используем Zenject для создания пикапа
+            WeaponPickup pickup = _instantiator.InstantiatePrefabForComponent<WeaponPickup>(
+                _basePickupPrefab.gameObject, spawnPoint.position, spawnPoint.rotation, null);
 
-            // 2. Создаем ЖИВОЕ оружие и инициализируем его патронами из конфига
-            WeaponBase weaponInstance = Instantiate(weaponPrefab, pickup.transform);
-            weaponInstance.Initialize(config);
+            // 2. ВАЖНО: Используем Zenject для создания пушки! Теперь DecalManager прокинется внутрь.
+            WeaponBase weaponInstance = _instantiator.InstantiatePrefabForComponent<WeaponBase>(
+                weaponPrefab.gameObject, pickup.transform);
             
-            // 3. Отключаем скрипт, чтобы оружие не стреляло с пола
+            weaponInstance.Initialize(config);
             weaponInstance.enabled = false;
             
-            // 4. Вешаем красивую анимацию левитации на саму пушку
             weaponInstance.gameObject.AddComponent<PickupAnimator>();
-
-            // 5. Передаем инстанс в пикап
             pickup.Initialize(weaponInstance);
         }
     }

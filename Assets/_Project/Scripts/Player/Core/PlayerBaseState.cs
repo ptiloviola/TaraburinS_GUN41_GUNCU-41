@@ -1,6 +1,7 @@
 using UnityEngine;
+using TpsShooter.Player.Core;
 
-namespace TpsShooter.Player.Core
+namespace TpsShooter.Player.States
 {
     public abstract class PlayerBaseState : IPlayerState
     {
@@ -12,8 +13,8 @@ namespace TpsShooter.Player.Core
         protected static readonly int IsCrouchingHash = Animator.StringToHash("IsCrouching");
 
         // --- Избавляемся от магических чисел ---
-        protected const float StickToGroundVelocity = -2f; // Скорость прилипания к полу
-        protected const float InputThreshold = 0.01f;      // Порог срабатывания стика/клавиш
+        protected const float StickToGroundVelocity = -2f; 
+        protected const float InputThreshold = 0.01f;      
 
         protected readonly PlayerContext Ctx;
         protected readonly PlayerStateMachine StateMachine;
@@ -29,14 +30,12 @@ namespace TpsShooter.Player.Core
         public virtual void Tick(float deltaTime) 
         {
             ApplyGravity(deltaTime);
-            // Эта логика теперь выполняется КАЖДЫЙ кадр в ЛЮБОМ состоянии, 
-            // которое вызывает base.Tick(deltaTime);
-            HandleShooting();
+            // БОЛЬШЕ НИКАКОГО HandleShooting() ЗДЕСЬ!
         }
         
         public virtual void Exit() { }
         
-        public virtual void HandleJump() { } // По умолчанию ничего не делаем
+        public virtual void HandleJump() { } 
 
         protected void ApplyGravity(float deltaTime)
         {
@@ -57,36 +56,6 @@ namespace TpsShooter.Player.Core
             
             // Проверка ввода через константу
             Ctx.Animator.SetBool(IsMovingHash, Ctx.Input.MoveAxis.sqrMagnitude > InputThreshold);
-        }
-
-        // Делаем метод виртуальным, чтобы наследники могли его запретить
-        protected virtual void HandleShooting()
-        {
-            // 1. Проверяем инпут и наличие оружия
-            if (!Ctx.Input.IsFiring || Ctx.WeaponInventory.CurrentWeapon == null) 
-                return;
-
-            // 2. Ищем точку прицеливания от камеры
-            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
-            Ray cameraRay = UnityEngine.Camera.main.ScreenPointToRay(screenCenter);
-            Vector3 targetPoint;
-
-            // ВАЖНО: Камера не должна попадать лучом в самого игрока (иначе мы будем стрелять себе в затылок).
-            // В идеале тут нужен LayerMask, исключающий слой Player. 
-            // Пока берем все слои кроме IgnoreRaycast.
-            int mask = ~LayerMask.GetMask("Ignore Raycast", "Player");
-
-            if (Physics.Raycast(cameraRay, out RaycastHit hit, 1000f, mask))
-            {
-                targetPoint = hit.point;
-            }
-            else
-            {
-                targetPoint = cameraRay.GetPoint(1000f);
-            }
-
-            // 3. Отдаем команду пушке
-            Ctx.WeaponInventory.CurrentWeapon.TryFire(targetPoint);
         }
     }
 }

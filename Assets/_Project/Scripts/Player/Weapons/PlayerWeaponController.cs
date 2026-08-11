@@ -94,17 +94,19 @@ namespace TpsShooter.Player.Weapons
 
             // Обработка инпута (Edge Detection)
             bool isFiringNow = _inputService != null && _inputService.IsFiring;
-            bool isTriggerPulled = isFiringNow && !_wasFiring; // Срабатывает только в 1-й кадр клика
-            _wasFiring = isFiringNow; // Запоминаем для следующего кадра
+            bool isTriggerPulled = isFiringNow && !_wasFiring; 
+            _wasFiring = isFiringNow; 
 
             if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
             {
-                // Если автомат - реагируем на удержание (isFiringNow)
-                // Если пистолет - только на свежий клик (isTriggerPulled)
-                bool canFire = CurrentWeapon.Config.IsAutomatic ? isFiringNow : isTriggerPulled;
+                bool isAuto = CurrentWeapon.Config.IsAutomatic;
+                bool canFire = isAuto ? isFiringNow : isTriggerPulled;
                 
                 if (canFire)
                 {
+                    // --- ДЕТЕКТИВНЫЙ ЛОГ ---
+                    Debug.Log($"<color=magenta>[DEBUG]</color> Стреляем! isAuto={isAuto} | isTriggerPulled={isTriggerPulled}");
+                    
                     CurrentWeapon.TryFire(_aimTarget.position);
                 }
             }
