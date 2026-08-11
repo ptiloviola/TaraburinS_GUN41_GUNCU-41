@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5673310857916542389}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LeftHandGrip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 7808590448141575902}
   - component: {fileID: 6407126708965081035}
   - component: {fileID: 2298598569425816652}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: G-17 Mag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8979236926369127974}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,7 +156,7 @@ GameObject:
   - component: {fileID: 5690705590106231787}
   - component: {fileID: 4966109703415660411}
   - component: {fileID: 3953419686289965241}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: tps_guns_1_pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8210038179700786204}
   - component: {fileID: 8272612338521340879}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: weapon_pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 7677323378605969246}
   - component: {fileID: 3217536458603953455}
   - component: {fileID: 1362595841066115598}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: G-17 slide
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7057017142520579517}
   - component: {fileID: 7691623521051308260}
   - component: {fileID: 4306269768374484641}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: L85A2 Mag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3887591025349361116}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LeftHandGrip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8793715827344310800}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,7 +156,7 @@ GameObject:
   - component: {fileID: 5538223254505741454}
   - component: {fileID: 3734930747515542084}
   - component: {fileID: 7157920383329124706}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: L85A2 chamber charging handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 2532933305196051048}
   - component: {fileID: 1949428837579583193}
   - component: {fileID: 1706180884043239134}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: tps_guns_1_assault_rifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -326,7 +326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 200783140952910565}
   - component: {fileID: 2407257601844311330}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: weapon_assault_rifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -377,7 +377,7 @@ GameObject:
   - component: {fileID: 1198157091466793669}
   - component: {fileID: 1362834259079630559}
   - component: {fileID: 3005326301161719760}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: L85A2 trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}

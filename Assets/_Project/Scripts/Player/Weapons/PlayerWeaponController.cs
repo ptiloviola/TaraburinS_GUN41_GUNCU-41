@@ -22,6 +22,7 @@ namespace TpsShooter.Player.Weapons
         
         private static readonly int IsArmedHash = Animator.StringToHash("IsArmed");
         private static readonly int MeleePunchStateHash = Animator.StringToHash("MeleePunch");
+        private static readonly int RollStateHash = Animator.StringToHash("Roll");
         private const int UpperBodyLayerIndex = 1;
 
         public WeaponBase CurrentWeapon { get; private set; }
@@ -72,64 +73,87 @@ namespace TpsShooter.Player.Weapons
             IsAiming = isAiming;
         }
 
-public void Tick(float deltaTime)
+        public void Tick(float deltaTime)
         {
             // --- 1. ГЛОБАЛЬНЫЙ ПРИЦЕЛ И СТРЕЛЬБА ---
             if (_cameraTransform != null && _aimTarget != null)
             {
-                Vector3 finalTargetPosition = _cameraTransform.position + _cameraTransform.forward * 50f;
+                // =========================================================
+                // А. ЖЕСТКАЯ ПРИВЯЗКА ВИЗУАЛЬНОГО ТАРГЕТА (БЕЗ ФИЗИКИ)
+                // =========================================================
+                // Мы ЖЕСТКО говорим кубику: виси в 50 метрах перед камерой. 
+                // Никаких лучей. Никаких проверок на столкновения.
+                // Благодаря этому спина НИКОГДА не будет дергаться.
+                _aimTarget.position = _cameraTransform.position + _cameraTransform.forward * 50f;
+
+                // =========================================================
+                // Б. ФИЗИЧЕСКИЙ ЛУЧ (ТОЛЬКО ДЛЯ ПУЛЬ)
+                // =========================================================
+                // По умолчанию пули полетят туда же, куда смотрит спина
+                Vector3 shootTargetPosition = _aimTarget.position;
 
                 if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
                 {
-                    if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out RaycastHit camHit, 100f, CurrentWeapon.Config.HitMask))
+                    int safeMask = CurrentWeapon.Config.HitMask & ~LayerMask.GetMask("Player", "Ignore Raycast");
+
+                    // Кидаем физический луч сквозь уровень
+                    if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out RaycastHit camHit, 100f, safeMask))
                     {
-                        finalTargetPosition = camHit.point; 
+                        // Если луч во что-то врезался (стена, враг, пол), 
+                        // мы меняем цель ДЛЯ СТРЕЛЬБЫ, но НЕ ТРОГАЕМ AimTarget!
+                        shootTargetPosition = camHit.point; 
                     }
                 }
-                _aimTarget.position = finalTargetPosition;
-            }
 
-            bool isFiringNow = _inputService != null && _inputService.IsFiring;
-            bool isTriggerPulled = isFiringNow && !_wasFiring; 
-            _wasFiring = isFiringNow; 
+                // =========================================================
+                // В. ОБРАБОТКА СТРЕЛЬБЫ
+                // =========================================================
+                bool isFiringNow = _inputService != null && _inputService.IsFiring;
+                bool isTriggerPulled = isFiringNow && !_wasFiring; 
+                _wasFiring = isFiringNow; 
 
-            if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
-            {
-                bool canFire = CurrentWeapon.Config.IsAutomatic ? isFiringNow : isTriggerPulled;
-                if (canFire)
+                if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
                 {
-                    CurrentWeapon.TryFire(_aimTarget.position);
+                    bool canFire = CurrentWeapon.Config.IsAutomatic ? isFiringNow : isTriggerPulled;
+                    if (canFire)
+                    {
+                        // Передаем пушке физическую точку попадания
+                        CurrentWeapon.TryFire(shootTargetPosition);
+                    }
                 }
             }
 
-            // --- 2. ВЫЧИСЛЕНИЕ ВЕСОВ (ИСПРАВЛЕНО ДЛЯ MELEE) ---
-            
-            // Проверяем, проигрывается ли сейчас анимация удара (по нашему хэшу)
+            // --- 2. УМНОЕ ВЫЧИСЛЕНИЕ ВЕСОВ (ТЕПЕРЬ ПРАВИЛЬНОЕ) ---
             bool isMeleeing = _animator.GetCurrentAnimatorStateInfo(UpperBodyLayerIndex).shortNameHash == MeleePunchStateHash;
+            bool isRolling = _animator.GetCurrentAnimatorStateInfo(0).shortNameHash == RollStateHash;
 
-            // Вес слоя: 1, если целимся ИЛИ если бьем
-            float targetLayerWeight = (IsArmed && IsAiming) || isMeleeing ? 1f : 0f;
+            // 1. Вес слоя рук: 1, если мы вооружены (чтобы держать пушку от бедра), НО строго 0 во время переката
+            float targetLayerWeight = (IsArmed && !isRolling) ? 1f : 0f;
             
-            // Вес прицеливания (для спины и рук): 1, только если целимся
-            float targetAimWeight = (IsArmed && IsAiming) ? 1f : 0f;
+            // 2. Вес Риггинга (спина): 1, ТОЛЬКО когда мы целимся (ПКМ) и не бьем/не кувыркаемся!
+            float targetRigWeight = (IsArmed && IsAiming && !isMeleeing && !isRolling) ? 1f : 0f;
+
+            // 3. Вес левой руки: 1, всегда когда с пушкой, кроме рукопашки и переката
+            float leftHandTargetWeight = (IsArmed && !isMeleeing && !isRolling) ? 1f : 0f;
             
             float lerpSpeed = deltaTime * 15f;
 
-            // 3. Слои Аниматора (теперь слой включается во время удара!)
+            // --- 3. ПРИМЕНЯЕМ ВЕСА ---
+            // Слой Аниматора
             float currentLayerWeight = _animator.GetLayerWeight(UpperBodyLayerIndex);
             _animator.SetLayerWeight(UpperBodyLayerIndex, Mathf.Lerp(currentLayerWeight, targetLayerWeight, lerpSpeed));
 
-            // 4. Поворот спины
+            // Поворот спины (теперь сработает только при ПКМ!)
             if (_weaponRig != null) 
             {
-                _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, targetAimWeight, lerpSpeed);
+                _weaponRig.weight = Mathf.Lerp(_weaponRig.weight, targetRigWeight, lerpSpeed);
             }
 
-            // 5. Смещение оружия (ADS OFFSET)
+            // Смещение оружия к лицу (ADS)
             if (IsArmed && CurrentWeapon != null)
             {
                 Transform weaponTransform = CurrentWeapon.transform;
-                if (IsAiming)
+                if (IsAiming && !isMeleeing)
                 {
                     weaponTransform.localPosition = Vector3.Lerp(weaponTransform.localPosition, CurrentWeapon.AimPositionOffset, lerpSpeed);
                     weaponTransform.localRotation = Quaternion.Slerp(weaponTransform.localRotation, Quaternion.Euler(CurrentWeapon.AimRotationOffset), lerpSpeed);
@@ -141,7 +165,7 @@ public void Tick(float deltaTime)
                 }
             }
 
-            // 6. Левая рука
+            // Левая рука (теперь не зависит от того, гнется спина или нет)
             if (!IsArmed || CurrentWeapon == null || CurrentWeapon.LeftHandGripPoint == null)
             {
                 if (_leftHandIK != null) _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, 0f, lerpSpeed);
@@ -155,11 +179,11 @@ public void Tick(float deltaTime)
                 
                 if (_leftHandIK != null) 
                 {
-                    // Если бьем - отпускаем левую руку (вес 0)
-                    float leftHandTargetWeight = (targetAimWeight > 0f && !isMeleeing) ? 1f : 0f;
                     _leftHandIK.weight = Mathf.Lerp(_leftHandIK.weight, leftHandTargetWeight, lerpSpeed * 2f);
                 }
             }
         }
+
+
     }
 }
