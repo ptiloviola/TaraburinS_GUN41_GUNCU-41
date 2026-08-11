@@ -16,6 +16,7 @@ namespace TpsShooter.Services.Input
         // Новые события для инвентаря
         event Action<int> OnWeaponSelect; // Передаем индекс (0, 1, 2)
         event Action<int> OnWeaponScroll; // Передаем направление (+1 или -1)
+        event Action OnDropWeapon;
         
         event Action OnJump;
         event Action OnReload;

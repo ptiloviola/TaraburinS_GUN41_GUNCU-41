@@ -1,27 +1,23 @@
 using UnityEngine;
 using TpsShooter.Weapons.Core;
-using TpsShooter.Weapons.Configs;
 
 namespace TpsShooter.Interactables
 {
     [RequireComponent(typeof(Collider))]
     public class WeaponPickup : MonoBehaviour
     {
-        // Храним данные, которые отдадим Инвентарю
-        public WeaponConfig Config { get; private set; }
-        public WeaponBase WeaponPrefab { get; private set; }
+        // Храним саму "живую" пушку
+        public WeaponBase WeaponInstance { get; private set; }
 
-        public void Initialize(WeaponConfig config, WeaponBase weaponPrefab)
+        public void Initialize(WeaponBase weaponInstance)
         {
-            Config = config;
-            WeaponPrefab = weaponPrefab;
+            WeaponInstance = weaponInstance;
         }
 
-        // Этот метод вызовет игрок, когда подберет предмет
         public void Collect()
         {
-            // Позже, когда добавим Object Pool, мы будем возвращать пикап в пул,
-            // а не уничтожать. Пока для прототипа используем Destroy.
+            // Пушку мы не трогаем (она уходит в руки игрока),
+            // уничтожаем только этот пустой объект-триггер, который служил для нее контейнером на земле
             Destroy(gameObject);
         }
     }

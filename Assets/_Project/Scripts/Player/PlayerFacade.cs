@@ -78,10 +78,10 @@ namespace TpsShooter.Player
 
             // 2. Создаем Инвентарь, прокидываем в него сервис переходов
             _weaponInventory = new WeaponInventory(
-                instantiator,
                 _weaponController,
                 transitionService,
-                inputService, // <--- Теперь передаем инпут сюда!
+                inputService,
+                transform, 
                 _weaponHandSocket,
                 _weaponBackSocket1,
                 _weaponBackSocket2

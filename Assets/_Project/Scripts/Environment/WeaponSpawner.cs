@@ -8,7 +8,6 @@ namespace TpsShooter.Environment
     public class WeaponSpawner : MonoBehaviour
     {
         [Header("Prefabs")]
-        [Tooltip("Пустой префаб с триггером и скриптом WeaponPickup")]
         [SerializeField] private WeaponPickup _basePickupPrefab; 
         
         [Header("Spawn Points")]
@@ -28,11 +27,7 @@ namespace TpsShooter.Environment
 
         private void SpawnInitialWeapons()
         {
-            if (_spawnPoints.Length < 2)
-            {
-                Debug.LogWarning("[WeaponSpawner] Недостаточно точек спавна! Нужно минимум 2.");
-                return;
-            }
+            if (_spawnPoints.Length < 2) return;
 
             SpawnWeapon(_pistolConfig, _pistolPrefab, _spawnPoints[0]);
             SpawnWeapon(_rifleConfig, _riflePrefab, _spawnPoints[1]);
@@ -40,18 +35,21 @@ namespace TpsShooter.Environment
 
         private void SpawnWeapon(WeaponConfig config, WeaponBase weaponPrefab, Transform spawnPoint)
         {
-            // 1. Создаем корневой объект-триггер
+            // 1. Создаем корневой триггер
             WeaponPickup pickup = Instantiate(_basePickupPrefab, spawnPoint.position, spawnPoint.rotation);
-            pickup.Initialize(config, weaponPrefab);
 
-            // 2. Создаем визуальную 3D-модель оружия как дочернюю
-            WeaponBase visualModel = Instantiate(weaponPrefab, pickup.transform);
+            // 2. Создаем ЖИВОЕ оружие и инициализируем его патронами из конфига
+            WeaponBase weaponInstance = Instantiate(weaponPrefab, pickup.transform);
+            weaponInstance.Initialize(config);
             
-            // 3. Отключаем боевую логику, так как на земле это просто визуал
-            Destroy(visualModel.GetComponent<WeaponBase>());
+            // 3. Отключаем скрипт, чтобы оружие не стреляло с пола
+            weaponInstance.enabled = false;
             
-            // 4. Добавляем красивую анимацию левитации
-            visualModel.gameObject.AddComponent<PickupAnimator>();
+            // 4. Вешаем красивую анимацию левитации на саму пушку
+            weaponInstance.gameObject.AddComponent<PickupAnimator>();
+
+            // 5. Передаем инстанс в пикап
+            pickup.Initialize(weaponInstance);
         }
     }
 }

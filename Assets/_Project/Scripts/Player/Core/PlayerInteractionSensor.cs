@@ -9,7 +9,6 @@ namespace TpsShooter.Player.Core
         private readonly Transform _playerTransform;
         private readonly WeaponInventory _inventory;
         
-        // Буфер для результатов физики без аллокации памяти (GC Alloc = 0)
         private readonly Collider[] _colliders = new Collider[5]; 
         private readonly float _radius;
 
@@ -22,13 +21,14 @@ namespace TpsShooter.Player.Core
 
         public void Tick()
         {
-            // Сканируем сферу вокруг игрока каждый кадр. 
-            // QueryTriggerInteraction.Collide позволяет находить наши триггеры WeaponPickup
+            // Если инвентарь полон, нет смысла проверять физику
+            if (_inventory.IsFull) return;
+
             int count = Physics.OverlapSphereNonAlloc(
                 _playerTransform.position, 
                 _radius, 
                 _colliders, 
-                ~0, // Маска всех слоев. В идеале позже вынесем нужный LayerMask в конфиг
+                ~0, 
                 QueryTriggerInteraction.Collide
             );
 
@@ -36,9 +36,10 @@ namespace TpsShooter.Player.Core
             {
                 if (_colliders[i].TryGetComponent(out WeaponPickup pickup))
                 {
-                    Debug.Log($"[Interaction] Подобран предмет: {pickup.Config.WeaponName}");
+                    Debug.Log($"[Interaction] Подобран предмет: {pickup.WeaponInstance.Config.WeaponName}");
                     
-                    _inventory.AddWeapon(pickup.WeaponPrefab, pickup.Config, pickup.transform.position);
+                    // Передаем ЖИВУЮ пушку в инвентарь
+                    _inventory.AddWeapon(pickup.WeaponInstance);
                     pickup.Collect();
                 }
             }

@@ -145,7 +145,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Weapon3"",
+                    ""name"": ""DropWeapon"",
                     ""type"": ""Button"",
                     ""id"": ""fcea0b57-4720-4c8b-b2c1-ce63e3b81506"",
                     ""expectedControlType"": ""Button"",
@@ -345,11 +345,11 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""05e1b2c3-be1b-4d58-a4a8-367bbe9db919"",
-                    ""path"": ""<Keyboard>/3"",
+                    ""path"": ""<Keyboard>/g"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Weapon3"",
+                    ""action"": ""DropWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -373,7 +373,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_ScrollWeapon = m_Player.FindAction("ScrollWeapon", throwIfNotFound: true);
         m_Player_Weapon1 = m_Player.FindAction("Weapon1", throwIfNotFound: true);
         m_Player_Weapon2 = m_Player.FindAction("Weapon2", throwIfNotFound: true);
-        m_Player_Weapon3 = m_Player.FindAction("Weapon3", throwIfNotFound: true);
+        m_Player_DropWeapon = m_Player.FindAction("DropWeapon", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -448,7 +448,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ScrollWeapon;
     private readonly InputAction m_Player_Weapon1;
     private readonly InputAction m_Player_Weapon2;
-    private readonly InputAction m_Player_Weapon3;
+    private readonly InputAction m_Player_DropWeapon;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -466,7 +466,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @ScrollWeapon => m_Wrapper.m_Player_ScrollWeapon;
         public InputAction @Weapon1 => m_Wrapper.m_Player_Weapon1;
         public InputAction @Weapon2 => m_Wrapper.m_Player_Weapon2;
-        public InputAction @Weapon3 => m_Wrapper.m_Player_Weapon3;
+        public InputAction @DropWeapon => m_Wrapper.m_Player_DropWeapon;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -515,9 +515,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Weapon2.started += instance.OnWeapon2;
             @Weapon2.performed += instance.OnWeapon2;
             @Weapon2.canceled += instance.OnWeapon2;
-            @Weapon3.started += instance.OnWeapon3;
-            @Weapon3.performed += instance.OnWeapon3;
-            @Weapon3.canceled += instance.OnWeapon3;
+            @DropWeapon.started += instance.OnDropWeapon;
+            @DropWeapon.performed += instance.OnDropWeapon;
+            @DropWeapon.canceled += instance.OnDropWeapon;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -561,9 +561,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Weapon2.started -= instance.OnWeapon2;
             @Weapon2.performed -= instance.OnWeapon2;
             @Weapon2.canceled -= instance.OnWeapon2;
-            @Weapon3.started -= instance.OnWeapon3;
-            @Weapon3.performed -= instance.OnWeapon3;
-            @Weapon3.canceled -= instance.OnWeapon3;
+            @DropWeapon.started -= instance.OnDropWeapon;
+            @DropWeapon.performed -= instance.OnDropWeapon;
+            @DropWeapon.canceled -= instance.OnDropWeapon;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -596,6 +596,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnScrollWeapon(InputAction.CallbackContext context);
         void OnWeapon1(InputAction.CallbackContext context);
         void OnWeapon2(InputAction.CallbackContext context);
-        void OnWeapon3(InputAction.CallbackContext context);
+        void OnDropWeapon(InputAction.CallbackContext context);
     }
 }

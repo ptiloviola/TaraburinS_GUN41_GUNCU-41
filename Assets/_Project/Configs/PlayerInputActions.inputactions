@@ -123,7 +123,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Weapon3",
+                    "name": "DropWeapon",
                     "type": "Button",
                     "id": "fcea0b57-4720-4c8b-b2c1-ce63e3b81506",
                     "expectedControlType": "Button",
@@ -323,11 +323,11 @@
                 {
                     "name": "",
                     "id": "05e1b2c3-be1b-4d58-a4a8-367bbe9db919",
-                    "path": "<Keyboard>/3",
+                    "path": "<Keyboard>/g",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Weapon3",
+                    "action": "DropWeapon",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

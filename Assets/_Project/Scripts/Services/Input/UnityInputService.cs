@@ -19,6 +19,7 @@ namespace TpsShooter.Services.Input
         // Новые события для инвентаря
         public event Action<int> OnWeaponSelect;
         public event Action<int> OnWeaponScroll;
+        public event Action OnDropWeapon; // <--- Добавили реализацию события из интерфейса
 
         public event Action OnJump;
         public event Action OnReload;
@@ -37,8 +38,10 @@ namespace TpsShooter.Services.Input
             // Подписки на смену оружия
             _input.Player.Weapon1.performed += OnWeapon1Performed;
             _input.Player.Weapon2.performed += OnWeapon2Performed;
-            _input.Player.Weapon3.performed += OnWeapon3Performed;
             _input.Player.ScrollWeapon.performed += OnScrollPerformed;
+            
+            // Подписка на выброс оружия
+            _input.Player.DropWeapon.performed += OnDropWeaponPerformed; // <--- Добавили
         }
 
         public void Dispose()
@@ -52,8 +55,10 @@ namespace TpsShooter.Services.Input
 
             _input.Player.Weapon1.performed -= OnWeapon1Performed;
             _input.Player.Weapon2.performed -= OnWeapon2Performed;
-            _input.Player.Weapon3.performed -= OnWeapon3Performed;
             _input.Player.ScrollWeapon.performed -= OnScrollPerformed;
+            
+            // Отписка от выброса оружия
+            _input.Player.DropWeapon.performed -= OnDropWeaponPerformed; // <--- Добавили
             
             // Очищаем сам объект инпута
             _input.Dispose();
@@ -66,7 +71,6 @@ namespace TpsShooter.Services.Input
 
         private void OnWeapon1Performed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnWeaponSelect?.Invoke(0);
         private void OnWeapon2Performed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnWeaponSelect?.Invoke(1);
-        private void OnWeapon3Performed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnWeaponSelect?.Invoke(2);
 
         private void OnScrollPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
         {
@@ -74,5 +78,8 @@ namespace TpsShooter.Services.Input
             if (scrollY > 0) OnWeaponScroll?.Invoke(1);      // Скролл вверх -> Следующее оружие
             else if (scrollY < 0) OnWeaponScroll?.Invoke(-1); // Скролл вниз -> Предыдущее оружие
         }
+
+        // <--- Обработчик для выброса оружия
+        private void OnDropWeaponPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnDropWeapon?.Invoke();
     }
 }
