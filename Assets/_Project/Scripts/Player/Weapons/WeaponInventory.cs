@@ -4,7 +4,8 @@ using UnityEngine;
 using Zenject;
 using TpsShooter.Weapons.Core;
 using TpsShooter.Services.Input;
-using TpsShooter.Interactables; 
+using TpsShooter.Interactables;
+using TpsShooter.Environment;
 
 namespace TpsShooter.Player.Weapons
 {
@@ -23,7 +24,8 @@ namespace TpsShooter.Player.Weapons
         private int _currentWeaponIndex = -1;
         private const float TransitionDuration = 0.35f; 
         private const int MaxWeapons = 2; 
-        private bool _isTransitioning = false; 
+        private bool _isTransitioning = false;
+        private readonly LootFactory _lootFactory;
 
         public bool IsFull => _weapons.Count >= MaxWeapons;
         public WeaponBase CurrentWeapon { get; private set; }
@@ -35,7 +37,8 @@ namespace TpsShooter.Player.Weapons
             Transform playerTransform, 
             Transform handSocket,
             Transform backSocket1,
-            Transform backSocket2)
+            Transform backSocket2,
+            LootFactory lootFactory)
         {
             _weaponController = weaponController;
             _transitionService = transitionService;
@@ -44,6 +47,7 @@ namespace TpsShooter.Player.Weapons
             _handSocket = handSocket;
             _backSocket1 = backSocket1;
             _backSocket2 = backSocket2;
+            _lootFactory = lootFactory;
 
             _inputService.OnWeaponSelect += EquipWeapon;
             _inputService.OnWeaponScroll += HandleScroll;
@@ -108,7 +112,6 @@ namespace TpsShooter.Player.Weapons
 
             WeaponBase weaponToDrop = CurrentWeapon;
             
-            // --- УЛУЧШЕННЫЕ ЛОГИ ---
             Debug.Log($"<color=yellow>[Inventory]</color> Выбрасываем оружие: {weaponToDrop.Config.WeaponName}");
 
             // 1. Убираем из инвентаря
@@ -116,33 +119,11 @@ namespace TpsShooter.Player.Weapons
             CurrentWeapon = null;
             _currentWeaponIndex = -1;
 
-            // 2. Создаем ПУСТОЙ объект-контейнер
-            GameObject pickupObj = new GameObject($"Pickup_{weaponToDrop.Config.WeaponName}");
-            
-            // --- НОВАЯ ПОЗИЦИЯ: ДАЛЬШЕ И ВПРАВО ---
-            // 2 метра вперед, 1.5 метра вправо, полметра над землей
+            // 2. Рассчитываем позицию сброса
             Vector3 dropPos = _playerTransform.position + _playerTransform.forward * 2.0f + _playerTransform.right * 1.5f + Vector3.up * 0.5f;
-            pickupObj.transform.position = dropPos;
-
-            // Настраиваем триггер
-            SphereCollider col = pickupObj.AddComponent<SphereCollider>();
-            col.isTrigger = true;
-            // УМЕНЬШИЛИ РАДИУС! Теперь игрок не подберет пушку, пока реально к ней не подойдет
-            col.radius = 0.5f; 
             
-            WeaponPickup pickup = pickupObj.AddComponent<WeaponPickup>();
-            pickup.Initialize(weaponToDrop);
-
-            // 3. Отключаем пушку, привязываем к триггеру и вешаем аниматор вращения
-            weaponToDrop.enabled = false;
-            weaponToDrop.transform.SetParent(pickup.transform);
-            weaponToDrop.transform.localPosition = Vector3.zero;
-            weaponToDrop.transform.localRotation = Quaternion.identity;
-
-            if (weaponToDrop.GetComponent<PickupAnimator>() == null)
-            {
-                weaponToDrop.gameObject.AddComponent<PickupAnimator>();
-            }
+            // 3. ВЫЗЫВАЕМ ФАБРИКУ (вся грязная работа теперь там)
+            _lootFactory.DropLiveWeapon(weaponToDrop, dropPos, Quaternion.identity);
 
             // 4. Достаем оставшееся оружие (или остаемся с пустыми руками)
             if (_weapons.Count > 0)

@@ -3,6 +3,7 @@ using Zenject;
 using TpsShooter.Player;
 using TpsShooter.Effects;
 using TpsShooter.Player.Configs; // Подключаем пространство имен с конфигами
+using TpsShooter.Environment;
 
 namespace TpsShooter.Infrastructure
 {
@@ -32,6 +33,8 @@ namespace TpsShooter.Infrastructure
 
             // 4. Биндим Presenter (Zenject сам его создаст и свяжет с View и Model)
             Container.BindInterfacesAndSelfTo<TpsShooter.UI.Presenters.PlayerHUDPresenter>().AsSingle();
+            
+            Container.Bind<LootFactory>().AsSingle();
         }
     }
 }

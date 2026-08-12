@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Health
   Icon: {fileID: 0}
-  Prefab: {fileID: 0}
+  Prefab: {fileID: 9027775805896835447, guid: 812d9a0e626a3e441bb544f3a4a232ed, type: 3}
   HealAmount: 25

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: AmmoPistol
   Icon: {fileID: 0}
-  Prefab: {fileID: 0}
+  Prefab: {fileID: 61205793794937103, guid: 437b45149b073474fa0097c0575cb1b0, type: 3}
   AmmoType: 0
-  Amount: 30
+  Amount: 15

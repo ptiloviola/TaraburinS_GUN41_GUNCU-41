@@ -9,6 +9,7 @@ using TpsShooter.Player.Weapons;
 using TpsShooter.Player.Combat; // <-- Для Melee
 using UnityEngine.Animations.Rigging;
 using TpsShooter.Player.Inventory;
+using TpsShooter.Environment;
 
 namespace TpsShooter.Player
 {
@@ -60,7 +61,8 @@ namespace TpsShooter.Player
             PlayerConfig config, 
             PlayerInventoryConfig inventoryConfig, // <--- НОВЫЙ КОНФИГ
             IInstantiator instantiator,
-            PlayerInventoryModel inventoryModel)
+            PlayerInventoryModel inventoryModel,
+            LootFactory lootFactory)
         {
             _inputService = inputService;
             Transform camTransform = UnityEngine.Camera.main != null ? UnityEngine.Camera.main.transform : null;
@@ -78,7 +80,8 @@ namespace TpsShooter.Player
 
             _weaponInventory = new WeaponInventory(
                 _weaponController, transitionService, inputService, transform, 
-                _weaponHandSocket, _weaponBackSocket1, _weaponBackSocket2);
+                _weaponHandSocket, _weaponBackSocket1, _weaponBackSocket2,
+                lootFactory);
 
             _interactionSensor = new PlayerInteractionSensor(transform);
 

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6c0371c7047383459083e1ea9c5d111, type: 3}
+  m_Name: LevelLootConfig
+  m_EditorClassIdentifier: 
+  LootToSpawn:
+  - ItemToSpawn: {fileID: 11400000, guid: 13301179cf667ff4387a6607d48b6101, type: 2}
+    Amount: 2
+  - ItemToSpawn: {fileID: 11400000, guid: fc5d81348eb9c0e4bbb56d7bbb960e7a, type: 2}
+    Amount: 3
+  - ItemToSpawn: {fileID: 11400000, guid: 8251b89b64579c24c9f00e8bcbaa1d8f, type: 2}
+    Amount: 2
+  - ItemToSpawn: {fileID: 11400000, guid: b89cd93081355334eb64db476a8b6aba, type: 2}
+    Amount: 3
+  - ItemToSpawn: {fileID: 11400000, guid: ef12704c151b0d24e8d084d916cac355, type: 2}
+    Amount: 5
