@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using TpsShooter.Player.Inventory;
 
 namespace TpsShooter.Weapons.Configs
 {
@@ -26,6 +27,7 @@ namespace TpsShooter.Weapons.Configs
         public bool IsAutomatic = true; // True для винтовки, False для пистолета
 
         [Header("Ammo & Magazine")]
+        public AmmoType WeaponAmmoType;
         public int AmmoPerClip = 30; // Магазин
         public int MaxReserveAmmo = 90; // Запас
 

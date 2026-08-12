@@ -25,6 +25,9 @@ namespace TpsShooter.Weapons.Core
         public float CurrentSpread => _currentSpread; // Публичный геттер для UI прицела
 
         public WeaponConfig Config => _config;
+        public int CurrentAmmoInClip => _currentAmmoInClip;
+        public int CurrentReserveAmmo => _currentReserveAmmo;
+        public int TotalAmmo => _currentAmmoInClip + _currentReserveAmmo;
 
         [Inject] protected DecalManager _decalManager;
 

@@ -50,6 +50,15 @@ namespace TpsShooter.Player.Weapons
             _inputService.OnDropWeapon += DropCurrentWeapon;
         }
 
+        public bool HasWeapon(string weaponName)
+        {
+            foreach (var weapon in _weapons)
+            {
+                if (weapon.Config.WeaponName == weaponName) return true;
+            }
+            return false;
+        }
+
         // Теперь мы принимаем ЖИВУЮ пушку
         public void AddWeapon(WeaponBase weaponInstance)
         {
