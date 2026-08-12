@@ -1,5 +1,6 @@
 using UnityEngine;
 using TpsShooter.Player;
+using TpsShooter.Items.Configs;
 
 namespace TpsShooter.Interactables
 {
@@ -7,7 +8,8 @@ namespace TpsShooter.Interactables
     public class HealthPickup : MonoBehaviour, IPickable
     {
         // Пока оставим хил в инспекторе, позже можем вынести в HealthItemConfig
-        [SerializeField] private float _healAmount = 25f; 
+
+        [SerializeField] private HealthItemConfig _config;
         private bool _isCollected = false; // Защита от двойного подбора в одном кадре
 
         // 1. АВТОМАТИЧЕСКИЙ ПОДБОР ПРИ КАСАНИИ
@@ -26,10 +28,10 @@ namespace TpsShooter.Interactables
 
             if (collector.TryGetComponent(out PlayerFacade playerFacade))
             {
-                if (playerFacade.InventoryModel.TryHeal(_healAmount))
+                if (playerFacade.InventoryModel.TryHeal(_config.HealAmount))
                 {
                     _isCollected = true;
-                    Debug.Log($"<color=green>[Interaction]</color> Подобрана аптечка. Восстановлено {_healAmount} ХП. Текущее ХП: {playerFacade.InventoryModel.CurrentHealth}");
+                    Debug.Log($"<color=green>[Interaction]</color> Подобрана аптечка. Восстановлено {_config.HealAmount} ХП. Текущее ХП: {playerFacade.InventoryModel.CurrentHealth}");
                     
                     Destroy(gameObject); 
                     return true; 

@@ -16,8 +16,9 @@ MonoBehaviour:
   Damage: 10
   Range: 100
   IsAutomatic: 0
-  AmmoPerClip: 30
-  MaxReserveAmmo: 90
+  WeaponAmmoType: 0
+  AmmoPerClip: 15
+  MaxReserveAmmo: 45
   FireRate: 0.1
   ReloadTime: 2
   BaseSpread: 0

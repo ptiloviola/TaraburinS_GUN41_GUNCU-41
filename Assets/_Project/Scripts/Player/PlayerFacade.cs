@@ -59,7 +59,8 @@ namespace TpsShooter.Player
             IInputService inputService, 
             PlayerConfig config, 
             PlayerInventoryConfig inventoryConfig, // <--- НОВЫЙ КОНФИГ
-            IInstantiator instantiator)
+            IInstantiator instantiator,
+            PlayerInventoryModel inventoryModel)
         {
             _inputService = inputService;
             Transform camTransform = UnityEngine.Camera.main != null ? UnityEngine.Camera.main.transform : null;
@@ -81,20 +82,10 @@ namespace TpsShooter.Player
 
             _interactionSensor = new PlayerInteractionSensor(transform);
 
-            // --- ИНИЦИАЛИЗАЦИЯ ИНВЕНТАРЯ И СТАТОВ ЧЕРЕЗ КОНФИГ ---
-            InventoryModel = new TpsShooter.Player.Inventory.PlayerInventoryModel(
-                inventoryConfig.MaxHealth, 
-                inventoryConfig.StartingHealth
-            );
+            InventoryModel = inventoryModel;
+
             
-            // Если нужно установить начальное здоровье (отличное от полного):
-            // Для этого в PlayerInventoryModel можно добавить метод SetHealth(inventoryConfig.StartingHealth);
-            
-            // Инициализируем лимиты патронов, проходясь по списку из конфига
-            foreach (var limit in inventoryConfig.AmmoLimits)
-            {
-                InventoryModel.InitializeAmmoCapacity(limit.Type, limit.MaxCapacity);
-            }
+
 
             // --- ИНИЦИАЛИЗАЦИЯ БЛИЖНЕГО БОЯ ---
             _meleeController = new PlayerMeleeController(animator, transform);

@@ -19,17 +19,18 @@ namespace TpsShooter.Weapons.Core
 
         protected WeaponConfig _config;
         protected int _currentAmmoInClip;
-        protected int _currentReserveAmmo;
         protected float _lastFireTime;
         protected float _currentSpread; // Защищенное поле для внутренних расчетов
         public float CurrentSpread => _currentSpread; // Публичный геттер для UI прицела
 
         public WeaponConfig Config => _config;
+
         public int CurrentAmmoInClip => _currentAmmoInClip;
-        public int CurrentReserveAmmo => _currentReserveAmmo;
-        public int TotalAmmo => _currentAmmoInClip + _currentReserveAmmo;
+
+        public int TotalAmmo => _currentAmmoInClip;
 
         [Inject] protected DecalManager _decalManager;
+        [Inject] protected TpsShooter.Player.Inventory.PlayerInventoryModel _inventoryModel; // <--- ДОБАВЛЕНО
 
         private void Awake()
         {
@@ -43,7 +44,6 @@ namespace TpsShooter.Weapons.Core
         {
             _config = config;
             _currentAmmoInClip = config.AmmoPerClip;
-            _currentReserveAmmo = config.MaxReserveAmmo;
             Debug.Log($"[WeaponBase] Оружие {gameObject.name} инициализировано! Патронов: {_currentAmmoInClip}");
         }
 
@@ -81,16 +81,23 @@ namespace TpsShooter.Weapons.Core
         public virtual void Reload()
         {
             if (_config == null) return;
-            if (_currentAmmoInClip == _config.AmmoPerClip || _currentReserveAmmo <= 0) return;
+            if (_currentAmmoInClip == _config.AmmoPerClip) return; // Магазин полон
 
             int ammoNeeded = _config.AmmoPerClip - _currentAmmoInClip;
-            int ammoToReload = Mathf.Min(ammoNeeded, _currentReserveAmmo);
+            
+            // ПРОСИМ ПАТРОНЫ ИЗ ГЛОБАЛЬНОГО ИНВЕНТАРЯ
+            int ammoReceived = _inventoryModel.ConsumeAmmo(_config.WeaponAmmoType, ammoNeeded);
 
-            _currentAmmoInClip += ammoToReload;
-            _currentReserveAmmo -= ammoToReload;
-
-            Debug.Log($"[WeaponBase] Перезарядка! В магазине: {_currentAmmoInClip}, в запасе: {_currentReserveAmmo}");
-            PlayReloadSound();
+            if (ammoReceived > 0)
+            {
+                _currentAmmoInClip += ammoReceived;
+                Debug.Log($"[WeaponBase] Перезарядка! Заряжено {ammoReceived}. В магазине: {_currentAmmoInClip}");
+                PlayReloadSound();
+            }
+            else
+            {
+                Debug.Log($"[WeaponBase] Нет патронов типа {_config.WeaponAmmoType} в инвентаре!");
+            }
         }
 
         public bool IsClipEmpty() 

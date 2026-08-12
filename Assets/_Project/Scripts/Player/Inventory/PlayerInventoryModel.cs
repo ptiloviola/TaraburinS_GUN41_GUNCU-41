@@ -1,68 +1,74 @@
 using System;
 using System.Collections.Generic;
+using TpsShooter.Player.Configs; // Для доступа к PlayerInventoryConfig
+using Zenject; // Для IInitializable
 
 namespace TpsShooter.Player.Inventory
 {
-    // Простой enum для типов патронов. Позже можно вынести в отдельный файл.
-    public enum AmmoType 
-    { 
-        Pistol, 
-        Rifle, 
-        Shotgun 
-    }
+    public enum AmmoType { Pistol, Rifle, Shotgun }
 
-    public class PlayerInventoryModel
+    // Реализуем IInitializable, чтобы Zenject сам вызвал настройку при старте
+    public class PlayerInventoryModel : IInitializable
     {
-        // --- ЗДОРОВЬЕ ---
         public float MaxHealth { get; private set; }
         public float CurrentHealth { get; private set; }
 
-        // --- ПАТРОНЫ ---
         private readonly Dictionary<AmmoType, int> _ammo = new Dictionary<AmmoType, int>();
         private readonly Dictionary<AmmoType, int> _maxAmmo = new Dictionary<AmmoType, int>();
+        private readonly PlayerInventoryConfig _config;
 
-        // --- СОБЫТИЯ ДЛЯ UI (OBSERVER) ---
-        public event Action<float, float> OnHealthChanged; // Current, Max
-        public event Action<AmmoType, int> OnAmmoChanged;  // Type, CurrentAmount
+        public event Action<float, float> OnHealthChanged;
+        public event Action<AmmoType, int> OnAmmoChanged;
 
-        public PlayerInventoryModel(float maxHealth, float startingHealth)
+        // Zenject автоматически передаст конфиг при создании
+        public PlayerInventoryModel(PlayerInventoryConfig config)
         {
-            MaxHealth = maxHealth;
-            CurrentHealth = startingHealth;
+            _config = config;
         }
 
-        // --- ЛОГИКА АПТЕЧЕК ---
+        // Zenject вызовет это при старте сцены
+        public void Initialize()
+        {
+            MaxHealth = _config.MaxHealth;
+            CurrentHealth = _config.StartingHealth;
+
+            foreach (var limit in _config.AmmoLimits)
+            {
+                _ammo[limit.Type] = 0;
+                _maxAmmo[limit.Type] = limit.MaxCapacity;
+            }
+        }
+
         public bool TryHeal(float amount)
         {
-            if (CurrentHealth >= MaxHealth) return false; // Здоровье уже полное, не подбираем
-
-            CurrentHealth += amount;
-            if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
-
+            if (CurrentHealth >= MaxHealth) return false;
+            CurrentHealth = Math.Min(CurrentHealth + amount, MaxHealth);
             OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
             return true;
         }
 
-        // --- ЛОГИКА ПАТРОНОВ ---
-        public void InitializeAmmoCapacity(AmmoType type, int maxCapacity)
-        {
-            if (!_ammo.ContainsKey(type))
-            {
-                _ammo[type] = 0;
-                _maxAmmo[type] = maxCapacity;
-            }
-        }
-
         public bool TryAddAmmo(AmmoType type, int amount)
         {
-            if (!_ammo.ContainsKey(type)) return false; // Если такой тип не инициализирован
-            if (_ammo[type] >= _maxAmmo[type]) return false; // Карманы полны
+            if (!_ammo.ContainsKey(type)) return false;
+            if (_ammo[type] >= _maxAmmo[type]) return false;
 
-            _ammo[type] += amount;
-            if (_ammo[type] > _maxAmmo[type]) _ammo[type] = _maxAmmo[type];
-
+            _ammo[type] = Math.Min(_ammo[type] + amount, _maxAmmo[type]);
             OnAmmoChanged?.Invoke(type, _ammo[type]);
             return true;
         }
+
+        // --- НОВЫЙ МЕТОД ДЛЯ ПЕРЕЗАРЯДКИ ОРУЖИЯ ---
+        public int ConsumeAmmo(AmmoType type, int amountNeeded)
+        {
+            if (!_ammo.ContainsKey(type) || _ammo[type] <= 0) return 0;
+
+            int amountToTake = Math.Min(_ammo[type], amountNeeded);
+            _ammo[type] -= amountToTake;
+            OnAmmoChanged?.Invoke(type, _ammo[type]);
+            
+            return amountToTake; // Возвращаем, сколько реально патронов смогли дать
+        }
+
+        public int GetAmmo(AmmoType type) => _ammo.ContainsKey(type) ? _ammo[type] : 0;
     }
 }

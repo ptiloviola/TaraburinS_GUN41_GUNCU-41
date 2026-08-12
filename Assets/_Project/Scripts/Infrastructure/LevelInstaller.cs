@@ -17,20 +17,21 @@ namespace TpsShooter.Infrastructure
 
         public override void InstallBindings()
         {
-            // 1. Биндим конфиг инвентаря
-            // BindInstance берет конкретный объект из Инспектора и кладет его в контейнер
             Container.BindInstance(_inventoryConfig);
 
-            // 2. Биндим фасад игрока
-            Container.Bind<PlayerFacade>()
-                     .FromComponentInHierarchy()
-                     .AsSingle()
-                     .NonLazy();
+            // 1. Биндим Модель Инвентаря (InterfacesAndSelfTo автоматически вызовет Initialize)
+            Container.BindInterfacesAndSelfTo<TpsShooter.Player.Inventory.PlayerInventoryModel>().AsSingle();
+
+            // 2. Фасад
+            Container.Bind<PlayerFacade>().FromComponentInHierarchy().AsSingle().NonLazy();
                      
-            // 3. Биндим менеджер декалей
-            Container.Bind<DecalManager>()
-                     .FromComponentInHierarchy()
-                     .AsSingle();
+            Container.Bind<DecalManager>().FromComponentInHierarchy().AsSingle();
+
+            // 3. Биндим View с Канваса
+            Container.Bind<TpsShooter.UI.PlayerHUDView>().FromComponentInHierarchy().AsSingle();
+
+            // 4. Биндим Presenter (Zenject сам его создаст и свяжет с View и Model)
+            Container.BindInterfacesAndSelfTo<TpsShooter.UI.Presenters.PlayerHUDPresenter>().AsSingle();
         }
     }
 }
