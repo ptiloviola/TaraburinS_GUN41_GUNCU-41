@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace TpsShooter.Player.Configs
 {
-    [CreateAssetMenu(fileName = "PlayerConfig", menuName = "TpsShooter/PlayerConfig")]
+    [CreateAssetMenu(fileName = "PlayerConfig", menuName = "TpsShooter/PlayerConfigs/PlayerConfig")]
     public class PlayerConfig : ScriptableObject
     {
         [Header("Movement")]
