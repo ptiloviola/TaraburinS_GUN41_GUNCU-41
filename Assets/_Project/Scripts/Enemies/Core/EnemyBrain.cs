@@ -6,6 +6,8 @@ using TpsShooter.Player;
 using TpsShooter.Enemies.Vision; // Добавлено для доступа к EnemySensor
 using TpsShooter.Enemies.States;
 using TpsShooter.Enemies.Weapons;
+using Zenject;
+using TpsShooter.Environment;
 
 namespace TpsShooter.Enemies.Core
 {
@@ -30,7 +32,15 @@ namespace TpsShooter.Enemies.Core
         public EnemyWeaponController WeaponController { get; private set; }
         
         public HealthEngine Health { get; private set; }
+        public LootFactory LootSpawner { get; private set; }
         private float _lastSensorTickTime;
+
+
+        [Inject]
+        public void Construct(LootFactory lootFactory)
+        {
+            LootSpawner = lootFactory;
+        }
 
         private void Awake()
         {

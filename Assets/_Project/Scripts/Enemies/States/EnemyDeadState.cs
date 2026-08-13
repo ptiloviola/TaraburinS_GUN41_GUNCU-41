@@ -20,13 +20,26 @@ namespace TpsShooter.Enemies.States
             _brain.Agent.isStopped = true;
             _brain.Agent.enabled = false;
 
-            // 2. Отключаем коллайдер, чтобы пули игрока больше не попадали в труп
-            if (_brain.TryGetComponent(out Collider collider))
+            // 2. Отключаем все хитбоксы, чтобы пули пролетали сквозь труп
+            var colliders = _brain.GetComponentsInChildren<Collider>();
+            foreach (var col in colliders)
             {
-                collider.enabled = false;
+                col.enabled = false;
             }
 
-            // Позже мы добавим сюда обращение к LootFactory для выброса пушки/аптечки!
+            // 3. ВЫПАДЕНИЕ ЛУТА (Используем твой точный метод SpawnLoot)
+            if (_brain.Config.DropLoot != null)
+            {
+                if (Random.value <= _brain.Config.DropChance)
+                {
+                    Debug.Log($"<color=cyan>[Loot]</color> Из врага выпал предмет: {_brain.Config.DropLoot.name}");
+                    
+                    // Спавним предмет немного приподнятым над землей
+                    Vector3 dropPosition = _brain.transform.position + Vector3.up * 0.5f;
+                    
+                    _brain.LootSpawner.SpawnLoot(_brain.Config.DropLoot, dropPosition, Quaternion.identity);
+                }
+            }
         }
 
         public void Tick()
