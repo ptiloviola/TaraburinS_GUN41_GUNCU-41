@@ -20,7 +20,7 @@ MonoBehaviour:
   JumpHeight: 3
   GroundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   GroundCheckRadius: 0.28
   GroundCheckDistance: 0.15
   AimFov: 20
