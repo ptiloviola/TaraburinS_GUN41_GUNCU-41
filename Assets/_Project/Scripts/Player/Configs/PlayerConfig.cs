@@ -15,6 +15,9 @@ namespace TpsShooter.Player.Configs
         public float Gravity = -15f;
         public float JumpHeight = 1.2f;
 
+        [Header("Stats")]
+        public float MaxHealth = 100f;
+
         [Header("Ground Check (Рейкасты)")]
         public LayerMask GroundMask;
         public float GroundCheckRadius = 0.28f; // Чуть меньше радиуса капсулы (0.3), чтобы не цеплять стены

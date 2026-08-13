@@ -10,11 +10,12 @@ using TpsShooter.Player.Combat; // <-- Для Melee
 using UnityEngine.Animations.Rigging;
 using TpsShooter.Player.Inventory;
 using TpsShooter.Environment;
+using TpsShooter.Combat;
 
 namespace TpsShooter.Player
 {
     [RequireComponent(typeof(CharacterController))]
-    public class PlayerFacade : MonoBehaviour
+    public class PlayerFacade : MonoBehaviour, IDamageable
     {
         private PlayerStateMachine _stateMachine;
         private PlayerContext _context;
@@ -42,6 +43,7 @@ namespace TpsShooter.Player
         // Новые компоненты для Melee
         private PlayerMeleeController _meleeController;
         private PlayerAnimationEvents _animEvents;
+        public HealthEngine Health { get; private set; }
 
         public float CurrentWeaponSpread 
         {
@@ -87,6 +89,9 @@ namespace TpsShooter.Player
 
             InventoryModel = inventoryModel;
 
+            Health = new HealthEngine(config.MaxHealth);
+            Health.OnDeath += HandleDeath;
+
             
 
 
@@ -117,6 +122,28 @@ namespace TpsShooter.Player
             _stateMachine.SwitchState<PlayerIdleState>();
         }
 
+        public void TakeDamage(float amount)
+        {
+            Health?.TakeDamage(amount);
+            Debug.Log($"<color=green>[Player]</color> Получил {amount} урона. ХП: {Health.CurrentHealth}");
+        }
+
+        private void HandleDeath()
+        {
+            Debug.Log("<color=green>[Player]</color> ИГРОК МЕРТВ!");
+            
+            // Блокируем управление
+            if (_inputService != null)
+            {
+                _inputService.OnJump -= OnJump;
+                _inputService.OnReload -= OnReload;
+                _inputService.OnMelee -= OnMelee;
+            }
+            
+            // Отключаем физику, чтобы капсула не двигалась
+            GetComponent<CharacterController>().enabled = false;
+        }
+
         private void OnEnable()
         {
             if (_inputService != null)
@@ -140,17 +167,25 @@ namespace TpsShooter.Player
         private void Update()
         {
             float deltaTime = Time.deltaTime;
-            _context.GroundSensor.Tick(); 
-            _interactionSensor?.Tick();
+            
+            // Если игрок жив - обновляем физику, сенсоры и стейт-машину
+            if (Health != null && !Health.IsDead)
+            {
+                _context.GroundSensor.Tick(); 
+                _interactionSensor?.Tick();
+                _stateMachine?.Tick(deltaTime);
+            }
+
+            // Оружие и камера обновляются независимо (камера может крутиться после смерти)
             _weaponController?.Tick(deltaTime);
             _cameraController?.Tick(deltaTime);
-            _stateMachine?.Tick(deltaTime);
         }
 
         private void OnDestroy()
         {
             _weaponInventory?.Dispose();
             if (_animEvents != null) _animEvents.OnMeleeStrike -= _meleeController.PerformStrike;
+            if (Health != null) Health.OnDeath -= HandleDeath; // Отписка
         }
 
         private void OnJump() => _stateMachine.HandleJump();

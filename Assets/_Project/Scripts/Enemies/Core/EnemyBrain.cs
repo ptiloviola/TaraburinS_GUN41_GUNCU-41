@@ -5,6 +5,7 @@ using TpsShooter.Enemies.Configs;
 using TpsShooter.Player;
 using TpsShooter.Enemies.Vision; // Добавлено для доступа к EnemySensor
 using TpsShooter.Enemies.States;
+using TpsShooter.Enemies.Weapons;
 
 namespace TpsShooter.Enemies.Core
 {
@@ -26,8 +27,9 @@ namespace TpsShooter.Enemies.Core
         // Системы (Чистый C#)
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemySensor Sensor { get; private set; }
+        public EnemyWeaponController WeaponController { get; private set; }
         
-        private float _currentHealth;
+        public HealthEngine Health { get; private set; }
         private float _lastSensorTickTime;
 
         private void Awake()
@@ -35,6 +37,12 @@ namespace TpsShooter.Enemies.Core
             Agent = GetComponent<NavMeshAgent>();
             StateMachine = new EnemyStateMachine();
             Sensor = new EnemySensor(this);
+            // Пытаемся получить контроллер. Если его нет — добавляем на лету
+            WeaponController = GetComponent<EnemyWeaponController>();
+            if (WeaponController == null)
+            {
+                WeaponController = gameObject.AddComponent<EnemyWeaponController>();
+            }
             
             // Временно ищем игрока на сцене. Позже это будет выдавать SpawnManager
             Target = FindObjectOfType<PlayerFacade>();
@@ -44,7 +52,11 @@ namespace TpsShooter.Enemies.Core
         {
             if (_config != null)
             {
-                _currentHealth = _config.MaxHealth;
+                // 3. ИНИЦИАЛИЗИРУЕМ ЗДОРОВЬЕ ВРАГА
+                Health = new HealthEngine(_config.MaxHealth);
+                Health.OnDeath += Die; // Подписываемся на собственную смерть
+
+                WeaponController.Initialize(_config);
                 
                 // ВНИМАНИЕ: Назначение скорости убрано отсюда!
                 // Ею будут управлять классы состояний (PatrolState / CombatState)
@@ -56,37 +68,47 @@ namespace TpsShooter.Enemies.Core
 
         private void Update()
         {
-            if (_currentHealth <= 0) return;
+            // 4. ПРОВЕРЯЕМ СТАТУС СМЕРТИ
+            if (Health == null || Health.IsDead) return;
             
-            // 1. Оптимизированный опрос сенсора зрения
             if (Time.time - _lastSensorTickTime >= _config.SensorTickRate)
             {
                 _lastSensorTickTime = Time.time;
                 Sensor.Tick();
             }
-
-            // 2. Обновление текущего состояния
             StateMachine.Tick();
         }
 
         public void TakeDamage(float amount)
         {
-            if (_currentHealth <= 0) return;
+            Health?.TakeDamage(amount);
+            Debug.Log($"<color=orange>[Enemy]</color> Получил {amount} урона. Осталось ХП: {Health?.CurrentHealth}");
 
-            _currentHealth -= amount;
-            Debug.Log($"<color=orange>[Enemy]</color> Получил {amount} урона. Осталось: {_currentHealth}");
-
-            if (_currentHealth <= 0)
+            // --- ДОБАВЛЯЕМ РЕАКЦИЮ НА УРОН ---
+            if (Health != null && !Health.IsDead)
             {
-                Die();
+                // Если мы гуляли и нас ударили - идем проверять, кто это сделал
+                if (StateMachine.CurrentState is States.EnemyPatrolState)
+                {
+                    if (Target != null)
+                    {
+                        // Запоминаем, откуда стрелял игрок, и переходим в поиск
+                        LastKnownTargetPosition = Target.transform.position;
+                        StateMachine.ChangeState(new States.EnemySearchState(this));
+                    }
+                }
             }
+        }
+
+        private void OnDestroy()
+        {
+            if (Health != null) Health.OnDeath -= Die;
         }
 
         private void Die()
         {
-            Debug.Log($"<color=red>[Enemy]</color> Умер!");
-            Agent.isStopped = true;
-            // TODO: Переключиться в EnemyDeadState, заспавнить лут из Фабрики
+            Debug.Log($"<color=black>[Enemy]</color> УМЕР!");
+            StateMachine.ChangeState(new EnemyDeadState(this));
         }
 
         private void OnDrawGizmosSelected()

@@ -1,5 +1,6 @@
 using UnityEngine;
 using TpsShooter.Enemies.Core;
+using TpsShooter.Enemies.Configs;
 
 namespace TpsShooter.Enemies.States
 {
@@ -64,7 +65,16 @@ namespace TpsShooter.Enemies.States
         private void PerformAttack()
         {
             _lastAttackTime = Time.time;
-            Debug.Log($"<color=red>[EnemyCombat]</color> Атака! (позже тут будет выстрел/удар)");
+            
+            if (_brain.Config.Type == EnemyType.Ranged)
+            {
+                _brain.WeaponController.TryFire(_brain.Target);
+            }
+            else
+            {
+                Debug.Log($"<color=red>[EnemyCombat]</color> Удар ближнего боя на {_brain.Config.MeleeDamage} урона!");
+                // Позже передадим урон через IDamageable игроку
+            }
         }
     }
 }

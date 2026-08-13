@@ -38,7 +38,10 @@ namespace TpsShooter.Enemies.Configs
         [Tooltip("Скорость полета пули для расчета упреждения")]
         public float ProjectileSpeed = 50f; 
         [Tooltip("Радиус разброса стрельбы (чтобы ИИ мазал)")]
-        public float AimInaccuracy = 1.5f; 
+        public float AimInaccuracy = 0.5f; 
+
+        [Tooltip("Дистанция, на которой разброс достигает максимума")]
+        public float MaxInaccuracyDistance = 20f;
 
         [Header("Loot Drop")]
         public ItemConfig DropLoot; 

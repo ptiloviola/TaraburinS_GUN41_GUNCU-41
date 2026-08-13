@@ -7,8 +7,6 @@ namespace TpsShooter.Interactables
     [RequireComponent(typeof(Collider))]
     public class HealthPickup : MonoBehaviour, IPickable
     {
-        // Пока оставим хил в инспекторе, позже можем вынести в HealthItemConfig
-
         [SerializeField] private HealthItemConfig _config;
         private bool _isCollected = false; // Защита от двойного подбора в одном кадре
 
@@ -28,17 +26,18 @@ namespace TpsShooter.Interactables
 
             if (collector.TryGetComponent(out PlayerFacade playerFacade))
             {
-                if (playerFacade.InventoryModel.TryHeal(_config.HealAmount))
+                // ОБНОВЛЕНО: Обращаемся к новому HealthEngine
+                if (playerFacade.Health != null && playerFacade.Health.TryHeal(_config.HealAmount))
                 {
                     _isCollected = true;
-                    Debug.Log($"<color=green>[Interaction]</color> Подобрана аптечка. Восстановлено {_config.HealAmount} ХП. Текущее ХП: {playerFacade.InventoryModel.CurrentHealth}");
+                    Debug.Log($"<color=green>[Interaction]</color> Подобрана аптечка. Восстановлено {_config.HealAmount} ХП. Текущее ХП: {playerFacade.Health.CurrentHealth}");
                     
                     Destroy(gameObject); 
                     return true; 
                 }
                 else
                 {
-                    Debug.Log($"<color=yellow>[Interaction]</color> Здоровье полное! Аптечка не подобрана.");
+                    Debug.Log($"<color=yellow>[Interaction]</color> Здоровье полное (или игрок мертв)! Аптечка не подобрана.");
                 }
             }
 

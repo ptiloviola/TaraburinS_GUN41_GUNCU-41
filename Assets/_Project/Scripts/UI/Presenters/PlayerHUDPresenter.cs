@@ -22,16 +22,16 @@ namespace TpsShooter.UI.Presenters
         public void Initialize()
         {
             // Подписываемся на события модели
-            _model.OnHealthChanged += HandleHealthChanged;
+            _player.Health.OnHealthChanged += HandleHealthChanged;
             _model.OnAmmoChanged += HandleAmmoChanged;
 
             // Обновляем UI начальными значениями
-            HandleHealthChanged(_model.CurrentHealth, _model.MaxHealth);
+            HandleHealthChanged(_player.Health.CurrentHealth, _player.Health.MaxHealth);
         }
 
         public void Dispose()
         {
-            _model.OnHealthChanged -= HandleHealthChanged;
+            _player.Health.OnHealthChanged -= HandleHealthChanged;
             _model.OnAmmoChanged -= HandleAmmoChanged;
         }
 
