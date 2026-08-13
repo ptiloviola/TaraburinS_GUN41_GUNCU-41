@@ -30,6 +30,8 @@ namespace TpsShooter.Enemies.Core
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemySensor Sensor { get; private set; }
         public EnemyWeaponController WeaponController { get; private set; }
+
+        public EnemyAnimator Animator { get; private set; }
         
         public HealthEngine Health { get; private set; }
         public LootFactory LootSpawner { get; private set; }
@@ -49,6 +51,7 @@ namespace TpsShooter.Enemies.Core
             Sensor = new EnemySensor(this);
             // Пытаемся получить контроллер. Если его нет — добавляем на лету
             WeaponController = GetComponent<EnemyWeaponController>();
+            Animator = GetComponentInChildren<EnemyAnimator>();
             if (WeaponController == null)
             {
                 WeaponController = gameObject.AddComponent<EnemyWeaponController>();
@@ -94,15 +97,16 @@ namespace TpsShooter.Enemies.Core
             Health?.TakeDamage(amount);
             Debug.Log($"<color=orange>[Enemy]</color> Получил {amount} урона. Осталось ХП: {Health?.CurrentHealth}");
 
-            // --- ДОБАВЛЯЕМ РЕАКЦИЮ НА УРОН ---
             if (Health != null && !Health.IsDead)
             {
-                // Если мы гуляли и нас ударили - идем проверять, кто это сделал
+                // ПРОИГРЫВАЕМ АНИМАЦИЮ ПОПАДАНИЯ
+                Animator?.PlayHit(); 
+
+                // Если гуляли - переключаемся в поиск
                 if (StateMachine.CurrentState is States.EnemyPatrolState)
                 {
                     if (Target != null)
                     {
-                        // Запоминаем, откуда стрелял игрок, и переходим в поиск
                         LastKnownTargetPosition = Target.transform.position;
                         StateMachine.ChangeState(new States.EnemySearchState(this));
                     }

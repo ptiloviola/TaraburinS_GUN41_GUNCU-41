@@ -19,6 +19,7 @@ namespace TpsShooter.Enemies.States
             // 1. Останавливаем агента навсегда
             _brain.Agent.isStopped = true;
             _brain.Agent.enabled = false;
+            _brain.Animator?.PlayDeath();
 
             // 2. Отключаем все хитбоксы, чтобы пули пролетали сквозь труп
             var colliders = _brain.GetComponentsInChildren<Collider>();

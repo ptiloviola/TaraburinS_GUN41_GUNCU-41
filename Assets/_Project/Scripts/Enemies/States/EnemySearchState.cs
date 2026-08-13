@@ -20,6 +20,7 @@ namespace TpsShooter.Enemies.States
             _brain.Agent.speed = _brain.Config.PatrolSpeed; // Осторожно идем к точке
             _brain.Agent.isStopped = false;
             _brain.Agent.SetDestination(_brain.LastKnownTargetPosition);
+            _brain.Animator?.PlayWalk();
             
             _searchTimer = 0f;
             _reachedLocation = false;
@@ -27,34 +28,28 @@ namespace TpsShooter.Enemies.States
 
         public void Tick()
         {
-            // Если во время поиска снова увидели игрока — мгновенно в бой!
             if (_brain.Sensor.IsTargetVisible)
             {
                 _brain.StateMachine.ChangeState(new EnemyCombatState(_brain));
                 return;
             }
 
-            // 1. Идем к точке, где последний раз видели игрока
             if (!_reachedLocation)
             {
                 if (!_brain.Agent.pathPending && _brain.Agent.remainingDistance <= 1f)
                 {
                     _reachedLocation = true;
-                    Debug.Log("<color=yellow>[EnemySearch]</color> Прибыл на место. Осматриваюсь...");
+                    Debug.Log("<color=yellow>[EnemySearch]</color> Осматриваюсь...");
+                    _brain.Animator?.PlayIdle(); // <--- ДОШЕЛ ДО МЕСТА - ОСТАНОВИЛСЯ
                 }
             }
-            // 2. Дошли. Осматриваемся.
             else
             {
                 _searchTimer += Time.deltaTime;
-                
-                // Имитируем осмотр по сторонам (крутимся)
                 _brain.transform.Rotate(Vector3.up, 60f * Time.deltaTime);
 
-                // Если время поиска вышло — сдаемся и идем в патруль
                 if (_searchTimer >= _brain.Config.SearchDuration)
                 {
-                    Debug.Log("<color=yellow>[EnemySearch]</color> Никого нет. Возвращаюсь в патруль.");
                     _brain.StateMachine.ChangeState(new EnemyPatrolState(_brain));
                 }
             }

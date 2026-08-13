@@ -33,8 +33,11 @@ namespace TpsShooter.Enemies.States
 
             if (distance > _brain.Config.AttackRange)
             {
-                // Игрок далеко - догоняем
-                _brain.Agent.isStopped = false;
+                if (_brain.Agent.isStopped) 
+                {
+                    _brain.Agent.isStopped = false;
+                    _brain.Animator?.PlayRun(); // <--- АГРЕССИВНЫЙ БЕГ
+                }
                 _brain.Agent.SetDestination(_brain.Target.transform.position);
             }
             else
@@ -68,12 +71,13 @@ namespace TpsShooter.Enemies.States
             
             if (_brain.Config.Type == EnemyType.Ranged)
             {
+                _brain.Animator?.PlayShoot(); // <--- АНИМАЦИЯ СТРЕЛЬБЫ
                 _brain.WeaponController.TryFire(_brain.Target);
             }
             else
             {
-                Debug.Log($"<color=red>[EnemyCombat]</color> Удар ближнего боя на {_brain.Config.MeleeDamage} урона!");
-                // Позже передадим урон через IDamageable игроку
+                _brain.Animator?.PlayMeleeAttack(); // <--- АНИМАЦИЯ УДАРА
+                // (Позже сюда добавим физический урон для милишника)
             }
         }
     }

@@ -18,6 +18,8 @@ namespace TpsShooter.Enemies.States
             Debug.Log("<color=green>[EnemyState]</color> Переход в PatrolState");
             _brain.Agent.speed = _brain.Config.PatrolSpeed;
             _brain.Agent.isStopped = false;
+            
+            _brain.Animator?.PlayWalk(); // <--- ТЕПЕРЬ ОН ШАГАЕТ, А НЕ БЕГАЕТ
             MoveToNextWaypoint();
         }
 
