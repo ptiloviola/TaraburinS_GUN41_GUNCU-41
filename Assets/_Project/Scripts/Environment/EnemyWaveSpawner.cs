@@ -3,9 +3,16 @@ using UnityEngine;
 using Zenject;
 using TpsShooter.Enemies.Configs;
 using TpsShooter.Enemies.Core;
+using System;
 
 namespace TpsShooter.Environment
 {
+    [Serializable]
+    public struct PatrolRoute
+    {
+        public string RouteName; // Просто для удобства в инспекторе (например, "Balcony" или "Center")
+        public Transform[] Waypoints;
+    }
     public class EnemyWaveSpawner : MonoBehaviour
     {
         [Header("Wave Settings")]
@@ -14,9 +21,11 @@ namespace TpsShooter.Environment
         [Tooltip("Точки на уровне, где будут появляться враги")]
         [SerializeField] private Transform[] _spawnPoints;
 
-        // <--- ДОБАВЛЕНО: Точки патрулирования комнаты --->
-        [Tooltip("Точки патрулирования комнаты. Будут переданы всем заспавненным врагам")]
-        [SerializeField] private Transform[] _roomPatrolPoints;
+        // 2. БИБЛИОТЕКА МАРШРУТОВ ЭТОЙ КОМНАТЫ
+        [Header("Routes Library")]
+        [Tooltip("Список доступных маршрутов. Индекс здесь совпадает с RouteIndex в конфиге волны.")]
+        [SerializeField] private PatrolRoute[] _patrolRoutes;
+
 
         private IEnemyFactory _enemyFactory;
 
@@ -68,10 +77,23 @@ namespace TpsShooter.Environment
                 return;
             }
 
-            Transform randomPoint = _spawnPoints[Random.Range(0, _spawnPoints.Length)];
+            Transform randomPoint = _spawnPoints[UnityEngine.Random.Range(0, _spawnPoints.Length)];
 
-            // <--- ИЗМЕНЕНО: Передаем _roomPatrolPoints в фабрику --->
-            _enemyFactory.Create(spawnData.BasePrefab, spawnData.Config, randomPoint.position, randomPoint.rotation, _roomPatrolPoints);
+            // 3. ПОЛУЧАЕМ НУЖНЫЙ МАРШРУТ ПО ИНДЕКСУ
+            Transform[] selectedRoute = null;
+            
+            // Проверяем, существует ли такой индекс в нашей библиотеке маршрутов
+            if (_patrolRoutes != null && spawnData.RouteIndex >= 0 && spawnData.RouteIndex < _patrolRoutes.Length)
+            {
+                selectedRoute = _patrolRoutes[spawnData.RouteIndex].Waypoints;
+            }
+            else
+            {
+                Debug.LogWarning($"<color=yellow>[Spawner]</color> Маршрут с индексом {spawnData.RouteIndex} не найден! Враг будет стоять на месте.");
+            }
+
+            // Передаем выбранный маршрут в фабрику
+            _enemyFactory.Create(spawnData.BasePrefab, spawnData.Config, randomPoint.position, randomPoint.rotation, selectedRoute);
         }
     }
 }

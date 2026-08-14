@@ -15,6 +15,8 @@ namespace TpsShooter.Enemies.Configs
         
         [Tooltip("Количество таких врагов в волне")]
         public int Count = 1;
+        [Tooltip("Индекс маршрута патрулирования из Спавнера (0 - первый маршрут, 1 - второй и т.д.)")]
+        public int RouteIndex = 0;
     }
 
     [Serializable]
