@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.AI;
+using Zenject;
 using TpsShooter.Combat;
 using TpsShooter.Enemies.Configs;
 using TpsShooter.Player;
-using TpsShooter.Enemies.Vision; // Добавлено для доступа к EnemySensor
+using TpsShooter.Enemies.Vision;
 using TpsShooter.Enemies.States;
 using TpsShooter.Enemies.Weapons;
-using Zenject;
 using TpsShooter.Environment;
 
 namespace TpsShooter.Enemies.Core
@@ -14,15 +14,14 @@ namespace TpsShooter.Enemies.Core
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyBrain : MonoBehaviour, IDamageable
     {
-        [SerializeField] private EnemyConfig _config;
 
-        [Header("Patrol Settings")]
-        [SerializeField] private Transform[] _patrolPoints;
-        
         // Компоненты (Контекст для стейтов)
         public NavMeshAgent Agent { get; private set; }
-        public EnemyConfig Config => _config;
-        public Transform[] PatrolPoints => _patrolPoints;
+        
+        // Конфиг теперь задается строго через Фабрику
+        public EnemyConfig Config { get; private set; }
+        
+        public Transform[] PatrolPoints { get; private set; }
         public PlayerFacade Target { get; private set; } 
         public Vector3 LastKnownTargetPosition { get; set; }
 
@@ -30,18 +29,19 @@ namespace TpsShooter.Enemies.Core
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemySensor Sensor { get; private set; }
         public EnemyWeaponController WeaponController { get; private set; }
-
         public EnemyAnimator Animator { get; private set; }
         
         public HealthEngine Health { get; private set; }
         public LootFactory LootSpawner { get; private set; }
+        
         private float _lastSensorTickTime;
 
-
+        // 1. СТРОГИЙ DI: Zenject прокинет Фабрику Лута и Игрока прямо сюда
         [Inject]
-        public void Construct(LootFactory lootFactory)
+        public void Construct(LootFactory lootFactory, PlayerFacade playerFacade)
         {
             LootSpawner = lootFactory;
+            Target = playerFacade; 
         }
 
         private void Awake()
@@ -49,42 +49,36 @@ namespace TpsShooter.Enemies.Core
             Agent = GetComponent<NavMeshAgent>();
             StateMachine = new EnemyStateMachine();
             Sensor = new EnemySensor(this);
-            // Пытаемся получить контроллер. Если его нет — добавляем на лету
             WeaponController = GetComponent<EnemyWeaponController>();
             Animator = GetComponentInChildren<EnemyAnimator>();
+            
             if (WeaponController == null)
             {
                 WeaponController = gameObject.AddComponent<EnemyWeaponController>();
             }
-            
-            // Временно ищем игрока на сцене. Позже это будет выдавать SpawnManager
-            Target = FindObjectOfType<PlayerFacade>();
         }
 
-        private void Start()
+        // 2. ИНИЦИАЛИЗАЦИЯ: Вызывается Фабрикой при спавне
+        public void Initialize(EnemyConfig config, Transform[] patrolPoints)
         {
-            if (_config != null)
-            {
-                // 3. ИНИЦИАЛИЗИРУЕМ ЗДОРОВЬЕ ВРАГА
-                Health = new HealthEngine(_config.MaxHealth);
-                Health.OnDeath += Die; // Подписываемся на собственную смерть
+            Config = config;
+            
+            // Защита: если точки не передали, пусть враг считает точкой патруля место своего спавна
+            PatrolPoints = (patrolPoints != null && patrolPoints.Length > 0) ? patrolPoints : new Transform[] { transform };
 
-                WeaponController.Initialize(_config);
-                
-                // ВНИМАНИЕ: Назначение скорости убрано отсюда!
-                // Ею будут управлять классы состояний (PatrolState / CombatState)
-                
-                // TODO: Инициализировать стартовое состояние (Patrol)
-                StateMachine.Initialize(new EnemyPatrolState(this));
-            }
+            Health = new HealthEngine(Config.MaxHealth);
+            Health.OnDeath += Die;
+
+            WeaponController.Initialize(Config);
+            
+            StateMachine.Initialize(new EnemyPatrolState(this));
         }
 
         private void Update()
         {
-            // 4. ПРОВЕРЯЕМ СТАТУС СМЕРТИ
             if (Health == null || Health.IsDead) return;
             
-            if (Time.time - _lastSensorTickTime >= _config.SensorTickRate)
+            if (Time.time - _lastSensorTickTime >= Config.SensorTickRate)
             {
                 _lastSensorTickTime = Time.time;
                 Sensor.Tick();
@@ -99,10 +93,8 @@ namespace TpsShooter.Enemies.Core
 
             if (Health != null && !Health.IsDead)
             {
-                // ПРОИГРЫВАЕМ АНИМАЦИЮ ПОПАДАНИЯ
                 Animator?.PlayHit(); 
 
-                // Если гуляли - переключаемся в поиск
                 if (StateMachine.CurrentState is States.EnemyPatrolState)
                 {
                     if (Target != null)
@@ -127,27 +119,20 @@ namespace TpsShooter.Enemies.Core
 
         private void OnDrawGizmosSelected()
         {
-            if (_config == null) return;
+            if (Config == null) return;
 
-            // Цвет зависит от состояния (пока сделаем желтый по умолчанию, красный если видим цель)
             Gizmos.color = (Sensor != null && Sensor.IsTargetVisible) ? Color.red : Color.yellow;
-
-            // Рисуем радиус обзора
-            Gizmos.DrawWireSphere(transform.position, _config.VisionRadius);
-
-            // Рисуем радиус атаки (отдельным цветом)
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(transform.position, _config.AttackRange);
-
-            // Рисуем конус зрения
-            Gizmos.color = Color.blue;
-            Vector3 leftBoundary = Quaternion.Euler(0, -_config.ViewAngle / 2f, 0) * transform.forward;
-            Vector3 rightBoundary = Quaternion.Euler(0, _config.ViewAngle / 2f, 0) * transform.forward;
+            Gizmos.DrawWireSphere(transform.position, Config.VisionRadius);
             
-            Gizmos.DrawRay(transform.position, leftBoundary * _config.VisionRadius);
-            Gizmos.DrawRay(transform.position, rightBoundary * _config.VisionRadius);
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(transform.position, Config.AttackRange);
+            
+            Gizmos.color = Color.blue;
+            Vector3 leftBoundary = Quaternion.Euler(0, -Config.ViewAngle / 2f, 0) * transform.forward;
+            Vector3 rightBoundary = Quaternion.Euler(0, Config.ViewAngle / 2f, 0) * transform.forward;
+            Gizmos.DrawRay(transform.position, leftBoundary * Config.VisionRadius);
+            Gizmos.DrawRay(transform.position, rightBoundary * Config.VisionRadius);
 
-            // Линия к цели, если видим её
             if (Sensor != null && Sensor.IsTargetVisible && Target != null)
             {
                 Gizmos.color = Color.red;

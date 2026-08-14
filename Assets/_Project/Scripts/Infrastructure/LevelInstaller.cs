@@ -35,6 +35,8 @@ namespace TpsShooter.Infrastructure
             Container.BindInterfacesAndSelfTo<TpsShooter.UI.Presenters.PlayerHUDPresenter>().AsSingle();
             
             Container.Bind<LootFactory>().AsSingle();
+
+            Container.Bind<TpsShooter.Enemies.Core.IEnemyFactory>().To<TpsShooter.Enemies.Core.EnemyFactory>().AsSingle();
         }
     }
 }
