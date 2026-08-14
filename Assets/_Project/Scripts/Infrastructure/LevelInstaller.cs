@@ -11,6 +11,7 @@ namespace TpsShooter.Infrastructure
     {
         [Header("Configs")]
         [SerializeField] private PlayerInventoryConfig _inventoryConfig;
+        [SerializeField] private PlayerConfig _playerConfig;
         
         // Примечание: Если твой PlayerConfig сейчас биндится в другом месте 
         // (например, в GameSettingsInstaller), то всё отлично. 
@@ -18,6 +19,7 @@ namespace TpsShooter.Infrastructure
 
         public override void InstallBindings()
         {
+            Container.BindInstance(_playerConfig);
             Container.BindInstance(_inventoryConfig);
 
             // 1. Биндим Модель Инвентаря (InterfacesAndSelfTo автоматически вызовет Initialize)

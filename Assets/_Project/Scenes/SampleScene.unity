@@ -184,6 +184,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryConfig: {fileID: 11400000, guid: e9042d293c59f1b448e4e054f3a2ee94, type: 2}
+  _playerConfig: {fileID: 11400000, guid: 40c9454de36ab82479c9f64a0e15f0dd, type: 2}
 --- !u!114 &15136588
 MonoBehaviour:
   m_ObjectHideFlags: 0
