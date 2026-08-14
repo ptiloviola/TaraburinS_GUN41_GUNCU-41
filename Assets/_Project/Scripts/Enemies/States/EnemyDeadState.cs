@@ -20,6 +20,7 @@ namespace TpsShooter.Enemies.States
             _brain.Agent.isStopped = true;
             _brain.Agent.enabled = false;
             _brain.Animator?.PlayDeath();
+            _brain.WeaponController?.HideWeapon();
 
             // 2. Отключаем все хитбоксы, чтобы пули пролетали сквозь труп
             var colliders = _brain.GetComponentsInChildren<Collider>();

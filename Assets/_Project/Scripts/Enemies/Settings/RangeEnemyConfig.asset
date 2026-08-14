@@ -30,6 +30,7 @@ MonoBehaviour:
   AttackRange: 15
   AttackCooldown: 1.5
   MeleeDamage: 25
+  WeaponPrefab: {fileID: 3438165001754377889, guid: 412b439ce5625b24c9a64587bf3be271, type: 3}
   WeaponStats: {fileID: 0}
   ProjectileSpeed: 50
   AimInaccuracy: 1.5

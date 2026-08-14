@@ -30,10 +30,13 @@ namespace TpsShooter.Enemies.Configs
         public float AttackRange = 15f; // Для мили ставим 2, для дальника 15-20
         public float AttackCooldown = 1.5f;
 
+        
+
         [Header("Melee Settings (If Type = Melee)")]
         public float MeleeDamage = 25f;
 
         [Header("Ranged Settings (If Type = Ranged)")]
+        public GameObject WeaponPrefab;
         public WeaponConfig WeaponStats;
         [Tooltip("Скорость полета пули для расчета упреждения")]
         public float ProjectileSpeed = 50f; 

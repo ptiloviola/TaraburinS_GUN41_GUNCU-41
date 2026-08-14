@@ -8,58 +8,83 @@ namespace TpsShooter.Enemies.Weapons
     public class EnemyWeaponController : MonoBehaviour
     {
         private EnemyConfig _config;
-        private Transform _firePoint; // Точка, откуда вылетает пуля (дуло)
+        
+        [Header("Setup")]
+        [Tooltip("Перетащи сюда объект WeaponSocket из руки врага")]
+        [SerializeField] private Transform _weaponSocket;
+        private GameObject _currentWeaponInstance;
+
+        private Transform _firePoint; 
 
         public void Initialize(EnemyConfig config)
         {
             _config = config;
-            // Пока нет 3D-модели пушки, стреляем из центра капсулы
-            _firePoint = transform; 
+
+            if (_config.Type == EnemyType.Ranged && _config.WeaponPrefab != null && _weaponSocket != null)
+            {
+                // Сохраняем ссылку на созданный объект в нашу новую переменную
+                _currentWeaponInstance = Instantiate(_config.WeaponPrefab, _weaponSocket);
+                
+                _currentWeaponInstance.transform.localPosition = Vector3.zero;
+                _currentWeaponInstance.transform.localRotation = Quaternion.identity;
+
+                _firePoint = _currentWeaponInstance.transform.Find("FirePoint");
+                
+                if (_firePoint == null)
+                {
+                    Debug.LogWarning($"На префабе {_currentWeaponInstance.name} нет 'FirePoint'!");
+                    _firePoint = _currentWeaponInstance.transform;
+                }
+            }
+            else
+            {
+                _firePoint = transform; 
+            }
+        }
+
+        public void HideWeapon()
+        {
+            if (_currentWeaponInstance != null)
+            {
+                _currentWeaponInstance.SetActive(false); // Просто выключаем визуал пушки в руке
+            }
         }
 
         public void TryFire(PlayerFacade target)
         {
-            // 1. Целимся в центр массы игрока (примерно 1.5м от пола)
+            if (_firePoint == null) return;
+
             Vector3 targetCenter = target.transform.position + Vector3.up * 1.5f;
-            Vector3 fireOrigin = _firePoint.position + Vector3.up * 1.5f;
+            Vector3 fireOrigin = _firePoint.position; 
             
-            // 2. Получаем скорость игрока для упреждения
+            float distance = Vector3.Distance(fireOrigin, targetCenter);
+            
+            // Расчет упреждения
             Vector3 targetVelocity = Vector3.zero;
             if (target.TryGetComponent(out CharacterController cc))
             {
                 targetVelocity = cc.velocity;
             }
-
-            // 3. Векторная математика (Формула из ТЗ)
-            float distance = Vector3.Distance(fireOrigin, targetCenter);
-            float timeToHit = distance / _config.ProjectileSpeed;
             
+            float timeToHit = distance / _config.ProjectileSpeed;
             Vector3 predictedPoint = targetCenter + (targetVelocity * timeToHit);
 
-            // 4. ИСПРАВЛЕННЫЙ РАЗБРОС: Без магических чисел
+            // Разброс
             float inaccuracyFactor = Mathf.Clamp01(distance / _config.MaxInaccuracyDistance); 
             Vector3 inaccuracyOffset = Random.insideUnitSphere * (_config.AimInaccuracy * inaccuracyFactor);
             predictedPoint += inaccuracyOffset;
 
-            // Направление выстрела
             Vector3 shootDirection = (predictedPoint - fireOrigin).normalized;
-
-            // Длина луча
             float maxRayDistance = distance * 1.5f;
 
-            // 5. ИСПРАВЛЕННАЯ ФИЗИКА: Используем SphereCast (толстый луч радиусом 0.35f)
-            // Это прощает врагу мелкие промахи и делает перестрелку опаснее для игрока
+            // Выстрел
             if (Physics.SphereCast(fireOrigin, 0.35f, shootDirection, out RaycastHit hit, maxRayDistance))
             {
                 if (hit.collider.GetComponentInParent<IDamageable>() is IDamageable targetDamageable)
                 {
                     float damage = _config.WeaponStats != null ? _config.WeaponStats.Damage : 15f;
                     targetDamageable.TakeDamage(damage);
-                    Debug.Log($"<color=red>[EnemyWeapon]</color> Пуля зацепила {hit.collider.name}! Урон: {damage}");
-                }
-                else
-                {
-                    Debug.Log($"<color=grey>[EnemyWeapon]</color> Промах. Пуля попала в {hit.collider.name}");
+                    Debug.Log($"<color=red>[EnemyWeapon]</color> Попадание! Урон: {damage}");
                 }
             }
 
