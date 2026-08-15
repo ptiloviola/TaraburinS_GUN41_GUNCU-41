@@ -88,6 +88,10 @@ namespace TpsShooter.Environment
                 foreach (EnemySpawnData enemyGroup in currentWave.Enemies)
                 {
                     int scaledCount = enemyGroup.Count + Mathf.FloorToInt(levelScale * _extraEnemiesPerLevel);
+                    int bonusEnemies = scaledCount - enemyGroup.Count;
+
+                    // <--- ДОБАВЛЕН ПОДРОБНЫЙ ЛОГ --->
+                    Debug.Log($"<color=cyan>[Spawner]</color> Спавн волны {waveIndex + 1}. Врагов: {scaledCount} (База: {enemyGroup.Count} | Бонус за уровень: +{bonusEnemies})");
 
                     for (int i = 0; i < scaledCount; i++)
                     {

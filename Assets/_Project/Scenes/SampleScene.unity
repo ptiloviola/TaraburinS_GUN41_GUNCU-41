@@ -7180,7 +7180,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 2, z: 2}
+  m_Size: {x: 3, y: 3, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5583283332080893788
 GameObject:
@@ -7759,6 +7759,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _timeLimit: 15
+  _targetScale: {x: 2, y: 2, z: 2}
+  _punchScale: {x: 0.3, y: 0.3, z: 0.3}
   _visualModel: {fileID: 4139541697751328194}
   _glowLight: {fileID: 8521244705736902498}
 --- !u!4 &7666680084451569713

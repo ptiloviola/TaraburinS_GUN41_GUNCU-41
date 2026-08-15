@@ -10,16 +10,21 @@ namespace TpsShooter.Environment
         [Header("Settings")]
         [SerializeField] private float _timeLimit = 15f;
         
+        // <--- НОВЫЕ НАСТРОЙКИ РАЗМЕРА --->
+        [Header("Animation Settings")]
+        [Tooltip("Итоговый размер модели после появления")]
+        [SerializeField] private Vector3 _targetScale = new Vector3(2f, 2f, 2f);
+        [Tooltip("Сила эффекта пульсации")]
+        [SerializeField] private Vector3 _punchScale = new Vector3(0.3f, 0.3f, 0.3f);
+        
         [Header("Visuals")]
         [SerializeField] private Transform _visualModel; 
         [SerializeField] private Light _glowLight;
 
-        // События для Presenter'а и FlowManager'а
         public event Action OnActivated;
         public event Action OnPlayerExtracted;
         public event Action OnTimeExpired;
 
-        // Публичные свойства состояния для чтения
         public float TimeRemaining { get; private set; }
         public bool IsActive { get; private set; }
 
@@ -31,19 +36,16 @@ namespace TpsShooter.Environment
 
             OnActivated?.Invoke();
 
-            // Исправленная анимация DOTween
             if (_visualModel != null)
             {
-                // Очищаем старые анимации на случай перезапуска
                 _visualModel.DOKill(); 
-                
                 _visualModel.localScale = Vector3.zero;
                 
-                // 1. Сначала вырастаем до (1, 1, 1)
-                _visualModel.DOScale(Vector3.one, 1f).SetEase(Ease.OutBounce).OnComplete(() => 
+                // Используем _targetScale вместо Vector3.one
+                _visualModel.DOScale(_targetScale, 1f).SetEase(Ease.OutBounce).OnComplete(() => 
                 {
-                    // 2. По завершении роста (OnComplete) запускаем бесконечную пульсацию
-                    _visualModel.DOPunchScale(new Vector3(0.2f, 0.2f, 0.2f), 1f, 2, 0.5f).SetLoops(-1, LoopType.Yoyo);
+                    // Используем _punchScale
+                    _visualModel.DOPunchScale(_punchScale, 1f, 2, 0.5f).SetLoops(-1, LoopType.Yoyo);
                 });
             }
 
