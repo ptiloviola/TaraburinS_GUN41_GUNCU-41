@@ -1,18 +1,20 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Zenject;
 using TpsShooter.Enemies.Configs;
 using TpsShooter.Enemies.Core;
-using System;
+using TpsShooter.Services.Progress; // Для связи с глобальным прогрессом
 
 namespace TpsShooter.Environment
 {
     [Serializable]
     public struct PatrolRoute
     {
-        public string RouteName; // Просто для удобства в инспекторе (например, "Balcony" или "Center")
+        public string RouteName; 
         public Transform[] Waypoints;
     }
+
     public class EnemyWaveSpawner : MonoBehaviour
     {
         [Header("Wave Settings")]
@@ -21,18 +23,29 @@ namespace TpsShooter.Environment
         [Tooltip("Точки на уровне, где будут появляться враги")]
         [SerializeField] private Transform[] _spawnPoints;
 
-        // 2. БИБЛИОТЕКА МАРШРУТОВ ЭТОЙ КОМНАТЫ
         [Header("Routes Library")]
-        [Tooltip("Список доступных маршрутов. Индекс здесь совпадает с RouteIndex в конфиге волны.")]
         [SerializeField] private PatrolRoute[] _patrolRoutes;
 
+        [Header("Difficulty Scaling")]
+        [Tooltip("На сколько дополнительных врагов увеличивается спавн за каждый пройденный уровень")]
+        [SerializeField] private float _extraEnemiesPerLevel = 1.5f;
 
         private IEnemyFactory _enemyFactory;
+        private GameProgressService _progressService; 
+
+        // Отслеживание живых врагов для победы
+        private int _totalEnemiesToSpawn = 0;
+        private int _enemiesSpawned = 0;
+        private int _enemiesDead = 0;
+        
+        // ТО САМОЕ СОБЫТИЕ, КОТОРОЕ ИЩЕТ LevelFlowManager
+        public event Action OnAllEnemiesDefeated; 
 
         [Inject]
-        public void Construct(IEnemyFactory enemyFactory)
+        public void Construct(IEnemyFactory enemyFactory, GameProgressService progressService)
         {
             _enemyFactory = enemyFactory;
+            _progressService = progressService;
         }
 
         private void Start()
@@ -43,57 +56,80 @@ namespace TpsShooter.Environment
                 return;
             }
 
+            CalculateTotalEnemies();
             StartCoroutine(SpawnWavesRoutine());
+        }
+
+        private void CalculateTotalEnemies()
+        {
+            _totalEnemiesToSpawn = 0;
+            int levelScale = _progressService.CurrentLevel - 1;
+
+            foreach (var wave in _wavesConfig.Waves)
+            {
+                foreach (var group in wave.Enemies)
+                {
+                    int scaledCount = group.Count + Mathf.FloorToInt(levelScale * _extraEnemiesPerLevel);
+                    _totalEnemiesToSpawn += scaledCount;
+                }
+            }
+            Debug.Log($"<color=green>[Spawner]</color> Уровень {_progressService.CurrentLevel}. Всего врагов к спавну: {_totalEnemiesToSpawn}");
         }
 
         private IEnumerator SpawnWavesRoutine()
         {
+            int levelScale = _progressService.CurrentLevel - 1;
+
             for (int waveIndex = 0; waveIndex < _wavesConfig.Waves.Count; waveIndex++)
             {
                 WaveData currentWave = _wavesConfig.Waves[waveIndex];
-                
-                Debug.Log($"<color=green>[Spawner]</color> Подготовка к волне {waveIndex + 1}. Ожидание {currentWave.StartDelay} сек.");
                 yield return new WaitForSeconds(currentWave.StartDelay);
-
-                Debug.Log($"<color=green>[Spawner]</color> Волна {waveIndex + 1} началась!");
 
                 foreach (EnemySpawnData enemyGroup in currentWave.Enemies)
                 {
-                    for (int i = 0; i < enemyGroup.Count; i++)
+                    int scaledCount = enemyGroup.Count + Mathf.FloorToInt(levelScale * _extraEnemiesPerLevel);
+
+                    for (int i = 0; i < scaledCount; i++)
                     {
                         SpawnEnemy(enemyGroup);
                         yield return new WaitForSeconds(currentWave.SpawnInterval);
                     }
                 }
             }
-            Debug.Log("<color=green>[Spawner]</color> Все волны успешно завершены!");
         }
 
         private void SpawnEnemy(EnemySpawnData spawnData)
         {
-            if (spawnData.BasePrefab == null || spawnData.Config == null)
-            {
-                Debug.LogWarning("[EnemyWaveSpawner] Пустой префаб или конфиг в настройках волны!");
-                return;
-            }
+            if (spawnData.BasePrefab == null || spawnData.Config == null) return;
 
             Transform randomPoint = _spawnPoints[UnityEngine.Random.Range(0, _spawnPoints.Length)];
-
-            // 3. ПОЛУЧАЕМ НУЖНЫЙ МАРШРУТ ПО ИНДЕКСУ
             Transform[] selectedRoute = null;
             
-            // Проверяем, существует ли такой индекс в нашей библиотеке маршрутов
             if (_patrolRoutes != null && spawnData.RouteIndex >= 0 && spawnData.RouteIndex < _patrolRoutes.Length)
             {
                 selectedRoute = _patrolRoutes[spawnData.RouteIndex].Waypoints;
             }
-            else
-            {
-                Debug.LogWarning($"<color=yellow>[Spawner]</color> Маршрут с индексом {spawnData.RouteIndex} не найден! Враг будет стоять на месте.");
-            }
 
-            // Передаем выбранный маршрут в фабрику
-            _enemyFactory.Create(spawnData.BasePrefab, spawnData.Config, randomPoint.position, randomPoint.rotation, selectedRoute);
+            EnemyBrain spawnedEnemy = _enemyFactory.Create(spawnData.BasePrefab, spawnData.Config, randomPoint.position, randomPoint.rotation, selectedRoute);
+            _enemiesSpawned++;
+
+            // Подписываемся на смерть каждого заспавненного врага
+            if (spawnedEnemy.Health != null)
+            {
+                spawnedEnemy.Health.OnDeath += HandleEnemyDeath;
+            }
+        }
+
+        private void HandleEnemyDeath()
+        {
+            _enemiesDead++;
+            Debug.Log($"<color=yellow>[Spawner]</color> Враг убит. {_enemiesDead} / {_totalEnemiesToSpawn}");
+
+            if (_enemiesDead >= _totalEnemiesToSpawn && _enemiesSpawned == _totalEnemiesToSpawn)
+            {
+                Debug.Log($"<color=yellow>[Spawner]</color> ВСЕ ВРАГИ УНИЧТОЖЕНЫ!");
+                OnAllEnemiesDefeated?.Invoke();
+            }
         }
     }
 }
