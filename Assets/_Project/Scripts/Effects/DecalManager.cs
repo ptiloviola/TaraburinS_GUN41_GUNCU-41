@@ -7,6 +7,9 @@ namespace TpsShooter.Effects
         [Header("Pool Settings")]
         [SerializeField] private GameObject _decalPrefab;
         [SerializeField] private int _poolSize = 50;
+        
+        [Tooltip("Отступ от нормали стены, чтобы избежать мерцания текстур (Z-fighting)")]
+        [SerializeField] private float _wallOffset = 0.01f; 
 
         private GameObject[] _decals;
         private int _currentIndex = 0;
@@ -19,7 +22,6 @@ namespace TpsShooter.Effects
                 return;
             }
 
-            // Предсоздаем все декали при старте сцены
             _decals = new GameObject[_poolSize];
             for (int i = 0; i < _poolSize; i++)
             {
@@ -32,17 +34,18 @@ namespace TpsShooter.Effects
         {
             if (_decals == null || _decals.Length == 0) return;
 
-            // Берем самую старую декаль из пула
             GameObject decal = _decals[_currentIndex];
             
-            // Настраиваем её позицию и вращение (-normal разворачивает её "лицом" от стены)
-            decal.transform.position = position + normal * 0.001f;
+            // Настраиваем позицию с учетом отступа
+            decal.transform.position = position + normal * _wallOffset;
             decal.transform.rotation = Quaternion.LookRotation(-normal);
-            decal.transform.SetParent(parent);
+            
+            // worldPositionStays = true гарантирует, что декаль не исказится, 
+            // если родительский объект (например, рука врага) имеет неравномерный масштаб
+            decal.transform.SetParent(parent, true);
             
             decal.SetActive(true);
 
-            // Сдвигаем индекс по кругу. После 49-й декали снова возьмем 0-ю.
             _currentIndex = (_currentIndex + 1) % _poolSize;
         }
     }
