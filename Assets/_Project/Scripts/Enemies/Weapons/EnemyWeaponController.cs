@@ -2,6 +2,8 @@ using UnityEngine;
 using TpsShooter.Enemies.Configs;
 using TpsShooter.Player;
 using TpsShooter.Combat;
+using TpsShooter.Effects; // Для VFX и Декалей
+using Zenject;          // Для инъекции
 
 namespace TpsShooter.Enemies.Weapons
 {
@@ -15,6 +17,11 @@ namespace TpsShooter.Enemies.Weapons
         private GameObject _currentWeaponInstance;
 
         private Transform _firePoint; 
+        private ParticleSystem _muzzleFlash; // Ссылка на вспышку
+
+        // Внедряем глобальные сервисы эффектов
+        [Inject] private IVFXService _vfxService;
+        [Inject] private DecalManager _decalManager;
 
         public void Initialize(EnemyConfig config)
         {
@@ -22,7 +29,6 @@ namespace TpsShooter.Enemies.Weapons
 
             if (_config.Type == EnemyType.Ranged && _config.WeaponPrefab != null && _weaponSocket != null)
             {
-                // Сохраняем ссылку на созданный объект в нашу новую переменную
                 _currentWeaponInstance = Instantiate(_config.WeaponPrefab, _weaponSocket);
                 
                 _currentWeaponInstance.transform.localPosition = Vector3.zero;
@@ -32,9 +38,11 @@ namespace TpsShooter.Enemies.Weapons
                 
                 if (_firePoint == null)
                 {
-                    Debug.LogWarning($"На префабе {_currentWeaponInstance.name} нет 'FirePoint'!");
                     _firePoint = _currentWeaponInstance.transform;
                 }
+
+                // Ищем ParticleSystem в префабе оружия (он найдет наш MuzzleFlash)
+                _muzzleFlash = _currentWeaponInstance.GetComponentInChildren<ParticleSystem>();
             }
             else
             {
@@ -46,7 +54,7 @@ namespace TpsShooter.Enemies.Weapons
         {
             if (_currentWeaponInstance != null)
             {
-                _currentWeaponInstance.SetActive(false); // Просто выключаем визуал пушки в руке
+                _currentWeaponInstance.SetActive(false);
             }
         }
 
@@ -54,12 +62,17 @@ namespace TpsShooter.Enemies.Weapons
         {
             if (_firePoint == null) return;
 
+            // 1. Проигрываем вспышку из дула
+            if (_muzzleFlash != null)
+            {
+                _muzzleFlash.Play();
+            }
+
             Vector3 targetCenter = target.transform.position + Vector3.up * 1.5f;
             Vector3 fireOrigin = _firePoint.position; 
             
             float distance = Vector3.Distance(fireOrigin, targetCenter);
             
-            // Расчет упреждения
             Vector3 targetVelocity = Vector3.zero;
             if (target.TryGetComponent(out CharacterController cc))
             {
@@ -69,7 +82,6 @@ namespace TpsShooter.Enemies.Weapons
             float timeToHit = distance / _config.ProjectileSpeed;
             Vector3 predictedPoint = targetCenter + (targetVelocity * timeToHit);
 
-            // Разброс
             float inaccuracyFactor = Mathf.Clamp01(distance / _config.MaxInaccuracyDistance); 
             Vector3 inaccuracyOffset = Random.insideUnitSphere * (_config.AimInaccuracy * inaccuracyFactor);
             predictedPoint += inaccuracyOffset;
@@ -77,18 +89,33 @@ namespace TpsShooter.Enemies.Weapons
             Vector3 shootDirection = (predictedPoint - fireOrigin).normalized;
             float maxRayDistance = distance * 1.5f;
 
-            // Выстрел
+            // По умолчанию трассер летит на максимальную дистанцию (промах)
+            Vector3 tracerEndPoint = fireOrigin + shootDirection * maxRayDistance;
+
             if (Physics.SphereCast(fireOrigin, 0.35f, shootDirection, out RaycastHit hit, maxRayDistance))
             {
+                // Если попали во что-то, трассер должен остановиться там
+                tracerEndPoint = hit.point;
+
                 if (hit.collider.GetComponentInParent<IDamageable>() is IDamageable targetDamageable)
                 {
                     float damage = _config.WeaponStats != null ? _config.WeaponStats.Damage : 15f;
                     targetDamageable.TakeDamage(damage);
                     Debug.Log($"<color=red>[EnemyWeapon]</color> Попадание! Урон: {damage}");
                 }
+                // Если попали в стену (не игрок и не другой враг) - спавним декаль
+                else if (_decalManager != null && !hit.collider.CompareTag("Player") && !hit.collider.CompareTag("Enemy"))
+                {
+                    _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
+                }
             }
 
+            // 2. Запускаем глобальный трассер пули
+            _vfxService?.SpawnTracer(fireOrigin, tracerEndPoint);
+
+#if UNITY_EDITOR
             Debug.DrawRay(fireOrigin, shootDirection * maxRayDistance, Color.yellow, 0.2f);
+#endif
         }
     }
 }

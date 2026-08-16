@@ -5,15 +5,12 @@ namespace TpsShooter.Weapons.Core
 {
     public class AssaultRifleWeapon : WeaponBase
     {
-        // ЗДЕСЬ БОЛЬШЕ НЕТ ОБЪЯВЛЕНИЯ _currentSpread! Мы берем его из WeaponBase.
-
         private void Update()
         {
             if (_config == null) return;
 
             if (Time.time - _lastFireTime > _config.FireRate)
             {
-                // Используем унаследованное поле _currentSpread
                 _currentSpread = Mathf.MoveTowards(_currentSpread, _config.BaseSpread, _config.SpreadRecoveryRate * Time.deltaTime);
             }
         }
@@ -30,34 +27,28 @@ namespace TpsShooter.Weapons.Core
 
             if (Physics.Raycast(_muzzlePoint.position, direction, out RaycastHit hit, _config.Range, _config.HitMask))
             {
-                Debug.Log($"[AssaultRifle] Попали в: {hit.collider.name}");
-                
-#if UNITY_EDITOR
-                Debug.DrawLine(_muzzlePoint.position, hit.point, Color.green, 2f);
-#endif
-                
                 if (hit.collider.TryGetComponent(out IDamageable target))
                 {
                     target.TakeDamage(_config.Damage);
                 }
 
-                // --- БЛОК: СПАВН ДЕКАЛИ ---
-                if (_decalManager != null)
+                // Спавним декали только если это НЕ враг
+                if (_decalManager != null && !hit.collider.CompareTag("Enemy"))
                 {
                     _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
                 }
+
+                // Запрашиваем трассер до точки попадания
+                _vfxService?.SpawnTracer(_muzzlePoint.position, hit.point);
             }
             else
             {
-#if UNITY_EDITOR
-                Debug.DrawLine(_muzzlePoint.position, _muzzlePoint.position + direction * _config.Range, Color.red, 2f);
-#endif
+                // Если выстрел в молоко, пускаем трассер до конца дистанции
+                Vector3 endPoint = _muzzlePoint.position + direction * _config.Range;
+                _vfxService?.SpawnTracer(_muzzlePoint.position, endPoint);
             }
 
             _currentSpread = Mathf.Min(_currentSpread + _config.SpreadIncreaseRate, _config.MaxSpread);
-            
-            // Заглушка для отдачи
-            // ApplyCameraRecoil();
         }
     }
 }

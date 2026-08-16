@@ -2078,8 +2078,9 @@ GameObject:
   m_Component:
   - component: {fileID: 774934661}
   - component: {fileID: 774934660}
+  - component: {fileID: 774934662}
   m_Layer: 0
-  m_Name: DecalManager
+  m_Name: '[EffectsManager]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2099,6 +2100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _decalPrefab: {fileID: 7880165934403104407, guid: 1a614a5c783f65245a2eed956f6e8d97, type: 3}
   _poolSize: 50
+  _wallOffset: 0.01
 --- !u!4 &774934661
 Transform:
   m_ObjectHideFlags: 0
@@ -2114,6 +2116,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &774934662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 774934659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ab9b621cda6be3488e011d772ac7548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tracerPrefab: {fileID: 8654430814898280722, guid: e1d434d516ecea3448c5cb8b69387883, type: 3}
+  _tracerPoolSize: 30
+  _tracerSpeed: 150
 --- !u!1 &812346425
 GameObject:
   m_ObjectHideFlags: 0

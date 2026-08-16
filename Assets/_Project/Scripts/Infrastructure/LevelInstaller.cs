@@ -60,6 +60,7 @@ namespace TpsShooter.Infrastructure
             
             // 5. Биндим Презентер перехода уровня
             Container.BindInterfacesAndSelfTo<LevelFlowUIPresenter>().AsSingle();
+            Container.Bind<IVFXService>().To<VFXManager>().FromComponentInHierarchy().AsSingle();
         }
     }
 }
