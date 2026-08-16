@@ -1378,7 +1378,7 @@ GameObject:
   - component: {fileID: 473028622}
   - component: {fileID: 473028621}
   - component: {fileID: 473028620}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TestTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2131,6 +2131,10 @@ MonoBehaviour:
   _tracerPrefab: {fileID: 8654430814898280722, guid: e1d434d516ecea3448c5cb8b69387883, type: 3}
   _tracerPoolSize: 30
   _tracerSpeed: 150
+  _bloodPrefab: {fileID: 7780037274124442910, guid: c1730cf67aec4a646946c2e25d3d81a2, type: 3}
+  _bloodPoolSize: 15
+  _sparksPrefab: {fileID: 8635720892675560500, guid: f4627b44d85b045459acfcda5ab792c8, type: 3}
+  _sparksPoolSize: 15
 --- !u!1 &812346425
 GameObject:
   m_ObjectHideFlags: 0
@@ -4706,7 +4710,7 @@ GameObject:
   - component: {fileID: 1832140338}
   - component: {fileID: 1832140337}
   - component: {fileID: 1832140336}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TestTarget (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8533,7 +8537,6 @@ SceneRoots:
   - {fileID: 1832140340}
   - {fileID: 1344447532}
   - {fileID: 435902037}
-  - {fileID: 774934661}
   - {fileID: 887664609}
   - {fileID: 69154034}
   - {fileID: 1774522457}
@@ -8542,3 +8545,4 @@ SceneRoots:
   - {fileID: 1650305886}
   - {fileID: 304949083}
   - {fileID: 1239924471}
+  - {fileID: 774934661}

@@ -95,18 +95,21 @@ namespace TpsShooter.Enemies.Weapons
             if (Physics.SphereCast(fireOrigin, 0.35f, shootDirection, out RaycastHit hit, maxRayDistance))
             {
                 tracerEndPoint = hit.point;
-
                 IDamageable targetDamageable = hit.collider.GetComponentInParent<IDamageable>();
                 
                 if (targetDamageable != null)
                 {
                     float damage = _config.WeaponStats != null ? _config.WeaponStats.Damage : 15f;
                     targetDamageable.TakeDamage(damage);
-                    Debug.Log($"<color=red>[EnemyWeapon]</color> Попадание! Урон: {damage}");
+                    
+                    // СПАВН КРОВИ (учитываем, что враг может попасть по игроку)
+                    _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: true);
                 }
-                else if (_decalManager != null)
+                else 
                 {
-                    _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
+                    if (_decalManager != null) _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
+                    // СПАВН ИСКР/ПЫЛИ
+                    _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: false);
                 }
             }
 

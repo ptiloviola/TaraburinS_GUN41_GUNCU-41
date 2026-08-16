@@ -29,7 +29,7 @@ MonoBehaviour:
   ProjectilePrefab: {fileID: 0}
   HitMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 257
   MuzzleFlashPrefab: {fileID: 0}
   TracerPrefab: {fileID: 0}
   ShellCasingPrefab: {fileID: 0}
