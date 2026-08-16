@@ -49,5 +49,8 @@ namespace TpsShooter.Enemies.Configs
         [Header("Loot Drop")]
         public ItemConfig DropLoot; 
         [Range(0f, 1f)] public float DropChance = 0.5f;
+
+        [Header("Audio")]
+        public TpsShooter.Audio.FootstepConfig FootstepAudioConfig;
     }
 }

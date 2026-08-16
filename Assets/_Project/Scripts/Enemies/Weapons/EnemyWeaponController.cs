@@ -2,8 +2,9 @@ using UnityEngine;
 using TpsShooter.Enemies.Configs;
 using TpsShooter.Player;
 using TpsShooter.Combat;
-using TpsShooter.Effects; // Для VFX и Декалей
-using Zenject;          // Для инъекции
+using TpsShooter.Effects;
+using Zenject;
+using TpsShooter.Audio;
 
 namespace TpsShooter.Enemies.Weapons
 {
@@ -14,6 +15,11 @@ namespace TpsShooter.Enemies.Weapons
         [Header("Setup")]
         [Tooltip("Перетащи сюда объект WeaponSocket из руки врага")]
         [SerializeField] private Transform _weaponSocket;
+
+        [Header("Audio")]
+        [Tooltip("ID звука выстрела (из AudioConfig)")]
+        [SerializeField] private string _fireSoundId = "Rifle_Fire";
+
         private GameObject _currentWeaponInstance;
 
         private Transform _firePoint; 
@@ -22,6 +28,7 @@ namespace TpsShooter.Enemies.Weapons
         // Внедряем глобальные сервисы эффектов
         [Inject] private IVFXService _vfxService;
         [Inject] private DecalManager _decalManager;
+        [Inject] private IAudioService _audioService;
 
         public void Initialize(EnemyConfig config)
         {
@@ -66,6 +73,10 @@ namespace TpsShooter.Enemies.Weapons
             if (_muzzleFlash != null)
             {
                 _muzzleFlash.Play();
+            }
+            if (!string.IsNullOrEmpty(_fireSoundId))
+            {
+                _audioService?.PlaySFX(_fireSoundId, _firePoint.position);
             }
 
             Vector3 targetCenter = target.transform.position + Vector3.up * 1.5f;

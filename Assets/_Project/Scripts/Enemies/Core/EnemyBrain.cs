@@ -8,13 +8,14 @@ using TpsShooter.Enemies.Vision;
 using TpsShooter.Enemies.States;
 using TpsShooter.Enemies.Weapons;
 using TpsShooter.Environment;
+using TpsShooter.Audio;
+using TpsShooter.Player.Core; // Добавлено для PlayerAnimationEvents
 
 namespace TpsShooter.Enemies.Core
 {
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyBrain : MonoBehaviour, IDamageable
     {
-
         // Компоненты (Контекст для стейтов)
         public NavMeshAgent Agent { get; private set; }
         
@@ -35,6 +36,10 @@ namespace TpsShooter.Enemies.Core
         public LootFactory LootSpawner { get; private set; }
         
         private float _lastSensorTickTime;
+        
+        private FootstepAudioSystem _footstepAudio;
+        private PlayerAnimationEvents _animEvents; // Добавлен перехватчик событий
+        [Inject] private IAudioService _audioService;
 
         // 1. СТРОГИЙ DI: Zenject прокинет Фабрику Лута и Игрока прямо сюда
         [Inject]
@@ -52,6 +57,14 @@ namespace TpsShooter.Enemies.Core
             WeaponController = GetComponent<EnemyWeaponController>();
             Animator = GetComponentInChildren<EnemyAnimator>();
             
+            // Навешиваем слушатель событий на объект с Animator
+            if (Animator != null)
+            {
+                _animEvents = Animator.gameObject.GetComponent<PlayerAnimationEvents>();
+                if (_animEvents == null) 
+                    _animEvents = Animator.gameObject.AddComponent<PlayerAnimationEvents>();
+            }
+
             if (WeaponController == null)
             {
                 WeaponController = gameObject.AddComponent<EnemyWeaponController>();
@@ -72,6 +85,17 @@ namespace TpsShooter.Enemies.Core
             WeaponController.Initialize(Config);
             
             StateMachine.Initialize(new EnemyPatrolState(this));
+            
+            // Инициализация единой системы шагов на основе ивентов
+            if (Config.FootstepAudioConfig != null && _audioService != null)
+            {
+                _footstepAudio = new FootstepAudioSystem(
+                    _audioService,
+                    transform,
+                    _animEvents,
+                    Config.FootstepAudioConfig
+                );
+            }
         }
 
         private void Update()
@@ -83,7 +107,9 @@ namespace TpsShooter.Enemies.Core
                 _lastSensorTickTime = Time.time;
                 Sensor.Tick();
             }
+            
             StateMachine.Tick();
+            // Вызов Tick для _footstepAudio отсюда удален
         }
 
         public void TakeDamage(float amount)
@@ -109,6 +135,9 @@ namespace TpsShooter.Enemies.Core
         private void OnDestroy()
         {
             if (Health != null) Health.OnDeath -= Die;
+            
+            // Отписываемся от событий шагов при уничтожении
+            _footstepAudio?.Dispose();
         }
 
         private void Die()

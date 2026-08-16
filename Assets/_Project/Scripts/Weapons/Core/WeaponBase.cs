@@ -2,6 +2,8 @@ using UnityEngine;
 using TpsShooter.Weapons.Configs;
 using Zenject; 
 using TpsShooter.Effects; 
+using TpsShooter.Player.Inventory;
+using TpsShooter.Audio;
 
 namespace TpsShooter.Weapons.Core
 {
@@ -12,6 +14,15 @@ namespace TpsShooter.Weapons.Core
         [Header("VFX")]
         [Tooltip("Партикл вспышки из дула")]
         [SerializeField] protected ParticleSystem _muzzleFlash;
+
+        // <--- НОВЫЙ БЛОК: НАСТРОЙКИ ЗВУКА --->
+        [Header("Audio Settings")]
+        [Tooltip("ID звука выстрела в AudioConfig")]
+        [SerializeField] protected string _fireSoundId = "Pistol_Fire";
+        [Tooltip("ID звука пустого магазина")]
+        [SerializeField] protected string _emptySoundId = "Weapon_Empty";
+        [Tooltip("ID звука перезарядки")]
+        [SerializeField] protected string _reloadSoundId = "Weapon_Reload";
 
         public Transform LeftHandGripPoint;
 
@@ -33,10 +44,11 @@ namespace TpsShooter.Weapons.Core
         public int TotalAmmo => _currentAmmoInClip;
 
         [Inject] protected DecalManager _decalManager;
-        [Inject] protected TpsShooter.Player.Inventory.PlayerInventoryModel _inventoryModel; 
+        [Inject] protected PlayerInventoryModel _inventoryModel; 
         
         // <--- ДОБАВЛЯЕМ ИНЪЕКЦИЮ СЕРВИСА ЭФФЕКТОВ --->
         [Inject] protected IVFXService _vfxService; 
+        [Inject] protected IAudioService _audioService;
 
         private void Awake()
         {
@@ -95,8 +107,22 @@ namespace TpsShooter.Weapons.Core
             }
         }
         
-        protected virtual void PlayFireSound() { }
-        protected virtual void PlayEmptySound() { }
-        protected virtual void PlayReloadSound() { }
+        protected virtual void PlayFireSound() 
+        { 
+            if (!string.IsNullOrEmpty(_fireSoundId))
+                _audioService?.PlaySFX(_fireSoundId, _muzzlePoint.position);
+        }
+        
+        protected virtual void PlayEmptySound() 
+        { 
+            if (!string.IsNullOrEmpty(_emptySoundId))
+                _audioService?.PlaySFX(_emptySoundId, _muzzlePoint.position);
+        }
+        
+        protected virtual void PlayReloadSound() 
+        { 
+            if (!string.IsNullOrEmpty(_reloadSoundId))
+                _audioService?.PlaySFX(_reloadSoundId, transform.position);
+        }
     }
 }

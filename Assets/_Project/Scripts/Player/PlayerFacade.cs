@@ -6,11 +6,13 @@ using TpsShooter.Player.Core;
 using TpsShooter.Player.Configs;
 using TpsShooter.Player.Camera;
 using TpsShooter.Player.Weapons;
-using TpsShooter.Player.Combat; // <-- Для Melee
+using TpsShooter.Player.Combat;
 using UnityEngine.Animations.Rigging;
 using TpsShooter.Player.Inventory;
 using TpsShooter.Environment;
 using TpsShooter.Combat;
+using TpsShooter.Audio;
+
 
 namespace TpsShooter.Player
 {
@@ -43,6 +45,8 @@ namespace TpsShooter.Player
         // Новые компоненты для Melee
         private PlayerMeleeController _meleeController;
         private PlayerAnimationEvents _animEvents;
+        private FootstepAudioSystem _footstepAudio;
+
         public HealthEngine Health { get; private set; }
 
         public float CurrentWeaponSpread 
@@ -64,7 +68,9 @@ namespace TpsShooter.Player
             PlayerInventoryConfig inventoryConfig, // <--- НОВЫЙ КОНФИГ
             IInstantiator instantiator,
             PlayerInventoryModel inventoryModel,
-            LootFactory lootFactory)
+            LootFactory lootFactory,
+            IAudioService audioService,
+            FootstepConfig footstepConfig)
         {
             _inputService = inputService;
             Transform camTransform = UnityEngine.Camera.main != null ? UnityEngine.Camera.main.transform : null;
@@ -104,6 +110,7 @@ namespace TpsShooter.Player
                 _animEvents = animator.gameObject.AddComponent<PlayerAnimationEvents>();
                 
             _animEvents.OnMeleeStrike += _meleeController.PerformStrike;
+
             // -----------------------------------
 
             _context = new PlayerContext(
@@ -120,6 +127,14 @@ namespace TpsShooter.Player
             _stateMachine.AddState(new PlayerRollState(_context, _stateMachine));
             
             _stateMachine.SwitchState<PlayerIdleState>();
+
+            CharacterController cc = GetComponent<CharacterController>();
+            _footstepAudio = new FootstepAudioSystem(
+            audioService, 
+            transform, 
+            _animEvents, 
+            footstepConfig
+            );
         }
 
         public void TakeDamage(float amount)
@@ -174,6 +189,7 @@ namespace TpsShooter.Player
                 _context.GroundSensor.Tick(); 
                 _interactionSensor?.Tick();
                 _stateMachine?.Tick(deltaTime);
+
             }
 
             // Оружие и камера обновляются независимо (камера может крутиться после смерти)
@@ -184,6 +200,7 @@ namespace TpsShooter.Player
         private void OnDestroy()
         {
             _weaponInventory?.Dispose();
+            _footstepAudio?.Dispose();
             if (_animEvents != null) _animEvents.OnMeleeStrike -= _meleeController.PerformStrike;
             if (Health != null) Health.OnDeath -= HandleDeath; // Отписка
         }
