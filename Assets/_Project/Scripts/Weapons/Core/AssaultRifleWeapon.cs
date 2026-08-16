@@ -27,18 +27,19 @@ namespace TpsShooter.Weapons.Core
 
             if (Physics.Raycast(_muzzlePoint.position, direction, out RaycastHit hit, _config.Range, _config.HitMask))
             {
-                if (hit.collider.TryGetComponent(out IDamageable target))
+                // Ищем IDamageable даже на родителях (полезно, если попали в коллайдер кости)
+                IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
+                
+                if (target != null)
                 {
                     target.TakeDamage(_config.Damage);
                 }
-
-                // Спавним декали только если это НЕ враг
-                if (_decalManager != null && !hit.collider.CompareTag("Enemy"))
+                else if (_decalManager != null) 
                 {
+                    // Если target == null, значит это не враг и не игрок. Спавним дырку!
                     _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
                 }
 
-                // Запрашиваем трассер до точки попадания
                 _vfxService?.SpawnTracer(_muzzlePoint.position, hit.point);
             }
             else

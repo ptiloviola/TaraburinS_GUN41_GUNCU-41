@@ -135,11 +135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 893925fcc5c4e6d4da60c3048132f8dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &8729953216124405722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,7 +293,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 61fdd46ce246fa6448ae1351b465bd53, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 

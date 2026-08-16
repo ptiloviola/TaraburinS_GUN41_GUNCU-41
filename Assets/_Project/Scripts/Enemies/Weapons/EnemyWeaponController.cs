@@ -94,17 +94,17 @@ namespace TpsShooter.Enemies.Weapons
 
             if (Physics.SphereCast(fireOrigin, 0.35f, shootDirection, out RaycastHit hit, maxRayDistance))
             {
-                // Если попали во что-то, трассер должен остановиться там
                 tracerEndPoint = hit.point;
 
-                if (hit.collider.GetComponentInParent<IDamageable>() is IDamageable targetDamageable)
+                IDamageable targetDamageable = hit.collider.GetComponentInParent<IDamageable>();
+                
+                if (targetDamageable != null)
                 {
                     float damage = _config.WeaponStats != null ? _config.WeaponStats.Damage : 15f;
                     targetDamageable.TakeDamage(damage);
                     Debug.Log($"<color=red>[EnemyWeapon]</color> Попадание! Урон: {damage}");
                 }
-                // Если попали в стену (не игрок и не другой враг) - спавним декаль
-                else if (_decalManager != null && !hit.collider.CompareTag("Player") && !hit.collider.CompareTag("Enemy"))
+                else if (_decalManager != null)
                 {
                     _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
                 }
