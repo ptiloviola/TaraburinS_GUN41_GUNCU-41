@@ -9,40 +9,37 @@ using TpsShooter.Enemies.States;
 using TpsShooter.Enemies.Weapons;
 using TpsShooter.Environment;
 using TpsShooter.Audio;
-using TpsShooter.Player.Core; // Добавлено для PlayerAnimationEvents
+using TpsShooter.Core; // Обновленный неймспейс
 
 namespace TpsShooter.Enemies.Core
 {
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyBrain : MonoBehaviour, IDamageable
     {
-        // Компоненты (Контекст для стейтов)
         public NavMeshAgent Agent { get; private set; }
-        
-        // Конфиг теперь задается строго через Фабрику
         public EnemyConfig Config { get; private set; }
         
         public Transform[] PatrolPoints { get; private set; }
         public PlayerFacade Target { get; private set; } 
         public Vector3 LastKnownTargetPosition { get; set; }
 
-        // Системы (Чистый C#)
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemySensor Sensor { get; private set; }
-        public EnemyWeaponController WeaponController { get; private set; }
         public EnemyAnimator Animator { get; private set; }
+        
+        // НОВАЯ АРХИТЕКТУРА: Абстрактный обработчик боя
+        public IEnemyCombatHandler CombatHandler { get; private set; }
         
         public HealthEngine Health { get; private set; }
         public LootFactory LootSpawner { get; private set; }
         
         private float _lastSensorTickTime;
-        
         private FootstepAudioSystem _footstepAudio;
-        private PlayerAnimationEvents _animEvents; // Добавлен перехватчик событий
+        private CharacterAnimationEvents _animEvents; 
+        
         [Inject] private IAudioService _audioService;
         public IAudioService AudioService => _audioService;
 
-        // 1. СТРОГИЙ DI: Zenject прокинет Фабрику Лута и Игрока прямо сюда
         [Inject]
         public void Construct(LootFactory lootFactory, PlayerFacade playerFacade)
         {
@@ -55,47 +52,40 @@ namespace TpsShooter.Enemies.Core
             Agent = GetComponent<NavMeshAgent>();
             StateMachine = new EnemyStateMachine();
             Sensor = new EnemySensor(this);
-            WeaponController = GetComponent<EnemyWeaponController>();
             Animator = GetComponentInChildren<EnemyAnimator>();
             
-            // Навешиваем слушатель событий на объект с Animator
             if (Animator != null)
             {
-                _animEvents = Animator.gameObject.GetComponent<PlayerAnimationEvents>();
+                _animEvents = Animator.gameObject.GetComponent<CharacterAnimationEvents>();
                 if (_animEvents == null) 
-                    _animEvents = Animator.gameObject.AddComponent<PlayerAnimationEvents>();
+                    _animEvents = Animator.gameObject.AddComponent<CharacterAnimationEvents>();
             }
 
-            if (WeaponController == null)
+            // ИДЕАЛЬНАЯ СТРАТЕГИЯ: Мозг просто берет компонент, который мы повесили на префаб
+            CombatHandler = GetComponent<IEnemyCombatHandler>();
+            
+            if (CombatHandler == null)
             {
-                WeaponController = gameObject.AddComponent<EnemyWeaponController>();
+                Debug.LogError($"<color=red>[EnemyBrain]</color> На префабе {gameObject.name} нет скрипта боевки (IEnemyCombatHandler)!");
             }
         }
 
-        // 2. ИНИЦИАЛИЗАЦИЯ: Вызывается Фабрикой при спавне
         public void Initialize(EnemyConfig config, Transform[] patrolPoints)
         {
             Config = config;
-            
-            // Защита: если точки не передали, пусть враг считает точкой патруля место своего спавна
             PatrolPoints = (patrolPoints != null && patrolPoints.Length > 0) ? patrolPoints : new Transform[] { transform };
 
             Health = new HealthEngine(Config.MaxHealth);
             Health.OnDeath += Die;
 
-            WeaponController.Initialize(Config);
+            // Просто инициализируем ту стратегию, которую нашли в Awake
+            CombatHandler?.Initialize(Config);
             
             StateMachine.Initialize(new EnemyPatrolState(this));
             
-            // Инициализация единой системы шагов на основе ивентов
             if (Config.FootstepAudioConfig != null && _audioService != null)
             {
-                _footstepAudio = new FootstepAudioSystem(
-                    _audioService,
-                    transform,
-                    _animEvents,
-                    Config.FootstepAudioConfig
-                );
+                _footstepAudio = new FootstepAudioSystem(_audioService, transform, _animEvents, Config.FootstepAudioConfig);
             }
         }
 
@@ -110,40 +100,29 @@ namespace TpsShooter.Enemies.Core
             }
             
             StateMachine.Tick();
-            // Вызов Tick для _footstepAudio отсюда удален
         }
 
         public void TakeDamage(float amount)
         {
             Health?.TakeDamage(amount);
-            Debug.Log($"<color=orange>[Enemy]</color> Получил {amount} урона. Осталось ХП: {Health?.CurrentHealth}");
+            Debug.Log($"<color=orange>[Enemy]</color> Получил {amount} урона. ХП: {Health?.CurrentHealth}");
 
             if (Health != null && !Health.IsDead)
             {
                 Animator?.PlayHit(); 
-
-                if (StateMachine.CurrentState is States.EnemyPatrolState)
-                {
-                    if (Target != null)
-                    {
-                        LastKnownTargetPosition = Target.transform.position;
-                        StateMachine.ChangeState(new States.EnemySearchState(this));
-                    }
-                }
+                // ДЕЛЕГИРОВАНИЕ: Мозг больше не решает, куда переходить. Это делает Стейт.
+                StateMachine.CurrentState?.OnDamageTaken();
             }
         }
 
         private void OnDestroy()
         {
             if (Health != null) Health.OnDeath -= Die;
-            
-            // Отписываемся от событий шагов при уничтожении
             _footstepAudio?.Dispose();
         }
 
         private void Die()
         {
-            Debug.Log($"<color=black>[Enemy]</color> УМЕР!");
             StateMachine.ChangeState(new EnemyDeadState(this));
         }
 
@@ -151,7 +130,8 @@ namespace TpsShooter.Enemies.Core
         {
             if (Config == null) return;
 
-            Gizmos.color = (Sensor != null && Sensor.IsTargetVisible) ? Color.red : Color.yellow;
+            // ИСПРАВЛЕНИЕ ТЗ: Цвет берется строго из текущего стейта
+            Gizmos.color = StateMachine?.CurrentState?.StateGizmoColor ?? Color.white;
             Gizmos.DrawWireSphere(transform.position, Config.VisionRadius);
             
             Gizmos.color = Color.magenta;

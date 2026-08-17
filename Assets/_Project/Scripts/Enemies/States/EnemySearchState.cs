@@ -9,10 +9,13 @@ namespace TpsShooter.Enemies.States
         private float _searchTimer;
         private bool _reachedLocation;
 
+        public Color StateGizmoColor => Color.yellow;
+
         public EnemySearchState(EnemyBrain brain)
         {
             _brain = brain;
         }
+        
 
         public void Enter()
         {
@@ -56,5 +59,7 @@ namespace TpsShooter.Enemies.States
         }
 
         public void Exit() { }
+
+        public void OnDamageTaken() { /* Уже ищем, ничего не делаем */ }
     }
 }

@@ -12,6 +12,8 @@ namespace TpsShooter.Enemies.States
         // <--- СТАТИЧЕСКИЙ СЧЕТЧИК (ОБЩИЙ ДЛЯ ВСЕХ ВРАГОВ) --->
         private static int _enemiesInCombat = 0; 
 
+        public Color StateGizmoColor => Color.red;
+
         public EnemyCombatState(EnemyBrain brain)
         {
             _brain = brain;
@@ -87,16 +89,8 @@ namespace TpsShooter.Enemies.States
         private void PerformAttack()
         {
             _lastAttackTime = Time.time;
-            
-            if (_brain.Config.Type == EnemyType.Ranged)
-            {
-                _brain.Animator?.PlayShoot(); 
-                _brain.WeaponController.TryFire(_brain.Target);
-            }
-            else
-            {
-                _brain.Animator?.PlayMeleeAttack(); 
-            }
+            _brain.CombatHandler?.PerformAttack(_brain.Target, _brain.Animator);
         }
+        public void OnDamageTaken() { /* Уже в бою */ }
     }
 }

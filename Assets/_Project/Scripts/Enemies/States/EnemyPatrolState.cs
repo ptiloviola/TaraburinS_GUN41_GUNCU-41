@@ -5,13 +5,17 @@ namespace TpsShooter.Enemies.States
 {
     public class EnemyPatrolState : IEnemyState
     {
+        
         private readonly EnemyBrain _brain;
         private int _currentWaypointIndex;
+
+        public Color StateGizmoColor => Color.green;
 
         public EnemyPatrolState(EnemyBrain brain)
         {
             _brain = brain;
         }
+        
 
         public void Enter()
         {
@@ -51,5 +55,16 @@ namespace TpsShooter.Enemies.States
             _brain.Agent.SetDestination(_brain.PatrolPoints[_currentWaypointIndex].position);
             _currentWaypointIndex = (_currentWaypointIndex + 1) % _brain.PatrolPoints.Length;
         }
+
+        public void OnDamageTaken() 
+        {
+            if (_brain.Target != null)
+            {
+                _brain.LastKnownTargetPosition = _brain.Target.transform.position;
+                _brain.StateMachine.ChangeState(new EnemySearchState(_brain));
+            }
+        }
+
+        
     }
 }

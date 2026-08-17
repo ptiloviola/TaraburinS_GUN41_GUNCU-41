@@ -12,6 +12,7 @@ using TpsShooter.Player.Inventory;
 using TpsShooter.Environment;
 using TpsShooter.Combat;
 using TpsShooter.Audio;
+using TpsShooter.Core;
 
 
 namespace TpsShooter.Player
@@ -44,7 +45,7 @@ namespace TpsShooter.Player
         
         // Новые компоненты для Melee
         private PlayerMeleeController _meleeController;
-        private PlayerAnimationEvents _animEvents;
+        private CharacterAnimationEvents _animEvents;
         private FootstepAudioSystem _footstepAudio;
         private IAudioService _audioService;
 
@@ -107,9 +108,9 @@ namespace TpsShooter.Player
             _meleeController = new PlayerMeleeController(animator, transform);
             
             // Навешиваем слушатель событий анимации на ту же пустышку, где висит Animator
-            _animEvents = animator.gameObject.GetComponent<PlayerAnimationEvents>();
+            _animEvents = animator.gameObject.GetComponent<CharacterAnimationEvents>();
             if (_animEvents == null) 
-                _animEvents = animator.gameObject.AddComponent<PlayerAnimationEvents>();
+                _animEvents = animator.gameObject.AddComponent<CharacterAnimationEvents>();
                 
             _animEvents.OnMeleeStrike += _meleeController.PerformStrike;
 

@@ -5,10 +5,12 @@ using TpsShooter.Combat;
 using TpsShooter.Effects;
 using Zenject;
 using TpsShooter.Audio;
+using TpsShooter.Enemies.Core; // <-- Добавлено для интерфейса
 
 namespace TpsShooter.Enemies.Weapons
 {
-    public class EnemyWeaponController : MonoBehaviour
+    // ИСПРАВЛЕНИЕ: Добавили реализацию IEnemyCombatHandler
+    public class EnemyWeaponController : MonoBehaviour, IEnemyCombatHandler
     {
         private EnemyConfig _config;
         
@@ -21,11 +23,9 @@ namespace TpsShooter.Enemies.Weapons
         [SerializeField] private string _fireSoundId = "Rifle_Fire";
 
         private GameObject _currentWeaponInstance;
-
         private Transform _firePoint; 
-        private ParticleSystem _muzzleFlash; // Ссылка на вспышку
+        private ParticleSystem _muzzleFlash; 
 
-        // Внедряем глобальные сервисы эффектов
         [Inject] private IVFXService _vfxService;
         [Inject] private DecalManager _decalManager;
         [Inject] private IAudioService _audioService;
@@ -48,13 +48,25 @@ namespace TpsShooter.Enemies.Weapons
                     _firePoint = _currentWeaponInstance.transform;
                 }
 
-                // Ищем ParticleSystem в префабе оружия (он найдет наш MuzzleFlash)
                 _muzzleFlash = _currentWeaponInstance.GetComponentInChildren<ParticleSystem>();
             }
             else
             {
                 _firePoint = transform; 
             }
+        }
+
+        // РЕАЛИЗАЦИЯ ИНТЕРФЕЙСА: Вызывается из стейта боя
+        public void PerformAttack(PlayerFacade target, EnemyAnimator animator)
+        {
+            animator?.PlayShoot(); // Запускаем анимацию прямо здесь
+            TryFire(target);       // И сразу стреляем
+        }
+
+        // РЕАЛИЗАЦИЯ ИНТЕРФЕЙСА: Вызывается при смерти
+        public void OnDeath()
+        {
+            HideWeapon();
         }
 
         public void HideWeapon()
@@ -69,7 +81,6 @@ namespace TpsShooter.Enemies.Weapons
         {
             if (_firePoint == null) return;
 
-            // 1. Проигрываем вспышку из дула
             if (_muzzleFlash != null)
             {
                 _muzzleFlash.Play();
@@ -100,7 +111,6 @@ namespace TpsShooter.Enemies.Weapons
             Vector3 shootDirection = (predictedPoint - fireOrigin).normalized;
             float maxRayDistance = distance * 1.5f;
 
-            // По умолчанию трассер летит на максимальную дистанцию (промах)
             Vector3 tracerEndPoint = fireOrigin + shootDirection * maxRayDistance;
 
             if (Physics.SphereCast(fireOrigin, 0.35f, shootDirection, out RaycastHit hit, maxRayDistance))
@@ -112,19 +122,15 @@ namespace TpsShooter.Enemies.Weapons
                 {
                     float damage = _config.WeaponStats != null ? _config.WeaponStats.Damage : 15f;
                     targetDamageable.TakeDamage(damage);
-                    
-                    // СПАВН КРОВИ (учитываем, что враг может попасть по игроку)
                     _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: true);
                 }
                 else 
                 {
                     if (_decalManager != null) _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
-                    // СПАВН ИСКР/ПЫЛИ
                     _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: false);
                 }
             }
 
-            // 2. Запускаем глобальный трассер пули
             _vfxService?.SpawnTracer(fireOrigin, tracerEndPoint);
 
 #if UNITY_EDITOR

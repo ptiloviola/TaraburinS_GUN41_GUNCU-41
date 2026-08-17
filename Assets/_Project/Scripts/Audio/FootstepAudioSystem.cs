@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using TpsShooter.Player.Core;
+using TpsShooter.Core;
 
 namespace TpsShooter.Audio
 {
@@ -8,13 +8,13 @@ namespace TpsShooter.Audio
     {
         private readonly IAudioService _audioService;
         private readonly Transform _rootTransform;
-        private readonly PlayerAnimationEvents _animEvents;
+        private readonly CharacterAnimationEvents _animEvents;
         private readonly FootstepConfig _config;
 
         public FootstepAudioSystem(
             IAudioService audioService, 
             Transform rootTransform, 
-            PlayerAnimationEvents animEvents,
+            CharacterAnimationEvents animEvents,
             FootstepConfig config)
         {
             _audioService = audioService;
