@@ -40,6 +40,7 @@ namespace TpsShooter.Enemies.Core
         private FootstepAudioSystem _footstepAudio;
         private PlayerAnimationEvents _animEvents; // Добавлен перехватчик событий
         [Inject] private IAudioService _audioService;
+        public IAudioService AudioService => _audioService;
 
         // 1. СТРОГИЙ DI: Zenject прокинет Фабрику Лута и Игрока прямо сюда
         [Inject]

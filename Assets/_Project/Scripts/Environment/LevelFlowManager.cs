@@ -54,6 +54,11 @@ namespace TpsShooter.Environment
 
             _player.Health.OnDeath += HandleDefeat;
             _waveSpawner.OnAllEnemiesDefeated += ActivateExtraction;
+            // Запускаем сразу оба трека одновременно
+            _audioService?.StartDynamicMusic("Music_Calm", "Music_Combat");
+            
+            // Убеждаемся, что мы принудительно стартуем в мирном слепке
+            _audioService?.SetCombatMusicState(false);
         }
 
         private void ActivateExtraction()
@@ -63,6 +68,8 @@ namespace TpsShooter.Environment
             Transform randomLocation = _extractionSpawnLocations[UnityEngine.Random.Range(0, _extractionSpawnLocations.Length)];
             _extractionPoint.transform.position = randomLocation.position;
             _extractionPoint.transform.rotation = randomLocation.rotation;
+
+            _audioService?.SetExtractionMusicState();
 
             _extractionPoint.Activate();
         }

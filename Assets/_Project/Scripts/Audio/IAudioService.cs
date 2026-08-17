@@ -11,5 +11,11 @@ namespace TpsShooter.Audio
         // Задел на будущее для здоровья и настроек
         void SetLowpassFilter(bool isActive);
         void SetGroupVolume(AudioGroup group, float volume);
+
+        void StartDynamicMusic(string calmId, string combatId);
+
+        void SetCombatMusicState(bool isCombat);
+
+        void SetExtractionMusicState();
     }
 }

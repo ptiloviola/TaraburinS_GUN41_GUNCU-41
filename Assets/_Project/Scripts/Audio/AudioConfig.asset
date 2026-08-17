@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: AudioConfig
   m_EditorClassIdentifier: 
   MainMixer: {fileID: 24100000, guid: eefe5346b95b7694688cf6fd8eefe2c7, type: 2}
+  ExplorationSnapshot: {fileID: 24500006, guid: eefe5346b95b7694688cf6fd8eefe2c7, type: 2}
+  CombatSnapshot: {fileID: -551373484280107991, guid: eefe5346b95b7694688cf6fd8eefe2c7, type: 2}
+  ExtractionSnapshot: {fileID: 407215491048080632, guid: eefe5346b95b7694688cf6fd8eefe2c7, type: 2}
   Sounds:
   - ID: Pistol_Fire
     Clips:
@@ -99,6 +102,22 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 0e30f074e023c4ddfaa353b20fd5df44, type: 3}
     - {fileID: 8300000, guid: 6e9c02bbea51845d9a3745e38e2dcd7e, type: 3}
     Group: 0
+    Volume: 1
+    SpatialBlend: 1
+    MinDistance: 2
+    MaxDistance: 20
+  - ID: Music_Calm
+    Clips:
+    - {fileID: 8300000, guid: 9215d6661e86e4688865039f478e1446, type: 3}
+    Group: 2
+    Volume: 1
+    SpatialBlend: 1
+    MinDistance: 2
+    MaxDistance: 20
+  - ID: Music_Combat
+    Clips:
+    - {fileID: 8300000, guid: 759264f957afe8849916a8598944cd7e, type: 3}
+    Group: 3
     Volume: 1
     SpatialBlend: 1
     MinDistance: 2

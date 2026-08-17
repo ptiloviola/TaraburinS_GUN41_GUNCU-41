@@ -8,6 +8,9 @@ namespace TpsShooter.Enemies.States
     {
         private readonly EnemyBrain _brain;
         private float _lastAttackTime;
+        
+        // <--- СТАТИЧЕСКИЙ СЧЕТЧИК (ОБЩИЙ ДЛЯ ВСЕХ ВРАГОВ) --->
+        private static int _enemiesInCombat = 0; 
 
         public EnemyCombatState(EnemyBrain brain)
         {
@@ -18,11 +21,17 @@ namespace TpsShooter.Enemies.States
         {
             Debug.Log("<color=red>[EnemyState]</color> Переход в CombatState");
             _brain.Agent.speed = _brain.Config.ChaseSpeed;
+            
+            // Если это первый враг, который нас заметил — включаем экшен
+            _enemiesInCombat++;
+            if (_enemiesInCombat == 1)
+            {
+                _brain.AudioService?.SetCombatMusicState(true);
+            }
         }
 
         public void Tick()
         {
-            // Условие выхода: потеряли игрока из виду (забежал за стену/убежал)
             if (!_brain.Sensor.IsTargetVisible)
             {
                 _brain.StateMachine.ChangeState(new EnemySearchState(_brain));
@@ -36,13 +45,12 @@ namespace TpsShooter.Enemies.States
                 if (_brain.Agent.isStopped) 
                 {
                     _brain.Agent.isStopped = false;
-                    _brain.Animator?.PlayRun(); // <--- АГРЕССИВНЫЙ БЕГ
+                    _brain.Animator?.PlayRun(); 
                 }
                 _brain.Agent.SetDestination(_brain.Target.transform.position);
             }
             else
             {
-                // Игрок близко - стоим и атакуем
                 _brain.Agent.isStopped = true;
                 LookAtTarget();
 
@@ -53,12 +61,23 @@ namespace TpsShooter.Enemies.States
             }
         }
 
-        public void Exit() { }
+        public void Exit() 
+        {
+            // Враг умер или потерял нас из виду
+            _enemiesInCombat--;
+            
+            // Если больше ни один враг нас не видит — возвращаем спокойную музыку
+            if (_enemiesInCombat <= 0)
+            {
+                _enemiesInCombat = 0; // Защита от ухода в минус
+                _brain.AudioService?.SetCombatMusicState(false);
+            }
+        }
 
         private void LookAtTarget()
         {
             Vector3 dir = (_brain.Target.transform.position - _brain.transform.position).normalized;
-            dir.y = 0; // Не наклоняем капсулу
+            dir.y = 0; 
             if (dir != Vector3.zero)
             {
                 _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10f);
@@ -71,13 +90,12 @@ namespace TpsShooter.Enemies.States
             
             if (_brain.Config.Type == EnemyType.Ranged)
             {
-                _brain.Animator?.PlayShoot(); // <--- АНИМАЦИЯ СТРЕЛЬБЫ
+                _brain.Animator?.PlayShoot(); 
                 _brain.WeaponController.TryFire(_brain.Target);
             }
             else
             {
-                _brain.Animator?.PlayMeleeAttack(); // <--- АНИМАЦИЯ УДАРА
-                // (Позже сюда добавим физический урон для милишника)
+                _brain.Animator?.PlayMeleeAttack(); 
             }
         }
     }

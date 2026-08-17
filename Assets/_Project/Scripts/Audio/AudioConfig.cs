@@ -9,6 +9,8 @@ namespace TpsShooter.Audio
     {
         SFX,
         Music,
+        Music_Calm,   // Подгруппа для спокойной музыки
+        Music_Combat, // Подгруппа для боевой музыки
         UI,
         Ambient
     }
@@ -36,6 +38,12 @@ namespace TpsShooter.Audio
     public class AudioConfig : ScriptableObject
     {
         public AudioMixer MainMixer;
+        
+        [Header("Mixer Snapshots")]
+        public AudioMixerSnapshot ExplorationSnapshot;
+        public AudioMixerSnapshot CombatSnapshot;
+        public AudioMixerSnapshot ExtractionSnapshot;
+
         public List<SoundRecord> Sounds = new List<SoundRecord>();
 
         private Dictionary<string, SoundRecord> _soundDictionary;

@@ -14,8 +14,11 @@ namespace TpsShooter.Audio
         private List<AudioSource> _sfxPool;
         private int _poolSize = 20;
 
-        // Кэшируем группы микшера, чтобы не искать их каждый раз по строкам
         private Dictionary<AudioGroup, AudioMixerGroup> _mixerGroups;
+
+        // ОТДЕЛЬНЫЕ ИСТОЧНИКИ ДЛЯ ДИНАМИЧЕСКОЙ МУЗЫКИ
+        private AudioSource _calmMusicSource;
+        private AudioSource _combatMusicSource;
 
         public GlobalAudioService(AudioConfig config)
         {
@@ -26,13 +29,13 @@ namespace TpsShooter.Audio
         {
             _config.Initialize();
             
-            // Создаем родительский объект для пула, который не будет уничтожаться при смене сцен
             GameObject rootObject = new GameObject("[GlobalAudioService]");
             GameObject.DontDestroyOnLoad(rootObject);
             _poolRoot = rootObject.transform;
 
             InitializeMixerGroups();
             InitializePool();
+            InitializeMusicSources();
         }
 
         private void InitializeMixerGroups()
@@ -40,7 +43,6 @@ namespace TpsShooter.Audio
             _mixerGroups = new Dictionary<AudioGroup, AudioMixerGroup>();
             if (_config.MainMixer == null) return;
 
-            // Ищем группы в микшере (имена должны совпадать с enum!)
             foreach (AudioGroup group in Enum.GetValues(typeof(AudioGroup)))
             {
                 AudioMixerGroup[] foundGroups = _config.MainMixer.FindMatchingGroups(group.ToString());
@@ -60,13 +62,23 @@ namespace TpsShooter.Audio
             }
         }
 
+        private void InitializeMusicSources()
+        {
+            _calmMusicSource = CreateNewAudioSource("Music_Calm_Source");
+            _calmMusicSource.loop = true;
+            _calmMusicSource.spatialBlend = 0f; // Музыка всегда 2D
+
+            _combatMusicSource = CreateNewAudioSource("Music_Combat_Source");
+            _combatMusicSource.loop = true;
+            _combatMusicSource.spatialBlend = 0f; // Музыка всегда 2D
+        }
+
         private AudioSource CreateNewAudioSource(string name)
         {
             GameObject go = new GameObject(name);
             go.transform.SetParent(_poolRoot);
             AudioSource source = go.AddComponent<AudioSource>();
             source.playOnAwake = false;
-            // Правильный спад звука
             source.rolloffMode = AudioRolloffMode.Logarithmic; 
             return source;
         }
@@ -78,7 +90,6 @@ namespace TpsShooter.Audio
                 if (!source.isPlaying) return source;
             }
             
-            // Если все заняты, создаем новый и добавляем в пул (динамическое расширение)
             AudioSource newSource = CreateNewAudioSource($"SFX_Source_{_sfxPool.Count}");
             _sfxPool.Add(newSource);
             return newSource;
@@ -91,13 +102,11 @@ namespace TpsShooter.Audio
 
             AudioSource source = GetFreeSource();
             
-            // Настройка 3D
             source.transform.position = position;
             source.spatialBlend = record.SpatialBlend;
             source.minDistance = record.MinDistance;
             source.maxDistance = record.MaxDistance;
             
-            // Важно для выстрелов: легкая рандомизация питча (±10%)
             source.pitch = Random.Range(0.9f, 1.1f);
             
             PlayRecordOnSource(record, source);
@@ -110,25 +119,59 @@ namespace TpsShooter.Audio
 
             AudioSource source = GetFreeSource();
             
-            // UI всегда играет в 2D (в голове)
             source.spatialBlend = 0f;
             source.pitch = 1f;
             
             PlayRecordOnSource(record, source);
         }
 
-        public void PlayMusic(string soundId)
-        {
-            // Для музыки обычно нужен отдельный закрепленный AudioSource с Fade In/Out
-            // Пока используем пул в 2D режиме без изменения питча
-            SoundRecord record = _config.GetRecord(soundId);
-            if (record == null || record.Clips.Length == 0) return;
+        public void PlayMusic(string soundId) { }
 
-            AudioSource source = GetFreeSource();
-            source.spatialBlend = 0f;
-            source.pitch = 1f;
-            
-            PlayRecordOnSource(record, source);
+        // ЗАПУСК ОБЕИХ ДОРОЖЕК
+        public void StartDynamicMusic(string calmId, string combatId)
+        {
+            SoundRecord calmRecord = _config.GetRecord(calmId);
+            SoundRecord combatRecord = _config.GetRecord(combatId);
+
+            if (calmRecord != null && calmRecord.Clips.Length > 0)
+            {
+                _calmMusicSource.clip = calmRecord.Clips[0];
+                _calmMusicSource.volume = calmRecord.Volume;
+                if (_mixerGroups.TryGetValue(calmRecord.Group, out AudioMixerGroup calmGroup))
+                    _calmMusicSource.outputAudioMixerGroup = calmGroup;
+                _calmMusicSource.Play();
+            }
+
+            if (combatRecord != null && combatRecord.Clips.Length > 0)
+            {
+                _combatMusicSource.clip = combatRecord.Clips[0];
+                _combatMusicSource.volume = combatRecord.Volume;
+                if (_mixerGroups.TryGetValue(combatRecord.Group, out AudioMixerGroup combatGroup))
+                    _combatMusicSource.outputAudioMixerGroup = combatGroup;
+                _combatMusicSource.Play();
+            }
+        }
+
+        // ПЕРЕКЛЮЧЕНИЕ СЛЕПКОВ
+        public void SetCombatMusicState(bool isCombat)
+        {
+            if (isCombat && _config.CombatSnapshot != null)
+            {
+                _config.CombatSnapshot.TransitionTo(2f); // Плавный переход за 2 секунды
+            }
+            else if (!isCombat && _config.ExplorationSnapshot != null)
+            {
+                _config.ExplorationSnapshot.TransitionTo(4f); // Успокаиваемся дольше (4 секунды)
+            }
+        }
+
+        public void SetExtractionMusicState()
+        {
+            if (_config.ExtractionSnapshot != null)
+            {
+                // TransitionTo(1f) означает, что музыка затухнет плавно, но быстро — ровно за 1 секунду
+                _config.ExtractionSnapshot.TransitionTo(1f); 
+            }
         }
 
         private void PlayRecordOnSource(SoundRecord record, AudioSource source)
@@ -144,19 +187,8 @@ namespace TpsShooter.Audio
             source.Play();
         }
 
-        public void SetLowpassFilter(bool isActive)
-        {
-            // Здесь будем управлять Snapshots микшера
-        }
-
-        public void SetGroupVolume(AudioGroup group, float volume)
-        {
-            // Здесь будет конвертация в децибелы
-        }
-
-        public void Dispose()
-        {
-            // Очистка при выходе из игры
-        }
+        public void SetLowpassFilter(bool isActive) { }
+        public void SetGroupVolume(AudioGroup group, float volume) { }
+        public void Dispose() { }
     }
 }
