@@ -128,7 +128,7 @@ namespace TpsShooter.Player.Weapons
             bool isRolling = _animator.GetCurrentAnimatorStateInfo(0).shortNameHash == RollStateHash;
 
             // 1. Вес слоя рук: 1, если мы вооружены (чтобы держать пушку от бедра), НО строго 0 во время переката
-            float targetLayerWeight = (IsArmed && !isRolling) ? 1f : 0f;
+            float targetLayerWeight = (!isRolling) ? 1f : 0f;
             
             // 2. Вес Риггинга (спина): 1, ТОЛЬКО когда мы целимся (ПКМ) и не бьем/не кувыркаемся!
             float targetRigWeight = (IsArmed && IsAiming && !isMeleeing && !isRolling) ? 1f : 0f;
