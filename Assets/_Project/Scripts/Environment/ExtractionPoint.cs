@@ -10,7 +10,6 @@ namespace TpsShooter.Environment
         [Header("Settings")]
         [SerializeField] private float _timeLimit = 15f;
         
-        // <--- НОВЫЕ НАСТРОЙКИ РАЗМЕРА --->
         [Header("Animation Settings")]
         [Tooltip("Итоговый размер модели после появления")]
         [SerializeField] private Vector3 _targetScale = new Vector3(2f, 2f, 2f);
@@ -20,6 +19,10 @@ namespace TpsShooter.Environment
         [Header("Visuals")]
         [SerializeField] private Transform _visualModel; 
         [SerializeField] private Light _glowLight;
+
+        // <--- ДОБАВЛЕНО АУДИО --->
+        [Header("Audio")]
+        [SerializeField] private AudioSource _sirenAudio;
 
         public event Action OnActivated;
         public event Action OnPlayerExtracted;
@@ -36,15 +39,20 @@ namespace TpsShooter.Environment
 
             OnActivated?.Invoke();
 
+            // Включаем сирену
+            if (_sirenAudio != null)
+            {
+                _sirenAudio.pitch = 1f; // Базовый тон
+                _sirenAudio.Play();
+            }
+
             if (_visualModel != null)
             {
                 _visualModel.DOKill(); 
                 _visualModel.localScale = Vector3.zero;
                 
-                // Используем _targetScale вместо Vector3.one
                 _visualModel.DOScale(_targetScale, 1f).SetEase(Ease.OutBounce).OnComplete(() => 
                 {
-                    // Используем _punchScale
                     _visualModel.DOPunchScale(_punchScale, 1f, 2, 0.5f).SetLoops(-1, LoopType.Yoyo);
                 });
             }
@@ -63,9 +71,18 @@ namespace TpsShooter.Environment
             if (!IsActive) return;
 
             TimeRemaining -= Time.deltaTime;
+
+            // <--- НАГНЕТАНИЕ НАПРЯЖЕНИЯ (ПОВЫШАЕМ ПИТЧ С 1.0 ДО 1.5 К КОНЦУ) --->
+            if (_sirenAudio != null)
+            {
+                float timeRatio = 1f - (TimeRemaining / _timeLimit); // От 0 до 1
+                _sirenAudio.pitch = Mathf.Lerp(1f, 1.5f, timeRatio);
+            }
+
             if (TimeRemaining <= 0)
             {
                 IsActive = false;
+                _sirenAudio?.Stop(); // Выключаем при провале
                 OnTimeExpired?.Invoke();
             }
         }
@@ -77,6 +94,7 @@ namespace TpsShooter.Environment
             if (other.GetComponent<PlayerFacade>() != null)
             {
                 IsActive = false;
+                _sirenAudio?.Stop(); // Выключаем при успехе
                 OnPlayerExtracted?.Invoke();
             }
         }

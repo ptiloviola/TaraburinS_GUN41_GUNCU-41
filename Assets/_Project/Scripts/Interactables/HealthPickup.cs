@@ -1,6 +1,8 @@
 using UnityEngine;
 using TpsShooter.Player;
 using TpsShooter.Items.Configs;
+using Zenject;
+using TpsShooter.Audio;
 
 namespace TpsShooter.Interactables
 {
@@ -9,6 +11,7 @@ namespace TpsShooter.Interactables
     {
         [SerializeField] private HealthItemConfig _config;
         private bool _isCollected = false; // Защита от двойного подбора в одном кадре
+        [Inject] private IAudioService _audioService;
 
         // 1. АВТОМАТИЧЕСКИЙ ПОДБОР ПРИ КАСАНИИ
         private void OnTriggerEnter(Collider other)
@@ -31,7 +34,7 @@ namespace TpsShooter.Interactables
                 {
                     _isCollected = true;
                     Debug.Log($"<color=green>[Interaction]</color> Подобрана аптечка. Восстановлено {_config.HealAmount} ХП. Текущее ХП: {playerFacade.Health.CurrentHealth}");
-                    
+                    _audioService?.PlaySFX("Item_Pickup", transform.position);
                     Destroy(gameObject); 
                     return true; 
                 }

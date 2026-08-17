@@ -1,6 +1,8 @@
 using UnityEngine;
 using TpsShooter.Weapons.Core;
 using TpsShooter.Player; // Для доступа к PlayerFacade
+using Zenject;
+using TpsShooter.Audio;
 
 namespace TpsShooter.Interactables
 {
@@ -10,6 +12,7 @@ namespace TpsShooter.Interactables
     {
         public WeaponBase WeaponInstance { get; private set; }
         private bool _isCollected;
+        [Inject] private IAudioService _audioService;
 
         public void Initialize(WeaponBase weaponInstance)
         {
@@ -42,6 +45,7 @@ namespace TpsShooter.Interactables
                     {
                         Debug.Log($"<color=green>[Interaction]</color> Оружие уже есть. Извлечены патроны: +{ammoToGive} {WeaponInstance.Config.WeaponAmmoType}");
                         _isCollected = true;
+                        _audioService?.PlaySFX("Item_Pickup", transform.position);
                         Destroy(gameObject); // Уничтожаем лежащую пушку
                         return true;
                     }
@@ -63,6 +67,7 @@ namespace TpsShooter.Interactables
                 Debug.Log($"<color=green>[Interaction]</color> Подобрано новое оружие: {WeaponInstance.Config.WeaponName}");
                 _isCollected = true;
                 playerFacade.WeaponInventory.AddWeapon(WeaponInstance);
+                _audioService?.PlaySFX("Item_Pickup", transform.position);
                 Destroy(gameObject);
                 
                 return true;

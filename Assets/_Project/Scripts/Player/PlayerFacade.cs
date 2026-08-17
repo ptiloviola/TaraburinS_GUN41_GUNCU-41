@@ -46,6 +46,7 @@ namespace TpsShooter.Player
         private PlayerMeleeController _meleeController;
         private PlayerAnimationEvents _animEvents;
         private FootstepAudioSystem _footstepAudio;
+        private IAudioService _audioService;
 
         public HealthEngine Health { get; private set; }
 
@@ -72,6 +73,7 @@ namespace TpsShooter.Player
             IAudioService audioService,
             FootstepConfig footstepConfig)
         {
+            _audioService = audioService;
             _inputService = inputService;
             Transform camTransform = UnityEngine.Camera.main != null ? UnityEngine.Camera.main.transform : null;
             var groundSensor = new GroundSensor(transform, config);
@@ -140,6 +142,7 @@ namespace TpsShooter.Player
         public void TakeDamage(float amount)
         {
             Health?.TakeDamage(amount);
+            _audioService?.PlaySFX("Player_Hurt", transform.position);
             Debug.Log($"<color=green>[Player]</color> Получил {amount} урона. ХП: {Health.CurrentHealth}");
         }
 

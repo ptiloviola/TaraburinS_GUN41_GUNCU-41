@@ -2,6 +2,8 @@ using UnityEngine;
 using TpsShooter.Player;
 using TpsShooter.Player.Inventory;
 using TpsShooter.Items.Configs;
+using Zenject;
+using TpsShooter.Audio;
 
 
 namespace TpsShooter.Interactables
@@ -16,6 +18,8 @@ namespace TpsShooter.Interactables
         [SerializeField] private AmmoItemConfig _config;
         
         private bool _isCollected;
+
+        [Inject] private IAudioService _audioService;
 
         private void OnTriggerEnter(Collider other)
         {
@@ -34,7 +38,7 @@ namespace TpsShooter.Interactables
                     _isCollected = true;
                     Debug.Log($"<color=green>[Interaction]</color> Подобраны патроны: {_config.AmmoType} +{_config.Amount}");
                     
-                    // ТУТ БУДЕТ ЗВУК И ЭФФЕКТ
+                    _audioService?.PlaySFX("Item_Pickup", transform.position);
 
                     Destroy(gameObject);
                     return true;

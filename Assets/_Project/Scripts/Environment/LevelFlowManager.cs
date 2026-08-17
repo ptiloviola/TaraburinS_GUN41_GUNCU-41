@@ -5,6 +5,7 @@ using Zenject;
 using TpsShooter.Player;
 using TpsShooter.Services.Progress;
 using TpsShooter.Services.SceneManagement;
+using TpsShooter.Audio; // <-- Добавлено
 
 namespace TpsShooter.Environment
 {
@@ -14,7 +15,6 @@ namespace TpsShooter.Environment
         [Tooltip("Возможные точки появления эвакуации")]
         [SerializeField] private Transform[] _extractionSpawnLocations;
 
-        // Событие для Презентера: передает номер СЛЕДУЮЩЕГО уровня
         public event Action<int> OnVictoryTransition;
 
         private ExtractionPoint _extractionPoint;
@@ -22,6 +22,9 @@ namespace TpsShooter.Environment
         private EnemyWaveSpawner _waveSpawner;
         private GameProgressService _progressService;
         private SceneLoaderService _sceneLoader;
+        
+        // <--- СЕРВИС АУДИО --->
+        private IAudioService _audioService;
 
         [Inject]
         public void Construct(
@@ -29,13 +32,15 @@ namespace TpsShooter.Environment
             EnemyWaveSpawner waveSpawner,
             GameProgressService progressService,
             SceneLoaderService sceneLoader,
-            ExtractionPoint extractionPoint) 
+            ExtractionPoint extractionPoint,
+            IAudioService audioService) // <-- Инъекция
         {
             _player = player;
             _waveSpawner = waveSpawner;
             _progressService = progressService;
             _sceneLoader = sceneLoader;
             _extractionPoint = extractionPoint;
+            _audioService = audioService;
         }
 
         private void Start()
@@ -64,19 +69,18 @@ namespace TpsShooter.Environment
 
         private void HandleVictory()
         {
+            // <--- КРИК РАДОСТИ ПРИ ЭВАКУАЦИИ --->
+            _audioService?.PlaySFX("Player_Joy", _player.transform.position);
+
             _progressService.NextLevel();
             int nextLevel = _progressService.CurrentLevel;
             
-            // Вызываем событие, чтобы Презентер показал UI
             OnVictoryTransition?.Invoke(nextLevel);
-            
-            // Запускаем корутину с задержкой перед сменой сцены
             StartCoroutine(VictoryTransitionRoutine());
         }
 
         private IEnumerator VictoryTransitionRoutine()
         {
-            // Ждем 3 секунды, чтобы игрок успел прочитать текст
             yield return new WaitForSeconds(3f);
             _sceneLoader.ReloadCurrentScene(); 
         }

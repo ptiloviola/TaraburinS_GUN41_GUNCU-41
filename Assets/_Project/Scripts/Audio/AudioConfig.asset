@@ -78,3 +78,28 @@ MonoBehaviour:
     SpatialBlend: 1
     MinDistance: 2
     MaxDistance: 20
+  - ID: Player_Joy
+    Clips:
+    - {fileID: 8300000, guid: 0dac35a0466ff4cb9a3d2c006dc956af, type: 3}
+    Group: 0
+    Volume: 1
+    SpatialBlend: 1
+    MinDistance: 2
+    MaxDistance: 20
+  - ID: Player_Hurt
+    Clips:
+    - {fileID: 8300000, guid: 0fcccacff396a4e2b86aaab9fc07aaec, type: 3}
+    Group: 0
+    Volume: 1
+    SpatialBlend: 1
+    MinDistance: 2
+    MaxDistance: 20
+  - ID: Item_Pickup
+    Clips:
+    - {fileID: 8300000, guid: 0e30f074e023c4ddfaa353b20fd5df44, type: 3}
+    - {fileID: 8300000, guid: 6e9c02bbea51845d9a3745e38e2dcd7e, type: 3}
+    Group: 0
+    Volume: 1
+    SpatialBlend: 1
+    MinDistance: 2
+    MaxDistance: 20
