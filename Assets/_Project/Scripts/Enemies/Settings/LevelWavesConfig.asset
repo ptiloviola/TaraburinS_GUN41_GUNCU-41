@@ -17,13 +17,13 @@ MonoBehaviour:
     SpawnInterval: 0
     Enemies:
     - BasePrefab: {fileID: 190683357733756743, guid: b51dc3a9498daac45a8103d2c5892117, type: 3}
-      Config: {fileID: 11400000, guid: 2d7e5a905a3988e488e6380a0bc14dd3, type: 2}
+      Config: {fileID: 11400000, guid: d6516bd7ee8f0914da983197c47e0f10, type: 2}
       Count: 2
       RouteIndex: 0
   - StartDelay: 1
     SpawnInterval: 2
     Enemies:
     - BasePrefab: {fileID: 190683357733756743, guid: b51dc3a9498daac45a8103d2c5892117, type: 3}
-      Config: {fileID: 11400000, guid: 2d7e5a905a3988e488e6380a0bc14dd3, type: 2}
+      Config: {fileID: 11400000, guid: d6516bd7ee8f0914da983197c47e0f10, type: 2}
       Count: 2
       RouteIndex: 1

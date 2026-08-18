@@ -1,17 +1,23 @@
+using System;
 using UnityEngine;
 using TpsShooter.Enemies.Core;
+using TpsShooter.Environment; // Для GlobalAIEvents
 
 namespace TpsShooter.Enemies.Vision
 {
-    public class EnemySensor
+    public class EnemySensor : IDisposable
     {
         private readonly EnemyBrain _brain;
         private readonly Collider[] _colliders = new Collider[2]; 
+        
         public bool IsTargetVisible { get; private set; }
+        public event Action<Vector3> OnHeardNoise; // Сигнал для Мозга
 
         public EnemySensor(EnemyBrain brain)
         {
             _brain = brain;
+            // Подписываемся на глобальный слух
+            GlobalAIEvents.OnNoiseGenerated += HandleGlobalNoise;
         }
 
         public void Tick()
@@ -37,6 +43,25 @@ namespace TpsShooter.Enemies.Vision
                     }
                 }
             }
+        }
+
+        private void HandleGlobalNoise(Vector3 noisePosition, float volume)
+        {
+            // Если мы уже видим игрока, на слух не отвлекаемся
+            if (IsTargetVisible) return;
+
+            float distance = Vector3.Distance(_brain.transform.position, noisePosition);
+            if (distance <= _brain.Config.HearingRadius)
+            {
+                // Слышим! Запоминаем точку и кричим мозгу
+                _brain.LastKnownTargetPosition = noisePosition;
+                OnHeardNoise?.Invoke(noisePosition);
+            }
+        }
+
+        public void Dispose()
+        {
+            GlobalAIEvents.OnNoiseGenerated -= HandleGlobalNoise;
         }
     }
 }

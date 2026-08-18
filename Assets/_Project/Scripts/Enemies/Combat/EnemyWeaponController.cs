@@ -5,21 +5,17 @@ using TpsShooter.Combat;
 using TpsShooter.Effects;
 using Zenject;
 using TpsShooter.Audio;
-using TpsShooter.Enemies.Core; // <-- Добавлено для интерфейса
+using TpsShooter.Enemies.Core; 
 
-namespace TpsShooter.Enemies.Weapons
+namespace TpsShooter.Enemies.Combat // Исправленный неймспейс!
 {
-    // ИСПРАВЛЕНИЕ: Добавили реализацию IEnemyCombatHandler
     public class EnemyWeaponController : MonoBehaviour, IEnemyCombatHandler
     {
-        private EnemyConfig _config;
+        private RangedEnemyConfig _config; // <--- ТЕПЕРЬ ОН ЗНАЕТ СВОЙ ТИП
         
         [Header("Setup")]
-        [Tooltip("Перетащи сюда объект WeaponSocket из руки врага")]
         [SerializeField] private Transform _weaponSocket;
-
         [Header("Audio")]
-        [Tooltip("ID звука выстрела (из AudioConfig)")]
         [SerializeField] private string _fireSoundId = "Rifle_Fire";
 
         private GameObject _currentWeaponInstance;
@@ -32,22 +28,16 @@ namespace TpsShooter.Enemies.Weapons
 
         public void Initialize(EnemyConfig config)
         {
-            _config = config;
+            // ПРИВЕДЕНИЕ ТИПА (Никаких enum'ов!)
+            _config = config as RangedEnemyConfig;
 
-            if (_config.Type == EnemyType.Ranged && _config.WeaponPrefab != null && _weaponSocket != null)
+            if (_config != null && _config.WeaponPrefab != null && _weaponSocket != null)
             {
                 _currentWeaponInstance = Instantiate(_config.WeaponPrefab, _weaponSocket);
-                
                 _currentWeaponInstance.transform.localPosition = Vector3.zero;
                 _currentWeaponInstance.transform.localRotation = Quaternion.identity;
 
-                _firePoint = _currentWeaponInstance.transform.Find("FirePoint");
-                
-                if (_firePoint == null)
-                {
-                    _firePoint = _currentWeaponInstance.transform;
-                }
-
+                _firePoint = _currentWeaponInstance.transform.Find("FirePoint") ?? _currentWeaponInstance.transform;
                 _muzzleFlash = _currentWeaponInstance.GetComponentInChildren<ParticleSystem>();
             }
             else
@@ -56,50 +46,32 @@ namespace TpsShooter.Enemies.Weapons
             }
         }
 
-        // РЕАЛИЗАЦИЯ ИНТЕРФЕЙСА: Вызывается из стейта боя
         public void PerformAttack(PlayerFacade target, EnemyAnimator animator)
         {
-            animator?.PlayShoot(); // Запускаем анимацию прямо здесь
-            TryFire(target);       // И сразу стреляем
+            animator?.PlayShoot(); 
+            TryFire(target);       
         }
 
-        // РЕАЛИЗАЦИЯ ИНТЕРФЕЙСА: Вызывается при смерти
-        public void OnDeath()
-        {
-            HideWeapon();
-        }
+        public void OnDeath() => HideWeapon();
 
         public void HideWeapon()
         {
-            if (_currentWeaponInstance != null)
-            {
-                _currentWeaponInstance.SetActive(false);
-            }
+            if (_currentWeaponInstance != null) _currentWeaponInstance.SetActive(false);
         }
 
         public void TryFire(PlayerFacade target)
         {
-            if (_firePoint == null) return;
+            if (_firePoint == null || _config == null) return;
 
-            if (_muzzleFlash != null)
-            {
-                _muzzleFlash.Play();
-            }
-            if (!string.IsNullOrEmpty(_fireSoundId))
-            {
-                _audioService?.PlaySFX(_fireSoundId, _firePoint.position);
-            }
+            if (_muzzleFlash != null) _muzzleFlash.Play();
+            if (!string.IsNullOrEmpty(_fireSoundId)) _audioService?.PlaySFX(_fireSoundId, _firePoint.position);
 
             Vector3 targetCenter = target.transform.position + Vector3.up * 1.5f;
             Vector3 fireOrigin = _firePoint.position; 
-            
             float distance = Vector3.Distance(fireOrigin, targetCenter);
             
             Vector3 targetVelocity = Vector3.zero;
-            if (target.TryGetComponent(out CharacterController cc))
-            {
-                targetVelocity = cc.velocity;
-            }
+            if (target.TryGetComponent(out CharacterController cc)) targetVelocity = cc.velocity;
             
             float timeToHit = distance / _config.ProjectileSpeed;
             Vector3 predictedPoint = targetCenter + (targetVelocity * timeToHit);
@@ -110,7 +82,6 @@ namespace TpsShooter.Enemies.Weapons
 
             Vector3 shootDirection = (predictedPoint - fireOrigin).normalized;
             float maxRayDistance = distance * 1.5f;
-
             Vector3 tracerEndPoint = fireOrigin + shootDirection * maxRayDistance;
 
             if (Physics.SphereCast(fireOrigin, 0.35f, shootDirection, out RaycastHit hit, maxRayDistance))
@@ -130,12 +101,7 @@ namespace TpsShooter.Enemies.Weapons
                     _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: false);
                 }
             }
-
             _vfxService?.SpawnTracer(fireOrigin, tracerEndPoint);
-
-#if UNITY_EDITOR
-            Debug.DrawRay(fireOrigin, shootDirection * maxRayDistance, Color.yellow, 0.2f);
-#endif
         }
     }
 }

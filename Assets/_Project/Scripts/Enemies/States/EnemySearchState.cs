@@ -53,7 +53,7 @@ namespace TpsShooter.Enemies.States
 
                 if (_searchTimer >= _brain.Config.SearchDuration)
                 {
-                    _brain.StateMachine.ChangeState(new EnemyPatrolState(_brain));
+                    _brain.StateMachine.ChangeState(new EnemyWanderPatrolState(_brain));
                 }
             }
         }

@@ -6,7 +6,7 @@ using TpsShooter.Enemies.Configs;
 using TpsShooter.Player;
 using TpsShooter.Enemies.Vision;
 using TpsShooter.Enemies.States;
-using TpsShooter.Enemies.Weapons;
+using TpsShooter.Enemies.Combat;
 using TpsShooter.Environment;
 using TpsShooter.Audio;
 using TpsShooter.Core; // Обновленный неймспейс
@@ -53,6 +53,9 @@ namespace TpsShooter.Enemies.Core
             StateMachine = new EnemyStateMachine();
             Sensor = new EnemySensor(this);
             Animator = GetComponentInChildren<EnemyAnimator>();
+
+            Sensor = new EnemySensor(this);
+            Sensor.OnHeardNoise += HandleNoiseHeard;
             
             if (Animator != null)
             {
@@ -81,7 +84,7 @@ namespace TpsShooter.Enemies.Core
             // Просто инициализируем ту стратегию, которую нашли в Awake
             CombatHandler?.Initialize(Config);
             
-            StateMachine.Initialize(new EnemyPatrolState(this));
+            StateMachine.Initialize(Config.CreatePatrolState(this));
             
             if (Config.FootstepAudioConfig != null && _audioService != null)
             {
@@ -115,9 +118,19 @@ namespace TpsShooter.Enemies.Core
             }
         }
 
+        private void HandleNoiseHeard(Vector3 noisePosition)
+        {
+            // Если мы не в бою, переключаемся на поиск источника шума!
+            if (!(StateMachine.CurrentState is EnemyCombatState))
+            {
+                StateMachine.ChangeState(new EnemySearchState(this));
+            }
+        }
+
         private void OnDestroy()
         {
             if (Health != null) Health.OnDeath -= Die;
+            if (Sensor != null) Sensor.OnHeardNoise -= HandleNoiseHeard; // Отписка
             _footstepAudio?.Dispose();
         }
 

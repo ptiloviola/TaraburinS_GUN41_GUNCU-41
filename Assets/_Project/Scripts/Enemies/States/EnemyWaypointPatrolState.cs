@@ -3,7 +3,7 @@ using TpsShooter.Enemies.Core;
 
 namespace TpsShooter.Enemies.States
 {
-    public class EnemyPatrolState : IEnemyState
+    public class EnemyWaypointPatrolState : IEnemyState
     {
         
         private readonly EnemyBrain _brain;
@@ -11,7 +11,7 @@ namespace TpsShooter.Enemies.States
 
         public Color StateGizmoColor => Color.green;
 
-        public EnemyPatrolState(EnemyBrain brain)
+        public EnemyWaypointPatrolState(EnemyBrain brain)
         {
             _brain = brain;
         }

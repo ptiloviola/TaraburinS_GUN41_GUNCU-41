@@ -9,17 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b09a8645987b5247963297f63e4fa35, type: 3}
-  m_Name: RangeEnemyConfig
+  m_Script: {fileID: 11500000, guid: a778a9fef16a4a24fa62e41eb52dbce3, type: 3}
+  m_Name: RangedEnemyConfig_
   m_EditorClassIdentifier: 
-  EnemyName: RangeEnemy
-  Type: 1
+  EnemyName: Enemy
   MaxHealth: 100
+  AttackRange: 15
+  AttackCooldown: 1.5
   PatrolSpeed: 2
   ChaseSpeed: 4.5
   SearchDuration: 3
   VisionRadius: 20
   ViewAngle: 120
+  HearingRadius: 15
   SensorTickRate: 0.2
   TargetMask:
     serializedVersion: 2
@@ -27,14 +29,11 @@ MonoBehaviour:
   ObstacleMask:
     serializedVersion: 2
     m_Bits: 256
-  AttackRange: 15
-  AttackCooldown: 1.5
-  MeleeDamage: 25
+  DropLoot: {fileID: 11400000, guid: fc5d81348eb9c0e4bbb56d7bbb960e7a, type: 2}
+  DropChance: 0.902
+  FootstepAudioConfig: {fileID: 11400000, guid: 3f1fe2c1bb9cd1b40b4348853ba603fd, type: 2}
   WeaponPrefab: {fileID: 3438165001754377889, guid: 412b439ce5625b24c9a64587bf3be271, type: 3}
   WeaponStats: {fileID: 0}
   ProjectileSpeed: 50
-  AimInaccuracy: 1.5
+  AimInaccuracy: 0.5
   MaxInaccuracyDistance: 20
-  DropLoot: {fileID: 11400000, guid: fc5d81348eb9c0e4bbb56d7bbb960e7a, type: 2}
-  DropChance: 0.967
-  FootstepAudioConfig: {fileID: 11400000, guid: 3f1fe2c1bb9cd1b40b4348853ba603fd, type: 2}
