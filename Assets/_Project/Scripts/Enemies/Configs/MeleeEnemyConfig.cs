@@ -16,10 +16,16 @@ namespace TpsShooter.Enemies.Configs
         [Header("Wander Settings")]
         public float WanderRadius = 15f; // Насколько далеко шатается
         public float IdlePauseDuration = 3f; // Сколько "тупит" между точками
+        [Tooltip("Список названий анимаций для простоя")]
+        public string[] IdleAnimStates = { "Idle", "Idle_Stretch", "Idle_Crazy" };
+
+        [Tooltip("Анимация, когда заметил игрока (Alert)")]
+        public string AlertAnimState = "Alert"; 
+        public float AlertDuration = 1.2f; // Сколько секунд стоит и рычит
 
         // Каратист использует случайное шатание!
         public override IEnemyState CreatePatrolState(EnemyBrain brain) => new EnemyWanderPatrolState(brain);
         
-        public override IEnemyState CreateCombatState(EnemyBrain brain) => new EnemyCombatState(brain);
+        public override IEnemyState CreateCombatState(EnemyBrain brain) => new EnemyMeleeCombatState(brain);
     }
 }

@@ -18,12 +18,19 @@ MonoBehaviour:
     Enemies:
     - BasePrefab: {fileID: 190683357733756743, guid: b51dc3a9498daac45a8103d2c5892117, type: 3}
       Config: {fileID: 11400000, guid: d6516bd7ee8f0914da983197c47e0f10, type: 2}
-      Count: 2
+      Count: 1
       RouteIndex: 0
   - StartDelay: 1
     SpawnInterval: 2
     Enemies:
     - BasePrefab: {fileID: 190683357733756743, guid: b51dc3a9498daac45a8103d2c5892117, type: 3}
       Config: {fileID: 11400000, guid: d6516bd7ee8f0914da983197c47e0f10, type: 2}
-      Count: 2
+      Count: 1
       RouteIndex: 1
+  - StartDelay: 1
+    SpawnInterval: 2
+    Enemies:
+    - BasePrefab: {fileID: 1225402182282061678, guid: f21b765c2be657240846f5ae29ec38c3, type: 3}
+      Config: {fileID: 11400000, guid: 600a605850def134d8cac9ad67159730, type: 2}
+      Count: 1
+      RouteIndex: 0

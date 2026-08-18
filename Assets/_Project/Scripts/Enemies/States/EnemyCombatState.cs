@@ -44,11 +44,10 @@ namespace TpsShooter.Enemies.States
 
             if (distance > _brain.Config.AttackRange)
             {
-                if (_brain.Agent.isStopped) 
-                {
-                    _brain.Agent.isStopped = false;
-                    _brain.Animator?.PlayRun(); 
-                }
+                if (_brain.Agent.isStopped) _brain.Agent.isStopped = false;
+                
+                // ИСПРАВЛЕНИЕ: Вынесли наружу! Теперь он всегда будет переходить в бег.
+                _brain.Animator?.PlayRun(); 
                 _brain.Agent.SetDestination(_brain.Target.transform.position);
             }
             else

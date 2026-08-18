@@ -17,6 +17,7 @@ namespace TpsShooter.Enemies.Combat
 
         public void Initialize(EnemyConfig config)
         {
+            // Приводим базовый конфиг к конфигу милишника
             _config = config as MeleeEnemyConfig;
             
             // Ищем перехватчик событий на дочернем объекте с аниматором
@@ -34,9 +35,13 @@ namespace TpsShooter.Enemies.Combat
 
         public void PerformAttack(PlayerFacade target, EnemyAnimator animator)
         {
-            // Запускаем анимацию удара. Саму физику урона обсчитает метод DealDamage, 
-            // когда сработает Animation Event
-            animator?.PlayMeleeAttack();
+            // ИСПРАВЛЕНИЕ: Берем случайный удар из нашего массива в конфиге!
+            if (_config != null && _config.AttackAnimTriggers.Length > 0)
+            {
+                string randomAttack = _config.AttackAnimTriggers[Random.Range(0, _config.AttackAnimTriggers.Length)];
+                animator?.PlayCustomMelee(randomAttack, _config.AttackCooldown); 
+                // Передаем кулдаун, чтобы аниматор знал, сколько длится блокировка стейта
+            }
         }
 
         private void DealDamage()
@@ -54,9 +59,6 @@ namespace TpsShooter.Enemies.Combat
                 if (_hitColliders[i].TryGetComponent(out IDamageable targetDamageable))
                 {
                     targetDamageable.TakeDamage(_config.MeleeDamage);
-                    
-                    // Если хочешь, можно добавить звук удара (шлепок по плоти)
-                    // _audioService?.PlaySFX("Enemy_Hit_Flesh", strikeCenter);
                 }
             }
 
@@ -70,8 +72,7 @@ namespace TpsShooter.Enemies.Combat
 
         public void OnDeath()
         {
-            // Отписываемся, чтобы мертвый враг не наносил урон, 
-            // если его убили прямо во время замаха
+            // Отписываемся, чтобы мертвый враг не наносил урон
             if (_animEvents != null)
             {
                 _animEvents.OnMeleeStrike -= DealDamage;

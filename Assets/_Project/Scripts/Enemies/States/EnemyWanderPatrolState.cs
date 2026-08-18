@@ -32,7 +32,7 @@ namespace TpsShooter.Enemies.States
         {
             if (_brain.Sensor.IsTargetVisible)
             {
-                _brain.StateMachine.ChangeState(new EnemyCombatState(_brain));
+                _brain.StateMachine.ChangeState(new EnemyAlertState(_brain));
                 return;
             }
 
@@ -47,14 +47,26 @@ namespace TpsShooter.Enemies.States
             }
             else
             {
-                // Проверяем, дошли ли до случайной точки
-                if (!_brain.Agent.pathPending && _brain.Agent.remainingDistance <= _brain.Agent.stoppingDistance)
+                // ЖЕСТКАЯ ПРОВЕРКА: Дошли ли мы?
+                bool hasReached = !_brain.Agent.pathPending && 
+                                  _brain.Agent.remainingDistance <= _brain.Agent.stoppingDistance &&
+                                  (!_brain.Agent.hasPath || _brain.Agent.velocity.sqrMagnitude < 0.1f);
+
+                if (hasReached)
                 {
                     _isIdling = true;
-                    // Опционально: запускаем "чудаковатую" анимацию отдыха
-                    _brain.Animator?.PlayIdle(); 
-                    
                     _idleTimer = _meleeConfig != null ? _meleeConfig.IdlePauseDuration : 3f;
+
+                    if (_meleeConfig != null && _meleeConfig.IdleAnimStates.Length > 0)
+                    {
+                        string randomIdle = _meleeConfig.IdleAnimStates[Random.Range(0, _meleeConfig.IdleAnimStates.Length)];
+                        _brain.Animator?.PlayCustomIdle(randomIdle);
+                        Debug.Log($"<color=green>[Wander]</color> Пришел. Играю: {randomIdle}");
+                    }
+                    else
+                    {
+                        _brain.Animator?.PlayIdle(); 
+                    }
                 }
                 else
                 {
@@ -83,8 +95,11 @@ namespace TpsShooter.Enemies.States
         {
             if (_brain.Target != null)
             {
+                Debug.Log("<color=red>[Wander]</color> Получил пулю! В ЯРОСТЬ!");
                 _brain.LastKnownTargetPosition = _brain.Target.transform.position;
-                _brain.StateMachine.ChangeState(new EnemySearchState(_brain));
+                
+                // Мгновенный переход в бой, никаких поисков и пауз!
+                _brain.StateMachine.ChangeState(new EnemyMeleeCombatState(_brain));
             }
         }
     }
