@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1324339498890070827}
   - component: {fileID: 3100524587827789437}
   - component: {fileID: 7448277658951828226}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Ammo_pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 3247357073978949118}
   - component: {fileID: 2606627739876321369}
   - component: {fileID: 6578352720114332776}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: tps_ammo_pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -22,7 +22,6 @@ namespace TpsShooter.Enemies.Combat
             
             DevLogger.Log($"<color=orange>[Hitbox]</color> Попадание в {_bodyPartName}! Урон: {amount} x {_damageMultiplier} = {finalDamage}");
             
-            // Передаем умноженный урон в мозг
             _brain.TakeDamage(finalDamage);
         }
     }

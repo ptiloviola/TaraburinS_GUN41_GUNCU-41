@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1468104723725664528}
   - component: {fileID: 9190949996729698743}
   - component: {fileID: 7876149612414786991}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: tps_ammo_rifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 7289485446046572397}
   - component: {fileID: 7986814059753056736}
   - component: {fileID: 7532832249836917326}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Ammo_rifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

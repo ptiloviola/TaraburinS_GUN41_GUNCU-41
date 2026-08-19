@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4913190518697589234}
   - component: {fileID: 8232956486952611467}
   - component: {fileID: 3844207027862156380}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BaseWeaponPickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}

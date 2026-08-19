@@ -79,10 +79,11 @@ namespace TpsShooter.Player
             
             _cameraController = new PlayerCameraController(config, _cameraTarget, _normalCamera);
             
+            PlayerRigController rigController = new PlayerRigController(
+                animator, _leftHandIkTarget, _weaponRig, _leftHandIK);
+
             _weaponController = new PlayerWeaponController(
-                _weaponHandSocket, _weaponBackSocket1, _weaponBackSocket2, 
-                animator, _leftHandIkTarget, _weaponRig, _leftHandIK,
-                inputService, camTransform, _aimTarget);
+                inputService, camTransform, _aimTarget, rigController);
 
             WeaponTransitionService transitionService = new WeaponTransitionService();
 
@@ -91,7 +92,11 @@ namespace TpsShooter.Player
                 _weaponHandSocket, _weaponBackSocket1, _weaponBackSocket2,
                 lootFactory);
 
-            _interactionSensor = new PlayerInteractionSensor(transform);
+            _interactionSensor = new PlayerInteractionSensor(
+                    transform, 
+                    config.InteractionRadius, 
+                    config.InteractableMask
+                );
 
             InventoryModel = inventoryModel;
 
@@ -99,7 +104,7 @@ namespace TpsShooter.Player
             Health.OnDeath += HandleDeath;
 
 
-            _meleeController = new PlayerMeleeController(animator, transform);
+            _meleeController = new PlayerMeleeController(animator, transform, config);
             
             _animEvents = animator.gameObject.GetComponent<CharacterAnimationEvents>();
             if (_animEvents == null) 

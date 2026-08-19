@@ -1,6 +1,7 @@
 using UnityEngine;
 using TpsShooter.Items.Configs;
-using TpsShooter.Enemies.Core; // Для IEnemyState
+using TpsShooter.Enemies.Core;
+using TpsShooter.Audio;
 
 namespace TpsShooter.Enemies.Configs
 {
@@ -10,7 +11,6 @@ namespace TpsShooter.Enemies.Configs
         public string EnemyName = "Enemy";
         public float MaxHealth = 100f;
 
-        // Добавь это в EnemyConfig.cs (сразу под TargetMask)
         [Header("Combat Base")]
         public float AttackRange = 15f; 
         public float AttackCooldown = 1.5f;
@@ -23,7 +23,7 @@ namespace TpsShooter.Enemies.Configs
         [Header("Vision & Hearing")]
         public float VisionRadius = 20f;
         [Range(0, 360)] public float ViewAngle = 120f; 
-        public float HearingRadius = 15f; // НОВОЕ: Насколько далеко слышит шум
+        public float HearingRadius = 15f;
         public float SensorTickRate = 0.2f; 
         public LayerMask TargetMask; 
         public LayerMask ObstacleMask; 
@@ -33,9 +33,12 @@ namespace TpsShooter.Enemies.Configs
         [Range(0f, 1f)] public float DropChance = 0.5f;
 
         [Header("Audio")]
-        public TpsShooter.Audio.FootstepConfig FootstepAudioConfig;
+        public FootstepConfig FootstepAudioConfig;
 
-        // ПАТТЕРН ФАБРИКА: Конфиг сам решает, какой стейт породить! Никаких if/else в Мозге.
+        [Header("Debug & Gizmos")]
+        public float EyeHeight = 1.5f;
+        public float StateIndicatorHeight = 2.5f;
+
         public abstract IEnemyState CreatePatrolState(EnemyBrain brain);
         public abstract IEnemyState CreateCombatState(EnemyBrain brain);
     }

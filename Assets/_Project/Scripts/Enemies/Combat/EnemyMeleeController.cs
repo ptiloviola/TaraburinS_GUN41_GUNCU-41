@@ -12,15 +12,12 @@ namespace TpsShooter.Enemies.Combat
         private MeleeEnemyConfig _config;
         private CharacterAnimationEvents _animEvents;
         
-        // Буфер для оптимизированного поиска целей (NonAlloc)
         private readonly Collider[] _hitColliders = new Collider[5];
 
         public void Initialize(EnemyConfig config)
         {
-            // Приводим базовый конфиг к конфигу милишника
             _config = config as MeleeEnemyConfig;
             
-            // Ищем перехватчик событий на дочернем объекте с аниматором
             _animEvents = GetComponentInChildren<CharacterAnimationEvents>();
             
             if (_animEvents != null)

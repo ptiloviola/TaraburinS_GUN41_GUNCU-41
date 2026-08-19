@@ -7,7 +7,6 @@ namespace TpsShooter.Player.Weapons
 {
     public class WeaponTransitionService
     {
-        // MonoBehaviour больше не нужен!
         public WeaponTransitionService() { }
 
         public async UniTask MoveWeaponToSocketAsync(Transform weaponTransform, Transform targetSocket, float duration, CancellationToken cancelToken)
@@ -21,7 +20,7 @@ namespace TpsShooter.Player.Weapons
             {
                 while (elapsed < duration)
                 {
-                    cancelToken.ThrowIfCancellationRequested(); // ЖЕСТКОЕ ТРЕБОВАНИЕ ТЗ: проверка отмены
+                    cancelToken.ThrowIfCancellationRequested();
 
                     elapsed += Time.deltaTime;
                     float t = elapsed / duration;
@@ -38,7 +37,6 @@ namespace TpsShooter.Player.Weapons
             }
             catch (OperationCanceledException)
             {
-                // ЖЕСТКОЕ ТРЕБОВАНИЕ ТЗ: осознанная обработка отмены
                 Debug.LogWarning("[WeaponTransition] Смена оружия прервана (игрок умер или переключил пушку)!");
                 weaponTransform.localPosition = Vector3.zero;
                 weaponTransform.localRotation = Quaternion.identity;

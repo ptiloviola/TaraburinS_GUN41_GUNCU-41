@@ -57,6 +57,20 @@ namespace TpsShooter.Player.States
             
             if (_rollTimer <= 0f)
             {
+
+                bool hitCeiling = Physics.SphereCast(
+                    Ctx.Transform.position + Vector3.up * Ctx.Controller.height, 
+                    Ctx.Controller.radius, 
+                    Vector3.up, 
+                    out RaycastHit hit, 
+                    Ctx.Config.NormalHeight - Ctx.Config.CrouchHeight);
+
+                if (hitCeiling)
+                {
+                    StateMachine.SwitchState<PlayerCrouchState>();
+                    return;
+                }
+
                 if (Ctx.Input.IsCrouching)
                     StateMachine.SwitchState<PlayerCrouchState>();
                 else if (Ctx.Input.IsAiming)

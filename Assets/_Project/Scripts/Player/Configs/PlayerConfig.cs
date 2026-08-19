@@ -7,8 +7,8 @@ namespace TpsShooter.Player.Configs
     {
         [Header("Movement")]
         public float MoveSpeed = 5f;
-        public float RunSpeed = 8f; // <-- ДОБАВЛЕНО: Скорость бега
-        public float AimMoveSpeed = 2.5f; // При прицеливании ходим медленнее
+        public float RunSpeed = 8f;
+        public float AimMoveSpeed = 2.5f;
         public float RotationSmoothTime = 0.1f;
         
         [Header("Physics")]
@@ -20,8 +20,8 @@ namespace TpsShooter.Player.Configs
 
         [Header("Ground Check (Рейкасты)")]
         public LayerMask GroundMask;
-        public float GroundCheckRadius = 0.28f; // Чуть меньше радиуса капсулы (0.3), чтобы не цеплять стены
-        public float GroundCheckDistance = 0.15f; // Запас "прилипания" к полу
+        public float GroundCheckRadius = 0.28f;
+        public float GroundCheckDistance = 0.15f;
 
         [Header("Camera Aim Settings")]
         [Tooltip("FOV при прицеливании")]
@@ -64,6 +64,20 @@ namespace TpsShooter.Player.Configs
 
         [Tooltip("Длительность переката в секундах (подгоняется под длину анимации)")]
         public float RollDuration = 0.75f;
+
+        [Header("Interaction Settings")]
+        [Tooltip("Радиус подбора предметов и взаимодействия")]
+        public float InteractionRadius = 1.5f;
+
+        [Tooltip("Слои, на которых находится лут и интерактивные объекты")]
+        public LayerMask InteractableMask;
+
+        [Header("Melee Settings")]
+        public float MeleeDamage = 25f;
+        public float MeleeRange = 1.0f;
+        public float MeleeRadius = 0.8f;
+        public float MeleeHeightOffset = 1.0f;
+        public LayerMask MeleeHitMask;
 
 
     }

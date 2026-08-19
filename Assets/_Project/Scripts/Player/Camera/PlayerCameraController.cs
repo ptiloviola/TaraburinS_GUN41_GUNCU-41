@@ -6,6 +6,7 @@ namespace TpsShooter.Player.Camera
 {
     public class PlayerCameraController
     {
+        private const int MiddleRigIndex = 1;
         private readonly PlayerConfig _config;
         private readonly Transform _cameraTarget;
         private readonly CinemachineFreeLook _freeLookCamera;
@@ -19,14 +20,13 @@ namespace TpsShooter.Player.Camera
         private bool _isAiming;
         private bool _isCrouching;
 
-        // Конструктор вместо метода Awake/Start
         public PlayerCameraController(PlayerConfig config, Transform cameraTarget, CinemachineFreeLook freeLookCamera)
         {
             _config = config;
             _cameraTarget = cameraTarget;
             _freeLookCamera = freeLookCamera;
 
-            _middleRigComposer = _freeLookCamera.GetRig(1).GetCinemachineComponent<CinemachineComposer>();
+            _middleRigComposer = _freeLookCamera.GetRig(MiddleRigIndex).GetCinemachineComponent<CinemachineComposer>();
 
             _normalFov = _freeLookCamera.m_Lens.FieldOfView;
             _normalOffset = _middleRigComposer.m_TrackedObjectOffset;
@@ -46,7 +46,6 @@ namespace TpsShooter.Player.Camera
             _isCrouching = isCrouching;
         }
 
-        // Вместо Unity Update() мы создаем свой метод Tick
         public void Tick(float deltaTime)
         {
             HandleCameraTargetHeight(deltaTime);

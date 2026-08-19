@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9163278877347253383}
   - component: {fileID: 1788588816498843097}
   - component: {fileID: 5416500401301262396}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Healthpack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 7069414960495373630}
   - component: {fileID: 1366340821539515934}
   - component: {fileID: 5982100617093625554}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 using TpsShooter.Weapons.Core;
 using TpsShooter.Services.Input;
 using TpsShooter.Interactables;
 using TpsShooter.Environment;
-using Cysharp.Threading.Tasks; // Добавили UniTask
-using System.Threading;      // Добавили CancellationToken
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace TpsShooter.Player.Weapons
 {
@@ -29,7 +28,6 @@ namespace TpsShooter.Player.Weapons
         
         private readonly LootFactory _lootFactory;
         
-        // ТОКЕН ОТМЕНЫ (Требование ТЗ)
         private CancellationTokenSource _transitionCts;
 
         public bool IsFull => _weapons.Count >= MaxWeapons;
@@ -85,15 +83,12 @@ namespace TpsShooter.Player.Weapons
             else PutWeaponOnBackAsync(weaponInstance, newWeaponIndex, CancellationToken.None).Forget(); 
         }
 
-        // Оболочка для события инпута
         public void EquipWeapon(int index) => EquipWeaponAsync(index).Forget();
 
-        // АСИНХРОННАЯ СМЕНА ОРУЖИЯ С ОТМЕНОЙ
         private async UniTaskVoid EquipWeaponAsync(int index)
         {
             if (index < 0 || index >= _weapons.Count || index == _currentWeaponIndex) return;
 
-            // 1. ОТМЕНА: Если мы уже меняли оружие, прерываем ту задачу!
             _transitionCts?.Cancel();
             _transitionCts = new CancellationTokenSource();
             var token = _transitionCts.Token;
@@ -102,10 +97,8 @@ namespace TpsShooter.Player.Weapons
             {
                 if (CurrentWeapon != null)
                 {
-                    // 2. ОТМЕНА ПЕРЕЗАРЯДКИ: Говорим пушке прекратить заряжаться
                     CurrentWeapon.CancelReload(); 
                     
-                    // Ждем, пока старая пушка уберется за спину
                     await PutWeaponOnBackAsync(CurrentWeapon, _currentWeaponIndex, token);
                 }
 
@@ -114,7 +107,6 @@ namespace TpsShooter.Player.Weapons
 
                 DevLogger.Log($"<color=green>[Inventory]</color> Экипируем оружие: {CurrentWeapon.Config.WeaponName}");
                 
-                // Ждем, пока новая пушка окажется в руках
                 await _transitionService.MoveWeaponToSocketAsync(CurrentWeapon.transform, _handSocket, TransitionDuration, token);
 
                 _weaponController.OnWeaponEquipped(CurrentWeapon);
@@ -135,10 +127,10 @@ namespace TpsShooter.Player.Weapons
         {
             if (_weapons.Count == 0 || CurrentWeapon == null) return;
             
-            _transitionCts?.Cancel(); // Прерываем доставание, если оно было
+            _transitionCts?.Cancel();
 
             WeaponBase weaponToDrop = CurrentWeapon;
-            weaponToDrop.CancelReload(); // Прерываем перезарядку
+            weaponToDrop.CancelReload();
             
             DevLogger.Log($"<color=yellow>[Inventory]</color> Выбрасываем оружие: {weaponToDrop.Config.WeaponName}");
 
@@ -170,7 +162,6 @@ namespace TpsShooter.Player.Weapons
             EquipWeapon(nextIndex);
         }
 
-        // ВЫЗЫВАЕТСЯ ПРИ СМЕРТИ ИГРОКА ИЛИ В КОНЦЕ УРОВНЯ
         public void CancelAllOperations()
         {
             _transitionCts?.Cancel();

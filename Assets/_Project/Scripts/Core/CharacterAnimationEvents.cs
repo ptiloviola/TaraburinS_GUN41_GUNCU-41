@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace TpsShooter.Core
 {
-    // Теперь это универсальный класс для игрока и для любых врагов
     public class CharacterAnimationEvents : MonoBehaviour
     {
         public event Action OnMeleeStrike;

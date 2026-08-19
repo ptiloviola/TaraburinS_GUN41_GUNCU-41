@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using TpsShooter.Player.Inventory; // Для доступа к AmmoType
+using TpsShooter.Player.Inventory;
 
 namespace TpsShooter.Player.Configs
 {
@@ -17,12 +17,11 @@ namespace TpsShooter.Player.Configs
     {
         [Header("Health Settings")]
         public float MaxHealth = 100f;
-        public float StartingHealth = 50f; // Оставим 50 для тестов аптечек
+        public float StartingHealth = 50f;
 
         [Header("Ammo Settings")]
         public List<AmmoLimit> AmmoLimits = new List<AmmoLimit>
         {
-            // Дефолтные значения, чтобы не настраивать с нуля
             new AmmoLimit { Type = AmmoType.Pistol, MaxCapacity = 60 },
             new AmmoLimit { Type = AmmoType.Rifle, MaxCapacity = 120 },
             new AmmoLimit { Type = AmmoType.Shotgun, MaxCapacity = 24 }

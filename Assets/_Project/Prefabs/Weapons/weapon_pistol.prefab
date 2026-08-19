@@ -280,6 +280,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _muzzlePoint: {fileID: 8979236926369127974}
   _muzzleFlash: {fileID: 7321605528519946936}
+  _fireSoundId: Pistol_Fire
+  _emptySoundId: Weapon_Empty
+  _reloadSoundId: Weapon_Reload
   LeftHandGripPoint: {fileID: 5673310857916542389}
   AimPositionOffset: {x: -0.12, y: -0.109, z: -0.056}
   AimRotationOffset: {x: -66, y: 32, z: 10}
