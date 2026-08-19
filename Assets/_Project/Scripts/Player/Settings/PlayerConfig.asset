@@ -18,6 +18,7 @@ MonoBehaviour:
   RotationSmoothTime: 0.1
   Gravity: -15
   JumpHeight: 3
+  MaxHealth: 100
   GroundMask:
     serializedVersion: 2
     m_Bits: 256
@@ -35,3 +36,14 @@ MonoBehaviour:
   CrouchCameraHeight: 0.9
   RollSpeed: 7
   RollDuration: 1
+  InteractionRadius: 1.5
+  InteractableMask:
+    serializedVersion: 2
+    m_Bits: 512
+  MeleeDamage: 25
+  MeleeRange: 1
+  MeleeRadius: 0.8
+  MeleeHeightOffset: 1
+  MeleeHitMask:
+    serializedVersion: 2
+    m_Bits: 1280

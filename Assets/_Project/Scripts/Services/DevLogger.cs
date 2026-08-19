@@ -15,7 +15,6 @@ using System.Diagnostics;
             UnityEngine.Debug.LogWarning(message);
         }
         
-        // Ошибки мы ОБЯЗАТЕЛЬНО оставляем в билде, чтобы отловить краши
         public static void LogError(string message)
         {
             UnityEngine.Debug.LogError(message);

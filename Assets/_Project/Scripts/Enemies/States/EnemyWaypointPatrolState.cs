@@ -5,6 +5,7 @@ namespace TpsShooter.Enemies.States
 {
     public class EnemyWaypointPatrolState : IEnemyState
     {
+        private const float WaypointTolerance = 0.1f;
         
         private readonly EnemyBrain _brain;
         private int _currentWaypointIndex;
@@ -15,7 +16,6 @@ namespace TpsShooter.Enemies.States
         {
             _brain = brain;
         }
-        
 
         public void Enter()
         {
@@ -23,21 +23,20 @@ namespace TpsShooter.Enemies.States
             _brain.Agent.speed = _brain.Config.PatrolSpeed;
             _brain.Agent.isStopped = false;
             
-            _brain.Animator?.PlayWalk(); // <--- ТЕПЕРЬ ОН ШАГАЕТ, А НЕ БЕГАЕТ
+            _brain.Animator?.PlayWalk(); 
             MoveToNextWaypoint();
         }
 
         public void Tick()
         {
-            // Условие выхода: заметили игрока!
             if (_brain.Sensor.IsTargetVisible)
             {
-                _brain.StateMachine.ChangeState(new EnemyCombatState(_brain));
+                _brain.LastKnownTargetPosition = _brain.Target.transform.position;
+                _brain.StateMachine.ChangeState(new EnemyAlertState(_brain));
                 return;
             }
 
-            // Если дошли до точки — идем к следующей
-            if (!_brain.Agent.pathPending && _brain.Agent.remainingDistance <= _brain.Agent.stoppingDistance + 0.1f)
+            if (!_brain.Agent.pathPending && _brain.Agent.remainingDistance <= _brain.Agent.stoppingDistance + WaypointTolerance)
             {
                 MoveToNextWaypoint();
             }
@@ -61,10 +60,8 @@ namespace TpsShooter.Enemies.States
             if (_brain.Target != null)
             {
                 _brain.LastKnownTargetPosition = _brain.Target.transform.position;
-                _brain.StateMachine.ChangeState(new EnemySearchState(_brain));
+                _brain.StateMachine.ChangeState(new EnemyAlertState(_brain));
             }
         }
-
-        
     }
 }

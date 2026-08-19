@@ -1,6 +1,6 @@
 using UnityEngine;
 using TpsShooter.Weapons.Configs;
-using TpsShooter.Enemies.States; // Будущие стейты
+using TpsShooter.Enemies.States;
 using TpsShooter.Enemies.Core;
 
 namespace TpsShooter.Enemies.Configs
@@ -15,10 +15,14 @@ namespace TpsShooter.Enemies.Configs
         public float AimInaccuracy = 0.5f; 
         public float MaxInaccuracyDistance = 20f;
 
-        // Стрелок использует ходьбу по точкам
+        [Header("Animations")]
+        [Tooltip("Название State в Аниматоре для стрельбы")]
+        public string ShootAnimState = "Firing Rifle"; 
+        [Tooltip("Сколько секунд длится блокировка аниматора при выстреле")]
+        public float ShootAnimDuration = 0.4f;
+
+
         public override IEnemyState CreatePatrolState(EnemyBrain brain) => new EnemyWaypointPatrolState(brain);
-        
-        // Временно возвращаем базовый комбат, пока не разделим их
         public override IEnemyState CreateCombatState(EnemyBrain brain) => new EnemyCombatState(brain);
     }
 }

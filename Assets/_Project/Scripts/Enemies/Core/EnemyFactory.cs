@@ -18,7 +18,6 @@ namespace TpsShooter.Enemies.Core
         {
             EnemyBrain enemy = _container.InstantiatePrefabForComponent<EnemyBrain>(prefab, position, rotation, null);
             
-            // Передаем точки в инициализацию
             enemy.Initialize(config, patrolPoints);
             
             return enemy;

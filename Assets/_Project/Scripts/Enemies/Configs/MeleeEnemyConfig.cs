@@ -10,20 +10,34 @@ namespace TpsShooter.Enemies.Configs
         [Header("Melee Combat")]
         public float MeleeDamage = 25f;
         
-        [Tooltip("Список названий триггеров в Аниматоре для рандома (напр. 'Kick', 'Spin')")]
-        public string[] AttackAnimTriggers = { "MeleeAttack" }; 
 
         [Header("Wander Settings")]
-        public float WanderRadius = 15f; // Насколько далеко шатается
-        public float IdlePauseDuration = 3f; // Сколько "тупит" между точками
+        public float WanderRadius = 15f;
+        public float IdlePauseDuration = 3f;
+        
         [Tooltip("Список названий анимаций для простоя")]
         public string[] IdleAnimStates = { "Idle", "Idle_Stretch", "Idle_Crazy" };
 
+        [Header("Melee Animations")]
+        [Tooltip("Список названий стейтов в Аниматоре для рандома (напр. 'Kick', 'Spin')")]
+        public string[] AttackAnimStates = { "MeleeAttack" }; 
+        [Tooltip("Длительность блокировки при ударе")]
+        public float AttackAnimDuration = 0.8f;
+
+        [Header("Backstep Settings")]
+        [Tooltip("Название анимации отхода назад")]
+        public string BackstepAnimState = "Walking Backwards";
+        [Tooltip("Сколько секунд враг пятится назад")]
+        public float BackstepDuration = 1.5f;
+        [Tooltip("Дистанция отхода в метрах")]
+        public float BackstepDistance = 4f;
+        [Tooltip("Скорость ходьбы спиной")]
+        public float BackstepSpeed = 2.5f;
+        
         [Tooltip("Анимация, когда заметил игрока (Alert)")]
         public string AlertAnimState = "Alert"; 
-        public float AlertDuration = 1.2f; // Сколько секунд стоит и рычит
+        public float AlertDuration = 1.2f;
 
-        // Каратист использует случайное шатание!
         public override IEnemyState CreatePatrolState(EnemyBrain brain) => new EnemyWanderPatrolState(brain);
         
         public override IEnemyState CreateCombatState(EnemyBrain brain) => new EnemyMeleeCombatState(brain);

@@ -32,13 +32,16 @@ MonoBehaviour:
   DropLoot: {fileID: 11400000, guid: ef12704c151b0d24e8d084d916cac355, type: 2}
   DropChance: 0.914
   FootstepAudioConfig: {fileID: 11400000, guid: 3f1fe2c1bb9cd1b40b4348853ba603fd, type: 2}
+  EyeHeight: 1.5
+  StateIndicatorHeight: 2.5
   MeleeDamage: 12
-  AttackAnimTriggers:
-  - Mma Kick
   WanderRadius: 50
   IdlePauseDuration: 3
   IdleAnimStates:
   - Idle1
   - Idle2
+  AttackAnimStates:
+  - Mma Kick
+  AttackAnimDuration: 0.8
   AlertAnimState: Alert
   AlertDuration: 0.3

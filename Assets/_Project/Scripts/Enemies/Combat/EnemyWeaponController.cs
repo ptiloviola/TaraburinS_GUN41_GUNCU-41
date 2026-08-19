@@ -7,11 +7,16 @@ using Zenject;
 using TpsShooter.Audio;
 using TpsShooter.Enemies.Core; 
 
-namespace TpsShooter.Enemies.Combat // Исправленный неймспейс!
+namespace TpsShooter.Enemies.Combat
 {
     public class EnemyWeaponController : MonoBehaviour, IEnemyCombatHandler
     {
-        private RangedEnemyConfig _config; // <--- ТЕПЕРЬ ОН ЗНАЕТ СВОЙ ТИП
+        private const float TargetCenterYOffset = 1.5f;
+        private const float DefaultFallbackDamage = 15f;
+        private const float SphereCastRadius = 0.35f;
+        private const float MaxRayDistanceMultiplier = 1.5f;
+
+        private RangedEnemyConfig _config; 
         
         [Header("Setup")]
         [SerializeField] private Transform _weaponSocket;
@@ -28,7 +33,6 @@ namespace TpsShooter.Enemies.Combat // Исправленный неймспей
 
         public void Initialize(EnemyConfig config)
         {
-            // ПРИВЕДЕНИЕ ТИПА (Никаких enum'ов!)
             _config = config as RangedEnemyConfig;
 
             if (_config != null && _config.WeaponPrefab != null && _weaponSocket != null)
@@ -48,7 +52,10 @@ namespace TpsShooter.Enemies.Combat // Исправленный неймспей
 
         public void PerformAttack(PlayerFacade target, EnemyAnimator animator)
         {
-            animator?.PlayShoot(); 
+            if (_config != null)
+            {
+                animator?.PlayAttack(_config.ShootAnimState, _config.ShootAnimDuration); 
+            }
             TryFire(target);       
         }
 
@@ -66,13 +73,14 @@ namespace TpsShooter.Enemies.Combat // Исправленный неймспей
             if (_muzzleFlash != null) _muzzleFlash.Play();
             if (!string.IsNullOrEmpty(_fireSoundId)) _audioService?.PlaySFX(_fireSoundId, _firePoint.position);
 
-            Vector3 targetCenter = target.transform.position + Vector3.up * 1.5f;
+            Vector3 targetCenter = target.transform.position + Vector3.up * TargetCenterYOffset;
             Vector3 fireOrigin = _firePoint.position; 
             float distance = Vector3.Distance(fireOrigin, targetCenter);
             
             Vector3 targetVelocity = Vector3.zero;
             if (target.TryGetComponent(out CharacterController cc)) targetVelocity = cc.velocity;
             
+
             float timeToHit = distance / _config.ProjectileSpeed;
             Vector3 predictedPoint = targetCenter + (targetVelocity * timeToHit);
 
@@ -81,17 +89,17 @@ namespace TpsShooter.Enemies.Combat // Исправленный неймспей
             predictedPoint += inaccuracyOffset;
 
             Vector3 shootDirection = (predictedPoint - fireOrigin).normalized;
-            float maxRayDistance = distance * 1.5f;
+            float maxRayDistance = distance * MaxRayDistanceMultiplier;
             Vector3 tracerEndPoint = fireOrigin + shootDirection * maxRayDistance;
 
-            if (Physics.SphereCast(fireOrigin, 0.35f, shootDirection, out RaycastHit hit, maxRayDistance))
+            if (Physics.SphereCast(fireOrigin, SphereCastRadius, shootDirection, out RaycastHit hit, maxRayDistance))
             {
                 tracerEndPoint = hit.point;
                 IDamageable targetDamageable = hit.collider.GetComponentInParent<IDamageable>();
                 
                 if (targetDamageable != null)
                 {
-                    float damage = _config.WeaponStats != null ? _config.WeaponStats.Damage : 15f;
+                    float damage = _config.WeaponStats != null ? _config.WeaponStats.Damage : DefaultFallbackDamage;
                     targetDamageable.TakeDamage(damage);
                     _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: true);
                 }

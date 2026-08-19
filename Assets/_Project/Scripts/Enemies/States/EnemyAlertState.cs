@@ -6,10 +6,13 @@ namespace TpsShooter.Enemies.States
 {
     public class EnemyAlertState : IEnemyState
     {
+        private const float DefaultAlertDuration = 1.0f;
+        private const float TurnSpeed = 5f;
+        
         private readonly EnemyBrain _brain;
         private float _timer;
 
-        public Color StateGizmoColor => Color.magenta; // Рисуем фиолетовым!
+        public Color StateGizmoColor => Color.magenta;
 
         public EnemyAlertState(EnemyBrain brain)
         {
@@ -18,12 +21,11 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            DevLogger.Log("<color=magenta>[EnemyState]</color> ЗАМЕТИЛ ИГРОКА (Alert)!");
+            DevLogger.Log("<color=magenta>[EnemyState]</color> ЗАМЕТИЛ УГРОЗУ (Alert)!");
             
-            // Тормозим врага
             _brain.Agent.isStopped = true;
+            _brain.Agent.velocity = Vector3.zero;
 
-            // Пытаемся достать конфиг и запустить уникальную анимацию
             if (_brain.Config is MeleeEnemyConfig meleeConfig)
             {
                 _timer = meleeConfig.AlertDuration;
@@ -31,21 +33,34 @@ namespace TpsShooter.Enemies.States
             }
             else
             {
-                // Резервный вариант, если это обычный стрелок
-                _timer = 1.0f;
+                _timer = DefaultAlertDuration;
                 _brain.Animator?.PlayIdle(); 
             }
         }
 
         public void Tick()
         {
+            Vector3 directionToTarget = (_brain.LastKnownTargetPosition - _brain.transform.position).normalized;
+            directionToTarget.y = 0; 
+
+            if (directionToTarget != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, targetRotation, Time.deltaTime * TurnSpeed);
+            }
+
             _timer -= Time.deltaTime;
             
             if (_timer <= 0)
             {
-                _brain.Agent.isStopped = false;
-                // ИСПРАВЛЕНИЕ: Берем правильный стейт из конфига!
-                _brain.StateMachine.ChangeState(_brain.Config.CreateCombatState(_brain));
+                if (_brain.Sensor.IsTargetVisible)
+                {
+                    _brain.StateMachine.ChangeState(_brain.Config.CreateCombatState(_brain));
+                }
+                else
+                {
+                    _brain.StateMachine.ChangeState(new EnemyInvestigateState(_brain));
+                }
             }
         }
 
@@ -56,9 +71,10 @@ namespace TpsShooter.Enemies.States
 
         public void OnDamageTaken()
         {
-            _brain.Agent.isStopped = false;
-            // ИСПРАВЛЕНИЕ: Берем правильный стейт из конфига!
-            _brain.StateMachine.ChangeState(_brain.Config.CreateCombatState(_brain));
+            if (_brain.Target != null)
+            {
+                _brain.LastKnownTargetPosition = _brain.Target.transform.position;
+            }
         }
     }
 }

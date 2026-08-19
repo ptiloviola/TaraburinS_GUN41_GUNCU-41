@@ -7,7 +7,11 @@ namespace TpsShooter.Enemies.Vision
 {
     public class EnemySensor : IDisposable
     {
+        private const float RaycastForwardOffset = 0.5f;
+        private const int MaxTargets = 3;
+
         private readonly EnemyBrain _brain;
+        private readonly Collider[] _targetColliders = new Collider[MaxTargets];
         
         public bool IsTargetVisible { get; private set; }
         public event Action<Vector3> OnHeardNoise; 
@@ -21,54 +25,58 @@ namespace TpsShooter.Enemies.Vision
         public void Tick()
         {
             IsTargetVisible = false;
-            
-            // Если цели нет, выходим (но если она есть - идем дальше)
-            if (_brain.Target == null) return;
 
-            Transform targetTransform = _brain.Target.transform;
             Vector3 myPos = _brain.transform.position;
-            Vector3 targetPos = targetTransform.position;
+            Vector3 eyePosition = myPos + Vector3.up * _brain.Config.EyeHeight;
 
-            float distanceToTarget = Vector3.Distance(myPos, targetPos);
+            int hits = Physics.OverlapSphereNonAlloc(myPos, _brain.Config.VisionRadius, _targetColliders, _brain.Config.TargetMask);
 
-            // Точки для глаз (поднимаем на 1.5 метра от пола)
-            Vector3 eyePosition = myPos + Vector3.up * 1.5f;
-            Vector3 targetEyePosition = targetPos + Vector3.up * 1.5f;
-            Vector3 dirToTarget = (targetEyePosition - eyePosition).normalized;
-
-            // 1. Проверка дистанции
-            if (distanceToTarget <= _brain.Config.VisionRadius)
+            for (int i = 0; i < hits; i++)
             {
+                Transform targetTransform = _targetColliders[i].transform;
+                Vector3 targetPos = targetTransform.position;
+                Vector3 targetEyePosition = targetPos + Vector3.up * _brain.Config.EyeHeight;
+                
+                Vector3 dirToTarget = (targetEyePosition - eyePosition).normalized;
+                float distanceToTarget = Vector3.Distance(myPos, targetPos);
+
                 float angle = Vector3.Angle(_brain.transform.forward, dirToTarget);
 
-                // 2. Проверка угла
                 if (angle < _brain.Config.ViewAngle / 2f)
                 {
-                    // 3. Проверка препятствий (Raycast со смещением на 0.5 метра вперед, чтобы не попасть в самого себя)
-                    if (Physics.Raycast(eyePosition + dirToTarget * 0.5f, dirToTarget, out RaycastHit hit, distanceToTarget, _brain.Config.ObstacleMask))
+                    if (Physics.Raycast(eyePosition + dirToTarget * RaycastForwardOffset, dirToTarget, out RaycastHit hit, distanceToTarget, _brain.Config.ObstacleMask))
                     {
+#if UNITY_EDITOR
                         Debug.DrawLine(eyePosition, hit.point, Color.red);
-                        // ЭТОТ ЛОГ СКАЖЕТ НАМ ВСЮ ПРАВДУ:
-                        DevLogger.Log($"<color=red>[Sensor]</color> Не вижу! Врезался в: {hit.collider.gameObject.name} (Слой: {LayerMask.LayerToName(hit.collider.gameObject.layer)})");
+#endif
                     }
                     else
                     {
+#if UNITY_EDITOR
                         Debug.DrawLine(eyePosition, targetEyePosition, Color.green);
+#endif
                         IsTargetVisible = true;
                         _brain.LastKnownTargetPosition = targetPos;
+                        
+                        break; 
                     }
                 }
                 else
                 {
-                    // Рядом, но не в зоне угла
+#if UNITY_EDITOR
+
                     Debug.DrawLine(eyePosition, targetEyePosition, Color.yellow);
+#endif
                 }
             }
-            else
+
+
+#if UNITY_EDITOR
+            if (!IsTargetVisible && _brain.Target != null)
             {
-                // Слишком далеко
-                Debug.DrawLine(eyePosition, targetEyePosition, Color.gray);
+                Debug.DrawLine(eyePosition, _brain.Target.transform.position + Vector3.up * _brain.Config.EyeHeight, Color.gray);
             }
+#endif
         }
 
         private void HandleGlobalNoise(Vector3 noisePosition, float volume)

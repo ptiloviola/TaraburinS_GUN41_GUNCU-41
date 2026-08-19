@@ -5,9 +5,10 @@ namespace TpsShooter.Enemies.States
 {
     public class EnemySearchState : IEnemyState
     {
+        private const float SearchRotationSpeed = 60f; 
+
         private readonly EnemyBrain _brain;
         private float _searchTimer;
-        private bool _reachedLocation;
 
         public Color StateGizmoColor => Color.yellow;
 
@@ -18,51 +19,29 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            DevLogger.Log("<color=yellow>[EnemyState]</color> Переход в SearchState");
-            _brain.Agent.speed = _brain.Config.PatrolSpeed; 
-            _brain.Agent.isStopped = false;
-            _brain.Agent.SetDestination(_brain.LastKnownTargetPosition);
-            _brain.Animator?.PlayWalk();
+            DevLogger.Log("<color=yellow>[EnemyState]</color> Осматриваю точку (SearchState)");
             
+
+            _brain.Agent.isStopped = true;
+            _brain.Animator?.PlayIdle(); 
             _searchTimer = 0f;
-            _reachedLocation = false;
         }
 
         public void Tick()
         {
-            // 1. ИСПРАВЛЕНИЕ: Если увидели игрока - идем в Alert (испуг/рык), 
-            // а Alert сам потом переведет в нужный CombatState через конфиг!
             if (_brain.Sensor.IsTargetVisible)
             {
-                _brain.StateMachine.ChangeState(new EnemyAlertState(_brain));
+                _brain.StateMachine.ChangeState(_brain.Config.CreateCombatState(_brain));
                 return;
             }
 
-            if (!_reachedLocation)
-            {
-                // Защита от бага NavMesh с дистанцией
-                bool hasReached = !_brain.Agent.pathPending && 
-                                  _brain.Agent.remainingDistance <= 1f &&
-                                  (!_brain.Agent.hasPath || _brain.Agent.velocity.sqrMagnitude < 0.1f);
+            _searchTimer += Time.deltaTime;
+            _brain.transform.Rotate(Vector3.up, SearchRotationSpeed * Time.deltaTime);
 
-                if (hasReached)
-                {
-                    _reachedLocation = true;
-                    DevLogger.Log("<color=yellow>[EnemySearch]</color> Осматриваюсь...");
-                    _brain.Animator?.PlayIdle(); 
-                }
-            }
-            else
+            if (_searchTimer >= _brain.Config.SearchDuration)
             {
-                _searchTimer += Time.deltaTime;
-                _brain.transform.Rotate(Vector3.up, 60f * Time.deltaTime);
-
-                if (_searchTimer >= _brain.Config.SearchDuration)
-                {
-                    // 2. ИСПРАВЛЕНИЕ: Возвращаемся в патруль ТОЛЬКО через фабрику конфига!
-                    // Стрелок пойдет по точкам, каратист пойдет шататься.
-                    _brain.StateMachine.ChangeState(_brain.Config.CreatePatrolState(_brain));
-                }
+                DevLogger.Log("<color=yellow>[EnemySearch]</color> Никого нет. Возвращаюсь к патрулю.");
+                _brain.StateMachine.ChangeState(_brain.Config.CreatePatrolState(_brain));
             }
         }
 
@@ -70,9 +49,11 @@ namespace TpsShooter.Enemies.States
 
         public void OnDamageTaken() 
         { 
-            // 3. ИСПРАВЛЕНИЕ: Если в нас стреляют, пока мы ищем — мгновенно в бой через Фабрику!
-            _brain.Agent.isStopped = false;
-            _brain.StateMachine.ChangeState(_brain.Config.CreateCombatState(_brain));
+            if (_brain.Target != null)
+            {
+                _brain.LastKnownTargetPosition = _brain.Target.transform.position;
+                _brain.StateMachine.ChangeState(new EnemyAlertState(_brain));
+            }
         }
     }
 }

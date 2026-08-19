@@ -7,7 +7,6 @@ namespace TpsShooter.Enemies.Core
     {
         private Animator _animator;
 
-        // Возвращаем простые, надежные хэши
         private static readonly int IdleHash = Animator.StringToHash("Idle");
         private static readonly int WalkHash = Animator.StringToHash("Walk");
         private static readonly int RunHash = Animator.StringToHash("Run");
@@ -15,8 +14,14 @@ namespace TpsShooter.Enemies.Core
         private static readonly int HitHash = Animator.StringToHash("Hit");
         private static readonly int DeathHash = Animator.StringToHash("Death");
 
+        private const float DefaultCrossfade = 0.2f;
+        private const float FastCrossfade = 0.05f;
+        private const float AlertCrossfade = 0.1f;
+        private const float DeathLockTime = 10f;
+        private const float HitLockTime = 0.3f;
+
         private int _currentLoopingAnim = IdleHash;
-        private int _lastPlayedHash = 0; // Наша защита от дрожи осталась!
+        private int _lastPlayedHash = 0; 
         private float _lockTime = 0f;
 
         private void Awake()
@@ -36,7 +41,6 @@ namespace TpsShooter.Enemies.Core
             }
         }
 
-        // --- ЦИКЛИЧНЫЕ (Прямые вызовы стейтов) ---
         public void PlayIdle() { _currentLoopingAnim = IdleHash; PlayLooping(IdleHash); }
         public void PlayWalk() { _currentLoopingAnim = WalkHash; PlayLooping(WalkHash); }
         public void PlayRun()  { _currentLoopingAnim = RunHash; PlayLooping(RunHash); }
@@ -48,48 +52,46 @@ namespace TpsShooter.Enemies.Core
             PlayLooping(hash);
         }
 
+        public void PlayCustomLooping(string stateName)
+        {
+            int hash = Animator.StringToHash(stateName);
+            _currentLoopingAnim = hash;
+            PlayLooping(hash);
+        }
+
         private void PlayLooping(int hash)
         {
             if (_lockTime <= 0) 
             {
-                // Если мы уже играем эту анимацию - не дергаем Аниматор
                 if (_lastPlayedHash != hash)
                 {
-                    _animator.CrossFadeInFixedTime(hash, 0.2f);
+                    _animator.CrossFadeInFixedTime(hash, DefaultCrossfade);
                     _lastPlayedHash = hash;
                 }
             }
         }
 
-        // --- ОДНОРАЗОВЫЕ (Блокируют аниматор) ---
-        public void PlayCustomMelee(string stateName, float duration = 0.8f)
+        public void PlayAttack(string stateName, float duration)
         {
-            PlayOneShot(Animator.StringToHash(stateName), duration, 0.05f);
+            PlayOneShot(Animator.StringToHash(stateName), duration, FastCrossfade);
         }
         
-        public void PlayAlert(string stateName, float duration = 1.0f)
+        public void PlayAlert(string stateName, float duration)
         {
-            PlayOneShot(Animator.StringToHash(stateName), duration, 0.1f);
+            PlayOneShot(Animator.StringToHash(stateName), duration, AlertCrossfade);
         }
 
         public void PlayHit() 
         { 
-            // ИСПРАВЛЕНИЕ: Если враг сейчас бьет или рычит (_lockTime > 0) — 
-            // пули наносят урон, но НЕ прерывают его анимацию! Это уберет судороги.
             if (_lockTime > 0) return; 
 
-            PlayOneShot(HitHash, 0.3f, 0.05f);
+            PlayOneShot(HitHash, HitLockTime, FastCrossfade);
         }
         
         public void PlayDeath() 
         { 
             _currentLoopingAnim = DeathHash; 
-            PlayOneShot(DeathHash, 999f, 0.1f);
-        }
-
-        public void PlayShoot() // Оставили для стрелков
-        {
-            PlayOneShot(Animator.StringToHash("Firing Rifle"), 0.4f, 0.05f);
+            PlayOneShot(DeathHash, DeathLockTime, AlertCrossfade);
         }
 
         private void PlayOneShot(int hash, float lockDuration, float transitionTime)

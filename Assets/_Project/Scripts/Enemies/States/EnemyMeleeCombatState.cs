@@ -6,11 +6,14 @@ namespace TpsShooter.Enemies.States
 {
     public class EnemyMeleeCombatState : IEnemyState
     {
-        private readonly EnemyBrain _brain;
-        private float _lastAttackTime = -999f;
+        private const float TurnSpeed = 30f;
         
+        private readonly EnemyBrain _brain;
+        private readonly MeleeEnemyConfig _meleeConfig;
+        
+        private float _lastAttackTime = 0f;
         private bool _isAttacking = false;
-        private float _attackAnimationDuration = 1.3f;
+        
         private static int _enemiesInCombat = 0; 
 
         public Color StateGizmoColor => Color.red;
@@ -18,13 +21,14 @@ namespace TpsShooter.Enemies.States
         public EnemyMeleeCombatState(EnemyBrain brain)
         {
             _brain = brain;
+            _meleeConfig = _brain.Config as MeleeEnemyConfig;
         }
 
         public void Enter()
         {
             DevLogger.Log("<color=red>[MeleeCombat]</color> Начал бой!");
             _brain.Agent.speed = _brain.Config.ChaseSpeed;
-            _brain.Agent.stoppingDistance = _brain.Config.AttackRange; // Агент сам будет тормозить у цели
+            _brain.Agent.stoppingDistance = _brain.Config.AttackRange; 
             _isAttacking = false;
             
             _enemiesInCombat++;
@@ -42,13 +46,12 @@ namespace TpsShooter.Enemies.States
             float distance = Vector3.Distance(_brain.transform.position, _brain.Target.transform.position);
             float timeSinceAttack = Time.time - _lastAttackTime;
 
-            // 1. ФАЗА ЗАМАХА (Намертво прибиваем к полу)
+
             if (_isAttacking)
             {
-                // Принудительно убиваем любую инерцию и движение от аниматора!
-                _brain.Agent.velocity = Vector3.zero;
-                
-                if (timeSinceAttack < _attackAnimationDuration)
+                float currentAnimDuration = _meleeConfig != null ? _meleeConfig.AttackAnimDuration : 1.0f;
+
+                if (timeSinceAttack < currentAnimDuration)
                 {
                     _brain.Agent.updateRotation = false; 
                     LookAtTarget(); 
@@ -56,23 +59,21 @@ namespace TpsShooter.Enemies.States
                 }
                 else
                 {
-                    _isAttacking = false;
-                    _brain.Agent.updateRotation = true; 
+                    _brain.StateMachine.ChangeState(new EnemyBackstepState(_brain));
+                    return; 
                 }
             }
 
-            // 2. ФАЗА БОЯ И БЕГА
             if (distance <= _brain.Config.AttackRange && timeSinceAttack >= _brain.Config.AttackCooldown)
             {
                 _brain.Agent.isStopped = true;
-                _brain.Agent.velocity = Vector3.zero; 
                 
                 _isAttacking = true;
                 _lastAttackTime = Time.time;
                 
                 _brain.CombatHandler?.PerformAttack(_brain.Target, _brain.Animator);
             }
-            else
+            else if (!_isAttacking)
             {
                 if (_brain.Agent.isStopped) _brain.Agent.isStopped = false;
                 
@@ -100,10 +101,10 @@ namespace TpsShooter.Enemies.States
             dir.y = 0; 
             if (dir != Vector3.zero)
             {
-                _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 30f);
+                _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * TurnSpeed);
             }
         }
 
-        public void OnDamageTaken() { /* В бою игнорируем урон, прем как танк */ }
+        public void OnDamageTaken() {  }
     }
 }

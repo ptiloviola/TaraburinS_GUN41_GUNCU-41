@@ -8,7 +8,7 @@ namespace TpsShooter.Enemies.Combat
     {
         [SerializeField] private EnemyBrain _brain;
         
-        [Tooltip("Множитель урона. Для головы ставь 2.0, для тела 1.0")]
+        [Tooltip("Множитель урона")]
         [SerializeField] private float _damageMultiplier = 1.0f;
         
         [Tooltip("Опционально: Имя части тела для дебага (Head, Torso, Limbs)")]

@@ -1,15 +1,15 @@
 using UnityEngine;
 using TpsShooter.Enemies.Core;
-using TpsShooter.Enemies.Configs;
 
 namespace TpsShooter.Enemies.States
 {
     public class EnemyCombatState : IEnemyState
     {
+        private const float TurnSpeed = 10f;
+
         private readonly EnemyBrain _brain;
         private float _lastAttackTime;
         
-        // <--- СТАТИЧЕСКИЙ СЧЕТЧИК (ОБЩИЙ ДЛЯ ВСЕХ ВРАГОВ) --->
         private static int _enemiesInCombat = 0; 
 
         public Color StateGizmoColor => Color.red;
@@ -24,7 +24,6 @@ namespace TpsShooter.Enemies.States
             DevLogger.Log("<color=red>[EnemyState]</color> Переход в CombatState");
             _brain.Agent.speed = _brain.Config.ChaseSpeed;
             
-            // Если это первый враг, который нас заметил — включаем экшен
             _enemiesInCombat++;
             if (_enemiesInCombat == 1)
             {
@@ -46,7 +45,6 @@ namespace TpsShooter.Enemies.States
             {
                 if (_brain.Agent.isStopped) _brain.Agent.isStopped = false;
                 
-                // ИСПРАВЛЕНИЕ: Вынесли наружу! Теперь он всегда будет переходить в бег.
                 _brain.Animator?.PlayRun(); 
                 _brain.Agent.SetDestination(_brain.Target.transform.position);
             }
@@ -64,13 +62,10 @@ namespace TpsShooter.Enemies.States
 
         public void Exit() 
         {
-            // Враг умер или потерял нас из виду
             _enemiesInCombat--;
-            
-            // Если больше ни один враг нас не видит — возвращаем спокойную музыку
             if (_enemiesInCombat <= 0)
             {
-                _enemiesInCombat = 0; // Защита от ухода в минус
+                _enemiesInCombat = 0; 
                 _brain.AudioService?.SetCombatMusicState(false);
             }
         }
@@ -81,7 +76,7 @@ namespace TpsShooter.Enemies.States
             dir.y = 0; 
             if (dir != Vector3.zero)
             {
-                _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10f);
+                _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * TurnSpeed);
             }
         }
 
@@ -90,6 +85,7 @@ namespace TpsShooter.Enemies.States
             _lastAttackTime = Time.time;
             _brain.CombatHandler?.PerformAttack(_brain.Target, _brain.Animator);
         }
-        public void OnDamageTaken() { /* Уже в бою */ }
+        
+        public void OnDamageTaken() {  }
     }
 }
