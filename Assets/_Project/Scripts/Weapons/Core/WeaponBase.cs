@@ -4,6 +4,9 @@ using Zenject;
 using TpsShooter.Effects; 
 using TpsShooter.Player.Inventory;
 using TpsShooter.Audio;
+using Cysharp.Threading.Tasks;
+using System.Threading;
+using System;
 
 namespace TpsShooter.Weapons.Core
 {
@@ -42,6 +45,9 @@ namespace TpsShooter.Weapons.Core
         public WeaponConfig Config => _config;
         public int CurrentAmmoInClip => _currentAmmoInClip;
         public int TotalAmmo => _currentAmmoInClip;
+
+        private CancellationTokenSource _reloadCts;
+        public bool IsReloading { get; private set; }
 
         [Inject] protected DecalManager _decalManager;
         [Inject] protected PlayerInventoryModel _inventoryModel; 
@@ -82,15 +88,48 @@ namespace TpsShooter.Weapons.Core
 
         public virtual void Reload()
         {
-            if (_config == null || _currentAmmoInClip == _config.AmmoPerClip) return;
+            if (_config == null || _currentAmmoInClip == _config.AmmoPerClip || IsReloading) return;
+            ReloadAsync().Forget();
+        }
 
-            int ammoNeeded = _config.AmmoPerClip - _currentAmmoInClip;
-            int ammoReceived = _inventoryModel.ConsumeAmmo(_config.WeaponAmmoType, ammoNeeded);
+        private async UniTaskVoid ReloadAsync()
+        {
+            _reloadCts?.Cancel();
+            _reloadCts = new CancellationTokenSource();
+            IsReloading = true;
 
-            if (ammoReceived > 0)
+            try
             {
-                _currentAmmoInClip += ammoReceived;
                 PlayReloadSound();
+
+                
+                await UniTask.Delay(TimeSpan.FromSeconds(_config.ReloadTime), cancellationToken: _reloadCts.Token);
+
+                int ammoNeeded = _config.AmmoPerClip - _currentAmmoInClip;
+                int ammoReceived = _inventoryModel.ConsumeAmmo(_config.WeaponAmmoType, ammoNeeded);
+
+                if (ammoReceived > 0)
+                {
+                    _currentAmmoInClip += ammoReceived;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                DevLogger.Log("<color=yellow>[Weapon]</color> Перезарядка прервана (смена оружия или смерть)!");
+            }
+            finally
+            {
+                IsReloading = false;
+                _reloadCts?.Dispose();
+                _reloadCts = null;
+            }
+        }
+
+        public void CancelReload()
+        {
+            if (IsReloading)
+            {
+                _reloadCts?.Cancel();
             }
         }
 
@@ -98,7 +137,7 @@ namespace TpsShooter.Weapons.Core
 
         protected abstract void PerformFire(Vector3 targetPoint);
 
-        // --- Запуск локальной вспышки дула ---
+
         protected virtual void PlayFireVfx() 
         { 
             if (_muzzleFlash != null)

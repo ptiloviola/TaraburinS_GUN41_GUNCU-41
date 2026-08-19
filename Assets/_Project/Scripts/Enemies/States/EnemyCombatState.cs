@@ -21,7 +21,7 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            Debug.Log("<color=red>[EnemyState]</color> Переход в CombatState");
+            DevLogger.Log("<color=red>[EnemyState]</color> Переход в CombatState");
             _brain.Agent.speed = _brain.Config.ChaseSpeed;
             
             // Если это первый враг, который нас заметил — включаем экшен

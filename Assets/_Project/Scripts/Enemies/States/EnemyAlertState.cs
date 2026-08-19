@@ -18,7 +18,7 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            Debug.Log("<color=magenta>[EnemyState]</color> ЗАМЕТИЛ ИГРОКА (Alert)!");
+            DevLogger.Log("<color=magenta>[EnemyState]</color> ЗАМЕТИЛ ИГРОКА (Alert)!");
             
             // Тормозим врага
             _brain.Agent.isStopped = true;

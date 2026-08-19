@@ -5,16 +5,17 @@ namespace TpsShooter.Player.States
 {
     public abstract class PlayerBaseState : IPlayerState
     {
-        // --- Кэшируем хэши параметров аниматора (вычисляются 1 раз при запуске) ---
+
         protected static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
         protected static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
         protected static readonly int MoveXHash = Animator.StringToHash("MoveX");
         protected static readonly int MoveYHash = Animator.StringToHash("MoveY");
         protected static readonly int IsCrouchingHash = Animator.StringToHash("IsCrouching");
 
-        // --- Избавляемся от магических чисел ---
+
         protected const float StickToGroundVelocity = -2f; 
-        protected const float InputThreshold = 0.01f;      
+        protected const float InputThreshold = 0.01f;
+        protected const float AnimDampTime = 0.1f;  
 
         protected readonly PlayerContext Ctx;
         protected readonly PlayerStateMachine StateMachine;
@@ -30,7 +31,7 @@ namespace TpsShooter.Player.States
         public virtual void Tick(float deltaTime) 
         {
             ApplyGravity(deltaTime);
-            // БОЛЬШЕ НИКАКОГО HandleShooting() ЗДЕСЬ!
+
         }
         
         public virtual void Exit() { }
@@ -39,22 +40,18 @@ namespace TpsShooter.Player.States
 
         protected void ApplyGravity(float deltaTime)
         {
-            // 1. Применяем гравитацию
+
             Ctx.Velocity.y += Ctx.Config.Gravity * deltaTime;
 
-            // 2. Сбрасываем накопленную гравитацию, если мы на земле
             if (Ctx.GroundSensor.IsGrounded && Ctx.Velocity.y < 0)
             {
                 Ctx.Velocity.y = StickToGroundVelocity; 
             }
 
-            // 3. Двигаем капсулу по вертикали
             Ctx.Controller.Move(Ctx.Velocity * deltaTime);
 
-            // 4. Синхронизация с Аниматором через хэши
             Ctx.Animator.SetBool(IsGroundedHash, Ctx.GroundSensor.IsGrounded);
             
-            // Проверка ввода через константу
             Ctx.Animator.SetBool(IsMovingHash, Ctx.Input.MoveAxis.sqrMagnitude > InputThreshold);
         }
     }

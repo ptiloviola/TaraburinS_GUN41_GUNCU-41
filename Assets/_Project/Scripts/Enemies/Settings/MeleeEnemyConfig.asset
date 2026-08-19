@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyName: Enemy
   MaxHealth: 100
-  AttackRange: 1.5
+  AttackRange: 2.2
   AttackCooldown: 0.9
-  PatrolSpeed: 2
-  ChaseSpeed: 6
-  SearchDuration: 3
-  VisionRadius: 20
-  ViewAngle: 120
-  HearingRadius: 30
-  SensorTickRate: 0.2
+  PatrolSpeed: 3
+  ChaseSpeed: 8
+  SearchDuration: 4
+  VisionRadius: 30
+  ViewAngle: 216
+  HearingRadius: 50
+  SensorTickRate: 0.1
   TargetMask:
     serializedVersion: 2
     m_Bits: 128
@@ -32,11 +32,10 @@ MonoBehaviour:
   DropLoot: {fileID: 11400000, guid: ef12704c151b0d24e8d084d916cac355, type: 2}
   DropChance: 0.914
   FootstepAudioConfig: {fileID: 11400000, guid: 3f1fe2c1bb9cd1b40b4348853ba603fd, type: 2}
-  MeleeDamage: 25
+  MeleeDamage: 12
   AttackAnimTriggers:
-  - Armada
-  - Flying Kick
-  WanderRadius: 15
+  - Mma Kick
+  WanderRadius: 50
   IdlePauseDuration: 3
   IdleAnimStates:
   - Idle1

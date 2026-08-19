@@ -16,7 +16,7 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            Debug.Log("<color=black>[EnemyState]</color> Переход в DeadState");
+            DevLogger.Log("<color=black>[EnemyState]</color> Переход в DeadState");
             
             // 1. Останавливаем агента навсегда
             _brain.Agent.isStopped = true;
@@ -38,7 +38,7 @@ namespace TpsShooter.Enemies.States
             {
                 if (Random.value <= _brain.Config.DropChance)
                 {
-                    Debug.Log($"<color=cyan>[Loot]</color> Из врага выпал предмет: {_brain.Config.DropLoot.name}");
+                    DevLogger.Log($"<color=cyan>[Loot]</color> Из врага выпал предмет: {_brain.Config.DropLoot.name}");
                     Vector3 dropPosition = _brain.transform.position + Vector3.up * 0.5f;
                     _brain.LootSpawner.SpawnLoot(_brain.Config.DropLoot, dropPosition, Quaternion.identity);
                 }

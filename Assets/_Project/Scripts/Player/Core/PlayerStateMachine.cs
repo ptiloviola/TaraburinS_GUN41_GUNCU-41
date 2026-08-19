@@ -15,15 +15,21 @@ namespace TpsShooter.Player.Core
 
         public void SwitchState<T>() where T : IPlayerState
         {
+            Type type = typeof(T);
+            
+
+            if (!_states.TryGetValue(type, out IPlayerState nextState))
+            {
+                DevLogger.LogError($"[StateMachine] Критическая ошибка! Стейт {type.Name} не зарегистрирован в машине состояний.");
+                return;
+            }
+
             if (_currentState != null)
                 _currentState.Exit();
 
-        #if UNITY_EDITOR
-            // Выводим в консоль, откуда и куда мы переходим
-            UnityEngine.Debug.Log($"[StateMachine] Transition: {_currentState?.GetType().Name} -> {typeof(T).Name}");
-        #endif
+            DevLogger.Log($"[StateMachine] Transition: {_currentState?.GetType().Name} -> {type.Name}");
 
-            _currentState = _states[typeof(T)];
+            _currentState = nextState;
             _currentState.Enter();
         }
 

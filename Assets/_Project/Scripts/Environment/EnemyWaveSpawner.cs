@@ -73,7 +73,7 @@ namespace TpsShooter.Environment
                     _totalEnemiesToSpawn += scaledCount;
                 }
             }
-            Debug.Log($"<color=green>[Spawner]</color> Уровень {_progressService.CurrentLevel}. Всего врагов к спавну: {_totalEnemiesToSpawn}");
+            DevLogger.Log($"<color=green>[Spawner]</color> Уровень {_progressService.CurrentLevel}. Всего врагов к спавну: {_totalEnemiesToSpawn}");
         }
 
         private IEnumerator SpawnWavesRoutine()
@@ -91,7 +91,7 @@ namespace TpsShooter.Environment
                     int bonusEnemies = scaledCount - enemyGroup.Count;
 
                     // <--- ДОБАВЛЕН ПОДРОБНЫЙ ЛОГ --->
-                    Debug.Log($"<color=cyan>[Spawner]</color> Спавн волны {waveIndex + 1}. Врагов: {scaledCount} (База: {enemyGroup.Count} | Бонус за уровень: +{bonusEnemies})");
+                    DevLogger.Log($"<color=cyan>[Spawner]</color> Спавн волны {waveIndex + 1}. Врагов: {scaledCount} (База: {enemyGroup.Count} | Бонус за уровень: +{bonusEnemies})");
 
                     for (int i = 0; i < scaledCount; i++)
                     {
@@ -127,11 +127,11 @@ namespace TpsShooter.Environment
         private void HandleEnemyDeath()
         {
             _enemiesDead++;
-            Debug.Log($"<color=yellow>[Spawner]</color> Враг убит. {_enemiesDead} / {_totalEnemiesToSpawn}");
+            DevLogger.Log($"<color=yellow>[Spawner]</color> Враг убит. {_enemiesDead} / {_totalEnemiesToSpawn}");
 
             if (_enemiesDead >= _totalEnemiesToSpawn && _enemiesSpawned == _totalEnemiesToSpawn)
             {
-                Debug.Log($"<color=yellow>[Spawner]</color> ВСЕ ВРАГИ УНИЧТОЖЕНЫ!");
+                DevLogger.Log($"<color=yellow>[Spawner]</color> ВСЕ ВРАГИ УНИЧТОЖЕНЫ!");
                 OnAllEnemiesDefeated?.Invoke();
             }
         }

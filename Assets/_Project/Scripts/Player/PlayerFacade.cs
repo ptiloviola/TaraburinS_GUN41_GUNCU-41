@@ -43,7 +43,6 @@ namespace TpsShooter.Player
         private WeaponInventory _weaponInventory;
         private PlayerInteractionSensor _interactionSensor;
         
-        // Новые компоненты для Melee
         private PlayerMeleeController _meleeController;
         private CharacterAnimationEvents _animEvents;
         private FootstepAudioSystem _footstepAudio;
@@ -66,9 +65,7 @@ namespace TpsShooter.Player
         [Inject]
         public void Construct(
             IInputService inputService, 
-            PlayerConfig config, 
-            PlayerInventoryConfig inventoryConfig, // <--- НОВЫЙ КОНФИГ
-            IInstantiator instantiator,
+            PlayerConfig config,
             PlayerInventoryModel inventoryModel,
             LootFactory lootFactory,
             IAudioService audioService,
@@ -87,7 +84,7 @@ namespace TpsShooter.Player
                 animator, _leftHandIkTarget, _weaponRig, _leftHandIK,
                 inputService, camTransform, _aimTarget);
 
-            WeaponTransitionService transitionService = new WeaponTransitionService(this);
+            WeaponTransitionService transitionService = new WeaponTransitionService();
 
             _weaponInventory = new WeaponInventory(
                 _weaponController, transitionService, inputService, transform, 
@@ -101,20 +98,15 @@ namespace TpsShooter.Player
             Health = new HealthEngine(config.MaxHealth);
             Health.OnDeath += HandleDeath;
 
-            
 
-
-            // --- ИНИЦИАЛИЗАЦИЯ БЛИЖНЕГО БОЯ ---
             _meleeController = new PlayerMeleeController(animator, transform);
             
-            // Навешиваем слушатель событий анимации на ту же пустышку, где висит Animator
             _animEvents = animator.gameObject.GetComponent<CharacterAnimationEvents>();
             if (_animEvents == null) 
                 _animEvents = animator.gameObject.AddComponent<CharacterAnimationEvents>();
                 
             _animEvents.OnMeleeStrike += _meleeController.PerformStrike;
 
-            // -----------------------------------
 
             _context = new PlayerContext(
                 GetComponent<CharacterController>(), transform, camTransform, config,
@@ -131,7 +123,6 @@ namespace TpsShooter.Player
             
             _stateMachine.SwitchState<PlayerIdleState>();
 
-            CharacterController cc = GetComponent<CharacterController>();
             _footstepAudio = new FootstepAudioSystem(
             audioService, 
             transform, 
@@ -144,23 +135,22 @@ namespace TpsShooter.Player
         {
             Health?.TakeDamage(amount);
             _audioService?.PlaySFX("Player_Hurt", transform.position);
-            Debug.Log($"<color=green>[Player]</color> Получил {amount} урона. ХП: {Health.CurrentHealth}");
+            DevLogger.Log($"<color=green>[Player]</color> Получил {amount} урона. ХП: {Health.CurrentHealth}");
         }
 
         private void HandleDeath()
         {
-            Debug.Log("<color=green>[Player]</color> ИГРОК МЕРТВ!");
+            DevLogger.Log("<color=green>[Player]</color> ИГРОК МЕРТВ!");
             
-            // Блокируем управление
             if (_inputService != null)
             {
+                _weaponInventory?.CancelAllOperations();
                 _inputService.OnJump -= OnJump;
                 _inputService.OnReload -= OnReload;
                 _inputService.OnMelee -= OnMelee;
             }
             
-            // Отключаем физику, чтобы капсула не двигалась
-            GetComponent<CharacterController>().enabled = false;
+            _context.Controller.enabled = false;
         }
 
         private void OnEnable()
@@ -169,7 +159,7 @@ namespace TpsShooter.Player
             {
                 _inputService.OnJump += OnJump;
                 _inputService.OnReload += OnReload;
-                _inputService.OnMelee += OnMelee; // Подписка на рукопашку!
+                _inputService.OnMelee += OnMelee;
             }
         }
 
@@ -187,7 +177,6 @@ namespace TpsShooter.Player
         {
             float deltaTime = Time.deltaTime;
             
-            // Если игрок жив - обновляем физику, сенсоры и стейт-машину
             if (Health != null && !Health.IsDead)
             {
                 _context.GroundSensor.Tick(); 
@@ -196,7 +185,6 @@ namespace TpsShooter.Player
 
             }
 
-            // Оружие и камера обновляются независимо (камера может крутиться после смерти)
             _weaponController?.Tick(deltaTime);
             _cameraController?.Tick(deltaTime);
         }
@@ -206,7 +194,7 @@ namespace TpsShooter.Player
             _weaponInventory?.Dispose();
             _footstepAudio?.Dispose();
             if (_animEvents != null) _animEvents.OnMeleeStrike -= _meleeController.PerformStrike;
-            if (Health != null) Health.OnDeath -= HandleDeath; // Отписка
+            if (Health != null) Health.OnDeath -= HandleDeath;
         }
 
         private void OnJump() => _stateMachine.HandleJump();
@@ -217,6 +205,6 @@ namespace TpsShooter.Player
                 _weaponInventory.CurrentWeapon.Reload();
         }
 
-        private void OnMelee() => _meleeController?.TryMeleeAttack(); // Вызов удара
+        private void OnMelee() => _meleeController?.TryMeleeAttack();
     }
 }

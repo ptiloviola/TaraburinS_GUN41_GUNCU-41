@@ -108,7 +108,7 @@ namespace TpsShooter.Enemies.Core
         public void TakeDamage(float amount)
         {
             Health?.TakeDamage(amount);
-            Debug.Log($"<color=orange>[Enemy]</color> Получил {amount} урона. ХП: {Health?.CurrentHealth}");
+            DevLogger.Log($"<color=orange>[Enemy]</color> Получил {amount} урона. ХП: {Health?.CurrentHealth}");
 
             if (Health != null && !Health.IsDead)
             {

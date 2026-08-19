@@ -14,7 +14,6 @@ namespace TpsShooter.Player.States
             
             Ctx.Animator.SetBool(IsCrouchingHash, true);
             
-            // Сообщаем камере, что мы присели
             Ctx.CameraController.SetCrouching(true);
 
             Ctx.Controller.height = Ctx.Config.CrouchHeight;
@@ -23,7 +22,7 @@ namespace TpsShooter.Player.States
 
         public override void Tick(float deltaTime)
         {
-            base.Tick(deltaTime); // Гравитация
+            base.Tick(deltaTime);
             
             if (Ctx.Input.IsRollTriggered)
             {
@@ -58,8 +57,8 @@ namespace TpsShooter.Player.States
             float animX = localVelocity.x / Ctx.Config.CrouchSpeed;
             float animZ = localVelocity.z / Ctx.Config.CrouchSpeed;
 
-            Ctx.Animator.SetFloat(MoveXHash, animX, 0.1f, deltaTime);
-            Ctx.Animator.SetFloat(MoveYHash, animZ, 0.1f, deltaTime);
+            Ctx.Animator.SetFloat(MoveXHash, animX, AnimDampTime, deltaTime);
+            Ctx.Animator.SetFloat(MoveYHash, animZ, AnimDampTime, deltaTime);
 
             if (Ctx.Input.IsAiming && Ctx.WeaponController.IsArmed)
             {
@@ -85,7 +84,6 @@ namespace TpsShooter.Player.States
             
             Ctx.Animator.SetBool(IsCrouchingHash, false);
             
-            // Сообщаем камере, что мы встали
             Ctx.CameraController.SetCrouching(false);
 
             Ctx.Controller.height = Ctx.Config.NormalHeight;

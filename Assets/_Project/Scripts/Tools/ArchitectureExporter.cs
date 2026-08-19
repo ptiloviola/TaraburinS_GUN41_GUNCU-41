@@ -73,7 +73,7 @@ public static class ArchitectureExporter
         if (!string.IsNullOrEmpty(savePath))
         {
             File.WriteAllText(savePath, report.ToString());
-            Debug.Log($"[ArchitectureExporter] Отчет успешно сохранен: {savePath}");
+            DevLogger.Log($"[ArchitectureExporter] Отчет успешно сохранен: {savePath}");
             EditorUtility.RevealInFinder(savePath);
         }
     }

@@ -61,7 +61,7 @@ namespace TpsShooter.Enemies.States
                     {
                         string randomIdle = _meleeConfig.IdleAnimStates[Random.Range(0, _meleeConfig.IdleAnimStates.Length)];
                         _brain.Animator?.PlayCustomIdle(randomIdle);
-                        Debug.Log($"<color=green>[Wander]</color> Пришел. Играю: {randomIdle}");
+                        DevLogger.Log($"<color=green>[Wander]</color> Пришел. Играю: {randomIdle}");
                     }
                     else
                     {
@@ -95,7 +95,7 @@ namespace TpsShooter.Enemies.States
         {
             if (_brain.Target != null)
             {
-                Debug.Log("<color=red>[Wander]</color> Получил пулю! В ЯРОСТЬ!");
+                DevLogger.Log("<color=red>[Wander]</color> Получил пулю! В ЯРОСТЬ!");
                 _brain.LastKnownTargetPosition = _brain.Target.transform.position;
                 
                 // Мгновенный переход в бой, никаких поисков и пауз!

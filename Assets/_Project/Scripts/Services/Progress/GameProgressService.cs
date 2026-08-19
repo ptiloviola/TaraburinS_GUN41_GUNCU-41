@@ -23,13 +23,13 @@ namespace TpsShooter.Services.Progress
                 PlayerPrefs.SetInt(HighScoreKey, HighScore);
                 PlayerPrefs.Save();
             }
-            Debug.Log($"<color=cyan>[Progress]</color> Переход на уровень {CurrentLevel}. Рекорд: {HighScore}");
+            DevLogger.Log($"<color=cyan>[Progress]</color> Переход на уровень {CurrentLevel}. Рекорд: {HighScore}");
         }
 
         public void ResetProgress()
         {
             CurrentLevel = 1;
-            Debug.Log("<color=cyan>[Progress]</color> Прогресс сброшен до 1 уровня.");
+            DevLogger.Log("<color=cyan>[Progress]</color> Прогресс сброшен до 1 уровня.");
         }
     }
 }

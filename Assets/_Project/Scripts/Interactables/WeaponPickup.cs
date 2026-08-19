@@ -43,7 +43,7 @@ namespace TpsShooter.Interactables
 
                     if (playerFacade.InventoryModel.TryAddAmmo(WeaponInstance.Config.WeaponAmmoType, ammoToGive))
                     {
-                        Debug.Log($"<color=green>[Interaction]</color> Оружие уже есть. Извлечены патроны: +{ammoToGive} {WeaponInstance.Config.WeaponAmmoType}");
+                        DevLogger.Log($"<color=green>[Interaction]</color> Оружие уже есть. Извлечены патроны: +{ammoToGive} {WeaponInstance.Config.WeaponAmmoType}");
                         _isCollected = true;
                         _audioService?.PlaySFX("Item_Pickup", transform.position);
                         Destroy(gameObject); // Уничтожаем лежащую пушку
@@ -51,7 +51,7 @@ namespace TpsShooter.Interactables
                     }
                     else
                     {
-                        Debug.Log($"<color=yellow>[Interaction]</color> Патроны {WeaponInstance.Config.WeaponAmmoType} на максимуме. Оружие не тронуто.");
+                        DevLogger.Log($"<color=yellow>[Interaction]</color> Патроны {WeaponInstance.Config.WeaponAmmoType} на максимуме. Оружие не тронуто.");
                         return false;
                     }
                 }
@@ -59,12 +59,12 @@ namespace TpsShooter.Interactables
                 // 2. ПУШКИ НЕТ. ПРОВЕРКА: ЕСТЬ ЛИ МЕСТО В РУКАХ/НА СПИНЕ?
                 if (playerFacade.WeaponInventory.IsFull)
                 {
-                    Debug.Log($"<color=yellow>[Interaction]</color> Нет места для нового оружия!");
+                    DevLogger.Log($"<color=yellow>[Interaction]</color> Нет места для нового оружия!");
                     return false; 
                 }
 
                 // 3. МЕСТО ЕСТЬ. ПОДБИРАЕМ ПУШКУ.
-                Debug.Log($"<color=green>[Interaction]</color> Подобрано новое оружие: {WeaponInstance.Config.WeaponName}");
+                DevLogger.Log($"<color=green>[Interaction]</color> Подобрано новое оружие: {WeaponInstance.Config.WeaponName}");
                 _isCollected = true;
                 playerFacade.WeaponInventory.AddWeapon(WeaponInstance);
                 _audioService?.PlaySFX("Item_Pickup", transform.position);

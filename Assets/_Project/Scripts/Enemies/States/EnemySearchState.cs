@@ -18,7 +18,7 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            Debug.Log("<color=yellow>[EnemyState]</color> Переход в SearchState");
+            DevLogger.Log("<color=yellow>[EnemyState]</color> Переход в SearchState");
             _brain.Agent.speed = _brain.Config.PatrolSpeed; 
             _brain.Agent.isStopped = false;
             _brain.Agent.SetDestination(_brain.LastKnownTargetPosition);
@@ -48,7 +48,7 @@ namespace TpsShooter.Enemies.States
                 if (hasReached)
                 {
                     _reachedLocation = true;
-                    Debug.Log("<color=yellow>[EnemySearch]</color> Осматриваюсь...");
+                    DevLogger.Log("<color=yellow>[EnemySearch]</color> Осматриваюсь...");
                     _brain.Animator?.PlayIdle(); 
                 }
             }

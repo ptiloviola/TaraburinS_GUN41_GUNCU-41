@@ -49,7 +49,7 @@ namespace TpsShooter.Enemies.Vision
                     {
                         Debug.DrawLine(eyePosition, hit.point, Color.red);
                         // ЭТОТ ЛОГ СКАЖЕТ НАМ ВСЮ ПРАВДУ:
-                        Debug.Log($"<color=red>[Sensor]</color> Не вижу! Врезался в: {hit.collider.gameObject.name} (Слой: {LayerMask.LayerToName(hit.collider.gameObject.layer)})");
+                        DevLogger.Log($"<color=red>[Sensor]</color> Не вижу! Врезался в: {hit.collider.gameObject.name} (Слой: {LayerMask.LayerToName(hit.collider.gameObject.layer)})");
                     }
                     else
                     {

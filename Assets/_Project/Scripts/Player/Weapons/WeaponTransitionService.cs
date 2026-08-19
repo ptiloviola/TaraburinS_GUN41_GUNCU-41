@@ -1,52 +1,49 @@
 using System;
-using System.Collections;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace TpsShooter.Player.Weapons
 {
     public class WeaponTransitionService
     {
-        private readonly MonoBehaviour _coroutineRunner;
+        // MonoBehaviour больше не нужен!
+        public WeaponTransitionService() { }
 
-        // Передаем сюда Фасад, чтобы чистый класс мог запускать корутины
-        public WeaponTransitionService(MonoBehaviour coroutineRunner)
+        public async UniTask MoveWeaponToSocketAsync(Transform weaponTransform, Transform targetSocket, float duration, CancellationToken cancelToken)
         {
-            _coroutineRunner = coroutineRunner;
-        }
-
-        public void MoveWeaponToSocket(Transform weaponTransform, Transform targetSocket, float duration, Action onComplete = null)
-        {
-            // SetParent(..., true) — это магия! Оружие сохранит свои мировые координаты (например, на земле),
-            // но станет дочерним к сокету. Дальше мы просто плавно сведем его локальные координаты к нулю.
             weaponTransform.SetParent(targetSocket, true);
-            _coroutineRunner.StartCoroutine(TransitionRoutine(weaponTransform, duration, onComplete));
-        }
-
-        private IEnumerator TransitionRoutine(Transform weaponTransform, float duration, Action onComplete)
-        {
             Vector3 startPos = weaponTransform.localPosition;
             Quaternion startRot = weaponTransform.localRotation;
-            
             float elapsed = 0f;
-            while (elapsed < duration)
+
+            try
             {
-                elapsed += Time.deltaTime;
-                float t = elapsed / duration;
-                
-                // SmoothStep делает анимацию мягкой в начале и в конце (ease-in-out)
-                float smoothT = Mathf.SmoothStep(0f, 1f, t);
+                while (elapsed < duration)
+                {
+                    cancelToken.ThrowIfCancellationRequested(); // ЖЕСТКОЕ ТРЕБОВАНИЕ ТЗ: проверка отмены
 
-                weaponTransform.localPosition = Vector3.Lerp(startPos, Vector3.zero, smoothT);
-                weaponTransform.localRotation = Quaternion.Lerp(startRot, Quaternion.identity, smoothT);
-                
-                yield return null;
+                    elapsed += Time.deltaTime;
+                    float t = elapsed / duration;
+                    float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+                    weaponTransform.localPosition = Vector3.Lerp(startPos, Vector3.zero, smoothT);
+                    weaponTransform.localRotation = Quaternion.Lerp(startRot, Quaternion.identity, smoothT);
+
+                    await UniTask.Yield(PlayerLoopTiming.Update, cancelToken);
+                }
+
+                weaponTransform.localPosition = Vector3.zero;
+                weaponTransform.localRotation = Quaternion.identity;
             }
-
-            // Жестко фиксируем в конце, чтобы не было микро-зазоров
-            weaponTransform.localPosition = Vector3.zero;
-            weaponTransform.localRotation = Quaternion.identity;
-            
-            onComplete?.Invoke();
+            catch (OperationCanceledException)
+            {
+                // ЖЕСТКОЕ ТРЕБОВАНИЕ ТЗ: осознанная обработка отмены
+                Debug.LogWarning("[WeaponTransition] Смена оружия прервана (игрок умер или переключил пушку)!");
+                weaponTransform.localPosition = Vector3.zero;
+                weaponTransform.localRotation = Quaternion.identity;
+                throw; 
+            }
         }
     }
 }

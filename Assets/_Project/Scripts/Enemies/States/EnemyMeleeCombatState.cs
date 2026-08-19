@@ -22,7 +22,7 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            Debug.Log("<color=red>[MeleeCombat]</color> Начал бой!");
+            DevLogger.Log("<color=red>[MeleeCombat]</color> Начал бой!");
             _brain.Agent.speed = _brain.Config.ChaseSpeed;
             _brain.Agent.stoppingDistance = _brain.Config.AttackRange; // Агент сам будет тормозить у цели
             _isAttacking = false;

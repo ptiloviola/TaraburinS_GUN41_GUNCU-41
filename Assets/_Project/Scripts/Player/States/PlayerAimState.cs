@@ -32,24 +32,21 @@ namespace TpsShooter.Player.States
             float currentSpeed = isCrouching ? Ctx.Config.CrouchSpeed : Ctx.Config.AimMoveSpeed;
 
             Vector2 input = Ctx.Input.MoveAxis;
-            Ctx.Animator.SetFloat(MoveXHash, input.x, 0.1f, deltaTime);
-            Ctx.Animator.SetFloat(MoveYHash, input.y, 0.1f, deltaTime);
-            Ctx.Animator.SetBool(IsMovingHash, input.sqrMagnitude > 0.01f);
+            Ctx.Animator.SetFloat(MoveXHash, input.x, AnimDampTime, deltaTime);
+            Ctx.Animator.SetFloat(MoveYHash, input.y, AnimDampTime, deltaTime);
+            Ctx.Animator.SetBool(IsMovingHash, input.sqrMagnitude > InputThreshold);
 
-            // Поворот игрока за камерой
             float targetAngle = Ctx.CameraTransform.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(Ctx.Transform.eulerAngles.y, targetAngle, ref Ctx.CurrentRotationVelocity, 0.02f);
+            float angle = Mathf.SmoothDampAngle(Ctx.Transform.eulerAngles.y, targetAngle, ref Ctx.CurrentRotationVelocity, Ctx.Config.RotationSmoothTime);
             Ctx.Transform.rotation = Quaternion.Euler(0f, angle, 0f);
             
-            // Движение
             Vector3 moveDir = Ctx.Transform.right * input.x + Ctx.Transform.forward * input.y;
             Ctx.Controller.Move(moveDir.normalized * (currentSpeed * deltaTime));
 
-            // Выход из прицеливания
             if (!Ctx.Input.IsAiming)
             {
                 if (isCrouching) StateMachine.SwitchState<PlayerCrouchState>();
-                else if (input.sqrMagnitude > 0.01f) StateMachine.SwitchState<PlayerMoveState>();
+                else if (input.sqrMagnitude > InputThreshold) StateMachine.SwitchState<PlayerMoveState>();
                 else StateMachine.SwitchState<PlayerIdleState>();
             }
         }

@@ -19,7 +19,7 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            Debug.Log("<color=green>[EnemyState]</color> Переход в PatrolState");
+            DevLogger.Log("<color=green>[EnemyState]</color> Переход в PatrolState");
             _brain.Agent.speed = _brain.Config.PatrolSpeed;
             _brain.Agent.isStopped = false;
             

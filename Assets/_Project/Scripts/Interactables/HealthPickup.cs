@@ -33,14 +33,14 @@ namespace TpsShooter.Interactables
                 if (playerFacade.Health != null && playerFacade.Health.TryHeal(_config.HealAmount))
                 {
                     _isCollected = true;
-                    Debug.Log($"<color=green>[Interaction]</color> Подобрана аптечка. Восстановлено {_config.HealAmount} ХП. Текущее ХП: {playerFacade.Health.CurrentHealth}");
+                    DevLogger.Log($"<color=green>[Interaction]</color> Подобрана аптечка. Восстановлено {_config.HealAmount} ХП. Текущее ХП: {playerFacade.Health.CurrentHealth}");
                     _audioService?.PlaySFX("Item_Pickup", transform.position);
                     Destroy(gameObject); 
                     return true; 
                 }
                 else
                 {
-                    Debug.Log($"<color=yellow>[Interaction]</color> Здоровье полное (или игрок мертв)! Аптечка не подобрана.");
+                    DevLogger.Log($"<color=yellow>[Interaction]</color> Здоровье полное (или игрок мертв)! Аптечка не подобрана.");
                 }
             }
 

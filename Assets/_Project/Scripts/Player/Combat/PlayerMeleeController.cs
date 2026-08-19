@@ -52,7 +52,7 @@ namespace TpsShooter.Player.Combat
                     
 #if UNITY_EDITOR
                     // ИСПРАВЛЕНИЕ: Берем имя у самого коллайдера, а не у интерфейса
-                    Debug.Log($"<color=red>[Melee]</color> Удар по {_hitColliders[i].gameObject.name}! Урон: {_meleeDamage}");
+                    DevLogger.Log($"<color=red>[Melee]</color> Удар по {_hitColliders[i].gameObject.name}! Урон: {_meleeDamage}");
 #endif
                 }
             }
@@ -64,7 +64,7 @@ namespace TpsShooter.Player.Combat
             Debug.DrawRay(strikeCenter, Vector3.left * _meleeRadius, Color.red, 2f);
             Debug.DrawRay(strikeCenter, Vector3.right * _meleeRadius, Color.red, 2f);
             
-            if (!hitSomething) Debug.Log("<color=red>[Melee]</color> Взмах по воздуху!");
+            if (!hitSomething) DevLogger.Log("<color=red>[Melee]</color> Взмах по воздуху!");
 #endif
         }
     }

@@ -1,6 +1,5 @@
 using UnityEngine;
 using TpsShooter.Services.Input;
-using Cinemachine;
 using TpsShooter.Player.Configs;
 using UnityEngine.Animations.Rigging;
 using TpsShooter.Player.Camera;
@@ -8,7 +7,6 @@ using TpsShooter.Player.Weapons;
 
 namespace TpsShooter.Player.Core
 {
-    // Хранит все необходимые данные для работы состояний
     public class PlayerContext
     {
         public readonly CharacterController Controller;
@@ -17,7 +15,6 @@ namespace TpsShooter.Player.Core
         public readonly PlayerConfig Config;
         public readonly IInputService Input;
 
-        // Разделяем горизонтальную и вертикальную скорости для удобства расчетов
         public Vector3 Velocity; 
         public float CurrentRotationVelocity;
         public readonly GroundSensor GroundSensor;

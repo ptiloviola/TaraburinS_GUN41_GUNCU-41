@@ -20,7 +20,7 @@ namespace TpsShooter.Enemies.Combat
 
             float finalDamage = amount * _damageMultiplier;
             
-            Debug.Log($"<color=orange>[Hitbox]</color> Попадание в {_bodyPartName}! Урон: {amount} x {_damageMultiplier} = {finalDamage}");
+            DevLogger.Log($"<color=orange>[Hitbox]</color> Попадание в {_bodyPartName}! Урон: {amount} x {_damageMultiplier} = {finalDamage}");
             
             // Передаем умноженный урон в мозг
             _brain.TakeDamage(finalDamage);

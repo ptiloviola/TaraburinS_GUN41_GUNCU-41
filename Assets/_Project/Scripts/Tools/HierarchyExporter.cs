@@ -23,7 +23,7 @@ public class HierarchyExporter : Editor
 
         // Копируем результат в буфер обмена
         GUIUtility.systemCopyBuffer = sb.ToString();
-        Debug.Log("Иерархия скопирована в буфер обмена! Можешь вставлять текст (Ctrl+V).");
+        DevLogger.Log("Иерархия скопирована в буфер обмена! Можешь вставлять текст (Ctrl+V).");
     }
 
     private static void DumpObject(GameObject obj, StringBuilder sb, string indent)

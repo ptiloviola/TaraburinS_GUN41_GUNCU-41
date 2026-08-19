@@ -36,7 +36,7 @@ namespace TpsShooter.Interactables
                 if (playerFacade.InventoryModel.TryAddAmmo(_config.AmmoType, _config.Amount))
                 {
                     _isCollected = true;
-                    Debug.Log($"<color=green>[Interaction]</color> Подобраны патроны: {_config.AmmoType} +{_config.Amount}");
+                    DevLogger.Log($"<color=green>[Interaction]</color> Подобраны патроны: {_config.AmmoType} +{_config.Amount}");
                     
                     _audioService?.PlaySFX("Item_Pickup", transform.position);
 
@@ -45,7 +45,7 @@ namespace TpsShooter.Interactables
                 }
                 else
                 {
-                    Debug.Log($"<color=yellow>[Interaction]</color> Запас патронов {_config.AmmoType} полон!");
+                    DevLogger.Log($"<color=yellow>[Interaction]</color> Запас патронов {_config.AmmoType} полон!");
                 }
             }
 

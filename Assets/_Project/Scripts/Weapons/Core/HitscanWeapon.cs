@@ -12,7 +12,7 @@ namespace TpsShooter.Weapons.Core
             // Выпускаем луч (Raycast)
             if (Physics.Raycast(_muzzlePoint.position, direction, out RaycastHit hit, _config.Range, _config.HitMask))
             {
-                Debug.Log($"[HitscanWeapon] Попали в: {hit.collider.name}");
+                DevLogger.Log($"[HitscanWeapon] Попали в: {hit.collider.name}");
 
                 // Позже добавим: if (hit.collider.TryGetComponent(out IDamageable target)) target.TakeDamage(_config.Damage);
                 
@@ -20,7 +20,7 @@ namespace TpsShooter.Weapons.Core
             }
             else
             {
-                Debug.Log("[HitscanWeapon] Выстрел в молоко");
+                DevLogger.Log("[HitscanWeapon] Выстрел в молоко");
             }
         }
     }

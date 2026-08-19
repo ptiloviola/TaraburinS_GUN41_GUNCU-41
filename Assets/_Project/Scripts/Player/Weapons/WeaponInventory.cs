@@ -6,6 +6,8 @@ using TpsShooter.Weapons.Core;
 using TpsShooter.Services.Input;
 using TpsShooter.Interactables;
 using TpsShooter.Environment;
+using Cysharp.Threading.Tasks; // Добавили UniTask
+using System.Threading;      // Добавили CancellationToken
 
 namespace TpsShooter.Player.Weapons
 {
@@ -24,8 +26,11 @@ namespace TpsShooter.Player.Weapons
         private int _currentWeaponIndex = -1;
         private const float TransitionDuration = 0.35f; 
         private const int MaxWeapons = 2; 
-        private bool _isTransitioning = false;
+        
         private readonly LootFactory _lootFactory;
+        
+        // ТОКЕН ОТМЕНЫ (Требование ТЗ)
+        private CancellationTokenSource _transitionCts;
 
         public bool IsFull => _weapons.Count >= MaxWeapons;
         public WeaponBase CurrentWeapon { get; private set; }
@@ -63,90 +68,100 @@ namespace TpsShooter.Player.Weapons
             return false;
         }
 
-        // Теперь мы принимаем ЖИВУЮ пушку
         public void AddWeapon(WeaponBase weaponInstance)
         {
             if (IsFull) return;
 
-            // 1. Убиваем анимацию левитации, чтобы пушка не дергалась в руках
             if (weaponInstance.TryGetComponent(out PickupAnimator animator))
             {
                 GameObject.Destroy(animator);
             }
             
-            // 2. Включаем мозги пушке
             weaponInstance.enabled = true;
-            
             _weapons.Add(weaponInstance);
             int newWeaponIndex = _weapons.Count - 1;
 
             if (_weapons.Count == 1) EquipWeapon(0);
-            else PutWeaponOnBack(weaponInstance, newWeaponIndex); 
+            else PutWeaponOnBackAsync(weaponInstance, newWeaponIndex, CancellationToken.None).Forget(); 
         }
 
-        public void EquipWeapon(int index)
+        // Оболочка для события инпута
+        public void EquipWeapon(int index) => EquipWeaponAsync(index).Forget();
+
+        // АСИНХРОННАЯ СМЕНА ОРУЖИЯ С ОТМЕНОЙ
+        private async UniTaskVoid EquipWeaponAsync(int index)
         {
-            if (index < 0 || index >= _weapons.Count || index == _currentWeaponIndex || _isTransitioning) return;
+            if (index < 0 || index >= _weapons.Count || index == _currentWeaponIndex) return;
 
-            _isTransitioning = true;
+            // 1. ОТМЕНА: Если мы уже меняли оружие, прерываем ту задачу!
+            _transitionCts?.Cancel();
+            _transitionCts = new CancellationTokenSource();
+            var token = _transitionCts.Token;
 
-            if (CurrentWeapon != null)
+            try
             {
-                PutWeaponOnBack(CurrentWeapon, _currentWeaponIndex);
-            }
+                if (CurrentWeapon != null)
+                {
+                    // 2. ОТМЕНА ПЕРЕЗАРЯДКИ: Говорим пушке прекратить заряжаться
+                    CurrentWeapon.CancelReload(); 
+                    
+                    // Ждем, пока старая пушка уберется за спину
+                    await PutWeaponOnBackAsync(CurrentWeapon, _currentWeaponIndex, token);
+                }
 
-            _currentWeaponIndex = index;
-            CurrentWeapon = _weapons[_currentWeaponIndex];
+                _currentWeaponIndex = index;
+                CurrentWeapon = _weapons[_currentWeaponIndex];
 
-            Debug.Log($"<color=green>[Inventory]</color> Экипируем оружие: {CurrentWeapon.Config.WeaponName}");
-            _transitionService.MoveWeaponToSocket(CurrentWeapon.transform, _handSocket, TransitionDuration, () =>
-            {
+                DevLogger.Log($"<color=green>[Inventory]</color> Экипируем оружие: {CurrentWeapon.Config.WeaponName}");
+                
+                // Ждем, пока новая пушка окажется в руках
+                await _transitionService.MoveWeaponToSocketAsync(CurrentWeapon.transform, _handSocket, TransitionDuration, token);
+
                 _weaponController.OnWeaponEquipped(CurrentWeapon);
-                _isTransitioning = false; 
-            });
+            }
+            catch (OperationCanceledException)
+            {
+                DevLogger.Log("<color=yellow>[Inventory]</color> Смена оружия прервана новым вводом!");
+            }
+        }
+
+        private async UniTask PutWeaponOnBackAsync(WeaponBase weapon, int slotNumber, CancellationToken token)
+        {
+            Transform targetSocket = slotNumber == 0 ? _backSocket1 : _backSocket2;
+            await _transitionService.MoveWeaponToSocketAsync(weapon.transform, targetSocket, TransitionDuration, token);
         }
 
         private void DropCurrentWeapon()
         {
-            if (_weapons.Count == 0 || CurrentWeapon == null || _isTransitioning) return;
+            if (_weapons.Count == 0 || CurrentWeapon == null) return;
+            
+            _transitionCts?.Cancel(); // Прерываем доставание, если оно было
 
             WeaponBase weaponToDrop = CurrentWeapon;
+            weaponToDrop.CancelReload(); // Прерываем перезарядку
             
-            Debug.Log($"<color=yellow>[Inventory]</color> Выбрасываем оружие: {weaponToDrop.Config.WeaponName}");
+            DevLogger.Log($"<color=yellow>[Inventory]</color> Выбрасываем оружие: {weaponToDrop.Config.WeaponName}");
 
-            // 1. Убираем из инвентаря
             _weapons.RemoveAt(_currentWeaponIndex);
             CurrentWeapon = null;
             _currentWeaponIndex = -1;
 
-            // 2. Рассчитываем позицию сброса
             Vector3 dropPos = _playerTransform.position + _playerTransform.forward * 2.0f + _playerTransform.right * 1.5f + Vector3.up * 0.5f;
-            
-            // 3. ВЫЗЫВАЕМ ФАБРИКУ (вся грязная работа теперь там)
             _lootFactory.DropLiveWeapon(weaponToDrop, dropPos, Quaternion.identity);
 
-            // 4. Достаем оставшееся оружие (или остаемся с пустыми руками)
             if (_weapons.Count > 0)
             {
-                Debug.Log($"<color=cyan>[Inventory]</color> Достаем оставшееся оружие: {_weapons[0].Config.WeaponName}");
                 EquipWeapon(0); 
             }
             else
             {
-                Debug.Log($"<color=cyan>[Inventory]</color> Игрок остался с пустыми руками.");
                 _weaponController.OnWeaponEquipped(null);
             }
         }
 
-        private void PutWeaponOnBack(WeaponBase weapon, int slotNumber)
-        {
-            Transform targetSocket = slotNumber == 0 ? _backSocket1 : _backSocket2;
-            _transitionService.MoveWeaponToSocket(weapon.transform, targetSocket, TransitionDuration);
-        }
-
         private void HandleScroll(int direction)
         {
-            if (_weapons.Count <= 1 || _isTransitioning) return;
+            if (_weapons.Count <= 1) return;
 
             int nextIndex = _currentWeaponIndex + direction;
             if (nextIndex >= _weapons.Count) nextIndex = 0;
@@ -155,8 +170,18 @@ namespace TpsShooter.Player.Weapons
             EquipWeapon(nextIndex);
         }
 
+        // ВЫЗЫВАЕТСЯ ПРИ СМЕРТИ ИГРОКА ИЛИ В КОНЦЕ УРОВНЯ
+        public void CancelAllOperations()
+        {
+            _transitionCts?.Cancel();
+            CurrentWeapon?.CancelReload();
+        }
+
         public void Dispose()
         {
+            CancelAllOperations();
+            _transitionCts?.Dispose();
+            
             _inputService.OnWeaponSelect -= EquipWeapon;
             _inputService.OnWeaponScroll -= HandleScroll;
             _inputService.OnDropWeapon -= DropCurrentWeapon;

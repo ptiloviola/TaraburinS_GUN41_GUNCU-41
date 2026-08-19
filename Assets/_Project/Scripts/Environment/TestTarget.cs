@@ -16,7 +16,7 @@ namespace TpsShooter.Environment
 
         public void TakeDamage(float amount)
         {
-            Debug.Log($"<color=orange>[HIT]</color> Попали по {gameObject.name}! Урон: {amount}");
+            DevLogger.Log($"<color=orange>[HIT]</color> Попали по {gameObject.name}! Урон: {amount}");
             
             if (_renderer != null)
             {
