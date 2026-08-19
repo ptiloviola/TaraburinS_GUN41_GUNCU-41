@@ -10,7 +10,7 @@ namespace TpsShooter.Enemies.States
         private float _lastAttackTime = -999f;
         
         private bool _isAttacking = false;
-        private float _attackAnimationDuration = 0.9f; 
+        private float _attackAnimationDuration = 1.3f;
         private static int _enemiesInCombat = 0; 
 
         public Color StateGizmoColor => Color.red;
@@ -42,33 +42,34 @@ namespace TpsShooter.Enemies.States
             float distance = Vector3.Distance(_brain.transform.position, _brain.Target.transform.position);
             float timeSinceAttack = Time.time - _lastAttackTime;
 
-            // 1. ФАЗА ЗАМАХА (Блокируем всё остальное)
+            // 1. ФАЗА ЗАМАХА (Намертво прибиваем к полу)
             if (_isAttacking)
             {
+                // Принудительно убиваем любую инерцию и движение от аниматора!
+                _brain.Agent.velocity = Vector3.zero;
+                
                 if (timeSinceAttack < _attackAnimationDuration)
                 {
-                    _brain.Agent.updateRotation = false; // Запрещаем Агенту крутить врага
-                    LookAtTarget(); // Крутим скриптом
+                    _brain.Agent.updateRotation = false; 
+                    LookAtTarget(); 
                     return; 
                 }
                 else
                 {
                     _isAttacking = false;
-                    _brain.Agent.updateRotation = true; // Отдаем руль обратно Агенту
+                    _brain.Agent.updateRotation = true; 
                 }
             }
 
             // 2. ФАЗА БОЯ И БЕГА
             if (distance <= _brain.Config.AttackRange && timeSinceAttack >= _brain.Config.AttackCooldown)
             {
-                // Жесткая остановка
                 _brain.Agent.isStopped = true;
-                _brain.Agent.velocity = Vector3.zero; // Убиваем инерцию
+                _brain.Agent.velocity = Vector3.zero; 
                 
                 _isAttacking = true;
                 _lastAttackTime = Time.time;
                 
-                Debug.Log("<color=red>[MeleeCombat]</color> БЬЮ!");
                 _brain.CombatHandler?.PerformAttack(_brain.Target, _brain.Animator);
             }
             else
@@ -99,7 +100,7 @@ namespace TpsShooter.Enemies.States
             dir.y = 0; 
             if (dir != Vector3.zero)
             {
-                _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 15f);
+                _brain.transform.rotation = Quaternion.Slerp(_brain.transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 30f);
             }
         }
 

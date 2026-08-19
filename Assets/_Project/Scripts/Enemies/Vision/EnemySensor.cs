@@ -1,59 +1,83 @@
 using System;
 using UnityEngine;
 using TpsShooter.Enemies.Core;
-using TpsShooter.Environment; // Для GlobalAIEvents
+using TpsShooter.Environment; 
 
 namespace TpsShooter.Enemies.Vision
 {
     public class EnemySensor : IDisposable
     {
         private readonly EnemyBrain _brain;
-        private readonly Collider[] _colliders = new Collider[2]; 
         
         public bool IsTargetVisible { get; private set; }
-        public event Action<Vector3> OnHeardNoise; // Сигнал для Мозга
+        public event Action<Vector3> OnHeardNoise; 
 
         public EnemySensor(EnemyBrain brain)
         {
             _brain = brain;
-            // Подписываемся на глобальный слух
             GlobalAIEvents.OnNoiseGenerated += HandleGlobalNoise;
         }
 
         public void Tick()
         {
             IsTargetVisible = false;
+            
+            // Если цели нет, выходим (но если она есть - идем дальше)
             if (_brain.Target == null) return;
 
-            int count = Physics.OverlapSphereNonAlloc(_brain.transform.position, _brain.Config.VisionRadius, _colliders, _brain.Config.TargetMask);
-            if (count > 0)
+            Transform targetTransform = _brain.Target.transform;
+            Vector3 myPos = _brain.transform.position;
+            Vector3 targetPos = targetTransform.position;
+
+            float distanceToTarget = Vector3.Distance(myPos, targetPos);
+
+            // Точки для глаз (поднимаем на 1.5 метра от пола)
+            Vector3 eyePosition = myPos + Vector3.up * 1.5f;
+            Vector3 targetEyePosition = targetPos + Vector3.up * 1.5f;
+            Vector3 dirToTarget = (targetEyePosition - eyePosition).normalized;
+
+            // 1. Проверка дистанции
+            if (distanceToTarget <= _brain.Config.VisionRadius)
             {
-                Transform targetTransform = _colliders[0].transform;
-                Vector3 dirToTarget = (targetTransform.position - _brain.transform.position).normalized;
+                float angle = Vector3.Angle(_brain.transform.forward, dirToTarget);
 
-                if (Vector3.Angle(_brain.transform.forward, dirToTarget) < _brain.Config.ViewAngle / 2f)
+                // 2. Проверка угла
+                if (angle < _brain.Config.ViewAngle / 2f)
                 {
-                    Vector3 eyePosition = _brain.transform.position + Vector3.up * 1.5f;
-                    Vector3 targetEyePosition = targetTransform.position + Vector3.up * 1.5f;
-
-                    if (!Physics.Linecast(eyePosition, targetEyePosition, _brain.Config.ObstacleMask))
+                    // 3. Проверка препятствий (Raycast со смещением на 0.5 метра вперед, чтобы не попасть в самого себя)
+                    if (Physics.Raycast(eyePosition + dirToTarget * 0.5f, dirToTarget, out RaycastHit hit, distanceToTarget, _brain.Config.ObstacleMask))
                     {
+                        Debug.DrawLine(eyePosition, hit.point, Color.red);
+                        // ЭТОТ ЛОГ СКАЖЕТ НАМ ВСЮ ПРАВДУ:
+                        Debug.Log($"<color=red>[Sensor]</color> Не вижу! Врезался в: {hit.collider.gameObject.name} (Слой: {LayerMask.LayerToName(hit.collider.gameObject.layer)})");
+                    }
+                    else
+                    {
+                        Debug.DrawLine(eyePosition, targetEyePosition, Color.green);
                         IsTargetVisible = true;
-                        _brain.LastKnownTargetPosition = targetTransform.position;
+                        _brain.LastKnownTargetPosition = targetPos;
                     }
                 }
+                else
+                {
+                    // Рядом, но не в зоне угла
+                    Debug.DrawLine(eyePosition, targetEyePosition, Color.yellow);
+                }
+            }
+            else
+            {
+                // Слишком далеко
+                Debug.DrawLine(eyePosition, targetEyePosition, Color.gray);
             }
         }
 
         private void HandleGlobalNoise(Vector3 noisePosition, float volume)
         {
-            // Если мы уже видим игрока, на слух не отвлекаемся
             if (IsTargetVisible) return;
 
             float distance = Vector3.Distance(_brain.transform.position, noisePosition);
             if (distance <= _brain.Config.HearingRadius)
             {
-                // Слышим! Запоминаем точку и кричим мозгу
                 _brain.LastKnownTargetPosition = noisePosition;
                 OnHeardNoise?.Invoke(noisePosition);
             }

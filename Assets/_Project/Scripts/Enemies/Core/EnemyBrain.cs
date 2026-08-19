@@ -139,28 +139,41 @@ namespace TpsShooter.Enemies.Core
             StateMachine.ChangeState(new EnemyDeadState(this));
         }
 
-        private void OnDrawGizmosSelected()
+        #if UNITY_EDITOR
+        private void OnDrawGizmos() // <--- УБРАЛИ СЛОВО Selected
         {
             if (Config == null) return;
 
-            // ИСПРАВЛЕНИЕ ТЗ: Цвет берется строго из текущего стейта
-            Gizmos.color = StateMachine?.CurrentState?.StateGizmoColor ?? Color.white;
-            Gizmos.DrawWireSphere(transform.position, Config.VisionRadius);
-            
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(transform.position, Config.AttackRange);
-            
-            Gizmos.color = Color.blue;
-            Vector3 leftBoundary = Quaternion.Euler(0, -Config.ViewAngle / 2f, 0) * transform.forward;
-            Vector3 rightBoundary = Quaternion.Euler(0, Config.ViewAngle / 2f, 0) * transform.forward;
-            Gizmos.DrawRay(transform.position, leftBoundary * Config.VisionRadius);
-            Gizmos.DrawRay(transform.position, rightBoundary * Config.VisionRadius);
+            Vector3 center = transform.position;
+            Vector3 eyePos = center + Vector3.up * 1.5f;
 
-            if (Sensor != null && Sensor.IsTargetVisible && Target != null)
+            // 1. Радиус Слуха (Синий круг)
+            Gizmos.color = new Color(0f, 0.5f, 1f, 0.3f);
+            Gizmos.DrawWireSphere(center, Config.HearingRadius);
+
+            // 2. Радиус Зрения (Желтый круг)
+            Gizmos.color = new Color(1f, 0.9f, 0f, 0.5f);
+            Gizmos.DrawWireSphere(center, Config.VisionRadius);
+
+            // 3. Дистанция Атаки (Красный круг)
+            Gizmos.color = new Color(1f, 0f, 0f, 0.8f);
+            Gizmos.DrawWireSphere(center, Config.AttackRange);
+
+            // 4. Угол Зрения (Два желтых луча, образующих сектор)
+            Vector3 leftRay = Quaternion.Euler(0, -(Config.ViewAngle / 2f), 0) * transform.forward;
+            Vector3 rightRay = Quaternion.Euler(0, (Config.ViewAngle / 2f), 0) * transform.forward;
+            
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(eyePos, leftRay * Config.VisionRadius);
+            Gizmos.DrawRay(eyePos, rightRay * Config.VisionRadius);
+
+            // 5. Текущий Стейт (Цветная сфера над головой)
+            if (StateMachine != null && StateMachine.CurrentState != null)
             {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, Target.transform.position + Vector3.up * 1.5f);
+                Gizmos.color = StateMachine.CurrentState.StateGizmoColor;
+                Gizmos.DrawSphere(center + Vector3.up * 2.5f, 0.2f);
             }
         }
+#endif
     }
 }

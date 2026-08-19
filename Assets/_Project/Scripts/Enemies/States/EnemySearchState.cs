@@ -15,12 +15,11 @@ namespace TpsShooter.Enemies.States
         {
             _brain = brain;
         }
-        
 
         public void Enter()
         {
             Debug.Log("<color=yellow>[EnemyState]</color> Переход в SearchState");
-            _brain.Agent.speed = _brain.Config.PatrolSpeed; // Осторожно идем к точке
+            _brain.Agent.speed = _brain.Config.PatrolSpeed; 
             _brain.Agent.isStopped = false;
             _brain.Agent.SetDestination(_brain.LastKnownTargetPosition);
             _brain.Animator?.PlayWalk();
@@ -31,19 +30,26 @@ namespace TpsShooter.Enemies.States
 
         public void Tick()
         {
+            // 1. ИСПРАВЛЕНИЕ: Если увидели игрока - идем в Alert (испуг/рык), 
+            // а Alert сам потом переведет в нужный CombatState через конфиг!
             if (_brain.Sensor.IsTargetVisible)
             {
-                _brain.StateMachine.ChangeState(new EnemyCombatState(_brain));
+                _brain.StateMachine.ChangeState(new EnemyAlertState(_brain));
                 return;
             }
 
             if (!_reachedLocation)
             {
-                if (!_brain.Agent.pathPending && _brain.Agent.remainingDistance <= 1f)
+                // Защита от бага NavMesh с дистанцией
+                bool hasReached = !_brain.Agent.pathPending && 
+                                  _brain.Agent.remainingDistance <= 1f &&
+                                  (!_brain.Agent.hasPath || _brain.Agent.velocity.sqrMagnitude < 0.1f);
+
+                if (hasReached)
                 {
                     _reachedLocation = true;
                     Debug.Log("<color=yellow>[EnemySearch]</color> Осматриваюсь...");
-                    _brain.Animator?.PlayIdle(); // <--- ДОШЕЛ ДО МЕСТА - ОСТАНОВИЛСЯ
+                    _brain.Animator?.PlayIdle(); 
                 }
             }
             else
@@ -53,13 +59,20 @@ namespace TpsShooter.Enemies.States
 
                 if (_searchTimer >= _brain.Config.SearchDuration)
                 {
-                    _brain.StateMachine.ChangeState(new EnemyWanderPatrolState(_brain));
+                    // 2. ИСПРАВЛЕНИЕ: Возвращаемся в патруль ТОЛЬКО через фабрику конфига!
+                    // Стрелок пойдет по точкам, каратист пойдет шататься.
+                    _brain.StateMachine.ChangeState(_brain.Config.CreatePatrolState(_brain));
                 }
             }
         }
 
         public void Exit() { }
 
-        public void OnDamageTaken() { /* Уже ищем, ничего не делаем */ }
+        public void OnDamageTaken() 
+        { 
+            // 3. ИСПРАВЛЕНИЕ: Если в нас стреляют, пока мы ищем — мгновенно в бой через Фабрику!
+            _brain.Agent.isStopped = false;
+            _brain.StateMachine.ChangeState(_brain.Config.CreateCombatState(_brain));
+        }
     }
 }

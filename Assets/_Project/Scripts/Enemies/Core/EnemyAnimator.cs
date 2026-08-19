@@ -74,6 +74,10 @@ namespace TpsShooter.Enemies.Core
 
         public void PlayHit() 
         { 
+            // ИСПРАВЛЕНИЕ: Если враг сейчас бьет или рычит (_lockTime > 0) — 
+            // пули наносят урон, но НЕ прерывают его анимацию! Это уберет судороги.
+            if (_lockTime > 0) return; 
+
             PlayOneShot(HitHash, 0.3f, 0.05f);
         }
         

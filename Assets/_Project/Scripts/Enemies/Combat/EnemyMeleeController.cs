@@ -50,7 +50,7 @@ namespace TpsShooter.Enemies.Combat
 
             // Бьем перед собой (на дистанции 1 метр)
             Vector3 strikeCenter = transform.position + Vector3.up * 1f + transform.forward * 1f;
-            float strikeRadius = 1.2f;
+            float strikeRadius = 2.5f;
 
             int hits = Physics.OverlapSphereNonAlloc(strikeCenter, strikeRadius, _hitColliders, _config.TargetMask);
 
