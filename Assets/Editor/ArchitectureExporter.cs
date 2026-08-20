@@ -9,7 +9,6 @@ using System.Linq;
 
 public static class ArchitectureExporter
 {
-    // Список компонентов, которые не несут архитектурной ценности для отчета
     private static readonly HashSet<Type> IgnoredComponents = new HashSet<Type>
     {
         typeof(Transform),
@@ -31,19 +30,17 @@ public static class ArchitectureExporter
         
         string assetsPath = Application.dataPath;
         
-        // Ищем все папки с именем "Scripts" во всех вложенных директориях внутри Assets
         string[] scriptFolders = Directory.GetDirectories(assetsPath, "Scripts", SearchOption.AllDirectories);
 
         if (scriptFolders.Length > 0)
         {
             foreach (string folderPath in scriptFolders)
             {
-                // Делаем путь относительным и красивым для отчета (например, Assets/_Project/Scripts)
                 string relativePath = "Assets" + folderPath.Substring(assetsPath.Length).Replace('\\', '/');
                 
                 report.AppendLine($"--- 📁 Найдена директория: {relativePath} ---");
                 BuildDirectoryTree(folderPath, report, 0);
-                report.AppendLine(); // Пустая строка для разделения, если папок Scripts несколько
+                report.AppendLine();
             }
         }
         else
@@ -85,14 +82,12 @@ public static class ArchitectureExporter
         
         report.AppendLine($"{indent}📁 {dir.Name}/");
 
-        // Выводим C# скрипты
         FileInfo[] files = dir.GetFiles("*.cs");
         foreach (FileInfo file in files)
         {
             report.AppendLine($"{indent}    📄 {file.Name}");
         }
 
-        // Рекурсивно обходим вложенные папки
         DirectoryInfo[] subDirs = dir.GetDirectories();
         foreach (DirectoryInfo subDir in subDirs)
         {
@@ -106,7 +101,6 @@ public static class ArchitectureExporter
 
         Component[] components = go.GetComponents<Component>();
         
-        // Фильтруем "пустые" компоненты (Missing Scripts) и те, что в игнор-листе
         var architecturalComponents = components
             .Where(c => c != null && !IgnoredComponents.Contains(c.GetType()))
             .ToList();
@@ -117,8 +111,6 @@ public static class ArchitectureExporter
             {
                 Type type = comp.GetType();
                 
-                // Разделяем визуально кастомную бизнес-логику (MonoBehaviour) 
-                // и встроенные компоненты движка (RigidBody, NavMeshAgent и т.д.)
                 string icon = (comp is MonoBehaviour) ? "⚙️" : "🔧";
                 report.AppendLine($"    {icon} {type.Name}");
             }
@@ -128,6 +120,6 @@ public static class ArchitectureExporter
             report.AppendLine("    (Нет значимых компонентов)");
         }
         
-        report.AppendLine(); // Пустая строка для читаемости между объектами
+        report.AppendLine();
     }
 }

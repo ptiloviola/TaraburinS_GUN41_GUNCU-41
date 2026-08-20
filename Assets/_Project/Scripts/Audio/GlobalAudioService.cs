@@ -16,7 +16,6 @@ namespace TpsShooter.Audio
 
         private Dictionary<AudioGroup, AudioMixerGroup> _mixerGroups;
 
-        // ОТДЕЛЬНЫЕ ИСТОЧНИКИ ДЛЯ ДИНАМИЧЕСКОЙ МУЗЫКИ
         private AudioSource _calmMusicSource;
         private AudioSource _combatMusicSource;
 
@@ -66,11 +65,11 @@ namespace TpsShooter.Audio
         {
             _calmMusicSource = CreateNewAudioSource("Music_Calm_Source");
             _calmMusicSource.loop = true;
-            _calmMusicSource.spatialBlend = 0f; // Музыка всегда 2D
+            _calmMusicSource.spatialBlend = 0f;
 
             _combatMusicSource = CreateNewAudioSource("Music_Combat_Source");
             _combatMusicSource.loop = true;
-            _combatMusicSource.spatialBlend = 0f; // Музыка всегда 2D
+            _combatMusicSource.spatialBlend = 0f;
         }
 
         private AudioSource CreateNewAudioSource(string name)
@@ -127,7 +126,6 @@ namespace TpsShooter.Audio
 
         public void PlayMusic(string soundId) { }
 
-        // ЗАПУСК ОБЕИХ ДОРОЖЕК
         public void StartDynamicMusic(string calmId, string combatId)
         {
             SoundRecord calmRecord = _config.GetRecord(calmId);
@@ -152,16 +150,15 @@ namespace TpsShooter.Audio
             }
         }
 
-        // ПЕРЕКЛЮЧЕНИЕ СЛЕПКОВ
         public void SetCombatMusicState(bool isCombat)
         {
             if (isCombat && _config.CombatSnapshot != null)
             {
-                _config.CombatSnapshot.TransitionTo(2f); // Плавный переход за 2 секунды
+                _config.CombatSnapshot.TransitionTo(2f);
             }
             else if (!isCombat && _config.ExplorationSnapshot != null)
             {
-                _config.ExplorationSnapshot.TransitionTo(4f); // Успокаиваемся дольше (4 секунды)
+                _config.ExplorationSnapshot.TransitionTo(4f);
             }
         }
 
@@ -169,7 +166,6 @@ namespace TpsShooter.Audio
         {
             if (_config.ExtractionSnapshot != null)
             {
-                // TransitionTo(1f) означает, что музыка затухнет плавно, но быстро — ровно за 1 секунду
                 _config.ExtractionSnapshot.TransitionTo(1f); 
             }
         }

@@ -44,7 +44,6 @@ namespace TpsShooter.Effects
             }
         }
 
-        // Универсальный метод для создания пула партиклов
         private ParticleSystem[] InitializeParticlePool(ParticleSystem prefab, int size)
         {
             if (prefab == null) return null;
@@ -52,7 +51,6 @@ namespace TpsShooter.Effects
             for (int i = 0; i < size; i++)
             {
                 pool[i] = Instantiate(prefab, transform);
-                // Мы не выключаем сам GameObject, партиклы просто находятся в состоянии "Stop"
             }
             return pool;
         }
@@ -87,11 +85,10 @@ namespace TpsShooter.Effects
         {
             ParticleSystem ps = pool[currentIndex];
             
-            // Ставим партикл в точку попадания и разворачиваем "лицом" от поверхности по нормали
             ps.transform.position = position;
             ps.transform.rotation = Quaternion.LookRotation(normal);
             
-            ps.Play(true); // true означает, что проиграются и все дочерние партиклы
+            ps.Play(true);
             
             currentIndex = (currentIndex + 1) % poolSize;
         }

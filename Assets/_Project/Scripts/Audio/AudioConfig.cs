@@ -9,8 +9,8 @@ namespace TpsShooter.Audio
     {
         SFX,
         Music,
-        Music_Calm,   // Подгруппа для спокойной музыки
-        Music_Combat, // Подгруппа для боевой музыки
+        Music_Calm, 
+        Music_Combat,
         UI,
         Ambient
     }
@@ -29,7 +29,7 @@ namespace TpsShooter.Audio
         [Range(0f, 1f)] public float Volume = 1f;
         
         [Header("3D Settings")]
-        [Range(0f, 1f)] public float SpatialBlend = 1f; // 1 = полное 3D
+        [Range(0f, 1f)] public float SpatialBlend = 1f;
         public float MinDistance = 5f;
         public float MaxDistance = 50f;
     }

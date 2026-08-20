@@ -5,7 +5,7 @@ namespace TpsShooter.Combat
 {
     public class HealthEngine
     {
-        public event Action<float, float> OnHealthChanged; // Текущее, Максимальное
+        public event Action<float, float> OnHealthChanged;
         public event Action OnDeath;
 
         public float MaxHealth { get; private set; }
@@ -23,7 +23,7 @@ namespace TpsShooter.Combat
             if (IsDead) return;
 
             CurrentHealth -= amount;
-            CurrentHealth = Mathf.Max(CurrentHealth, 0); // Защита от отрицательного ХП
+            CurrentHealth = Mathf.Max(CurrentHealth, 0);
 
             OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
 
@@ -35,7 +35,7 @@ namespace TpsShooter.Combat
 
         public bool TryHeal(float amount)
         {
-            if (IsDead || CurrentHealth >= MaxHealth) return false; // ХП и так полное, лечить не нужно
+            if (IsDead || CurrentHealth >= MaxHealth) return false;
 
             CurrentHealth += amount;
             CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth); 

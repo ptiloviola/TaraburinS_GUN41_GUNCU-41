@@ -35,10 +35,12 @@ namespace TpsShooter.Audio
             {
                 if (hit.collider.sharedMaterial != null)
                 {
-                    string matName = hit.collider.sharedMaterial.name.ToLower();
-                    if (matName.Contains("metal")) soundId = _config.MetalStep;
-                    else if (matName.Contains("dirt") || matName.Contains("grass")) soundId = _config.DirtStep;
-                    else if (matName.Contains("wood")) soundId = _config.WoodStep;
+                    string matName = hit.collider.sharedMaterial.name;
+                    
+                    if (matName.Contains("Metal", StringComparison.OrdinalIgnoreCase)) soundId = _config.MetalStep;
+                    else if (matName.Contains("Dirt", StringComparison.OrdinalIgnoreCase) || 
+                             matName.Contains("Grass", StringComparison.OrdinalIgnoreCase)) soundId = _config.DirtStep;
+                    else if (matName.Contains("Wood", StringComparison.OrdinalIgnoreCase)) soundId = _config.WoodStep;
                 }
             }
 
