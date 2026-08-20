@@ -88,14 +88,14 @@ namespace TpsShooter.Environment
         private async UniTaskVoid VictoryTransitionAsync()
         {
             await UniTask.Delay(TimeSpan.FromSeconds(_victoryTransitionDelay));
-            _sceneLoader.ReloadCurrentScene(); 
+            _sceneLoader.ReloadCurrentScene().Forget();; 
         }
 
         private void HandleDefeat()
         {
             _sceneLoader.SetPause(true);
             _progressService.ResetProgress();
-            _sceneLoader.LoadScene("MainMenu");
+            _sceneLoader.LoadScene("MainMenu").Forget();;
         }
 
         private void OnDestroy()

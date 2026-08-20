@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace TpsShooter.Enemies.Configs
 {
-    // =========================================================
-    // 1. ГЛАВНЫЙ КЛАСС СТРОГО НАВЕРХУ (Имя совпадает с файлом)
-    // =========================================================
+
     [CreateAssetMenu(fileName = "LevelWavesConfig", menuName = "TpsShooter/Enemies/LevelWavesConfig")]
     public class LevelWavesConfig : ScriptableObject
     {
@@ -14,9 +12,7 @@ namespace TpsShooter.Enemies.Configs
         public List<WaveData> Waves;
     }
 
-    // =========================================================
-    // 2. ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ НИЖЕ
-    // =========================================================
+
     [Serializable]
     public class WaveData
     {

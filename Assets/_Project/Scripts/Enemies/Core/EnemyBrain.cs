@@ -124,7 +124,7 @@ namespace TpsShooter.Enemies.Core
         private void OnDestroy()
         {
             if (Health != null) Health.OnDeath -= Die;
-            if (Sensor != null) Sensor.OnHeardNoise -= HandleNoiseHeard; // Отписка
+            if (Sensor != null) Sensor.OnHeardNoise -= HandleNoiseHeard;
             _footstepAudio?.Dispose();
         }
 
