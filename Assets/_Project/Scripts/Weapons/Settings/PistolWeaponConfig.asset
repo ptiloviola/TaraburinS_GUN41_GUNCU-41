@@ -29,12 +29,12 @@ MonoBehaviour:
   ProjectilePrefab: {fileID: 0}
   HitMask:
     serializedVersion: 2
-    m_Bits: 257
+    m_Bits: 1281
   MuzzleFlashPrefab: {fileID: 0}
   TracerPrefab: {fileID: 0}
   ShellCasingPrefab: {fileID: 0}
   SmokePrefab: {fileID: 0}
   SurfaceEffects: []
-  FireSound: {fileID: 0}
-  EmptyClickSound: {fileID: 0}
-  ReloadSounds: []
+  FireSoundId: Pistol_Fire
+  EmptyClickSoundId: Weapon_Empty
+  ReloadSoundId: Weapon_Reload

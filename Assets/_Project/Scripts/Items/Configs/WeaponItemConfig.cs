@@ -10,6 +10,6 @@ namespace TpsShooter.Items.Configs
         [Header("Weapon Logic")]
         [Tooltip("Ссылка на основной боевой конфиг пушки")]
         public WeaponConfig WeaponConfig; 
-        public WeaponBase LiveWeaponPrefab; // Сама 3D-модель пушки с логикой (которую вложим в пикап)
+        public WeaponBase LiveWeaponPrefab;
     }
 }

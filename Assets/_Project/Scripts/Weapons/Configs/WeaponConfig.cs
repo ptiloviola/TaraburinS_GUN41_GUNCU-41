@@ -5,63 +5,60 @@ using TpsShooter.Player.Inventory;
 
 namespace TpsShooter.Weapons.Configs
 {
-    // Структура для эффектов попадания по разным поверхностям
     [Serializable]
     public struct SurfaceEffect
     {
-        public string SurfaceTag;         // Тег или слой (например, "Metal", "EnemyFlesh")
-        public GameObject DecalPrefab;    // Дырка/порез
-        public GameObject ParticlePrefab; // Искры/кровь
-        public AudioClip ImpactSound;     // Звук попадания
+        public string SurfaceTag;         
+        public GameObject DecalPrefab;    
+        public GameObject ParticlePrefab; 
+        public string ImpactSoundId;
     }
 
-    // Базовый класс без CreateAssetMenu (мы будем создавать только конкретных наследников)
     public class WeaponConfig : ScriptableObject
     {
         [Header("General Stats")]
         public string WeaponName;
         public float Damage = 10f;
-        public float Range = 100f; // Дальность
+        public float Range = 100f; 
 
         [Header("Firing Mode")]
-        public bool IsAutomatic = true; // True для винтовки, False для пистолета
+        public bool IsAutomatic = true; 
 
         [Header("Ammo & Magazine")]
         public AmmoType WeaponAmmoType;
-        public int AmmoPerClip = 30; // Магазин
-        public int MaxReserveAmmo = 90; // Запас
+        public int AmmoPerClip = 30; 
+        public int MaxReserveAmmo = 90; 
 
         [Header("Timing")]
-        public float FireRate = 0.1f; // Темп стрельбы
+        public float FireRate = 0.1f; 
         public float ReloadTime = 2f;
 
         [Header("Accuracy, Spread & Recoil")]
-        public float BaseSpread = 0f;          // Базовый разброс
-        public float MaxSpread = 0f;           // Макс. разброс при зажиме
-        public float SpreadIncreaseRate = 0f;  // Скорость роста
-        public float SpreadRecoveryRate = 0f;  // Скорость восстановления
-        public float RecoilForce = 0f;         // Отдача
+        public float BaseSpread = 0f;          
+        public float MaxSpread = 0f;           
+        public float SpreadIncreaseRate = 0f;  
+        public float SpreadRecoveryRate = 0f;  
+        public float RecoilForce = 0f;         
 
         [Header("Projectiles (If applicable)")]
-        public GameObject ProjectilePrefab; // Префаб снаряда (для гранатомета/дробовика)
+        public GameObject ProjectilePrefab; 
 
         [Header("Masks")]
         public LayerMask HitMask;
 
-        [Header("VFX Prefabs (Pool ready)")]
-        public GameObject MuzzleFlashPrefab; // Вспышка выстрела
-        public GameObject TracerPrefab;      // Трассер / след луча
-        public GameObject ShellCasingPrefab; // Вылетающие гильзы
-        public GameObject SmokePrefab;       // Дым из ствола
+        [Header("VFX Prefabs")]
+        public GameObject MuzzleFlashPrefab; 
+        public GameObject TracerPrefab;      
+        public GameObject ShellCasingPrefab; 
+        public GameObject SmokePrefab;       
 
         [Header("Surface Impacts")]
-        public List<SurfaceEffect> SurfaceEffects; // Реакция на разные материалы
+        public List<SurfaceEffect> SurfaceEffects; 
 
-        [Header("SFX")]
-        public AudioClip FireSound;
-        public AudioClip EmptyClickSound;
-        public AudioClip[] ReloadSounds; // Массив для многофазной перезарядки (щелчок -> затвор)
-
-
+        [Header("SFX (Audio IDs)")]
+        public string FireSoundId = "Rifle_Fire";
+        public string EmptyClickSoundId = "Weapon_Empty";
+        public string ReloadSoundId = "Weapon_Reload";
+        public string PickupSoundId = "Item_Pickup";
     }
 }

@@ -8,7 +8,7 @@ namespace TpsShooter.Items.Configs
     public struct LootSpawnRequest
     {
         public ItemConfig ItemToSpawn;
-        public int Amount; // Сколько таких штук нужно раскидать по уровню
+        public int Amount;
     }
 
     [CreateAssetMenu(fileName = "LevelLootConfig", menuName = "TpsShooter/Configs/LevelLootConfig")]

@@ -1,9 +1,9 @@
 using UnityEngine;
-using TpsShooter.Combat;
 
 namespace TpsShooter.Weapons.Core
 {
-    public class AssaultRifleWeapon : WeaponBase
+
+    public class AssaultRifleWeapon : HitscanWeapon
     {
         private void Update()
         {
@@ -19,37 +19,16 @@ namespace TpsShooter.Weapons.Core
         {
             Vector3 direction = (targetPoint - _muzzlePoint.position).normalized;
 
+
             if (_currentSpread > 0f)
             {
                 direction += Random.insideUnitSphere * _currentSpread;
                 direction.Normalize();
             }
 
-            if (Physics.Raycast(_muzzlePoint.position, direction, out RaycastHit hit, _config.Range, _config.HitMask))
-            {
-                IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
-                
-                if (target != null)
-                {
-                    target.TakeDamage(_config.Damage);
-                    // СПАВН КРОВИ
-                    _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: true);
-                }
-                else 
-                {
-                    if (_decalManager != null) _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
-                    // СПАВН ИСКР/ПЫЛИ
-                    _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: false);
-                }
 
-                _vfxService?.SpawnTracer(_muzzlePoint.position, hit.point);
-            }
-            else
-            {
-                // Если выстрел в молоко, пускаем трассер до конца дистанции
-                Vector3 endPoint = _muzzlePoint.position + direction * _config.Range;
-                _vfxService?.SpawnTracer(_muzzlePoint.position, endPoint);
-            }
+            FireRaycast(direction);
+
 
             _currentSpread = Mathf.Min(_currentSpread + _config.SpreadIncreaseRate, _config.MaxSpread);
         }

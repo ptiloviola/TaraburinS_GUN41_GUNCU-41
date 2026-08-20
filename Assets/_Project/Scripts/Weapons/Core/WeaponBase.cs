@@ -18,15 +18,6 @@ namespace TpsShooter.Weapons.Core
         [Tooltip("Партикл вспышки из дула")]
         [SerializeField] protected ParticleSystem _muzzleFlash;
 
-        // <--- НОВЫЙ БЛОК: НАСТРОЙКИ ЗВУКА --->
-        [Header("Audio Settings")]
-        [Tooltip("ID звука выстрела в AudioConfig")]
-        [SerializeField] protected string _fireSoundId = "Pistol_Fire";
-        [Tooltip("ID звука пустого магазина")]
-        [SerializeField] protected string _emptySoundId = "Weapon_Empty";
-        [Tooltip("ID звука перезарядки")]
-        [SerializeField] protected string _reloadSoundId = "Weapon_Reload";
-
         public Transform LeftHandGripPoint;
 
         [Header("Aiming Offsets (ADS)")]
@@ -44,15 +35,16 @@ namespace TpsShooter.Weapons.Core
         public float CurrentSpread => _currentSpread; 
         public WeaponConfig Config => _config;
         public int CurrentAmmoInClip => _currentAmmoInClip;
-        public int TotalAmmo => _currentAmmoInClip;
+        
+        public int TotalAmmo => _inventoryModel != null && _config != null 
+            ? _inventoryModel.GetAmmo(_config.WeaponAmmoType) 
+            : 0;
 
         private CancellationTokenSource _reloadCts;
         public bool IsReloading { get; private set; }
 
         [Inject] protected DecalManager _decalManager;
         [Inject] protected PlayerInventoryModel _inventoryModel; 
-        
-        // <--- ДОБАВЛЯЕМ ИНЪЕКЦИЮ СЕРВИСА ЭФФЕКТОВ --->
         [Inject] protected IVFXService _vfxService; 
         [Inject] protected IAudioService _audioService;
 
@@ -89,6 +81,10 @@ namespace TpsShooter.Weapons.Core
         public virtual void Reload()
         {
             if (_config == null || _currentAmmoInClip == _config.AmmoPerClip || IsReloading) return;
+            
+
+            if (_inventoryModel.GetAmmo(_config.WeaponAmmoType) <= 0) return;
+
             ReloadAsync().Forget();
         }
 
@@ -102,7 +98,6 @@ namespace TpsShooter.Weapons.Core
             {
                 PlayReloadSound();
 
-                
                 await UniTask.Delay(TimeSpan.FromSeconds(_config.ReloadTime), cancellationToken: _reloadCts.Token);
 
                 int ammoNeeded = _config.AmmoPerClip - _currentAmmoInClip;
@@ -137,31 +132,27 @@ namespace TpsShooter.Weapons.Core
 
         protected abstract void PerformFire(Vector3 targetPoint);
 
-
         protected virtual void PlayFireVfx() 
         { 
-            if (_muzzleFlash != null)
-            {
-                _muzzleFlash.Play();
-            }
+            if (_muzzleFlash != null) _muzzleFlash.Play();
         }
         
         protected virtual void PlayFireSound() 
         { 
-            if (!string.IsNullOrEmpty(_fireSoundId))
-                _audioService?.PlaySFX(_fireSoundId, _muzzlePoint.position);
+            if (_config != null && !string.IsNullOrEmpty(_config.FireSoundId))
+                _audioService?.PlaySFX(_config.FireSoundId, _muzzlePoint.position);
         }
         
         protected virtual void PlayEmptySound() 
         { 
-            if (!string.IsNullOrEmpty(_emptySoundId))
-                _audioService?.PlaySFX(_emptySoundId, _muzzlePoint.position);
+            if (_config != null && !string.IsNullOrEmpty(_config.EmptyClickSoundId))
+                _audioService?.PlaySFX(_config.EmptyClickSoundId, _muzzlePoint.position);
         }
         
         protected virtual void PlayReloadSound() 
         { 
-            if (!string.IsNullOrEmpty(_reloadSoundId))
-                _audioService?.PlaySFX(_reloadSoundId, transform.position);
+            if (_config != null && !string.IsNullOrEmpty(_config.ReloadSoundId))
+                _audioService?.PlaySFX(_config.ReloadSoundId, transform.position);
         }
     }
 }

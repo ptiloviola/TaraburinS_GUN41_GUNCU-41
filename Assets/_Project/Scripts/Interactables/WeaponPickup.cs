@@ -1,15 +1,16 @@
 using UnityEngine;
 using TpsShooter.Weapons.Core;
-using TpsShooter.Player; // Для доступа к PlayerFacade
+using TpsShooter.Player;
 using Zenject;
 using TpsShooter.Audio;
 
 namespace TpsShooter.Interactables
 {
     [RequireComponent(typeof(Collider))]
-    // Реализуем интерфейс IPickable
     public class WeaponPickup : MonoBehaviour, IPickable
     {
+        private const string DefaultPickupSound = "Item_Pickup";
+
         public WeaponBase WeaponInstance { get; private set; }
         private bool _isCollected;
         [Inject] private IAudioService _audioService;
@@ -19,34 +20,30 @@ namespace TpsShooter.Interactables
             WeaponInstance = weaponInstance;
         }
 
-        // Подбор по касанию
         private void OnTriggerEnter(Collider other)
         {
             if (_isCollected) return;
             TryPickup(other.gameObject);
         }
 
-        // Новая логика подбора
         public bool TryPickup(GameObject collector)
         {
             if (_isCollected) return false;
 
             if (collector.TryGetComponent(out PlayerFacade playerFacade))
             {
-                // 1. ПРОВЕРКА: ЕСТЬ ЛИ УЖЕ ТАКАЯ ПУШКА?
+
                 if (playerFacade.WeaponInventory.HasWeapon(WeaponInstance.Config.WeaponName))
                 {
-                    // Пушка есть! Пытаемся забрать из нее патроны.
-                    int ammoToGive = WeaponInstance.TotalAmmo;
-                    // Если пушка только что заспавнилась (TotalAmmo == 0), даем хотя бы один магазин
+
+                    int ammoToGive = WeaponInstance.CurrentAmmoInClip;
+                    
                     if (ammoToGive == 0) ammoToGive = WeaponInstance.Config.AmmoPerClip; 
 
                     if (playerFacade.InventoryModel.TryAddAmmo(WeaponInstance.Config.WeaponAmmoType, ammoToGive))
                     {
                         DevLogger.Log($"<color=green>[Interaction]</color> Оружие уже есть. Извлечены патроны: +{ammoToGive} {WeaponInstance.Config.WeaponAmmoType}");
-                        _isCollected = true;
-                        _audioService?.PlaySFX("Item_Pickup", transform.position);
-                        Destroy(gameObject); // Уничтожаем лежащую пушку
+                        CompletePickup();
                         return true;
                     }
                     else
@@ -56,24 +53,33 @@ namespace TpsShooter.Interactables
                     }
                 }
 
-                // 2. ПУШКИ НЕТ. ПРОВЕРКА: ЕСТЬ ЛИ МЕСТО В РУКАХ/НА СПИНЕ?
+
                 if (playerFacade.WeaponInventory.IsFull)
                 {
                     DevLogger.Log($"<color=yellow>[Interaction]</color> Нет места для нового оружия!");
                     return false; 
                 }
 
-                // 3. МЕСТО ЕСТЬ. ПОДБИРАЕМ ПУШКУ.
+
                 DevLogger.Log($"<color=green>[Interaction]</color> Подобрано новое оружие: {WeaponInstance.Config.WeaponName}");
-                _isCollected = true;
                 playerFacade.WeaponInventory.AddWeapon(WeaponInstance);
-                _audioService?.PlaySFX("Item_Pickup", transform.position);
-                Destroy(gameObject);
+                CompletePickup();
                 
                 return true;
             }
 
             return false;
+        }
+
+        private void CompletePickup()
+        {
+            _isCollected = true;
+            string soundId = string.IsNullOrEmpty(WeaponInstance.Config.PickupSoundId) 
+                ? DefaultPickupSound 
+                : WeaponInstance.Config.PickupSoundId;
+                
+            _audioService?.PlaySFX(soundId, transform.position);
+            Destroy(gameObject);
         }
     }
 }

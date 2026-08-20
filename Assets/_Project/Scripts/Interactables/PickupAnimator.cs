@@ -17,10 +17,8 @@ namespace TpsShooter.Interactables
 
         private void Update()
         {
-            // Вращение
             transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime, Space.World);
             
-            // Покачивание (Синусоида)
             float newY = _startPos.y + Mathf.Sin(Time.time * Mathf.PI * _bobFrequency) * _bobAmplitude;
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }

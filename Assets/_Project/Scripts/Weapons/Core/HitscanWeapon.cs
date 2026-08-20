@@ -1,4 +1,5 @@
 using UnityEngine;
+using TpsShooter.Combat;
 
 namespace TpsShooter.Weapons.Core
 {
@@ -6,21 +7,32 @@ namespace TpsShooter.Weapons.Core
     {
         protected override void PerformFire(Vector3 targetPoint)
         {
-            // Направление от дула до точки, куда смотрит прицел камеры
             Vector3 direction = (targetPoint - _muzzlePoint.position).normalized;
-
-            // Выпускаем луч (Raycast)
+            FireRaycast(direction);
+        }
+        protected void FireRaycast(Vector3 direction)
+        {
             if (Physics.Raycast(_muzzlePoint.position, direction, out RaycastHit hit, _config.Range, _config.HitMask))
             {
-                DevLogger.Log($"[HitscanWeapon] Попали в: {hit.collider.name}");
-
-                // Позже добавим: if (hit.collider.TryGetComponent(out IDamageable target)) target.TakeDamage(_config.Damage);
+                IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
                 
-                // Позже добавим вызов из пула: PoolManager.Spawn(_config.BulletDecalPrefab, hit.point, ...)
+                if (target != null)
+                {
+                    target.TakeDamage(_config.Damage);
+                    _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: true);
+                }
+                else 
+                {
+                    if (_decalManager != null) _decalManager.SpawnDecal(hit.point, hit.normal, hit.collider.transform);
+                    _vfxService?.SpawnImpact(hit.point, hit.normal, isEnemy: false);
+                }
+
+                _vfxService?.SpawnTracer(_muzzlePoint.position, hit.point);
             }
             else
             {
-                DevLogger.Log("[HitscanWeapon] Выстрел в молоко");
+                Vector3 endPoint = _muzzlePoint.position + direction * _config.Range;
+                _vfxService?.SpawnTracer(_muzzlePoint.position, endPoint);
             }
         }
     }

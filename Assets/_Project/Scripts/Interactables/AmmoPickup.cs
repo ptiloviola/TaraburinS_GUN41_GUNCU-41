@@ -1,6 +1,5 @@
 using UnityEngine;
 using TpsShooter.Player;
-using TpsShooter.Player.Inventory;
 using TpsShooter.Items.Configs;
 using Zenject;
 using TpsShooter.Audio;
@@ -11,9 +10,7 @@ namespace TpsShooter.Interactables
     [RequireComponent(typeof(Collider))]
     public class AmmoPickup : MonoBehaviour, IPickable
     {
-        // [Header("Ammo Settings")]
-        // [SerializeField] private AmmoType _ammoType = AmmoType.Rifle;
-        // [SerializeField] private int _amount = 30;
+        private const string DefaultPickupSound = "Item_Pickup";
 
         [SerializeField] private AmmoItemConfig _config;
         
@@ -29,7 +26,7 @@ namespace TpsShooter.Interactables
 
         public bool TryPickup(GameObject collector)
         {
-            if (_isCollected) return false;
+            if (_isCollected || _config == null) return false;
 
             if (collector.TryGetComponent(out PlayerFacade playerFacade))
             {
@@ -38,7 +35,8 @@ namespace TpsShooter.Interactables
                     _isCollected = true;
                     DevLogger.Log($"<color=green>[Interaction]</color> Подобраны патроны: {_config.AmmoType} +{_config.Amount}");
                     
-                    _audioService?.PlaySFX("Item_Pickup", transform.position);
+                    string soundId = string.IsNullOrEmpty(_config.PickupSoundId) ? DefaultPickupSound : _config.PickupSoundId;
+                    _audioService?.PlaySFX(soundId, transform.position);
 
                     Destroy(gameObject);
                     return true;
