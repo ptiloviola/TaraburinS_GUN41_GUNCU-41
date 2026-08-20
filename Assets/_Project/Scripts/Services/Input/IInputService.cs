@@ -13,9 +13,9 @@ namespace TpsShooter.Services.Input
         bool IsCrouching { get; }
         bool IsRollTriggered { get; }
         
-        // Новые события для инвентаря
-        event Action<int> OnWeaponSelect; // Передаем индекс (0, 1, 2)
-        event Action<int> OnWeaponScroll; // Передаем направление (+1 или -1)
+
+        event Action<int> OnWeaponSelect;
+        event Action<int> OnWeaponScroll;
         event Action OnDropWeapon;
         
         event Action OnJump;

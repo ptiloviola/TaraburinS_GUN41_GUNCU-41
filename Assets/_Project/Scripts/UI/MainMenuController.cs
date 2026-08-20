@@ -4,8 +4,8 @@ using TMPro;
 using Zenject;
 using TpsShooter.Services.SceneManagement;
 using TpsShooter.Services.Progress;
-using TpsShooter.UI.Settings; // <-- Добавлено
-using TpsShooter.Audio;       // <-- Для AudioConfig
+using TpsShooter.UI.Settings;
+using TpsShooter.Audio;
 
 namespace TpsShooter.UI
 {
@@ -13,11 +13,11 @@ namespace TpsShooter.UI
     {
         [Header("Main Menu UI")]
         [SerializeField] private Button _playButton;
-        [SerializeField] private Button _settingsButton; // <--- НОВАЯ КНОПКА ОТКРЫТИЯ НАСТРОЕК
+        [SerializeField] private Button _settingsButton;
         [SerializeField] private TextMeshProUGUI _highScoreText; 
 
         [Header("Settings UI")]
-        [SerializeField] private SettingsUIView _settingsView; // <--- ССЫЛКА НА ВЬЮШКУ НАСТРОЕК
+        [SerializeField] private SettingsUIView _settingsView;
 
         private SceneLoaderService _sceneLoader;
         private GameProgressService _progressService;
@@ -29,7 +29,7 @@ namespace TpsShooter.UI
         public void Construct(
             SceneLoaderService sceneLoader, 
             GameProgressService progressService, 
-            AudioConfig audioConfig) // <--- ИНЪЕКЦИЯ АУДИОКОНФИГА
+            AudioConfig audioConfig)
         {
             _sceneLoader = sceneLoader;
             _progressService = progressService;
@@ -47,10 +47,9 @@ namespace TpsShooter.UI
             if (_highScoreText != null && _progressService != null)
                 _highScoreText.text = $"MAX LEVEL: {_progressService.HighScore}";
 
-            // Инициализация MVP настроек
             if (_settingsView != null)
             {
-                _settingsView.Hide(); // Скрываем при старте
+                _settingsView.Hide();
                 SettingsModel settingsModel = new SettingsModel();
                 _settingsPresenter = new SettingsPresenter(settingsModel, _settingsView, _audioConfig);
             }
@@ -59,7 +58,7 @@ namespace TpsShooter.UI
         private void StartGame()
         {
             _progressService.ResetProgress(); 
-            _sceneLoader.LoadScene("SampleScene"); 
+            _sceneLoader.LoadScene("SampleScene").Forget(); 
         }
 
         private void OpenSettings()
@@ -72,7 +71,7 @@ namespace TpsShooter.UI
             if (_playButton != null) _playButton.onClick.RemoveListener(StartGame);
             if (_settingsButton != null) _settingsButton.onClick.RemoveListener(OpenSettings);
             
-            _settingsPresenter?.Dispose(); // Очищаем подписки
+            _settingsPresenter?.Dispose();
         }
     }
 }

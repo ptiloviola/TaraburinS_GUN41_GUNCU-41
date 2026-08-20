@@ -20,7 +20,6 @@ namespace TpsShooter.UI
         private PlayerFacade _player;
         private float _currentVisualSpread;
 
-        // Zenject сам вызовет этот метод и передаст ссылку на Игрока
         [Inject]
         public void Construct(PlayerFacade playerFacade)
         {
@@ -29,13 +28,10 @@ namespace TpsShooter.UI
 
         private void Update()
         {
-            // 1. Спрашиваем у игрока его текущий разброс (если игрока нет, разброс = 0)
             float targetSpread = _player != null ? _player.CurrentWeaponSpread : 0f;
 
-            // 2. Интерполируем
             _currentVisualSpread = Mathf.Lerp(_currentVisualSpread, targetSpread, Time.deltaTime * _smoothSpeed);
 
-            // 3. Раздвигаем полоски
             float offset = _baseOffset + (_currentVisualSpread * _spreadMultiplier);
 
             if (_topLine != null) _topLine.anchoredPosition = new Vector2(0, offset);

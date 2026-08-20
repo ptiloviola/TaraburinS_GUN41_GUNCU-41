@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro; // Убедись, что используешь TextMeshPro
+using TMPro;
 
 namespace TpsShooter.UI
 {

@@ -16,10 +16,10 @@ namespace TpsShooter.Services.Input
         public bool IsCrouching => _input.Player.Crouch.IsPressed();
         public bool IsRollTriggered => _input.Player.Roll.IsPressed();
 
-        // Новые события для инвентаря
+
         public event Action<int> OnWeaponSelect;
         public event Action<int> OnWeaponScroll;
-        public event Action OnDropWeapon; // <--- Добавили реализацию события из интерфейса
+        public event Action OnDropWeapon;
 
         public event Action OnJump;
         public event Action OnReload;
@@ -30,25 +30,25 @@ namespace TpsShooter.Services.Input
             _input = new PlayerInputActions();
             _input.Player.Enable();
 
-            // Подписываемся через именованные методы
+
             _input.Player.Jump.performed += OnJumpPerformed;
             _input.Player.Reload.performed += OnReloadPerformed;
             _input.Player.Melee.performed += OnMeleePerformed;
 
-            // Подписки на смену оружия
+
             _input.Player.Weapon1.performed += OnWeapon1Performed;
             _input.Player.Weapon2.performed += OnWeapon2Performed;
             _input.Player.ScrollWeapon.performed += OnScrollPerformed;
             
-            // Подписка на выброс оружия
-            _input.Player.DropWeapon.performed += OnDropWeaponPerformed; // <--- Добавили
+
+            _input.Player.DropWeapon.performed += OnDropWeaponPerformed;
         }
 
         public void Dispose()
         {
             _input.Player.Disable();
 
-            // Корректно отписываемся от тех же самых методов
+
             _input.Player.Jump.performed -= OnJumpPerformed;
             _input.Player.Reload.performed -= OnReloadPerformed;
             _input.Player.Melee.performed -= OnMeleePerformed;
@@ -57,14 +57,11 @@ namespace TpsShooter.Services.Input
             _input.Player.Weapon2.performed -= OnWeapon2Performed;
             _input.Player.ScrollWeapon.performed -= OnScrollPerformed;
             
-            // Отписка от выброса оружия
-            _input.Player.DropWeapon.performed -= OnDropWeaponPerformed; // <--- Добавили
+            _input.Player.DropWeapon.performed -= OnDropWeaponPerformed;
             
-            // Очищаем сам объект инпута
             _input.Dispose();
         }
 
-        // --- Обработчики событий ---
         private void OnJumpPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnJump?.Invoke();
         private void OnReloadPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnReload?.Invoke();
         private void OnMeleePerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnMelee?.Invoke();
@@ -75,11 +72,10 @@ namespace TpsShooter.Services.Input
         private void OnScrollPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
         {
             float scrollY = ctx.ReadValue<Vector2>().y;
-            if (scrollY > 0) OnWeaponScroll?.Invoke(1);      // Скролл вверх -> Следующее оружие
-            else if (scrollY < 0) OnWeaponScroll?.Invoke(-1); // Скролл вниз -> Предыдущее оружие
+            if (scrollY > 0) OnWeaponScroll?.Invoke(1);
+            else if (scrollY < 0) OnWeaponScroll?.Invoke(-1);
         }
 
-        // <--- Обработчик для выброса оружия
         private void OnDropWeaponPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => OnDropWeapon?.Invoke();
     }
 }

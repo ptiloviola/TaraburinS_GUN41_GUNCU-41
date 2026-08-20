@@ -9,7 +9,6 @@ namespace TpsShooter.UI.Presenters
         private readonly ExtractionPoint _model;
         private readonly ExtractionUIView _view;
 
-        // Zenject сам прокинет сюда компоненты со сцены
         public ExtractionUIPresenter(ExtractionPoint model, ExtractionUIView view)
         {
             _model = model;
@@ -18,7 +17,7 @@ namespace TpsShooter.UI.Presenters
 
         public void Initialize()
         {
-            _view.Hide(); // Прячем UI на старте
+            _view.Hide();
             
             _model.OnActivated += HandleActivated;
             _model.OnTimeExpired += HandleDeactivated;
@@ -37,7 +36,6 @@ namespace TpsShooter.UI.Presenters
 
         public void Tick()
         {
-            // Обновляем текст только если точка активна
             if (_model.IsActive)
             {
                 _view.UpdateTime(_model.TimeRemaining);

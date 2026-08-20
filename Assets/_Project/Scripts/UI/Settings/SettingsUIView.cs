@@ -21,14 +21,12 @@ namespace TpsShooter.UI.Settings
 
         private void Awake()
         {
-            // Подписываем UI элементы на трансляцию событий
             _masterSlider.onValueChanged.AddListener(val => OnMasterVolumeChanged?.Invoke(val));
             _musicSlider.onValueChanged.AddListener(val => OnMusicVolumeChanged?.Invoke(val));
             _sfxSlider.onValueChanged.AddListener(val => OnSFXVolumeChanged?.Invoke(val));
             _closeButton.onClick.AddListener(() => OnCloseClicked?.Invoke());
         }
 
-        // Метод для начальной установки ползунков без вызова событий
         public void InitializeSliders(float master, float music, float sfx)
         {
             _masterSlider.SetValueWithoutNotify(master);

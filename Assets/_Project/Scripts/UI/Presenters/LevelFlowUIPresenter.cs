@@ -17,7 +17,7 @@ namespace TpsShooter.UI.Presenters
 
         public void Initialize()
         {
-            _view.Hide(); // Прячем панель на старте
+            _view.Hide();
             _flowManager.OnVictoryTransition += HandleVictory;
         }
 
