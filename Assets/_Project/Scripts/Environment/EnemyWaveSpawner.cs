@@ -1,10 +1,11 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using Zenject;
 using TpsShooter.Enemies.Configs;
 using TpsShooter.Enemies.Core;
-using TpsShooter.Services.Progress; // Для связи с глобальным прогрессом
+using TpsShooter.Services.Progress; 
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace TpsShooter.Environment
 {
@@ -19,26 +20,21 @@ namespace TpsShooter.Environment
     {
         [Header("Wave Settings")]
         [SerializeField] private LevelWavesConfig _wavesConfig;
-        
-        [Tooltip("Точки на уровне, где будут появляться враги")]
         [SerializeField] private Transform[] _spawnPoints;
 
         [Header("Routes Library")]
         [SerializeField] private PatrolRoute[] _patrolRoutes;
 
         [Header("Difficulty Scaling")]
-        [Tooltip("На сколько дополнительных врагов увеличивается спавн за каждый пройденный уровень")]
         [SerializeField] private float _extraEnemiesPerLevel = 1.5f;
 
         private IEnemyFactory _enemyFactory;
         private GameProgressService _progressService; 
 
-        // Отслеживание живых врагов для победы
         private int _totalEnemiesToSpawn = 0;
         private int _enemiesSpawned = 0;
         private int _enemiesDead = 0;
         
-        // ТО САМОЕ СОБЫТИЕ, КОТОРОЕ ИЩЕТ LevelFlowManager
         public event Action OnAllEnemiesDefeated; 
 
         [Inject]
@@ -50,14 +46,11 @@ namespace TpsShooter.Environment
 
         private void Start()
         {
-            if (_wavesConfig == null || _spawnPoints == null || _spawnPoints.Length == 0)
-            {
-                Debug.LogError("[EnemyWaveSpawner] Не назначен конфиг волн или точки спавна!");
-                return;
-            }
+            if (_wavesConfig == null || _spawnPoints == null || _spawnPoints.Length == 0) return;
 
             CalculateTotalEnemies();
-            StartCoroutine(SpawnWavesRoutine());
+            
+            SpawnWavesAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         private void CalculateTotalEnemies()
@@ -69,34 +62,29 @@ namespace TpsShooter.Environment
             {
                 foreach (var group in wave.Enemies)
                 {
-                    int scaledCount = group.Count + Mathf.FloorToInt(levelScale * _extraEnemiesPerLevel);
-                    _totalEnemiesToSpawn += scaledCount;
+                    _totalEnemiesToSpawn += group.Count + Mathf.FloorToInt(levelScale * _extraEnemiesPerLevel);
                 }
             }
-            DevLogger.Log($"<color=green>[Spawner]</color> Уровень {_progressService.CurrentLevel}. Всего врагов к спавну: {_totalEnemiesToSpawn}");
         }
 
-        private IEnumerator SpawnWavesRoutine()
+        private async UniTaskVoid SpawnWavesAsync(CancellationToken token)
         {
             int levelScale = _progressService.CurrentLevel - 1;
 
             for (int waveIndex = 0; waveIndex < _wavesConfig.Waves.Count; waveIndex++)
             {
                 WaveData currentWave = _wavesConfig.Waves[waveIndex];
-                yield return new WaitForSeconds(currentWave.StartDelay);
+                
+                await UniTask.Delay(TimeSpan.FromSeconds(currentWave.StartDelay), cancellationToken: token);
 
                 foreach (EnemySpawnData enemyGroup in currentWave.Enemies)
                 {
                     int scaledCount = enemyGroup.Count + Mathf.FloorToInt(levelScale * _extraEnemiesPerLevel);
-                    int bonusEnemies = scaledCount - enemyGroup.Count;
-
-                    // <--- ДОБАВЛЕН ПОДРОБНЫЙ ЛОГ --->
-                    DevLogger.Log($"<color=cyan>[Spawner]</color> Спавн волны {waveIndex + 1}. Врагов: {scaledCount} (База: {enemyGroup.Count} | Бонус за уровень: +{bonusEnemies})");
 
                     for (int i = 0; i < scaledCount; i++)
                     {
                         SpawnEnemy(enemyGroup);
-                        yield return new WaitForSeconds(currentWave.SpawnInterval);
+                        await UniTask.Delay(TimeSpan.FromSeconds(currentWave.SpawnInterval), cancellationToken: token);
                     }
                 }
             }
@@ -117,21 +105,24 @@ namespace TpsShooter.Environment
             EnemyBrain spawnedEnemy = _enemyFactory.Create(spawnData.BasePrefab, spawnData.Config, randomPoint.position, randomPoint.rotation, selectedRoute);
             _enemiesSpawned++;
 
-            // Подписываемся на смерть каждого заспавненного врага
             if (spawnedEnemy.Health != null)
             {
-                spawnedEnemy.Health.OnDeath += HandleEnemyDeath;
+                Action deathHandler = null;
+                deathHandler = () => 
+                {
+                    spawnedEnemy.Health.OnDeath -= deathHandler;
+                    HandleEnemyDeath();
+                };
+                
+                spawnedEnemy.Health.OnDeath += deathHandler;
             }
         }
 
         private void HandleEnemyDeath()
         {
             _enemiesDead++;
-            DevLogger.Log($"<color=yellow>[Spawner]</color> Враг убит. {_enemiesDead} / {_totalEnemiesToSpawn}");
-
             if (_enemiesDead >= _totalEnemiesToSpawn && _enemiesSpawned == _totalEnemiesToSpawn)
             {
-                DevLogger.Log($"<color=yellow>[Spawner]</color> ВСЕ ВРАГИ УНИЧТОЖЕНЫ!");
                 OnAllEnemiesDefeated?.Invoke();
             }
         }

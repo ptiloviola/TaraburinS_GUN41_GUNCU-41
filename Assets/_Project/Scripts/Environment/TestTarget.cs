@@ -1,10 +1,14 @@
 using UnityEngine;
 using TpsShooter.Combat;
+using Cysharp.Threading.Tasks;
+using System;
 
 namespace TpsShooter.Environment
 {
     public class TestTarget : MonoBehaviour, IDamageable
     {
+        private const float BlinkDuration = 0.1f;
+
         private Renderer _renderer;
         private Color _originalColor;
 
@@ -20,15 +24,19 @@ namespace TpsShooter.Environment
             
             if (_renderer != null)
             {
-                // При попадании кубик на долю секунды будет мигать красным
-                _renderer.material.color = Color.red;
-                Invoke(nameof(ResetColor), 0.1f);
+                BlinkRedAsync().Forget();
             }
         }
 
-        private void ResetColor()
+        private async UniTaskVoid BlinkRedAsync()
         {
-            if (_renderer != null) _renderer.material.color = _originalColor;
+            _renderer.material.color = Color.red;
+            await UniTask.Delay(TimeSpan.FromSeconds(BlinkDuration));
+            
+            if (_renderer != null) 
+            {
+                _renderer.material.color = _originalColor;
+            }
         }
     }
 }

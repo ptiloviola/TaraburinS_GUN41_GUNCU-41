@@ -13,14 +13,30 @@ namespace TpsShooter.Environment
         [Header("Animation Settings")]
         [Tooltip("Итоговый размер модели после появления")]
         [SerializeField] private Vector3 _targetScale = new Vector3(2f, 2f, 2f);
+        [Tooltip("Время появления (DOScale)")]
+        [SerializeField] private float _scaleDuration = 1f;
+        
         [Tooltip("Сила эффекта пульсации")]
         [SerializeField] private Vector3 _punchScale = new Vector3(0.3f, 0.3f, 0.3f);
-        
-        [Header("Visuals")]
+        [Tooltip("Длительность одного цикла пульсации")]
+        [SerializeField] private float _punchDuration = 1f;
+        [Tooltip("Количество вибраций при пульсации")]
+        [SerializeField] private int _punchVibrato = 2;
+        [Tooltip("Эластичность пульсации (от 0 до 1)")]
+        [SerializeField] private float _punchElasticity = 0.5f;
+
+        [Header("Visuals & Lighting")]
         [SerializeField] private Transform _visualModel; 
         [SerializeField] private Light _glowLight;
+        [Tooltip("Максимальная интенсивность света")]
+        [SerializeField] private float _glowIntensity = 5f;
+        [Tooltip("Скорость набора интенсивности")]
+        [SerializeField] private float _glowDuration = 1f;
+        [Tooltip("Целевой цвет свечения")]
+        [SerializeField] private Color _glowColor = Color.cyan;
+        [Tooltip("Скорость пульсации цвета")]
+        [SerializeField] private float _colorDuration = 2f;
 
-        // <--- ДОБАВЛЕНО АУДИО --->
         [Header("Audio")]
         [SerializeField] private AudioSource _sirenAudio;
 
@@ -39,10 +55,9 @@ namespace TpsShooter.Environment
 
             OnActivated?.Invoke();
 
-            // Включаем сирену
             if (_sirenAudio != null)
             {
-                _sirenAudio.pitch = 1f; // Базовый тон
+                _sirenAudio.pitch = 1f; 
                 _sirenAudio.Play();
             }
 
@@ -51,9 +66,10 @@ namespace TpsShooter.Environment
                 _visualModel.DOKill(); 
                 _visualModel.localScale = Vector3.zero;
                 
-                _visualModel.DOScale(_targetScale, 1f).SetEase(Ease.OutBounce).OnComplete(() => 
+                _visualModel.DOScale(_targetScale, _scaleDuration).SetEase(Ease.OutBounce).OnComplete(() => 
                 {
-                    _visualModel.DOPunchScale(_punchScale, 1f, 2, 0.5f).SetLoops(-1, LoopType.Yoyo);
+                    _visualModel.DOPunchScale(_punchScale, _punchDuration, _punchVibrato, _punchElasticity)
+                                .SetLoops(-1, LoopType.Yoyo);
                 });
             }
 
@@ -61,8 +77,8 @@ namespace TpsShooter.Environment
             {
                 _glowLight.DOKill();
                 _glowLight.intensity = 0f;
-                _glowLight.DOIntensity(5f, 1f);
-                _glowLight.DOColor(Color.cyan, 2f).SetLoops(-1, LoopType.Yoyo);
+                _glowLight.DOIntensity(_glowIntensity, _glowDuration);
+                _glowLight.DOColor(_glowColor, _colorDuration).SetLoops(-1, LoopType.Yoyo);
             }
         }
 
@@ -72,17 +88,16 @@ namespace TpsShooter.Environment
 
             TimeRemaining -= Time.deltaTime;
 
-            // <--- НАГНЕТАНИЕ НАПРЯЖЕНИЯ (ПОВЫШАЕМ ПИТЧ С 1.0 ДО 1.5 К КОНЦУ) --->
             if (_sirenAudio != null)
             {
-                float timeRatio = 1f - (TimeRemaining / _timeLimit); // От 0 до 1
+                float timeRatio = 1f - (TimeRemaining / _timeLimit); 
                 _sirenAudio.pitch = Mathf.Lerp(1f, 1.5f, timeRatio);
             }
 
             if (TimeRemaining <= 0)
             {
                 IsActive = false;
-                _sirenAudio?.Stop(); // Выключаем при провале
+                _sirenAudio?.Stop(); 
                 OnTimeExpired?.Invoke();
             }
         }
@@ -94,7 +109,7 @@ namespace TpsShooter.Environment
             if (other.GetComponent<PlayerFacade>() != null)
             {
                 IsActive = false;
-                _sirenAudio?.Stop(); // Выключаем при успехе
+                _sirenAudio?.Stop(); 
                 OnPlayerExtracted?.Invoke();
             }
         }

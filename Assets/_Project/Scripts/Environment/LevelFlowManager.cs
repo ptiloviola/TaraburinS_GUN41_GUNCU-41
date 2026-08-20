@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using Zenject;
 using TpsShooter.Player;
 using TpsShooter.Services.Progress;
 using TpsShooter.Services.SceneManagement;
-using TpsShooter.Audio; // <-- Добавлено
+using TpsShooter.Audio;
+using Cysharp.Threading.Tasks;
 
 namespace TpsShooter.Environment
 {
@@ -14,6 +14,8 @@ namespace TpsShooter.Environment
         [Header("Extraction Settings")]
         [Tooltip("Возможные точки появления эвакуации")]
         [SerializeField] private Transform[] _extractionSpawnLocations;
+        [Tooltip("Задержка перед перезагрузкой уровня после победы")]
+        [SerializeField] private float _victoryTransitionDelay = 3f;
 
         public event Action<int> OnVictoryTransition;
 
@@ -23,7 +25,6 @@ namespace TpsShooter.Environment
         private GameProgressService _progressService;
         private SceneLoaderService _sceneLoader;
         
-        // <--- СЕРВИС АУДИО --->
         private IAudioService _audioService;
 
         [Inject]
@@ -33,7 +34,7 @@ namespace TpsShooter.Environment
             GameProgressService progressService,
             SceneLoaderService sceneLoader,
             ExtractionPoint extractionPoint,
-            IAudioService audioService) // <-- Инъекция
+            IAudioService audioService)
         {
             _player = player;
             _waveSpawner = waveSpawner;
@@ -54,10 +55,9 @@ namespace TpsShooter.Environment
 
             _player.Health.OnDeath += HandleDefeat;
             _waveSpawner.OnAllEnemiesDefeated += ActivateExtraction;
-            // Запускаем сразу оба трека одновременно
+
             _audioService?.StartDynamicMusic("Music_Calm", "Music_Combat");
             
-            // Убеждаемся, что мы принудительно стартуем в мирном слепке
             _audioService?.SetCombatMusicState(false);
         }
 
@@ -76,19 +76,18 @@ namespace TpsShooter.Environment
 
         private void HandleVictory()
         {
-            // <--- КРИК РАДОСТИ ПРИ ЭВАКУАЦИИ --->
             _audioService?.PlaySFX("Player_Joy", _player.transform.position);
 
             _progressService.NextLevel();
             int nextLevel = _progressService.CurrentLevel;
             
             OnVictoryTransition?.Invoke(nextLevel);
-            StartCoroutine(VictoryTransitionRoutine());
+            VictoryTransitionAsync().Forget();
         }
 
-        private IEnumerator VictoryTransitionRoutine()
+        private async UniTaskVoid VictoryTransitionAsync()
         {
-            yield return new WaitForSeconds(3f);
+            await UniTask.Delay(TimeSpan.FromSeconds(_victoryTransitionDelay));
             _sceneLoader.ReloadCurrentScene(); 
         }
 

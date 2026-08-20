@@ -29,7 +29,6 @@ namespace TpsShooter.Environment
         {
             if (_levelConfig == null || _spawnPoints.Length == 0) return;
 
-            // Копируем список точек и перемешиваем (Алгоритм Фишера-Йетса)
             List<Transform> availablePoints = new List<Transform>(_spawnPoints);
             Shuffle(availablePoints);
 
@@ -53,13 +52,12 @@ namespace TpsShooter.Environment
             }
         }
 
-        // Метод для случайного перемешивания массива
         private void Shuffle(List<Transform> list)
         {
             for (int i = list.Count - 1; i > 0; i--)
             {
                 int j = Random.Range(0, i + 1);
-                (list[i], list[j]) = (list[j], list[i]); // Меняем местами
+                (list[i], list[j]) = (list[j], list[i]);
             }
         }
     }
