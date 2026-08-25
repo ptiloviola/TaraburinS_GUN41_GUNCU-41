@@ -15,7 +15,6 @@ namespace TpsShooter.Enemies.Core
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyBrain : MonoBehaviour, IDamageable
     {
-        
         public NavMeshAgent Agent { get; private set; }
         public EnemyConfig Config { get; private set; }
         
@@ -49,7 +48,6 @@ namespace TpsShooter.Enemies.Core
         {
             Agent = GetComponent<NavMeshAgent>();
             StateMachine = new EnemyStateMachine();
-            Sensor = new EnemySensor(this);
             Animator = GetComponentInChildren<EnemyAnimator>();
 
             Sensor = new EnemySensor(this);
@@ -66,7 +64,7 @@ namespace TpsShooter.Enemies.Core
             
             if (CombatHandler == null)
             {
-                Debug.LogError($"<color=red>[EnemyBrain]</color> На префабе {gameObject.name} нет скрипта боевки (IEnemyCombatHandler)!");
+                DevLogger.LogError($"<color=red>[EnemyBrain]</color> На префабе {gameObject.name} нет скрипта боевки (IEnemyCombatHandler)!");
             }
         }
 
@@ -124,7 +122,11 @@ namespace TpsShooter.Enemies.Core
         private void OnDestroy()
         {
             if (Health != null) Health.OnDeath -= Die;
-            if (Sensor != null) Sensor.OnHeardNoise -= HandleNoiseHeard;
+            if (Sensor != null) 
+            {
+                Sensor.OnHeardNoise -= HandleNoiseHeard;
+                Sensor.Dispose();
+            }
             _footstepAudio?.Dispose();
         }
 
@@ -133,7 +135,7 @@ namespace TpsShooter.Enemies.Core
             StateMachine.ChangeState(new EnemyDeadState(this));
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (Config == null) return;

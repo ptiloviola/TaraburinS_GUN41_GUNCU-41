@@ -6,11 +6,8 @@ namespace TpsShooter.Enemies.States
     public class EnemyCombatState : IEnemyState
     {
         private const float TurnSpeed = 10f;
-
         private readonly EnemyBrain _brain;
         private float _lastAttackTime;
-        
-        private static int _enemiesInCombat = 0; 
 
         public Color StateGizmoColor => Color.red;
 
@@ -24,15 +21,19 @@ namespace TpsShooter.Enemies.States
             DevLogger.Log("<color=red>[EnemyState]</color> Переход в CombatState");
             _brain.Agent.speed = _brain.Config.ChaseSpeed;
             
-            _enemiesInCombat++;
-            if (_enemiesInCombat == 1)
-            {
-                _brain.AudioService?.SetCombatMusicState(true);
-            }
+            // ИСПРАВЛЕНИЕ: Вызываем сервис, а не локальный static счетчик
+            _brain.AudioService?.AddCombatant();
         }
 
         public void Tick()
         {
+            // ИСПРАВЛЕНИЕ: Не бьем труп. Если игрок умер — возвращаемся в патруль
+            if (_brain.Target == null || _brain.Target.Health.IsDead)
+            {
+                _brain.StateMachine.ChangeState(new EnemyWaypointPatrolState(_brain));
+                return;
+            }
+
             if (!_brain.Sensor.IsTargetVisible)
             {
                 _brain.StateMachine.ChangeState(new EnemySearchState(_brain));
@@ -62,12 +63,7 @@ namespace TpsShooter.Enemies.States
 
         public void Exit() 
         {
-            _enemiesInCombat--;
-            if (_enemiesInCombat <= 0)
-            {
-                _enemiesInCombat = 0; 
-                _brain.AudioService?.SetCombatMusicState(false);
-            }
+            _brain.AudioService?.RemoveCombatant();
         }
 
         private void LookAtTarget()

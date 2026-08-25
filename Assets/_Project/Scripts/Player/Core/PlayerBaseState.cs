@@ -48,8 +48,6 @@ namespace TpsShooter.Player.States
                 Ctx.Velocity.y = StickToGroundVelocity; 
             }
 
-            Ctx.Controller.Move(Ctx.Velocity * deltaTime);
-
             Ctx.Animator.SetBool(IsGroundedHash, Ctx.GroundSensor.IsGrounded);
             
             Ctx.Animator.SetBool(IsMovingHash, Ctx.Input.MoveAxis.sqrMagnitude > InputThreshold);

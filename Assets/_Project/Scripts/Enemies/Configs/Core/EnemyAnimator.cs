@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace TpsShooter.Enemies.Core
 {
@@ -6,6 +7,7 @@ namespace TpsShooter.Enemies.Core
     public class EnemyAnimator : MonoBehaviour
     {
         private Animator _animator;
+        private NavMeshAgent _agent;
 
         private static readonly int IdleHash = Animator.StringToHash("Idle");
         private static readonly int WalkHash = Animator.StringToHash("Walk");
@@ -27,6 +29,7 @@ namespace TpsShooter.Enemies.Core
         private void Awake()
         {
             _animator = GetComponent<Animator>();
+            _agent = GetComponentInParent<NavMeshAgent>();
         }
 
         private void Update()
@@ -39,18 +42,24 @@ namespace TpsShooter.Enemies.Core
                     PlayLooping(_currentLoopingAnim);
                 }
             }
+
+
+            if (_agent != null && _lockTime <= 0 && (_currentLoopingAnim == WalkHash || _currentLoopingAnim == RunHash))
+            {
+                float speedRatio = _agent.speed > 0.1f ? (_agent.velocity.magnitude / _agent.speed) : 0f;
+                _animator.speed = Mathf.Max(0.1f, speedRatio);
+            }
+            else
+            {
+                _animator.speed = 1f;
+            }
         }
 
         public void PlayIdle() { _currentLoopingAnim = IdleHash; PlayLooping(IdleHash); }
         public void PlayWalk() { _currentLoopingAnim = WalkHash; PlayLooping(WalkHash); }
         public void PlayRun()  { _currentLoopingAnim = RunHash; PlayLooping(RunHash); }
 
-        public void PlayCustomIdle(string stateName)
-        {
-            int hash = Animator.StringToHash(stateName);
-            _currentLoopingAnim = hash;
-            PlayLooping(hash);
-        }
+        public void PlayCustomIdle(string stateName) { PlayCustomLooping(stateName); }
 
         public void PlayCustomLooping(string stateName)
         {
@@ -84,7 +93,6 @@ namespace TpsShooter.Enemies.Core
         public void PlayHit() 
         { 
             if (_lockTime > 0) return; 
-
             PlayOneShot(HitHash, HitLockTime, FastCrossfade);
         }
         
@@ -96,6 +104,7 @@ namespace TpsShooter.Enemies.Core
 
         private void PlayOneShot(int hash, float lockDuration, float transitionTime)
         {
+            _animator.speed = 1f;
             _animator.CrossFadeInFixedTime(hash, transitionTime);
             _lastPlayedHash = hash; 
             _lockTime = lockDuration;

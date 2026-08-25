@@ -188,10 +188,11 @@ namespace TpsShooter.Player
                 _interactionSensor?.Tick();
                 _stateMachine?.Tick(deltaTime);
 
+                // ИСПРАВЛЕНИЕ: Перенесли обновление пушки и камеры сюда.
+                // Теперь мертвый игрок не может ни стрелять, ни крутить головой.
+                _weaponController?.Tick(deltaTime);
+                _cameraController?.Tick(deltaTime);
             }
-
-            _weaponController?.Tick(deltaTime);
-            _cameraController?.Tick(deltaTime);
         }
 
         private void OnDestroy()

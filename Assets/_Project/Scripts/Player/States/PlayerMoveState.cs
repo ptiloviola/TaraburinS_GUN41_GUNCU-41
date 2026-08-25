@@ -13,6 +13,7 @@ namespace TpsShooter.Player.States
 
         public override void Tick(float deltaTime)
         {
+
             base.Tick(deltaTime);
             
             if (Ctx.Input.IsRollTriggered)
@@ -22,13 +23,9 @@ namespace TpsShooter.Player.States
             }
 
             Vector2 input = Ctx.Input.MoveAxis;
-            
-
             Vector3 inputDir = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
 
-
             float targetSpeed = Ctx.Input.IsRunning ? Ctx.Config.RunSpeed : Ctx.Config.MoveSpeed;
-
 
             Vector3 camForward = Ctx.CameraTransform.forward;
             camForward.y = 0f;
@@ -47,13 +44,22 @@ namespace TpsShooter.Player.States
                 Ctx.Transform.rotation = Quaternion.Euler(0f, angle, 0f);
             }
 
-            Vector3 currentVelocity = moveDir * targetSpeed;
-            Ctx.Controller.Move(currentVelocity * deltaTime);
 
-            Vector3 localVelocity = Ctx.Transform.InverseTransformDirection(currentVelocity);
+            Vector3 horizontalVelocity = moveDir * targetSpeed;
+            Vector3 finalVelocity = horizontalVelocity;
+            
 
-            float animX = localVelocity.x / Ctx.Config.MoveSpeed;
-            float animZ = localVelocity.z / Ctx.Config.MoveSpeed;
+            finalVelocity.y = Ctx.Velocity.y; 
+
+
+            Ctx.Controller.Move(finalVelocity * deltaTime);
+
+
+            Vector3 localVelocity = Ctx.Transform.InverseTransformDirection(horizontalVelocity);
+
+
+            float animX = localVelocity.x / Ctx.Config.RunSpeed;
+            float animZ = localVelocity.z / Ctx.Config.RunSpeed;
 
             Ctx.Animator.SetFloat(MoveXHash, animX, AnimDampTime, deltaTime);
             Ctx.Animator.SetFloat(MoveYHash, animZ, AnimDampTime, deltaTime);
@@ -80,7 +86,6 @@ namespace TpsShooter.Player.States
 
         public override void HandleJump()
         {
-
             DevLogger.Log($"[Jump Triggered] in {this.GetType().Name}. isGrounded = {Ctx.GroundSensor.IsGrounded}");
 
             if (Ctx.GroundSensor.IsGrounded)

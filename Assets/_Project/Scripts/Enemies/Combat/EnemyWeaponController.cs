@@ -79,7 +79,6 @@ namespace TpsShooter.Enemies.Combat
             
             Vector3 targetVelocity = Vector3.zero;
             if (target.TryGetComponent(out CharacterController cc)) targetVelocity = cc.velocity;
-            
 
             float timeToHit = distance / _config.ProjectileSpeed;
             Vector3 predictedPoint = targetCenter + (targetVelocity * timeToHit);
@@ -92,7 +91,9 @@ namespace TpsShooter.Enemies.Combat
             float maxRayDistance = distance * MaxRayDistanceMultiplier;
             Vector3 tracerEndPoint = fireOrigin + shootDirection * maxRayDistance;
 
-            if (Physics.SphereCast(fireOrigin, SphereCastRadius, shootDirection, out RaycastHit hit, maxRayDistance))
+            int layerMask = _config.TargetMask | _config.ObstacleMask;
+
+            if (Physics.SphereCast(fireOrigin, SphereCastRadius, shootDirection, out RaycastHit hit, maxRayDistance, layerMask))
             {
                 tracerEndPoint = hit.point;
                 IDamageable targetDamageable = hit.collider.GetComponentInParent<IDamageable>();

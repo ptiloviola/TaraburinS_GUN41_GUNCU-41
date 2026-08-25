@@ -13,5 +13,8 @@ namespace TpsShooter.Audio
         void SetCombatMusicState(bool isCombat);
 
         void SetExtractionMusicState();
+
+        void AddCombatant();
+        void RemoveCombatant();
     }
 }

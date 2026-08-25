@@ -8,7 +8,6 @@ namespace TpsShooter.Enemies.States
     public class EnemyBackstepState : IEnemyState
     {
         private const float TurnSpeed = 30f; 
-        private const float ReachTolerance = 0.5f;
         
         private readonly EnemyBrain _brain;
         private readonly MeleeEnemyConfig _meleeConfig;
@@ -25,44 +24,32 @@ namespace TpsShooter.Enemies.States
 
         public void Enter()
         {
-            DevLogger.Log("<color=cyan>[EnemyState]</color> ТАКТИЧЕСКИЙ ОТХОД (Backstep)");
-            
             if (_meleeConfig == null)
             {
                 _brain.StateMachine.ChangeState(new EnemyMeleeCombatState(_brain));
                 return;
             }
 
-            _brain.Agent.speed = _meleeConfig.BackstepSpeed;
+            // ИСПРАВЛЕНИЕ: Выключаем автоматическое вращение агента,
+            // но мы больше НЕ используем SetDestination, чтобы не было "кривых" лунных походок
             _brain.Agent.updateRotation = false; 
             _brain.Agent.isStopped = false;
 
             _timer = _meleeConfig.BackstepDuration;
-
-            Vector3 backDirection = -_brain.transform.forward;
-            Vector3 targetPosition = _brain.transform.position + backDirection * _meleeConfig.BackstepDistance;
-
-            if (NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, _meleeConfig.BackstepDistance, NavMesh.AllAreas))
-            {
-                _brain.Agent.SetDestination(hit.position);
-            }
-            else
-            {
-                _brain.Agent.SetDestination(_brain.transform.position);
-            }
-
             _brain.Animator?.PlayCustomLooping(_meleeConfig.BackstepAnimState);
         }
 
         public void Tick()
         {
             _timer -= Time.deltaTime;
-
             LookAtTarget();
 
-            bool hasReached = !_brain.Agent.pathPending && _brain.Agent.remainingDistance <= ReachTolerance;
+            // ИСПРАВЛЕНИЕ: Принудительно двигаем агента строго назад с помощью Agent.Move().
+            // Так он не будет пытаться обойти препятствия боком, глядя на игрока.
+            Vector3 backDirection = -_brain.transform.forward;
+            _brain.Agent.Move(backDirection * _meleeConfig.BackstepSpeed * Time.deltaTime);
 
-            if (_timer <= 0f || hasReached)
+            if (_timer <= 0f)
             {
                 _brain.StateMachine.ChangeState(new EnemyMeleeCombatState(_brain));
             }
@@ -86,8 +73,6 @@ namespace TpsShooter.Enemies.States
             }
         }
 
-        public void OnDamageTaken() 
-        { 
-        }
+        public void OnDamageTaken() { }
     }
 }

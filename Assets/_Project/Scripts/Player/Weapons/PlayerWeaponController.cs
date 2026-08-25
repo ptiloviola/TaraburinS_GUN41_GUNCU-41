@@ -14,6 +14,10 @@ namespace TpsShooter.Player.Weapons
         private const float AimTargetDistance = 50f;
         private const float MaxRaycastDistance = 100f;
 
+        // ИСПРАВЛЕНИЕ: Кэшируем маску один раз при старте игры. 
+        // Поиск по строкам ("Player", "Ignore Raycast") больше не нагружает Update.
+        private static readonly int PlayerAndIgnoreMask = LayerMask.GetMask("Player", "Ignore Raycast");
+
         public WeaponBase CurrentWeapon { get; private set; }
         public bool IsArmed { get; private set; } = false; 
         public bool IsAiming { get; private set; } = false;
@@ -60,7 +64,8 @@ namespace TpsShooter.Player.Weapons
 
             if (IsArmed && CurrentWeapon != null && CurrentWeapon.Config != null)
             {
-                int safeMask = CurrentWeapon.Config.HitMask & ~LayerMask.GetMask("Player", "Ignore Raycast");
+                // ИСПРАВЛЕНИЕ: Используем закэшированную маску
+                int safeMask = CurrentWeapon.Config.HitMask & ~PlayerAndIgnoreMask;
 
                 if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out RaycastHit camHit, MaxRaycastDistance, safeMask))
                 {

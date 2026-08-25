@@ -13,8 +13,6 @@ namespace TpsShooter.Enemies.States
         
         private float _lastAttackTime = 0f;
         private bool _isAttacking = false;
-        
-        private static int _enemiesInCombat = 0; 
 
         public Color StateGizmoColor => Color.red;
 
@@ -31,12 +29,18 @@ namespace TpsShooter.Enemies.States
             _brain.Agent.stoppingDistance = _brain.Config.AttackRange; 
             _isAttacking = false;
             
-            _enemiesInCombat++;
-            if (_enemiesInCombat == 1) _brain.AudioService?.SetCombatMusicState(true);
+            _brain.AudioService?.AddCombatant();
         }
 
         public void Tick()
         {
+            // ИСПРАВЛЕНИЕ: Проверка на мертвого игрока
+            if (_brain.Target == null || _brain.Target.Health.IsDead)
+            {
+                _brain.StateMachine.ChangeState(new EnemyWanderPatrolState(_brain));
+                return;
+            }
+
             if (!_brain.Sensor.IsTargetVisible)
             {
                 _brain.StateMachine.ChangeState(new EnemySearchState(_brain));
@@ -45,7 +49,6 @@ namespace TpsShooter.Enemies.States
 
             float distance = Vector3.Distance(_brain.transform.position, _brain.Target.transform.position);
             float timeSinceAttack = Time.time - _lastAttackTime;
-
 
             if (_isAttacking)
             {
@@ -67,16 +70,13 @@ namespace TpsShooter.Enemies.States
             if (distance <= _brain.Config.AttackRange && timeSinceAttack >= _brain.Config.AttackCooldown)
             {
                 _brain.Agent.isStopped = true;
-                
                 _isAttacking = true;
                 _lastAttackTime = Time.time;
-                
                 _brain.CombatHandler?.PerformAttack(_brain.Target, _brain.Animator);
             }
             else if (!_isAttacking)
             {
                 if (_brain.Agent.isStopped) _brain.Agent.isStopped = false;
-                
                 _brain.Animator?.PlayRun(); 
                 _brain.Agent.SetDestination(_brain.Target.transform.position);
             }
@@ -87,12 +87,7 @@ namespace TpsShooter.Enemies.States
             _brain.Agent.updateRotation = true;
             if (!_brain.Agent.isStopped) _brain.Agent.isStopped = true;
             
-            _enemiesInCombat--;
-            if (_enemiesInCombat <= 0)
-            {
-                _enemiesInCombat = 0;
-                _brain.AudioService?.SetCombatMusicState(false);
-            }
+            _brain.AudioService?.RemoveCombatant();
         }
 
         private void LookAtTarget()

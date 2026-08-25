@@ -87,15 +87,17 @@ namespace TpsShooter.Environment
 
         private async UniTaskVoid VictoryTransitionAsync()
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(_victoryTransitionDelay));
-            _sceneLoader.ReloadCurrentScene().Forget();; 
+            // ИСПРАВЛЕНИЕ: Добавили cancellationToken. Если компонент удалится (смена сцены/выход в меню), 
+            // этот таймер прервется и не выдаст ошибку NullReference.
+            await UniTask.Delay(TimeSpan.FromSeconds(_victoryTransitionDelay), cancellationToken: this.GetCancellationTokenOnDestroy());
+            _sceneLoader.ReloadCurrentScene().Forget();
         }
 
         private void HandleDefeat()
         {
             _sceneLoader.SetPause(true);
             _progressService.ResetProgress();
-            _sceneLoader.LoadScene("MainMenu").Forget();;
+            _sceneLoader.LoadScene("MainMenu").Forget();
         }
 
         private void OnDestroy()

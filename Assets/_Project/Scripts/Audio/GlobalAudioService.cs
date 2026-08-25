@@ -13,6 +13,7 @@ namespace TpsShooter.Audio
         private Transform _poolRoot;
         private List<AudioSource> _sfxPool;
         private int _poolSize = 20;
+        private int _combatantsCount = 0;
 
         private Dictionary<AudioGroup, AudioMixerGroup> _mixerGroups;
 
@@ -183,8 +184,28 @@ namespace TpsShooter.Audio
             source.Play();
         }
 
+        public void AddCombatant()
+        {
+            _combatantsCount++;
+            if (_combatantsCount == 1) SetCombatMusicState(true);
+        }
+
+        public void RemoveCombatant()
+        {
+            _combatantsCount--;
+            if (_combatantsCount <= 0)
+            {
+                _combatantsCount = 0;
+                SetCombatMusicState(false);
+            }
+        }
+
+
+
         public void SetLowpassFilter(bool isActive) { }
         public void SetGroupVolume(AudioGroup group, float volume) { }
         public void Dispose() { }
+
+
     }
 }
