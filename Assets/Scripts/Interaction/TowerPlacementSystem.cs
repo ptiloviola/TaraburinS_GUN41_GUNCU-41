@@ -13,7 +13,7 @@ namespace Gameplay.Interaction
     public class TowerPlacementSystem : ITickable, IInitializable 
     {
         private readonly IGridService _gridService;
-        private readonly GridGenerator _gridGenerator;
+        private readonly GridSceneReferences _sceneReferences; // ИЗМЕНЕНО
         private readonly Camera _mainCamera;
         private readonly Settings _settings;
         private readonly IInstantiator _instantiator;
@@ -40,7 +40,7 @@ namespace Gameplay.Interaction
 
         public TowerPlacementSystem(
             IGridService gridService, 
-            GridGenerator gridGenerator, 
+            GridSceneReferences sceneReferences, // ИЗМЕНЕНО
             Settings settings,
             IInstantiator instantiator,
             BankService bankService,
@@ -48,7 +48,7 @@ namespace Gameplay.Interaction
             TowerFactory towerFactory)
         {
             _gridService = gridService;
-            _gridGenerator = gridGenerator;
+            _sceneReferences = sceneReferences; // ИЗМЕНЕНО
             _settings = settings;
             _instantiator = instantiator;
             _bankService = bankService;
@@ -59,7 +59,6 @@ namespace Gameplay.Interaction
 
         public void Initialize()
         {
-            // Фабрикуем объекты один раз через Zenject
             var valid = _instantiator.InstantiatePrefab(_settings.ValidCursorPrefab);
             var invalid = _instantiator.InstantiatePrefab(_settings.InvalidCursorPrefab);
             var radius = _instantiator.InstantiatePrefab(_settings.RadiusIndicatorPrefab);
@@ -68,7 +67,6 @@ namespace Gameplay.Interaction
             invalid.SetActive(false);
             radius.SetActive(false);
 
-            // Создаем наш вспомогательный визуализатор
             _visualizer = new PlacementVisualizer(valid, invalid, radius, _settings.HeightOffset);
         }
 
@@ -112,8 +110,9 @@ namespace Gameplay.Interaction
 
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, _settings.GridLayerMask))
             {
-                int gridX = Mathf.RoundToInt(hit.transform.position.x / _gridGenerator.Spacing);
-                int gridZ = Mathf.RoundToInt(hit.transform.position.z / _gridGenerator.Spacing);
+                // ИЗМЕНЕНО: Используем Spacing из GridSceneReferences
+                int gridX = Mathf.RoundToInt(hit.transform.position.x / _sceneReferences.Spacing);
+                int gridZ = Mathf.RoundToInt(hit.transform.position.z / _sceneReferences.Spacing);
                 Vector2Int gridPos = new Vector2Int(gridX, gridZ);
 
                 bool isCellFree = _gridService.CanBuildAt(gridPos);
@@ -126,7 +125,6 @@ namespace Gameplay.Interaction
                 {
                     Vector3 spawnPosition = new Vector3(hit.collider.transform.position.x, hit.collider.bounds.max.y, hit.collider.transform.position.z);
                     
-                    // Делегируем постройку фабрике!
                     if (_towerFactory.TryBuildTower(_selectedTowerData, gridPos, spawnPosition))
                     {
                         _visualizer.UpdateVisuals(hit.collider.transform.position, hit.collider.bounds.max.y, false); 

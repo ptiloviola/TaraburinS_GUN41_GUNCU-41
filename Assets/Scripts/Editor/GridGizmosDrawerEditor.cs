@@ -4,38 +4,31 @@ using Gameplay.Grid;
 
 namespace Gameplay.Editor
 {
-    [CustomEditor(typeof(GridGenerator))]
-    public class GridGeneratorEditor : UnityEditor.Editor
+    [CustomEditor(typeof(GridGizmosDrawer))]
+    public class GridGizmosDrawerEditor : UnityEditor.Editor
     {
-        // 1. Режимы нашей кисточки
-        public enum BrushMode { PaintGround, PaintPath, PaintObstacle, 
-        PaintSpawn, PaintBase, RaiseElevation, LowerElevation }
+        public enum BrushMode { PaintGround, PaintPath, PaintObstacle, PaintSpawn, PaintBase, RaiseElevation, LowerElevation }
         private BrushMode _currentBrushMode = BrushMode.PaintPath;
 
-        // 2. Рисуем интерфейс прямо в Инспекторе Unity
         public override void OnInspectorGUI()
         {
-            // Отрисовка стандартных полей (чтобы spacing и префабы остались видны)
             DrawDefaultInspector();
 
-            GridGenerator generator = (GridGenerator)target;
-            GridConfig config = generator.EditorConfig;
+            GridGizmosDrawer drawer = (GridGizmosDrawer)target;
+            GridConfig config = drawer.EditorConfig;
 
             EditorGUILayout.Space(10);
             
-            // --- НОВАЯ КНОПКА ИНИЦИАЛИЗАЦИИ ---
             if (GUILayout.Button("🛠 Создать / Сбросить матрицу сетки", GUILayout.Height(30)))
             {
                 if (config != null)
                 {
-                    // Создаем новый массив нужного размера
                     config.rows = new GridRow[config.width];
                     for (int x = 0; x < config.width; x++)
                     {
                         config.rows[x].columns = new GridCellData[config.height];
                         for (int z = 0; z < config.height; z++)
                         {
-                            // Заполняем дефолтными значениями (Плоская Земля)
                             config.rows[x].columns[z] = new GridCellData { elevation = 0, type = NodeType.Ground };
                         }
                     }
@@ -47,13 +40,13 @@ namespace Gameplay.Editor
 
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("🖌 Инструменты Левел-Дизайнера", EditorStyles.boldLabel);
-            // КНОПКИ КИСТОЧЕК (Сгруппированы по логике)
+            
             GUILayout.BeginHorizontal();
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintPath, "Дорога (Желтая)", "Button")) _currentBrushMode = BrushMode.PaintPath;
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintGround, "Земля (Голубая)", "Button")) _currentBrushMode = BrushMode.PaintGround;
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintObstacle, "Препятствие (Красное)", "Button")) _currentBrushMode = BrushMode.PaintObstacle;
             GUILayout.EndHorizontal();
-            // НОВЫЕ КНОПКИ ДЛЯ СПАВНА И БАЗЫ
+            
             GUILayout.BeginHorizontal();
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintSpawn, "Спавн (Пурпур)", "Button")) _currentBrushMode = BrushMode.PaintSpawn;
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.PaintBase, "База (Синий)", "Button")) _currentBrushMode = BrushMode.PaintBase;
@@ -64,19 +57,21 @@ namespace Gameplay.Editor
             if (GUILayout.Toggle(_currentBrushMode == BrushMode.LowerElevation, "Опустить (-)", "Button")) _currentBrushMode = BrushMode.LowerElevation;
             GUILayout.EndHorizontal();
             
-            EditorGUILayout.HelpBox("Выделите GridGenerator и рисуйте по сетке в окне Scene. ЛКМ = Рисовать.", MessageType.Info);
+            EditorGUILayout.HelpBox("Выделите объект с GridGizmosDrawer и рисуйте по сетке в окне Scene. ЛКМ = Рисовать.", MessageType.Info);
         }
 
         private void OnSceneGUI()
         {
-            GridGenerator generator = (GridGenerator)target;
-            GridConfig config = generator.EditorConfig;
+            GridGizmosDrawer drawer = (GridGizmosDrawer)target;
+            GridConfig config = drawer.EditorConfig;
+            
+            // Получаем ссылки на сцену для расчета рейкаста
+            GridSceneReferences refs = drawer.GetComponent<GridSceneReferences>();
 
-            if (config == null || config.rows == null || config.rows.Length == 0) return;
+            if (config == null || config.rows == null || config.rows.Length == 0 || refs == null) return;
 
             Event e = Event.current;
 
-            // 3. Разрешаем рисовать кликом (MouseDown) ИЛИ зажатой кнопкой мыши (MouseDrag)
             if ((e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && e.button == 0)
             {
                 Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
@@ -85,10 +80,11 @@ namespace Gameplay.Editor
                 if (groundPlane.Raycast(ray, out float enter))
                 {
                     Vector3 hitPoint = ray.GetPoint(enter);
-                    float halfSpacing = generator.Spacing / 2f;
+                    float spacing = refs.Spacing;
+                    float halfSpacing = spacing / 2f;
                     
-                    int x = Mathf.FloorToInt((hitPoint.x + halfSpacing) / generator.Spacing);
-                    int z = Mathf.FloorToInt((hitPoint.z + halfSpacing) / generator.Spacing);
+                    int x = Mathf.FloorToInt((hitPoint.x + halfSpacing) / spacing);
+                    int z = Mathf.FloorToInt((hitPoint.z + halfSpacing) / spacing);
 
                     if (x >= 0 && x < config.width && z >= 0 && z < config.height)
                     {
@@ -101,18 +97,15 @@ namespace Gameplay.Editor
             }
             else if (e.type == EventType.MouseUp && e.button == 0)
             {
-                // Отпускаем контроль мыши
                 GUIUtility.hotControl = 0;
             }
         }
 
         private void ApplyBrush(GridConfig config, int x, int z)
         {
-            // Используем безопасный метод чтения
             GridCellData cellData = config.GetCellData(x, z);
             bool isChanged = false;
 
-            // Применяем логику в зависимости от выбранной кисти
             switch (_currentBrushMode)
             {
                 case BrushMode.PaintPath:
@@ -124,7 +117,6 @@ namespace Gameplay.Editor
                 case BrushMode.PaintObstacle:
                     if (cellData.type != NodeType.Obstacle) { cellData.type = NodeType.Obstacle; isChanged = true; }
                     break;
-                // НОВЫЕ РЕЖИМЫ КИСТИ:
                 case BrushMode.PaintSpawn:
                     if (cellData.type != NodeType.Spawn) { cellData.type = NodeType.Spawn; isChanged = true; }
                     break;
@@ -139,12 +131,9 @@ namespace Gameplay.Editor
                     break;
             }
 
-            // Если мы действительно что-то перекрасили/изменили
             if (isChanged)
             {
-                // Используем безопасный метод записи! IDE больше ругаться не будет.
                 config.SetCellData(x, z, cellData);
-                
                 EditorUtility.SetDirty(config); 
                 SceneView.RepaintAll();
             }

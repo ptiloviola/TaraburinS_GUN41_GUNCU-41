@@ -16,6 +16,7 @@ using Gameplay.Units.Data;
 using Gameplay.Towers.Factories;
 using Gameplay.Interaction;
 using Gameplay.Projectiles;
+using Infrastructure.Levels;
 
 namespace Infrastructure.Installers
 {
@@ -132,7 +133,28 @@ namespace Infrastructure.Installers
             Container.Bind<BaseCore>().FromComponentInHierarchy().AsSingle();
 
 
-            Container.Bind<GridGenerator>().FromComponentInHierarchy().AsSingle();
+
+            // --- GRID PIPELINE BINDINGS ---
+            // 1. Биндим ссылки на сцену и редакторный конфиг
+            Container.Bind<GridSceneReferences>().FromComponentInHierarchy().AsSingle();
+            // Если конфиг сетки нужно будет читать где-то еще, биндим и его:
+            Container.Bind<GridConfig>().FromInstance(gridConfig).AsSingle();
+
+            // 2. Биндим наши 4 этапа загрузки уровня к IInitializable
+            Container.BindInterfacesTo<GridDataInitializer>().AsSingle();
+            Container.BindInterfacesTo<GridVisualBuilder>().AsSingle();
+            Container.BindInterfacesTo<LevelEntitySpawner>().AsSingle();
+            Container.BindInterfacesTo<NavMeshBakeService>().AsSingle();
+
+            // 3. Жестко задаем порядок выполнения (как реле, строго друг за другом)
+            Container.BindExecutionOrder<GridDataInitializer>(-40);
+            Container.BindExecutionOrder<GridVisualBuilder>(-30);
+            Container.BindExecutionOrder<LevelEntitySpawner>(-20);
+            Container.BindExecutionOrder<NavMeshBakeService>(-10);
+            // ------------------------------
+
+
+
             
             
             // 1. Биндим настройки

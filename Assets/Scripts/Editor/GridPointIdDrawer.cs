@@ -15,10 +15,10 @@ namespace Gameplay.Editor
             // Получаем наш атрибут
             GridPointIdAttribute pointAttr = (GridPointIdAttribute)attribute;
 
-            // Ищем GridGenerator прямо на открытой сцене!
-            GridGenerator generator = Object.FindObjectOfType<GridGenerator>();
+            // ИЗМЕНЕНО: Ищем новый класс, который теперь хранит конфиг сетки на сцене
+            GridGizmosDrawer drawer = Object.FindObjectOfType<GridGizmosDrawer>();
 
-            if (generator != null && generator.EditorConfig != null)
+            if (drawer != null && drawer.EditorConfig != null)
             {
                 // Собираем список доступных ID
                 List<string> availableIds = new List<string>();
@@ -34,8 +34,8 @@ namespace Gameplay.Editor
                         property.stringValue = "[Ближайшая по пути]";
                 }
 
-                // Прочесываем флешку сетки
-                GridConfig config = generator.EditorConfig;
+                // ИЗМЕНЕНО: Берем конфиг из drawer
+                GridConfig config = drawer.EditorConfig;
                 for (int x = 0; x < config.width; x++)
                 {
                     for (int z = 0; z < config.height; z++)
@@ -62,7 +62,7 @@ namespace Gameplay.Editor
                 }
             }
 
-            // Фолбэк: Если генератор не найден, рисуем обычное текстовое поле
+            // Фолбэк: Если drawer не найден (например, открыли SO не на сцене), рисуем обычное текстовое поле
             EditorGUI.PropertyField(position, property, label);
         }
     }
