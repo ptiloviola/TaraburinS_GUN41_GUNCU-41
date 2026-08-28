@@ -438,11 +438,11 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 4
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -485,7 +485,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -528,7 +528,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -571,7 +571,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -614,7 +614,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -657,7 +657,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -700,7 +700,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -743,7 +743,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -786,7 +786,7 @@ MonoBehaviour:
     - elevation: 0
       type: 0
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
   - columns:
@@ -831,7 +831,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 4
+      type: 0
   - columns:
     - elevation: 0
       type: 0

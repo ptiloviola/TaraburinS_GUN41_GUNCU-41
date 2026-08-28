@@ -1,7 +1,6 @@
 using UnityEngine;
 using Zenject;
 using Infrastructure.Signals;
-using System;
 
 namespace Gameplay.Base
 {
@@ -10,8 +9,8 @@ namespace Gameplay.Base
         private readonly SignalBus _signalBus;
         private int _globalLives;
 
-        // Стартовые общие жизни (потом можно вынести в настройки уровня)
         private const int StartingLives = 20;
+        
         public int CurrentLives => _globalLives;
 
         public PlayerHealthService(SignalBus signalBus)
@@ -22,27 +21,27 @@ namespace Gameplay.Base
         public void Initialize()
         {
             _globalLives = StartingLives;
-            // Оповещаем UI о стартовых жизнях
-            _signalBus.Fire(new SignalBaseDamaged {CurrentLives = _globalLives });
+            _signalBus.Fire(new SignalBaseDamaged { CurrentLives = _globalLives });
         }
 
         public void TakeGlobalDamage(int amount)
         {
-            if (_globalLives <= 0) return; // Уже проиграли
+            if (_globalLives <= 0) return; 
 
             _globalLives -= amount;
             _signalBus.Fire(new SignalBaseDamaged { CurrentLives = _globalLives });
             
+#if UNITY_EDITOR
             Debug.Log($"<color=orange>[PlayerHealthService] Пропущен враг! Осталось глобальных жизней: {_globalLives}</color>");
+#endif
 
             if (_globalLives <= 0)
             {
                 _signalBus.Fire<SignalGameOver>();
+#if UNITY_EDITOR
                 Debug.Log("<color=red>[PlayerHealthService] ИГРА ОКОНЧЕНА (GAME OVER)!</color>");
+#endif
             }
         }
-
-
     }
 }
-

@@ -31,8 +31,8 @@ namespace Gameplay.UI
         private void OnDisable()
         {
             // ОБЯЗАТЕЛЬНО отписываемся, чтобы избежать ошибок утечки памяти
-            _signalBus.Unsubscribe<SignalBaseDamaged>(UpdateLivesText);
-            _signalBus.Unsubscribe<SignalBalanceChanged>(UpdateBalanceText);
+            _signalBus?.Unsubscribe<SignalBaseDamaged>(UpdateLivesText);
+            _signalBus?.Unsubscribe<SignalBalanceChanged>(UpdateBalanceText);
         }
 
         // Этот метод сработает АВТОМАТИЧЕСКИ, когда кто-то крикнет в эфир

@@ -25,6 +25,8 @@ namespace Gameplay.Spawning.Installers
             Container.Bind<BaseRegistry>().AsSingle();
             Container.Bind<SpawnRegistry>().AsSingle();
 
+            Container.Bind<BaseLocatorService>().AsSingle();
+
             // Фабрики для спавна маркеров/баз на этапе генерации уровня
             Container.BindFactory<BaseCore, BaseCore.Factory>()
                      .FromComponentInNewPrefab(_basePrefab).UnderTransformGroup("Bases");

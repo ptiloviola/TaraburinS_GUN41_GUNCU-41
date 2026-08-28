@@ -49,9 +49,9 @@ namespace Gameplay.UI
 
         private void OnDisable()
         {
-            _signalBus.TryUnsubscribe<SignalWaveTimerUpdated>(OnTimerUpdated);
-            _signalBus.TryUnsubscribe<SignalWaveStateChanged>(OnWaveStateChanged);
-            _signalBus.TryUnsubscribe<SignalWaveForecastUpdated>(OnForecastUpdated); // НОВОЕ
+            _signalBus?.TryUnsubscribe<SignalWaveTimerUpdated>(OnTimerUpdated);
+            _signalBus?.TryUnsubscribe<SignalWaveStateChanged>(OnWaveStateChanged);
+            _signalBus?.TryUnsubscribe<SignalWaveForecastUpdated>(OnForecastUpdated); // НОВОЕ
             
             _forceStartButton.onClick.RemoveListener(OnForceStartClicked);
         }

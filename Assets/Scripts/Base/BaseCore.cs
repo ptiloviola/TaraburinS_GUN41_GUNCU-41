@@ -1,59 +1,48 @@
 using UnityEngine;
 using Gameplay.Enemies;
-using Infrastructure.Signals; // Подключаем наши сигналы
+using Infrastructure.Signals;
 using Zenject;
-using Gameplay.Grid; // Подключаем доступ к сетке
-
-
 
 namespace Gameplay.Base
 {
-    // НОВОЕ: Перечисление режимы работы здоровья
     public enum BaseHealthMode { Global, Individual }
-    // Требуем, чтобы на объекте обязательно был коллайдер
+
     [RequireComponent(typeof(Collider))]
     public class BaseCore : MonoBehaviour
     {
         [Header("Настройки визуала")]
-        [Tooltip("Если база уходит под землю, увеличь этот параметр в Инспекторе ПРЕФАБА")]
         [SerializeField] private float _verticalOffset = 0.5f;
 
         [Header("Настройки Базы")]
-        public string BaseId = "MainBase"; // НОВОЕ ПОЛЕ
-
+        [SerializeField] private string _baseId = "MainBase";
 
         [Header("Настройки Здоровья")]
-        [Tooltip("Global = снимает общие жизни игрока. Individual = у базы свои ХП.")]
         [SerializeField] private BaseHealthMode _healthMode = BaseHealthMode.Global;
-
-        // Это поле работает только если выбран режим Individual
         [SerializeField] private int _individualLives = 20;
 
-
         private SignalBus _signalBus;
-        private BaseRegistry _baseRegistry; // НОВОЕ: Ссылка на реестр баз
-        private IGridService _gridService;
+        private BaseRegistry _baseRegistry;
+        private PlayerHealthService _playerHealthService;
 
-        private PlayerHealthService _playerHealthService; // НОВОЕ
+        private const int DefaultEnemyDamage = 1;
 
-        // Публичное свойство, чтобы GridGenerator мог прочитать, на сколько поднять базу
         public float VerticalOffset => _verticalOffset;
+        public string BaseId
+        {
+            get => _baseId;
+            set => _baseId = value;
+        }
 
-        // Внедряем SignalBus через Zenject
         [Inject]
-        public void Construct(SignalBus signalBus, BaseRegistry baseRegistry, 
-            PlayerHealthService playerHealthService)
+        public void Construct(SignalBus signalBus, BaseRegistry baseRegistry, PlayerHealthService playerHealthService)
         {
             _signalBus = signalBus;
             _baseRegistry = baseRegistry;
             _playerHealthService = playerHealthService;
         }
 
-        // НОВОЕ: Автоматическая регистрация при спавне
-        // ИСПРАВЛЕНИЕ: Меняем OnEnable/OnDisable на Start/OnDestroy
         private void Start()
         {
-            // Знак '?' спасает от ошибки, если база на сцене до инициализации Zenject
             _baseRegistry?.Register(this);
         }
 
@@ -62,59 +51,50 @@ namespace Gameplay.Base
             _baseRegistry?.Unregister(this);
         }
 
-
         private void OnTriggerEnter(Collider other)
         {
-
-            // Лог 1: Сработало ли вообще физическое касание?
-            Debug.Log($"<color=cyan>[BaseCore] Что-то коснулось базы! Имя объекта: {other.gameObject.name}</color>");
-            /// Лог 2: Пытаемся найти наш фасад на объекте
-            // Ищем фасад на самом объекте ИЛИ поднимаемся вверх до корня префаба
             EnemyFacade enemy = other.GetComponentInParent<EnemyFacade>();
 
             if (enemy != null)
             {
-                Debug.Log($"<color=green>[BaseCore] Нашли EnemyFacade на {enemy.gameObject.name}! Уничтожаем.</color>");
-                // Отнимаем жизнь и проверяем поражение
-                TakeDamage(1);
-                // НОВОЕ: Четко сообщаем системе, что враг дошел до финиша
+#if UNITY_EDITOR
+                Debug.Log($"<color=green>[BaseCore] Враг {enemy.gameObject.name} достиг базы. Уничтожаем.</color>");
+#endif
+                ProcessDamage(DefaultEnemyDamage);
                 _signalBus.Fire<SignalEnemyReachedBase>();
                 enemy.Despawn();
             }
             else
             {
-                // Лог 3: Касание было, но нужного скрипта нет ни тут, ни у родителей
+#if UNITY_EDITOR
                 Debug.LogWarning($"<color=red>[BaseCore] В базу врезалось что-то без EnemyFacade: {other.gameObject.name}!</color>");
+#endif
             }
         }
 
-        private void TakeDamage(int amount)
+        private void ProcessDamage(int amount)
         {
-            // --- НОВАЯ УМНАЯ ЛОГИКА ---
             if (_healthMode == BaseHealthMode.Global)
             {
-                // Передаем урон Глобальному менеджеру (UI не будет прыгать!)
                 _playerHealthService.TakeGlobalDamage(amount);
             }
             else
             {
-                // Режим независимой базы
                 _individualLives -= amount;
-                Debug.Log($"<color=orange>[BaseCore] База {BaseId} получила урон. Осталось личных жизней: {_individualLives}</color>");
-                
-                // Задел на будущее: 
-                // _signalBus.Fire(new SignalSpecificBaseDamaged { BaseId = this.BaseId, Lives = _individualLives });
+#if UNITY_EDITOR
+                Debug.Log($"<color=orange>[BaseCore] База {_baseId} получила урон. Осталось личных жизней: {_individualLives}</color>");
+#endif
                 
                 if (_individualLives <= 0)
                 {
-                    Debug.Log($"<color=red>[BaseCore] База {BaseId} УНИЧТОЖЕНА!</color>");
-                    // Здесь будет логика взрыва конкретной базы и удаления её с карты
+#if UNITY_EDITOR
+                    Debug.Log($"<color=red>[BaseCore] База {_baseId} УНИЧТОЖЕНА!</color>");
+#endif
                     Destroy(gameObject); 
                 }
             }
         }
 
-        // НОВОЕ: Паттерн Фабрики для создания префабов базы через Zenject
         public class Factory : PlaceholderFactory<BaseCore> { }
     }
 }
