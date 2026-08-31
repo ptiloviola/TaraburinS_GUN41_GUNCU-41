@@ -1,145 +1,155 @@
+using System;
 using UnityEngine;
+using UnityEngine.AI;
 using Zenject;
 using Gameplay.Core;
 using Infrastructure.Signals;
 using Gameplay.Enemies.Data;
-using UnityEngine.AI;
+using Gameplay.Enemies.FSM;
+using Gameplay.Base;
 
 namespace Gameplay.Enemies
 {
-
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyFacade : MonoBehaviour
     {
-        private IMovementStrategy _movementStrategy;
+        [Header("Компоненты")]
+        [SerializeField] private HealthComponent _health;
+        [SerializeField] private NavMeshAgent _agent;
+        [SerializeField] private Collider _collider;
+
         private Pool _pool;
         private SignalBus _signalBus;
-        private NavMeshAgent _agent;
+        private EnemyStateMachine _stateMachine;
+        private IMovementStrategy _movementStrategy;
 
-        // --- НОВОЕ: Ссылка на здоровье ---
-        [SerializeField] private HealthComponent _health;
-
-        // --- НОВОЕ: Статический счетчик ---
         private static int _spawnCounter = 0;
 
-        // Перечисление типов навигации врага
-        public enum MovementType { PathOnly, FreeRoam }
-        
-        [Header("Настройки навигации")]
-        [SerializeField] private MovementType _movementType = MovementType.PathOnly;
-
-        // Геттер, чтобы стратегия движения могла прочитать этот режим
-        public MovementType EnemyMovementType => _movementType;
-        // НОВОЕ: Свойство для доступа к конфигу (понадобится базе для расчета урона)
         public EnemyConfig Config { get; private set; }
+        public NavMeshAgent Agent => _agent;
+        public HealthComponent Health => _health;
+        public SignalBus SignalBus => _signalBus; // Чтобы стейты могли кидать сигналы
+        public IMovementStrategy MovementStrategy => _movementStrategy;
+        // --- СОБЫТИЯ ДЛЯ ВИЗУАЛА ---
+        public event Action<EnemyStateType> OnStateChanged;
 
-        // Магия Zenject: он сам вставит сюда ссылку на пул при инстанцировании префаба!
         [Inject]
         public void Construct(SignalBus signalBus)
         {
-            
             _signalBus = signalBus;
         }
 
-        // 2. НОВОЕ: Добавь этот метод. Режиссер вызовет его при спавне.
+        private void Awake()
+        {
+            if (_agent == null) _agent = GetComponent<NavMeshAgent>();
+            if (_health == null) _health = GetComponent<HealthComponent>();
+            if (_collider == null) _collider = GetComponent<Collider>();
+
+            // Создаем стейт-машину один раз
+            _stateMachine = new EnemyStateMachine();
+            
+            // Подписываемся на смену состояний, чтобы проксировать их наружу для аниматоров
+            _stateMachine.OnStateChanged += state => OnStateChanged?.Invoke(state);
+        }
+
         public void SetPool(Pool pool)
         {
             _pool = pool;
         }
 
-        // --- НОВОЕ: Ищем компонент, если забыли назначить в инспекторе ---
-        private void Awake()
-        {
-            // Кешируем компонент один раз при рождении объекта
-            _agent = GetComponent<NavMeshAgent>();
-            if (_health == null) _health = GetComponent<HealthComponent>();
-        }
-
-        // --- НОВОЕ: Подготовка врага при доставании из пула ---
         private void OnEnable()
         {
-            Debug.Log($"Родился {gameObject.name}");
-            // Каждое появление из пула увеличивает счетчик и меняет имя объекта
             _spawnCounter++;
             gameObject.name = $"Enemy_{_spawnCounter}";
             
+            // Включаем физику при спавне
+            _collider.enabled = true;
+            _agent.enabled = true;
+
             if (_health != null)
             {
-                // ИСПРАВЛЕНО: _health.Initialize() убрано отсюда, оно будет в InitConfig
-                _health.OnDied += HandleDeath; // Подписываемся на смерть
+                _health.OnDied += HandleDeath;
             }
         }
 
-        // --- НОВОЕ: Отписка при возврате в пул (защита от утечек памяти) ---
         private void OnDisable()
         {
             if (_health != null)
             {
                 _health.OnDied -= HandleDeath;
             }
+            _stateMachine.Cleanup();
         }
 
-        // НОВОЕ: Метод инициализации из конфига. Вызывается Режиссером при спавне.
         public void InitConfig(EnemyConfig config)
         {
             Config = config;
             if (_health != null)
             {
-                _health.Initialize(config.MaxHealth);
+                _health.Initialize(config.Stats.MaxHealth);
             }
-            _agent.speed = Config.MoveSpeed;
-            // добавить ангулар спид как у защитника
-
+            _agent.speed = Config.Movement.MoveSpeed;
         }
-
-
 
         public void InitializeMovement(IMovementStrategy movementStrategy)
         {
             _movementStrategy = movementStrategy;
             _movementStrategy.Initialize(this);
+
+            // Инициализируем стейты (мы создадим их на следующем шаге)
+            _stateMachine.AddState(new MoveState(this, _movementStrategy));
+            _stateMachine.AddState(new DeathState(this));
+            _stateMachine.AddState(new ReachedBaseState(this));
+            
+            // Стартуем логику!
+            _stateMachine.ChangeState(EnemyStateType.Move);
         }
 
         private void Update()
         {
-            // Обновляем логику только если стратегия назначена
-            if (_movementStrategy != null)
-            {
-                _movementStrategy.Tick(Time.deltaTime);
-            }
+            _stateMachine.Tick(Time.deltaTime);
         }
 
-        // --- НОВОЕ: Обработчик смерти ---
         private void HandleDeath()
         {
-            int reward = Config != null ? Config.RewardMoney : 10;
-            _signalBus.Fire(new SignalEnemyKilled { Reward = reward });
-            Despawn(); // Если ХП упало до нуля, просто возвращаем врага в пул
+            // Теперь Фасад не удаляет себя сам, он просто говорит машине: "Я умер"
+            // А DeathState отыграет анимацию и вызовет Despawn
+            _stateMachine.ChangeState(EnemyStateType.Death);
         }
 
-        public void Despawn()
+        public void ForceDespawn()
         {
             if (_pool != null)
             {
-                // Очищаем логику движения перед возвратом в пул
-                _movementStrategy = null;
-                
-                
-                
                 _agent.enabled = false;
-                
-
-                // MonoMemoryPool сам сделает gameObject.SetActive(false)!
                 _pool.Despawn(this);
             }
             else
             {
-                Debug.LogError($"[EnemyFacade] Пул потерян, жестко удаляем {gameObject.name}");
                 Destroy(gameObject);
             }
         }
 
-        // Простой, чистый пул без лишних параметров
+        private void OnTriggerEnter(Collider other)
+        {
+            // Защита: если враг уже умирает, игнорируем новые касания
+            if (_stateMachine.CurrentStateType == EnemyStateType.ReachedBase || 
+                _stateMachine.CurrentStateType == EnemyStateType.Death) return;
+
+            BaseCore baseCore = other.GetComponentInParent<BaseCore>();
+
+            if (baseCore != null)
+            {
+                // Враг сам бьет базу на основе СВОЕГО конфига
+                baseCore.TakeDamage(Config.Stats.DamageToBase);
+                
+                // Сигнал переехал сюда (мы ведь удалили его из базы)
+                _signalBus.Fire<SignalEnemyReachedBase>();
+                
+                _stateMachine.ChangeState(EnemyStateType.ReachedBase);
+            }
+        }
+
         public class Pool : MonoMemoryPool<EnemyFacade> { }
     }
 }

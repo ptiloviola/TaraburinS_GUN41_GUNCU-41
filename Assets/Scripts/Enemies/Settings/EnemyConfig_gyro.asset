@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55426c75f7b57784495fa19a16c35695, type: 3}
-  m_Name: EnemyConfig_jumper
+  m_Name: EnemyConfig_gyro
   m_EditorClassIdentifier: 
-  EnemyId: jumper
-  DisplayName: jumper
-  UIIcon: {fileID: 21300000, guid: 553d8739bcc6da149ae6d6cbe0b74e18, type: 3}
-  Prefab: {fileID: 5250815434494493359, guid: dc0455a21480a764aac72c24a4b202a6, type: 3}
+  EnemyId: gyro
+  DisplayName: gyro
+  UIIcon: {fileID: 21300000, guid: ebde0c3be9fefe34784289044efe9219, type: 3}
+  Prefab: {fileID: 6421098652743678490, guid: 65c3614e836d8494b86c7f34067439f5, type: 3}
   Stats:
     MaxHealth: 100
     DamageToBase: 1
-    RewardMoney: 15
-  Movement: {fileID: 11400000, guid: c42722ae624517f42a6cd536729d9adc, type: 2}
+    RewardMoney: 20
+  Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}

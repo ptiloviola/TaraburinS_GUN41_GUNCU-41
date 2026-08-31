@@ -221,7 +221,7 @@ namespace Gameplay.Spawning
                 
                 if (targetBase != null)
                 {
-                    IMovementStrategy movement = new NavMeshMovement(targetBase.transform.position);
+                    IMovementStrategy movement = config.Movement.CreateStrategy(targetBase.transform.position);
                     enemy.InitializeMovement(movement);
                 }
                 else

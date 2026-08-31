@@ -16,7 +16,8 @@ MonoBehaviour:
   DisplayName: sphere
   UIIcon: {fileID: 21300000, guid: 32fd088693d2fef4786097e06e33ed3e, type: 3}
   Prefab: {fileID: 4288731326268897973, guid: 5775723e01e29184ca5b3ece358be6f5, type: 3}
-  MaxHealth: 100
-  MoveSpeed: 4.5
-  DamageToBase: 1
-  RewardMoney: 15
+  Stats:
+    MaxHealth: 100
+    DamageToBase: 1
+    RewardMoney: 15
+  Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}

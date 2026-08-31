@@ -1,31 +1,30 @@
 using UnityEngine;
-using UnityEngine.AI;
 using DG.Tweening;
+using Gameplay.Enemies.Data.Movement;
 
 namespace Gameplay.Enemies.Visuals
 {
-    public class JumperAnimator : MonoBehaviour
+    public class JumperAnimator : EnemyVisualsBase
     {
-        [Header("Настройки времени и высоты")]
+        [Header("Компоненты")]
         [SerializeField] private Transform _visualMesh;
-        [SerializeField] private float _jumpDuration = 0.6f; // Время самого прыжка (полет)
-        [SerializeField] private float _pauseDuration = 0.4f; // НОВОЕ: Время отдыха на земле между прыжками
-        [SerializeField] private float _jumpHeight = 1.5f;
         
         [Header("Настройки деформации")]
+        [SerializeField] private float _jumpHeight = 1.5f;
         [SerializeField] private float _squashAmount = 0.5f;
         [SerializeField] private float _stretchAmount = 1.5f;
 
-        private NavMeshAgent _agent;
         private Sequence _jumpSequence;
         private Vector3 _initialScale;
         private Vector3 _initialLocalPos;
+        private DiscreteMovementStrategy _discreteStrategy;
+        private DiscreteMovementConfig _config;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (_visualMesh == null) _visualMesh = transform.Find("Visual");
-            _agent = GetComponent<NavMeshAgent>();
-
+            
             if (_visualMesh != null)
             {
                 _initialScale = _visualMesh.localScale;
@@ -33,69 +32,80 @@ namespace Gameplay.Enemies.Visuals
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (_visualMesh != null)
             {
                 _visualMesh.localScale = _initialScale;
                 _visualMesh.localPosition = _initialLocalPos;
-                _visualMesh.localRotation = Quaternion.identity;
-
-                StartJumpAnimation();
             }
         }
 
-        private void StartJumpAnimation()
+        protected override void OnDisable()
         {
+            base.OnDisable();
+            if (_discreteStrategy != null)
+            {
+                _discreteStrategy.OnJumpStart -= PlayJumpAnimation;
+                _discreteStrategy = null;
+            }
+            KillSequence();
+        }
+
+        protected override void OnMoveStart()
+        {
+            // Пытаемся достать дискретную стратегию и её конфиг
+            if (Facade.Config.Movement is DiscreteMovementConfig config)
+            {
+                _config = config;
+                // Чтобы получить саму стратегию, нам нужно добавить публичный геттер в Фасад.
+                // В EnemyFacade.cs добавь: public IMovementStrategy MovementStrategy => _movementStrategy;
+                _discreteStrategy = Facade.MovementStrategy as DiscreteMovementStrategy;
+
+                if (_discreteStrategy != null)
+                {
+                    _discreteStrategy.OnJumpStart += PlayJumpAnimation;
+                }
+            }
+        }
+
+        private void PlayJumpAnimation()
+        {
+            KillSequence();
+            if (_visualMesh == null || _config == null) return;
+
             _jumpSequence = DOTween.Sequence();
 
             Vector3 squashScale = new Vector3(_initialScale.x * 1.3f, _initialScale.y * _squashAmount, _initialScale.z * 1.3f);
             Vector3 stretchScale = new Vector3(_initialScale.x * 0.8f, _initialScale.y * _stretchAmount, _initialScale.z * 0.8f);
 
-            // Для удобства разобьем время на логические отрезки
-            float prepTime = _jumpDuration * 0.15f;
-            float halfFlight = _jumpDuration * 0.35f;
-            float impactTime = _jumpDuration * 0.15f;
+            // Синхронизируем тайминги с логикой!
+            float halfFlight = _config.JumpDuration / 2f;
+            float impactTime = _config.PauseDuration * 0.3f; // Четверть паузы на сплющивание
+            float recoverTime = _config.PauseDuration * 0.7f; // Остаток на выпрямление
 
-            // 1. СЖАТИЕ ПЕРЕД ПРЫЖКОМ. Агент стоит на месте.
-            _jumpSequence.AppendCallback(() => SetAgentMovement(false));
-            _jumpSequence.Append(_visualMesh.DOScale(squashScale, prepTime).SetEase(Ease.InOutQuad));
-
-            // 2. ВЗЛЕТ И ПОЛЕТ. Даем команду агенту двигаться!
-            _jumpSequence.AppendCallback(() => SetAgentMovement(true));
+            // 1. ВЗЛЕТ И ПОЛЕТ
             _jumpSequence.Append(_visualMesh.DOScale(stretchScale, halfFlight).SetEase(Ease.OutSine));
             _jumpSequence.Join(_visualMesh.DOLocalMoveY(_initialLocalPos.y + _jumpHeight, halfFlight).SetEase(Ease.OutQuad));
 
-            // 3. ПАДЕНИЕ. Агент всё еще движется. Возвращаем нормальный масштаб в воздухе.
+            // 2. ПАДЕНИЕ
             _jumpSequence.Append(_visualMesh.DOScale(_initialScale, halfFlight).SetEase(Ease.InSine));
             _jumpSequence.Join(_visualMesh.DOLocalMoveY(_initialLocalPos.y, halfFlight).SetEase(Ease.InQuad));
 
-            // 4. ПРИЗЕМЛЕНИЕ И СЖАТИЕ ОТ УДАРА. Тормозим агента.
-            _jumpSequence.AppendCallback(() => SetAgentMovement(false));
+            // 3. ПРИЗЕМЛЕНИЕ И СЖАТИЕ (Начинается пауза в движении агента)
             _jumpSequence.Append(_visualMesh.DOScale(squashScale, impactTime).SetEase(Ease.OutQuad));
             
-            // 5. ВЫПРЯМЛЕНИЕ. Возврат в исходную форму.
-            _jumpSequence.Append(_visualMesh.DOScale(_initialScale, impactTime).SetEase(Ease.OutBack));
-
-            // 6. ПАУЗА. Стоим ровно на месте и ждем перед новым циклом.
-            _jumpSequence.AppendInterval(_pauseDuration);
-
-            _jumpSequence.SetLoops(-1, LoopType.Restart);
+            // 4. ВЫПРЯМЛЕНИЕ ВО ВРЕМЯ ПАУЗЫ
+            _jumpSequence.Append(_visualMesh.DOScale(_initialScale, recoverTime).SetEase(Ease.OutBack));
         }
 
-        private void SetAgentMovement(bool canMove)
+        private void KillSequence()
         {
-            if (_agent != null && _agent.isActiveAndEnabled && _agent.isOnNavMesh)
-            {
-                _agent.isStopped = !canMove;
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (_jumpSequence != null)
+            if (_jumpSequence != null && _jumpSequence.IsActive())
             {
                 _jumpSequence.Kill();
+                _jumpSequence = null;
             }
         }
     }

@@ -27,6 +27,11 @@ MonoBehaviour:
       SpawnInterval: 2
       SpawnPointId: Spawn_12_12
       TargetBaseId: Base_9_17
+    - EnemyId: gyro
+      Count: 2
+      SpawnInterval: 3
+      SpawnPointId: Spawn_1_2
+      TargetBaseId: Base_2_20
     ClearReward: 0
   - StartMode: 0
     ActiveWaveDuration: 5

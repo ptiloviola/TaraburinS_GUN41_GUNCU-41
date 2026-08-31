@@ -2,51 +2,49 @@ using UnityEngine;
 
 namespace Gameplay.Enemies.Visuals
 {
-    public class BallRoller : MonoBehaviour
+    public class BallRoller : EnemyVisualsBase
     {
-        private Transform _visualMesh; 
+        [Header("Визуал")]
+        [SerializeField] private Transform _visualMesh; 
+        
         private float _radius;
         private Vector3 _lastPosition;
+        private bool _isMoving;
 
-        private void Awake()
+        private const float DefaultRadius = 0.5f;
+
+        protected override void Awake()
         {
-            // Awake вызывается один раз при создании префаба. 
-            // Ищем компоненты здесь, чтобы не тратить ресурсы потом.
-            _visualMesh = transform.Find("Visual");
+            base.Awake(); // Обязательно вызываем метод базы для поиска Facade
             
-            SphereCollider sphereCollider = GetComponent<SphereCollider>();
-            if (sphereCollider != null)
-            {
-                _radius = sphereCollider.radius * transform.localScale.x; 
-            }
-            else
-            {
-                _radius = 0.5f; 
-            }
+            if (_visualMesh == null) _visualMesh = transform.Find("Visual");
 
-            if (_visualMesh == null)
-            {
-                Debug.LogError($"[BallRoller] На объекте {gameObject.name} не найден дочерний объект 'Visual'!");
-            }
+            SphereCollider sphereCollider = GetComponent<SphereCollider>();
+            _radius = sphereCollider != null ? sphereCollider.radius * transform.localScale.x : DefaultRadius;
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            // OnEnable вызывается КАЖДЫЙ РАЗ, когда враг достается из пула (pool.Spawn)
+            base.OnEnable(); // Подписка на FSM происходит здесь
             
-            // 1. Сбрасываем позицию, чтобы избежать бешеного вращения при телепортации на точку спавна
             _lastPosition = transform.position;
+            _isMoving = false;
 
-            // 2. Сбрасываем вращение самой модельки в дефолтное состояние (опционально, но выглядит аккуратнее)
             if (_visualMesh != null)
             {
                 _visualMesh.localRotation = Quaternion.identity;
             }
         }
 
+        // --- РЕАКЦИИ НА СМЕНУ СОСТОЯНИЙ ---
+        protected override void OnMoveStart() => _isMoving = true;
+        protected override void OnStunned() => _isMoving = false;
+        protected override void OnDeath() => _isMoving = false;
+        protected override void OnReachedBase() => _isMoving = false;
+
         private void Update()
         {
-            if (_visualMesh == null) return;
+            if (_visualMesh == null || !_isMoving) return;
 
             Vector3 movement = transform.position - _lastPosition;
             float distance = movement.magnitude;

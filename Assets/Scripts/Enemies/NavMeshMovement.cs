@@ -3,40 +3,56 @@ using UnityEngine.AI;
 
 namespace Gameplay.Enemies
 {
+    // Перенесли Enum из Фасада сюда, так как это относится к логике движения
+    public enum MovementType { PathOnly, FreeRoam }
+
     public class NavMeshMovement : IMovementStrategy
     {
         private NavMeshAgent _agent;
-        private Vector3 _targetPosition;
-        private EnemyFacade _enemy; // Ссылка на фасад
+        private readonly Vector3 _targetPosition;
+        private EnemyFacade _enemy;
+        private readonly MovementType _movementType;
 
-        // Передаем целевую точку через конструктор
-        public NavMeshMovement(Vector3 targetPosition)
+        // Избавляемся от магических строк!
+        private const string CustomPathArea = "CustomPath";
+        private const string CustomGroundArea = "CustomGround";
+
+        // Передаем настройки через конструктор (в будущем MovementType будем брать из конфига)
+        public NavMeshMovement(Vector3 targetPosition, MovementType movementType = MovementType.PathOnly)
         {
             _targetPosition = targetPosition;
+            _movementType = movementType;
         }
 
         public void Initialize(EnemyFacade enemy)
         {
             _enemy = enemy;
-            _agent = _enemy.GetComponent<NavMeshAgent>();
+            // У нашего фасада уже есть публичный геттер для агента, используем его
+            _agent = _enemy.Agent; 
 
             if (_agent != null)
             {
                 _agent.enabled = true;
 
-                // Получаем индексы наших кастомных зон
-                int pathArea = UnityEngine.AI.NavMesh.GetAreaFromName("CustomPath");
-                int groundArea = UnityEngine.AI.NavMesh.GetAreaFromName("CustomGround");
+                int pathArea = NavMesh.GetAreaFromName(CustomPathArea);
+                int groundArea = NavMesh.GetAreaFromName(CustomGroundArea);
 
-                // Настраиваем маску навигации с помощью битовых сдвигов (1 << индекс_зоны)
-                if (_enemy.EnemyMovementType == EnemyFacade.MovementType.PathOnly)
+                // Защита: если зоны в Unity не настроены, движок вернет -1. 
+                if (pathArea == -1 || groundArea == -1)
                 {
-                    // Агент видит ТОЛЬКО дорогу
+#if UNITY_EDITOR
+                    Debug.LogError($"[NavMeshMovement] Ошибка: Зоны '{CustomPathArea}' или '{CustomGroundArea}' не найдены в Navigation!");
+#endif
+                    pathArea = 0;
+                    groundArea = 0;
+                }
+
+                if (_movementType == MovementType.PathOnly)
+                {
                     _agent.areaMask = (1 << pathArea);
                 }
                 else
                 {
-                    // Агент видит и дорогу, и обычную землю вокруг
                     _agent.areaMask = (1 << pathArea) | (1 << groundArea);
                 }
                 
@@ -44,17 +60,18 @@ namespace Gameplay.Enemies
             }
             else
             {
-                Debug.LogError($"[NavMeshMovement] На объекте {_enemy.name} отсутствует компонент NavMeshAgent!");
+#if UNITY_EDITOR
+                Debug.LogError($"[NavMeshMovement] На объекте {_enemy.gameObject.name} отсутствует NavMeshAgent!");
+#endif
             }
         }
 
         public void Tick(float deltaTime)
         {
-            // Оставляем только базовую защиту от ошибок.
-            // Больше мы не проверяем remainingDistance!
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) 
                 return;
             
+            // Здесь в будущем может быть логика проверки замедлений или динамического перестроения маршрута
         }
     }
 }
