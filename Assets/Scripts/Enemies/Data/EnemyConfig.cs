@@ -1,5 +1,6 @@
 using UnityEngine;
 using Gameplay.Enemies.Data.Movement;
+using Gameplay.Enemies.Data.Death;
 
 namespace Gameplay.Enemies.Data
 {
@@ -29,8 +30,7 @@ namespace Gameplay.Enemies.Data
         // Сюда мы будем перетаскивать наши ContinuousMovementConfig или DiscreteMovementConfig
         public MovementConfig Movement; 
 
-        // Задел для Гусеницы (оставим закомментированным, чтобы ты видел логику расширения)
-        // [Header("Модуль: Поведение при смерти")]
-        // public DeathBehaviorConfig DeathBehavior;
+        [Header("Модуль: Поведение при смерти (Опционально)")]
+        public DeathBehaviorConfig DeathBehavior;
     }
 }

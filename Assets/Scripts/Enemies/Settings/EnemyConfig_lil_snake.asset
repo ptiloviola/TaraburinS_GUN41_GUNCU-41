@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55426c75f7b57784495fa19a16c35695, type: 3}
+  m_Name: EnemyConfig_lil_snake
+  m_EditorClassIdentifier: 
+  EnemyId: lil_snake
+  DisplayName: lil_snake
+  UIIcon: {fileID: 0}
+  Prefab: {fileID: 9188307815248283287, guid: f170fa41ae0e5ae42a62ebf7c2e6c763, type: 3}
+  Stats:
+    MaxHealth: 100
+    DamageToBase: 1
+    RewardMoney: 15
+  Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}
+  DeathBehavior: {fileID: 0}

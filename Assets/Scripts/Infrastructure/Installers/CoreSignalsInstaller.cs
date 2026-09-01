@@ -24,6 +24,8 @@ namespace Infrastructure.Installers
             Container.DeclareSignal<SignalEnemyReachedBase>();
             Container.DeclareSignal<SignalWaveForecastUpdated>();
 
+            Container.DeclareSignal<SignalSpawnEnemyRequest>();
+
             Debug.Log("<color=green>[Zenject] CoreSignalsInstaller: Сигналы успешно зарегистрированы.</color>");
         }
     }

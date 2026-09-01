@@ -27,8 +27,13 @@ MonoBehaviour:
       SpawnInterval: 2
       SpawnPointId: Spawn_12_12
       TargetBaseId: Base_9_17
+    - EnemyId: caterpillar
+      Count: 1
+      SpawnInterval: 3
+      SpawnPointId: Spawn_1_2
+      TargetBaseId: Base_18_4
     - EnemyId: gyro
-      Count: 2
+      Count: 0
       SpawnInterval: 3
       SpawnPointId: Spawn_1_2
       TargetBaseId: Base_2_20

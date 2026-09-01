@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55426c75f7b57784495fa19a16c35695, type: 3}
+  m_Name: EnemyConfig_caterpillar
+  m_EditorClassIdentifier: 
+  EnemyId: caterpillar
+  DisplayName: caterpillar
+  UIIcon: {fileID: 0}
+  Prefab: {fileID: 2746841710687665809, guid: 848d03498833dfe43ba4de1369516dbf, type: 3}
+  Stats:
+    MaxHealth: 100
+    DamageToBase: 1
+    RewardMoney: 15
+  Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}
+  DeathBehavior: {fileID: 11400000, guid: 62a206b8c68b6dd42bda2cfd8769a4eb, type: 2}

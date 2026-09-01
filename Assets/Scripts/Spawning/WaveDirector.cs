@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // НОВОЕ: Для проверки Any()
+using System.Linq;
 using UnityEngine;
 using Gameplay.Spawning.Data;
 using Zenject;
@@ -19,7 +19,7 @@ namespace Gameplay.Spawning
 
         private IWaveProvider _waveProvider;
         private SpawnRegistry _spawnRegistry;
-        private BaseRegistry _baseRegistry; // ВЕРНУЛИ: Чтобы проверять, есть ли базы на карте
+        private BaseRegistry _baseRegistry; 
         private BaseLocatorService _baseLocatorService; 
         private SignalBus _signalBus;
         private DiContainer _container; 
@@ -32,7 +32,7 @@ namespace Gameplay.Spawning
 
         [Inject]
         public void Construct(SpawnRegistry spawnRegistry, 
-            BaseRegistry baseRegistry, // ДОБАВЛЕНО
+            BaseRegistry baseRegistry, 
             BaseLocatorService baseLocatorService, SignalBus signalBus, DiContainer container,
             BankService bankService, EnemyTrackerService enemyTracker, 
             EnemyRegistry enemyRegistry)
@@ -57,12 +57,14 @@ namespace Gameplay.Spawning
         private void OnEnable()
         {
             _signalBus.Subscribe<SignalForceStartWave>(OnForceStartRequested);
+            // НОВОЕ: Подписываемся на запросы динамического спавна (от боссов)
+            _signalBus.Subscribe<SignalSpawnEnemyRequest>(OnSpawnEnemyRequested);
         }
 
         private void OnDisable()
         {
-            // ИСПРАВЛЕНО: Безопасная отписка, если _signalBus не успел заинжектиться
             _signalBus?.TryUnsubscribe<SignalForceStartWave>(OnForceStartRequested);
+            _signalBus?.TryUnsubscribe<SignalSpawnEnemyRequest>(OnSpawnEnemyRequested);
         }
 
         private void OnForceStartRequested()
@@ -70,11 +72,16 @@ namespace Gameplay.Spawning
             _isForceStartRequested = true;
         }
 
+        // НОВОЕ: Обработчик сигнала
+        private void OnSpawnEnemyRequested(SignalSpawnEnemyRequest request)
+        {
+            SpawnPhysicalEnemyAtPosition(request.EnemyId, request.Position, request.TargetBaseId);
+        }
+
         private IEnumerator DirectorRoutine()
         {
             Debug.Log("<color=cyan>[Director] Режиссер начал работу.</color>");
             
-            // ИСПРАВЛЕНО: Ждем, пока в реестре не появится хотя бы одна база
             while (!_baseRegistry.ActiveBases.Any())
             {
                 yield return new WaitForSeconds(0.1f);
@@ -187,6 +194,7 @@ namespace Gameplay.Spawning
             }
         }
 
+        // Этот метод остался для классических волн (ищет точку по ID)
         private void SpawnPhysicalEnemy(string enemyId, string spawnPointId, string targetBaseId)
         {
             if (!_spawnRegistry.TryGetSpawnPosition(spawnPointId, out Vector3 spawnPos))
@@ -194,6 +202,13 @@ namespace Gameplay.Spawning
                 Debug.LogWarning($"[Director] Спавн '{spawnPointId}' не найден, кидаем в 0,0,0");
                 spawnPos = Vector3.zero; 
             }
+            
+            SpawnPhysicalEnemyAtPosition(enemyId, spawnPos, targetBaseId);
+        }
+
+        // НОВОЕ: Переиспользуемый метод чистого спавна по вектору координат
+        private void SpawnPhysicalEnemyAtPosition(string enemyId, Vector3 spawnPos, string targetBaseId)
+        {
             try
             {
                 EnemyConfig config = _enemyRegistry.GetEnemyById(enemyId);
@@ -215,8 +230,13 @@ namespace Gameplay.Spawning
                 {
                     agent.Warp(spawnPos);
                 }
+
+                // Если босс не передал цель для своих осколков, направляем их на ближайшую базу
+                if (string.IsNullOrEmpty(targetBaseId))
+                {
+                    targetBaseId = BaseLocatorService.NearestByPathTag; 
+                }
                 
-                // ИСПРАВЛЕНО: Запрашиваем базу у нового локатора!
                 BaseCore targetBase = _baseLocatorService.LocateTargetBase(targetBaseId, spawnPos);
                 
                 if (targetBase != null)

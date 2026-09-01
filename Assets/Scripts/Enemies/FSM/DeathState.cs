@@ -25,6 +25,12 @@ namespace Gameplay.Enemies.FSM
             
             Facade.SignalBus.Fire(new SignalEnemyKilled { Reward = reward });
 
+            // --- НОВОЕ: Запускаем кастомную смерть, если она есть ---
+            if (Facade.Config.DeathBehavior != null)
+            {
+                Facade.Config.DeathBehavior.Execute(Facade);
+            }
+
             Facade.ForceDespawn();
         }
     }

@@ -132,20 +132,19 @@ namespace Gameplay.Enemies
 
         private void OnTriggerEnter(Collider other)
         {
-            // Защита: если враг уже умирает, игнорируем новые касания
             if (_stateMachine.CurrentStateType == EnemyStateType.ReachedBase || 
                 _stateMachine.CurrentStateType == EnemyStateType.Death) return;
 
-            BaseCore baseCore = other.GetComponentInParent<BaseCore>();
+            Gameplay.Base.BaseCore baseCore = other.GetComponentInParent<Gameplay.Base.BaseCore>();
 
             if (baseCore != null)
             {
-                // Враг сам бьет базу на основе СВОЕГО конфига
-                baseCore.TakeDamage(Config.Stats.DamageToBase);
+                int damage = Config.Stats.DamageToBase;
+                Debug.Log($"<color=orange>[EnemyFacade] {gameObject.name} коснулся базы! Пытаемся нанести {damage} урона.</color>");
                 
-                // Сигнал переехал сюда (мы ведь удалили его из базы)
+                baseCore.TakeDamage(damage);
+                
                 _signalBus.Fire<SignalEnemyReachedBase>();
-                
                 _stateMachine.ChangeState(EnemyStateType.ReachedBase);
             }
         }
