@@ -15,8 +15,8 @@ namespace Gameplay.Enemies
         private bool _isJumping;
 
         public event Action OnJumpStart;
+        public event Action OnPauseStart; // НОВОЕ СОБЫТИЕ: Начало "Сжатия"
 
-        // Константы для зон
         private const string CustomPathArea = "CustomPath";
         private const string CustomGroundArea = "CustomGround";
 
@@ -33,7 +33,6 @@ namespace Gameplay.Enemies
             {
                 _agent.enabled = true;
 
-                // --- ИСПРАВЛЕНИЕ 1: ВОЗВРАЩАЕМ МАСКУ ЗОН ---
                 int pathArea = NavMesh.GetAreaFromName(CustomPathArea);
                 int groundArea = NavMesh.GetAreaFromName(CustomGroundArea);
 
@@ -49,21 +48,17 @@ namespace Gameplay.Enemies
 
                 _agent.SetDestination(_targetPosition);
                 
-                // --- ИСПРАВЛЕНИЕ 2: УБИРАЕМ ИНЕРЦИЮ ---
-                // Чтобы агент не скользил, он должен разгоняться и тормозить моментально
                 _agent.acceleration = 10000f;
-                _agent.angularSpeed = 1000f; // Резкие повороты
+                _agent.angularSpeed = 1000f; 
                 _agent.autoBraking = false;
 
-                // Скорость рывка должна компенсировать простой
                 float totalCycleTime = _config.JumpDuration + _config.PauseDuration;
                 float speedMultiplier = totalCycleTime / _config.JumpDuration;
                 _agent.speed = enemy.Config.Movement.MoveSpeed * speedMultiplier;
 
-                // Стартуем с паузы
                 _isJumping = false;
                 _agent.isStopped = true;
-                _agent.velocity = Vector3.zero; // Жестко гасим скорость
+                _agent.velocity = Vector3.zero; 
                 _timer = _config.PauseDuration;
             }
         }
@@ -80,8 +75,10 @@ namespace Gameplay.Enemies
                 {
                     _isJumping = false;
                     _agent.isStopped = true; 
-                    _agent.velocity = Vector3.zero; // ИСПРАВЛЕНИЕ 2: Принудительный стоп без скольжения!
+                    _agent.velocity = Vector3.zero; 
                     _timer = _config.PauseDuration;
+                    
+                    OnPauseStart?.Invoke(); // Оповещаем: "Начинай сжиматься!"
                 }
             }
             else
@@ -92,7 +89,7 @@ namespace Gameplay.Enemies
                     _agent.isStopped = false; 
                     _timer = _config.JumpDuration;
                     
-                    OnJumpStart?.Invoke(); 
+                    OnJumpStart?.Invoke(); // Оповещаем: "Растягивайся и прыгай!"
                 }
             }
         }

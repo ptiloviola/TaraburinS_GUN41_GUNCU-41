@@ -20,5 +20,5 @@ MonoBehaviour:
     MaxHealth: 100
     DamageToBase: 1
     RewardMoney: 15
-  Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}
+  Movement: {fileID: 11400000, guid: 64b6d32b61aebca46b69b72d746d80a7, type: 2}
   DeathBehavior: {fileID: 11400000, guid: 62a206b8c68b6dd42bda2cfd8769a4eb, type: 2}

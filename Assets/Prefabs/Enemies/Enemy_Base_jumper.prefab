@@ -63,6 +63,16 @@ PrefabInstance:
       propertyPath: m_BaseOffset
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3055197869304941540, guid: e9092fab2080f1544b9357823f0a0817,
+        type: 3}
+      propertyPath: m_AgentTypeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055197869304941540, guid: e9092fab2080f1544b9357823f0a0817,
+        type: 3}
+      propertyPath: m_ObstacleAvoidanceType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4190784476696311094, guid: e9092fab2080f1544b9357823f0a0817,
         type: 3}
       propertyPath: m_Name
@@ -151,8 +161,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _visualMesh: {fileID: 1853565502715705452}
-  _jumpDuration: 1.7
-  _pauseDuration: 0.2
   _jumpHeight: 1.8
   _squashAmount: 0.2
   _stretchAmount: 1.7
