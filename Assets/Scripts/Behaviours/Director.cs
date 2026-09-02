@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Behaviours;
 using Netologia.Systems;
 using Netologia.TowerDefence.Settings;
@@ -41,19 +41,37 @@ namespace Netologia.TowerDefence.Behaviors
 		private Constants _constants;
 		
 		public static Director Instance { get; private set; }
+		public float Gold => _gold;
+
+		private float _directorLogCooldown;
 
 		private void Update()
 		{
 			if (!TimeManager.IsGame) return;
 			TimeManager.IncrementDeltaTime();
-			//Set all damage
-			_projectiles.ManualUpdate();
-			//Remove all targets
-			_units.ManualUpdate();
-			//Find new targets
+
+			_directorLogCooldown -= UnityEngine.Time.deltaTime;
+			if (_directorLogCooldown <= 0f)
+			{
+				_directorLogCooldown = 2f;
+				Debug.Log($"[Director] Heartbeat: HP={_playerHP}, Gold={_gold}, Units={_units?.CountActive}, Time={TimeManager.Time:F1}");
+			}
+
+			// 1. Итерируемся по башням
 			_towers.ManualUpdate();
+			// 2. Итерируемся по снарядам
+			_projectiles.ManualUpdate();
+			// 3. Итерируемся по врагам
+			_units.ManualUpdate();
+			// 4. Если ХП игрока закончилось - останавливаем игру и отыгрываем поражение
+			if (_playerHP <= 0)
+			{
+				_interface.GameLose();
+				return;
+			}
+
 			_interface.ManualUpdate();
-			//Last wave
+			// Last wave
 			if (_startFindWin && _units.CountActive == 0)
 				_interface.GameWin();
 		}
@@ -70,6 +88,7 @@ namespace Netologia.TowerDefence.Behaviors
 		{
 			_gold += value;
 			_interface.SetGold(_gold);
+			Debug.Log($"[Director] AddMoney(+{value})! Total gold: {_gold}");
 		}
 
 		private bool TryChangeGold(int value)

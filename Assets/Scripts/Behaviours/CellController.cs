@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Netologia.Systems;
 using Netologia.TowerDefence.Interface;
 using Netologia.TowerDefence.Settings;
@@ -83,12 +83,18 @@ namespace Netologia.TowerDefence.Behaviors
 		private void OnCreateTower(ElementalType obj)
 		{
 			var index = Array.FindIndex(_prefabs, t => t.AttackElemental == obj);
+			Debug.Log($"[CellController] OnCreateTower requested for {obj}, prefab index={index}");
 			if (OnTryGoldChanged.Invoke(-_prefabs[index].Progress[0].Cost))
 			{
 				var tower = _towers[_prefabs[index]].Get;
 				_current.SetTower(tower);
+				Debug.Log($"[CellController] Tower created: {tower.name}, active={tower.gameObject.activeSelf}, pos={tower.transform.position}, cellPos={_current.transform.position}, Range={tower.Range}, Level={tower.Level}");
 			
 				OnCloseBuildPanel();
+			}
+			else
+			{
+				Debug.LogWarning($"[CellController] Not enough gold to create tower {obj}!");
 			}
 		}
 

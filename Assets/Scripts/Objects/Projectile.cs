@@ -1,4 +1,4 @@
-﻿using Netologia.Behaviours;
+using Netologia.Behaviours;
 using UnityEngine;
 
 namespace Netologia.TowerDefence
@@ -25,20 +25,24 @@ namespace Netologia.TowerDefence
 		public int ID { get; set; }
 		
 		
-		public Vector3 TargetPosition => _endPosition ?? _target.transform.position;
+		public Vector3 TargetPosition => _endPosition ?? (_target != null ? _target.transform.position : transform.position);
 		public int TargetID { get; private set; } = -1;
 
 
 		public void DealDamage()
 		{
-			if (_endPosition.HasValue) return;
+			if (_endPosition.HasValue || _target == null) return;
 			
 			_target.CurrentHealth -= _damage;
 			_target.TryAddEffect(TimeManager.Time, _elementalType);
 		}
 		
 		public void ResetTarget()
-			=> (_endPosition, _target) = (_target.transform.position, null);
+		{
+			if (_target != null)
+				_endPosition = _target.transform.position;
+			_target = null;
+		}
 
 		public void PrepareData(Vector3 position, Unit target, float damage, ElementalType type)
 		{

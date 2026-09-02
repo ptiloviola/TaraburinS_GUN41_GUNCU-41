@@ -15,4 +15,4 @@ MonoBehaviour:
   <Preset>k__BackingField:
     Health: 15
     MoveSpeed: 1
-    Cost: 1
+    Cost: 5

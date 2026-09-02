@@ -30,6 +30,7 @@ namespace Netologia.Systems
 					var sqrDistance = Vector3.SqrMagnitude(projectile.transform.position - projectile.TargetPosition);
 					if (sqrDistance <= _hitDistance)
 					{
+						Debug.Log($"[ProjectileSystem] Projectile {projectile.name} (id={projectile.ID}) HIT target at {projectile.transform.position}! sqrDist={sqrDistance:F4} <= hitDist={_hitDistance:F4}");
 						// 2.2.1. Создаем хит эффект
 						if (projectile.HasEffect)
 						{

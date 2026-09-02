@@ -25,17 +25,24 @@ namespace Netologia.Systems
 		[CanBeNull]
 		public Unit FindTarget(in Vector3 position, float range)
 		{
-			range *= range;
+			var sqrRange = range * range;
 			var target = default(Unit);
+			var checkedCount = 0;
 			foreach (var pair in this)
 			{
 				foreach (var unit in pair)
 				{
+					checkedCount++;
 					if (unit.CurrentHealth <= 0) continue;
 					var distance = Vector3.SqrMagnitude(unit.transform.position - position);
-					if (distance < range)
-						(range, target) = (distance, unit);
+					if (distance < sqrRange)
+						(sqrRange, target) = (distance, unit);
 				}
+			}
+
+			if (target != null)
+			{
+				Debug.Log($"[UnitSystem.FindTarget] SUCCESS! Checked {checkedCount} units. Target: {target.name} (id={target.ID}, hp={target.CurrentHealth}, pos={target.transform.position}), distance={Mathf.Sqrt(sqrRange):F2}, maxRange={range}");
 			}
 
 			return target;
@@ -123,7 +130,18 @@ namespace Netologia.Systems
 				AudioManager.PlayHit(unit.DieSound);
 			}
 
-			_director.AddMoney(unit.Stats.Cost);
+			var director = _director ?? Director.Instance;
+			var reward = unit.Stats.Cost > 0 ? unit.Stats.Cost : 5;
+			if (director != null)
+			{
+				director.AddMoney(reward);
+				Debug.Log($"[UnitSystem] DespawnUnit (KILL): Unit {unit.name} (id={unit.ID}) DIED! Rewarded {reward} gold.");
+			}
+			else
+			{
+				Debug.LogError($"[UnitSystem] DespawnUnit: Director is null! Cannot add money for {unit.name}");
+			}
+
 			this[unit.Ref].ReturnElement(unit.ID);
 		}
 		
@@ -133,6 +151,7 @@ namespace Netologia.Systems
 			(_effects, _director, _constants, _path) = (effects, director, constants, path.GetPath());
 			_arrivalDistance *= _arrivalDistance;
 			AwakeMethod = t => t.Constants = _constants;
+			Debug.Log($"[UnitSystem] Construct injected: director={director != null}, pathCount={_path?.Length}");
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using JetBrains.Annotations;
 using Netologia.TowerDefence.Behaviors;
 using UnityEngine;
@@ -17,7 +17,7 @@ namespace Netologia.TowerDefence
 			public int Cost;
 		}
 		
-		private int _level = -1;
+		private int _level = 0;
 		private Unit _target;
 		private bool _hasTarget;
 		private float _delay;
@@ -79,10 +79,12 @@ namespace Netologia.TowerDefence
 			UpdateRangeBackground();
 		}
 		
-		public bool DecrementAttackReload(float delta)
+		public bool IsReloading => _delay > 0f;
+		
+		public void DecrementAttackReload(float delta)
 		{
 			_delay -= delta;
-			return _delay <= 0f;
+			if (_delay < 0f) _delay = 0f;
 		}
 		
 		public void Attack()
@@ -98,6 +100,8 @@ namespace Netologia.TowerDefence
 		private void OnDisable()
 		{
 			_level = 0;
+			_delay = 0f;
+			Target = null;
 			UpdateRangeBackground();
 		}
 
