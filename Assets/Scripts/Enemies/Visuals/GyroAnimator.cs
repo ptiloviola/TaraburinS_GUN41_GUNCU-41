@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Enemies.Visuals
 {
@@ -25,12 +26,17 @@ namespace Gameplay.Enemies.Visuals
 
         private Vector3 _initialCoreScale;
         private Vector3 _initialVisualPos;
+        private Vector3 _initialVisualScale;
 
         protected override void Awake()
         {
             base.Awake();
             if (_core != null) _initialCoreScale = _core.localScale;
-            if (_visualRoot != null) _initialVisualPos = _visualRoot.localPosition;
+            if (_visualRoot != null) 
+            {
+                _initialVisualPos = _visualRoot.localPosition;
+                _initialVisualScale = _visualRoot.localScale; // НОВОЕ
+            }
         }
 
         protected override void OnEnable()
@@ -39,7 +45,11 @@ namespace Gameplay.Enemies.Visuals
             
             if (_ring1 != null) _ring1.localRotation = Quaternion.identity;
             if (_ring2 != null) _ring2.localRotation = Quaternion.identity;
-            if (_visualRoot != null) _visualRoot.localPosition = _initialVisualPos;
+            if (_visualRoot != null) 
+            {
+                _visualRoot.localPosition = _initialVisualPos;
+                _visualRoot.localScale = _initialVisualScale; // НОВОЕ
+            }
             if (_core != null) _core.localScale = _initialCoreScale;
 
             StartGyroAnimation();
@@ -51,8 +61,17 @@ namespace Gameplay.Enemies.Visuals
             KillAllAnimations();
         }
 
-        protected override void OnDeath() => KillAllAnimations();
         protected override void OnReachedBase() => KillAllAnimations();
+
+        public override async UniTask PlayDeathAnimationAsync()
+        {
+            KillAllAnimations(); // Останавливаем пульсацию и вращение
+            
+            if (_visualRoot != null)
+            {
+                await _visualRoot.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            }
+        }
 
         private void StartGyroAnimation()
         {

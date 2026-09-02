@@ -1,5 +1,6 @@
 using UnityEngine;
 using Gameplay.Enemies.FSM;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Enemies.Visuals
 {
@@ -29,7 +30,6 @@ namespace Gameplay.Enemies.Visuals
             {
                 case EnemyStateType.Move: OnMoveStart(); break;
                 case EnemyStateType.Stunned: OnStunned(); break;
-                case EnemyStateType.Death: OnDeath(); break;
                 case EnemyStateType.ReachedBase: OnReachedBase(); break;
             }
         }
@@ -37,7 +37,13 @@ namespace Gameplay.Enemies.Visuals
         // Виртуальные методы для наследников
         protected virtual void OnMoveStart() { }
         protected virtual void OnStunned() { }
-        protected virtual void OnDeath() { }
         protected virtual void OnReachedBase() { }
+        public virtual async UniTask PlayDeathAnimationAsync()
+        {
+            // Базовая реализация: просто ждем 0 секунд.
+            // В наследниках (например, JumperAnimator) ты переопределишь этот метод,
+            // запустишь анимацию рассыпания и напишешь: await UniTask.Delay(1000);
+            await UniTask.Yield(); 
+        }
     }
 }

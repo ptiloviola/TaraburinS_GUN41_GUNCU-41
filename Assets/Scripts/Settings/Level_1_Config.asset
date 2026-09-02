@@ -152,7 +152,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -195,7 +195,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -238,7 +238,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -281,7 +281,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -324,7 +324,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -367,7 +367,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0
@@ -410,7 +410,7 @@ MonoBehaviour:
     - elevation: 0
       type: 1
     - elevation: 0
-      type: 0
+      type: 1
     - elevation: 0
       type: 0
     - elevation: 0

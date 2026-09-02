@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using Gameplay.Enemies.Data.Movement;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Enemies.Visuals
 {
@@ -39,6 +40,7 @@ namespace Gameplay.Enemies.Visuals
         protected override void OnEnable()
         {
             base.OnEnable();
+            transform.localScale = Vector3.one;
             for (int i = 0; i < _segments.Length; i++)
             {
                 if (_segments[i] != null)
@@ -127,8 +129,15 @@ namespace Gameplay.Enemies.Visuals
         }
 
         protected override void OnStunned() => _crawlSequence?.Pause();
-        protected override void OnDeath() => KillSequence();
         protected override void OnReachedBase() => KillSequence();
+
+        public override async UniTask PlayDeathAnimationAsync()
+        {
+            KillSequence(); // Останавливаем ползание
+            
+            // Сжимаем всю гусеницу целиком
+            await transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+        }
 
         private void KillSequence()
         {

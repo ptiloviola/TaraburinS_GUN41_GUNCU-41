@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Enemies.Visuals
 {
@@ -50,8 +51,17 @@ namespace Gameplay.Enemies.Visuals
         }
 
         protected override void OnStunned() => _slinkySequence?.Pause();
-        protected override void OnDeath() => KillSequence();
         protected override void OnReachedBase() => KillSequence();
+
+        public override async UniTask PlayDeathAnimationAsync()
+        {
+            KillSequence(); 
+            
+            if (_visualMesh != null)
+            {
+                await _visualMesh.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            }
+        }
 
         private void StartSlinkyAnimation()
         {

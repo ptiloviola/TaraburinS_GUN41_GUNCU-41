@@ -44,12 +44,6 @@ namespace Gameplay.Enemies
             if (_agent == null) _agent = GetComponent<NavMeshAgent>();
             if (_health == null) _health = GetComponent<HealthComponent>();
             if (_collider == null) _collider = GetComponent<Collider>();
-
-            // Создаем стейт-машину один раз
-            _stateMachine = new EnemyStateMachine();
-            
-            // Подписываемся на смену состояний, чтобы проксировать их наружу для аниматоров
-            _stateMachine.OnStateChanged += state => OnStateChanged?.Invoke(state);
         }
 
         public void SetPool(Pool pool)
@@ -78,7 +72,13 @@ namespace Gameplay.Enemies
             {
                 _health.OnDied -= HandleDeath;
             }
-            _stateMachine.Cleanup();
+            
+            // ОБЯЗАТЕЛЬНО ставим знак вопроса ?. 
+            // Zenject вызовет OnDisable при добавлении в пул ДО того, как вызовется InitializeMovement
+            _stateMachine?.Cleanup(); 
+            
+            // Защита от утечек
+            OnStateChanged = null;
         }
 
         public void InitConfig(EnemyConfig config)
@@ -96,12 +96,18 @@ namespace Gameplay.Enemies
             _movementStrategy = movementStrategy;
             _movementStrategy.Initialize(this);
 
-            // Инициализируем стейты (мы создадим их на следующем шаге)
+            // 1. Создаем чистую машину при каждом доставании из пула
+            _stateMachine = new EnemyStateMachine();
+            
+            // 2. ПЕРЕНЕСЛИ СЮДА: Подписываемся на события только когда машина уже существует
+            _stateMachine.OnStateChanged += state => OnStateChanged?.Invoke(state);
+
+            // 3. Добавляем стейты
             _stateMachine.AddState(new MoveState(this, _movementStrategy));
             _stateMachine.AddState(new DeathState(this));
             _stateMachine.AddState(new ReachedBaseState(this));
             
-            // Стартуем логику!
+            // 4. Стартуем
             _stateMachine.ChangeState(EnemyStateType.Move);
         }
 

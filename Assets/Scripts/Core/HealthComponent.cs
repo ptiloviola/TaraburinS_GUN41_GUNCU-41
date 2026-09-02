@@ -15,6 +15,7 @@ namespace Gameplay.Core
         // События для UI и других систем
         public event Action<float, float> OnHealthChanged; // Текущее ХП, Максимальное ХП
         public event Action OnDied;
+        public event Action OnDamaged;
 
         public bool IsDead => _currentHealth <= 0f;
         public float CurrentHealth => _currentHealth; 
@@ -38,6 +39,7 @@ namespace Gameplay.Core
             _currentHealth = Mathf.Clamp(_currentHealth, 0f, _maxHealth); // ХП не может упасть ниже нуля
             Debug.Log($"<color=orange>[Health] {gameObject.name} получил {amount} урона. Осталось: {_currentHealth}/{_maxHealth}</color>");
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+            OnDamaged?.Invoke();
             if (IsDead)
             {
                 Die();

@@ -32,5 +32,21 @@ namespace Gameplay.Enemies.Data
 
         [Header("Модуль: Поведение при смерти (Опционально)")]
         public DeathBehaviorConfig DeathBehavior;
+
+        #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (Movement == null)
+            {
+                Debug.LogWarning($"[EnemyConfig] Врагу {EnemyId} не назначен модуль Movement!", this);
+            }
+            if (Prefab == null)
+            {
+                Debug.LogWarning($"[EnemyConfig] Врагу {EnemyId} не назначен Prefab!", this);
+            }
+        }
+        #endif
+
+
     }
 }

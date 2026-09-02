@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Enemies.Visuals
 {
@@ -14,12 +15,17 @@ namespace Gameplay.Enemies.Visuals
 
         private Sequence _snakeSequence;
         private Vector3 _initialLocalPos;
+        private Vector3 _initialScale;
 
         protected override void Awake()
         {
             base.Awake();
             if (_visualMesh == null) _visualMesh = transform.Find("Visual");
-            if (_visualMesh != null) _initialLocalPos = _visualMesh.localPosition;
+            if (_visualMesh != null)
+            {
+                _initialLocalPos = _visualMesh.localPosition;
+                _initialScale = _visualMesh.localScale; // НОВОЕ
+            }
         }
 
         protected override void OnEnable()
@@ -28,6 +34,7 @@ namespace Gameplay.Enemies.Visuals
             if (_visualMesh != null)
             {
                 _visualMesh.localPosition = _initialLocalPos;
+                _visualMesh.localScale = _initialScale; // НОВОЕ
             }
         }
 
@@ -54,8 +61,17 @@ namespace Gameplay.Enemies.Visuals
         }
 
         protected override void OnStunned() => _snakeSequence?.Pause();
-        protected override void OnDeath() => KillSequence();
         protected override void OnReachedBase() => KillSequence();
+
+        public override async UniTask PlayDeathAnimationAsync()
+        {
+            KillSequence(); 
+            
+            if (_visualMesh != null)
+            {
+                await _visualMesh.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            }
+        }
 
         private void KillSequence()
         {

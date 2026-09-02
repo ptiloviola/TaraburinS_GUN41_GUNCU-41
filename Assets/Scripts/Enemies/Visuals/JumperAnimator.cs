@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using Gameplay.Enemies.Data.Movement;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Enemies.Visuals
 {
@@ -37,6 +38,7 @@ namespace Gameplay.Enemies.Visuals
             base.OnEnable();
             if (_visualMesh != null)
             {
+                
                 _visualMesh.localScale = _initialScale;
                 _visualMesh.localPosition = _initialLocalPos;
             }
@@ -98,6 +100,17 @@ namespace Gameplay.Enemies.Visuals
             
             // 4. ВЫПРЯМЛЕНИЕ ВО ВРЕМЯ ПАУЗЫ
             _jumpSequence.Append(_visualMesh.DOScale(_initialScale, recoverTime).SetEase(Ease.OutBack));
+        }
+
+        public override async UniTask PlayDeathAnimationAsync()
+        {
+            KillSequence(); // Останавливаем прыжок, если он был в процессе
+            
+            if (_visualMesh != null)
+            {
+                // Сжимаем в ноль и ждем
+                await _visualMesh.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            }
         }
 
         private void KillSequence()
