@@ -1,6 +1,7 @@
 using UnityEngine;
 using Gameplay.Core;
 using Gameplay.Enemies.Data;
+using System;
 
 
 namespace Gameplay.Enemies
@@ -11,6 +12,7 @@ namespace Gameplay.Enemies
     {
         private HealthComponent _health;
         private ArmorCalculator _armorCalculator;
+        public event Action<DamagePayload> OnHitReceived;
 
         // Инициализируется извне (Фасадом)
         public void Initialize(HealthComponent health, ArmorCalculator armorCalculator)
@@ -22,6 +24,8 @@ namespace Gameplay.Enemies
         public void TakeDamage(DamagePayload payload)
         {
             if (_health == null || _health.IsDead) return;
+            // Сначала кричим визуалу: "В нас попали вот ЭТИМ!"
+            OnHitReceived?.Invoke(payload);
 
             // 1. Считаем броню через чистый класс
             float finalDamage = _armorCalculator.CalculateFinalDamage(payload);

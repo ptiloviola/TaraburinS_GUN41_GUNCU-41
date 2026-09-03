@@ -20,8 +20,11 @@ MonoBehaviour:
       type: 3}
     Attack:
       Damage: 21
+      Type: 2
       Range: 4
       Cooldown: 2
+      Targeting: 0
+      Aiming: 1
       PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
         type: 2}
     Aura:
@@ -38,8 +41,11 @@ MonoBehaviour:
       type: 3}
     Attack:
       Damage: 35
+      Type: 0
       Range: 5
       Cooldown: 1.5
+      Targeting: 0
+      Aiming: 0
       PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
         type: 2}
     Aura:

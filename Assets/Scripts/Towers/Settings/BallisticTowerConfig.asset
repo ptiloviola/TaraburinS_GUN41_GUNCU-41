@@ -23,6 +23,8 @@ MonoBehaviour:
       Type: 2
       Range: 10
       Cooldown: 2
+      Targeting: 0
+      Aiming: 1
       PayloadStrategy: {fileID: 11400000, guid: 7d3eca2f9350e9c4f8ce98c85233337a,
         type: 2}
     Aura:

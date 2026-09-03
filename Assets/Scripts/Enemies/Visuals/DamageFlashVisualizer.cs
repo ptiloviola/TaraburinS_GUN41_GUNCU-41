@@ -3,29 +3,29 @@ using Gameplay.Core;
 
 namespace Gameplay.Enemies.Visuals
 {
-    [RequireComponent(typeof(HealthComponent))]
+    // Меняем зависимость с HealthComponent на DamageReceiver
+    [RequireComponent(typeof(DamageReceiver))]
     public class DamageFlashVisualizer : MonoBehaviour
     {
-        [Header("Настройки вспышки")]
-        [SerializeField] private Color _flashColor = Color.white;
-        [SerializeField] private float _flashDuration = 0.15f;
+        [Header("Настройки вспышек")]
+        [SerializeField] private DamageVisualSettings _settings;
+      
         
-        // Массив больше не виден в инспекторе, скрипт соберет всё сам!
         private Renderer[] _renderers;
         private Color[] _originalColors;
         
-        private HealthComponent _health;
+        private DamageReceiver _damageReceiver;
         private MaterialPropertyBlock _propBlock;
         
         private float _currentFlashTimer;
         private bool _isFlashing;
+        private Color _currentFlashColor; // Храним цвет текущей вспышки
 
         private void Awake()
         {
-            _health = GetComponent<HealthComponent>();
+            _damageReceiver = GetComponent<DamageReceiver>();
             _propBlock = new MaterialPropertyBlock();
             
-            // АВТОМАТИЗАЦИЯ: Сам ищет все рендереры внутри префаба (даже в детских объектах)
             _renderers = GetComponentsInChildren<Renderer>(true);
             _originalColors = new Color[_renderers.Length];
             
@@ -45,21 +45,29 @@ namespace Gameplay.Enemies.Visuals
 
         private void OnEnable()
         {
-            _health.OnDamaged += PlayFlash;
+            _damageReceiver.OnHitReceived += PlayFlash;
             _currentFlashTimer = 0f;
             _isFlashing = false;
         }
 
         private void OnDisable()
         {
-            _health.OnDamaged -= PlayFlash;
+            _damageReceiver.OnHitReceived -= PlayFlash;
             ResetColor();
         }
 
-        private void PlayFlash()
+        private void PlayFlash(DamagePayload payload)
         {
-            // Просто сбрасываем таймер. НИКАКИХ аллокаций памяти и Sequence!
-            _currentFlashTimer = _flashDuration;
+            // Динамически выбираем цвет на основе типа входящего урона
+            _currentFlashColor = payload.Type switch
+            {
+                DamageType.Physical => _settings.GetColor(payload.Type),
+                DamageType.Energy => _settings.GetColor(payload.Type),
+                DamageType.Explosive => _settings.GetColor(payload.Type),
+                _ => _settings.PhysicalColor
+            };
+
+            _currentFlashTimer = _settings.FlashDuration;
             _isFlashing = true;
         }
 
@@ -76,10 +84,9 @@ namespace Gameplay.Enemies.Visuals
                 return;
             }
 
-            // Высчитываем интенсивность от 1 до 0 (треугольный график вспышки)
-            float halfDuration = _flashDuration / 2f;
+            float halfDuration = _settings.FlashDuration / 2f;
             float intensity = _currentFlashTimer > halfDuration 
-                ? Mathf.InverseLerp(_flashDuration, halfDuration, _currentFlashTimer) 
+                ? Mathf.InverseLerp(_settings.FlashDuration, halfDuration, _currentFlashTimer) 
                 : Mathf.InverseLerp(0f, halfDuration, _currentFlashTimer);
 
             ApplyFlashIntensity(intensity);
@@ -92,7 +99,7 @@ namespace Gameplay.Enemies.Visuals
                 if (_renderers[i] == null) continue;
                 
                 _renderers[i].GetPropertyBlock(_propBlock);
-                Color blendedColor = Color.Lerp(_originalColors[i], _flashColor, intensity);
+                Color blendedColor = Color.Lerp(_originalColors[i], _currentFlashColor, intensity);
                 
                 _propBlock.SetColor("_BaseColor", blendedColor);
                 _propBlock.SetColor("_Color", blendedColor); 
