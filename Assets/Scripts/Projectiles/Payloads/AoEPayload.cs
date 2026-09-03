@@ -6,33 +6,29 @@ namespace Gameplay.Projectiles.Payloads
 {
     public class AoEPayload : IProjectilePayload
     {
-        private readonly float _damage;
+        private readonly DamagePayload _damagePayload;
         private readonly float _radius;
         private readonly LayerMask _enemyMask;
 
-        public AoEPayload(float damage, float radius, LayerMask enemyMask)
+        public AoEPayload(DamagePayload damagePayload, float radius, LayerMask enemyMask)
         {
-            _damage = damage;
+            _damagePayload = damagePayload;
             _radius = radius;
             _enemyMask = enemyMask;
         }
 
         public void Apply(Transform target, Vector3 hitPoint)
         {
-            // Находим всех врагов в радиусе взрыва
             Collider[] hits = Physics.OverlapSphere(hitPoint, _radius, _enemyMask);
             
             foreach (var hit in hits)
             {
+                // Ищем IDamageable на самом объекте или родителе (наш DamageReceiver)
                 var damageable = hit.GetComponentInParent<IDamageable>();
-                if (damageable != null)
-                {
-                    damageable.TakeDamage(new DamagePayload(_damage, DamageType.Physical));
-                }
+                damageable?.TakeDamage(_damagePayload);
             }
             
-            // Здесь же в будущем можно вызывать спавн префаба взрыва (VFX)
-            Debug.Log($"<color=orange>[AoE] Взрыв на {hitPoint}! Задето врагов: {hits.Length}</color>");
+            Debug.Log($"<color=orange>[AoE] Взрыв на {hitPoint}! Задето объектов: {hits.Length}</color>");
         }
     }
 }

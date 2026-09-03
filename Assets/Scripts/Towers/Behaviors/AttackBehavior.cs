@@ -6,6 +6,7 @@ using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Projectiles.Contracts;
 using System;
 using Gameplay.Towers.Behaviors.Targeting;
+using Gameplay.Core;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -117,7 +118,8 @@ namespace Gameplay.Towers.Behaviors
                 return;
             }
             // 1. Просим конфиг собрать нам посылку
-            IProjectilePayload payload = stats.PayloadStrategy.CreatePayload(stats.Damage);
+            DamagePayload damagePayload = new DamagePayload(stats.Damage, stats.Type);
+            IProjectilePayload payload = stats.PayloadStrategy.CreatePayload(damagePayload);
             
             _attackExecutor?.ExecuteAttack(_currentTarget, payload, _firePoint);
 

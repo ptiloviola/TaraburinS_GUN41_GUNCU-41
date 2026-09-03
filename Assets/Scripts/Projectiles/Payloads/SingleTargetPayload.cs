@@ -1,28 +1,25 @@
 using UnityEngine;
-using Gameplay.Core; // Здесь лежит наш IDamageable
+using Gameplay.Core; 
 using Gameplay.Projectiles.Contracts;
 
 namespace Gameplay.Projectiles.Payloads
 {
-    // Обычный эффект урона по одной цели (Single Target)
     public class SingleTargetPayload : IProjectilePayload
     {
-        private readonly float _damage;
+        private readonly DamagePayload _damagePayload;
 
-        public SingleTargetPayload(float damage)
+        public SingleTargetPayload(DamagePayload damagePayload)
         {
-            _damage = damage;
+            _damagePayload = damagePayload;
         }
 
         public void Apply(Transform target, Vector3 hitPoint)
         {
             if (target == null) return;
 
+            // Используем ?. (null-conditional) для краткости
             var damageable = target.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                damageable.TakeDamage(new DamagePayload(_damage, DamageType.Physical));
-            }
+            damageable?.TakeDamage(_damagePayload);
         }
     }
 }

@@ -20,6 +20,7 @@ MonoBehaviour:
       type: 3}
     Attack:
       Damage: 7
+      Type: 1
       Range: 15
       Cooldown: 0.5
       PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
@@ -38,6 +39,7 @@ MonoBehaviour:
       type: 3}
     Attack:
       Damage: 17
+      Type: 0
       Range: 20
       Cooldown: 0.1
       PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,

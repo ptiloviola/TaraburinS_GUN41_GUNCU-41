@@ -1,26 +1,25 @@
 using UnityEngine;
-using Gameplay.Towers.Data.Payloads;
+using Gameplay.Core; // Для DamageType
+using Gameplay.Projectiles.Data;
 
 namespace Gameplay.Towers.Data.Modules
 {
     [System.Serializable]
     public class AttackStats : IModuleDescriptor
     {
+        [Header("Базовые характеристики")]
         public float Damage = 10f;
+        public DamageType Type = DamageType.Physical; // НОВОЕ: Тип урона
         public float Range = 3f;
         public float Cooldown = 1f;
 
-        // НОВОЕ: Теперь геймдизайнер в Инспекторе перетаскивает сюда 
-        // нужный SO (Яд, Огонь, Сплеш, Обычный урон)
-        [Header("Тип атаки")]
+        [Header("Тип атаки (Логика)")]
         public PayloadConfig PayloadStrategy;
 
         public string GetStatsDescription()
         {
-            // Небольшая защита: если урона нет, не выводим ничего
             if (Damage <= 0 && Range <= 0) return string.Empty;
-            
-            return $"Урон: {Damage}\nРадиус: {Range}\nКулдаун: {Cooldown} сек\n";
+            return $"Урон: {Damage} ({Type})\nРадиус: {Range}\nКулдаун: {Cooldown} сек\n";
         }
     }
 }

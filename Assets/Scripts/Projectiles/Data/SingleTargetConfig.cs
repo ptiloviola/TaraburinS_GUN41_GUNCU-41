@@ -1,16 +1,16 @@
 using UnityEngine;
+using Gameplay.Core; 
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Projectiles.Payloads;
 
-namespace Gameplay.Towers.Data.Payloads
+namespace Gameplay.Projectiles.Data
 {
-    [CreateAssetMenu(fileName = "SingleTargetConfig", menuName = "TD/Payloads/Single Target")]
+    [CreateAssetMenu(fileName = "SingleTargetConfig", menuName = "TD/Projectiles/Single Target Payload")]
     public class SingleTargetConfig : PayloadConfig
     {
-        // В этом конфиге нет настроек, так как одиночный урон зависит только от базового Damage
-        public override IProjectilePayload CreatePayload(float baseDamage)
+        public override IProjectilePayload CreatePayload(DamagePayload payload)
         {
-            return new SingleTargetPayload(baseDamage);
+            return new SingleTargetPayload(payload);
         }
     }
 }

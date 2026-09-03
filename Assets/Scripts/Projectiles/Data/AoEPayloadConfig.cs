@@ -1,19 +1,20 @@
 using UnityEngine;
+using Gameplay.Core;
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Projectiles.Payloads;
 
-namespace Gameplay.Towers.Data.Payloads
+namespace Gameplay.Projectiles.Data
 {
-    [CreateAssetMenu(fileName = "AoEConfig", menuName = "TD/Payloads/Area of Effect (Splash)")]
+    [CreateAssetMenu(fileName = "AoEPayloadConfig", menuName = "TD/Projectiles/AoE Payload")]
     public class AoEPayloadConfig : PayloadConfig
     {
-        [Header("Настройки взрыва")]
-        public float ExplosionRadius = 3f;
-        public LayerMask EnemyMask; // Укажи здесь слой "Enemy"
+        [Header("Настройки AoE")]
+        public float Radius = 3f;
+        public LayerMask EnemyMask;
 
-        public override IProjectilePayload CreatePayload(float baseDamage)
+        public override IProjectilePayload CreatePayload(DamagePayload payload)
         {
-            return new AoEPayload(baseDamage, ExplosionRadius, EnemyMask);
+            return new AoEPayload(payload, Radius, EnemyMask);
         }
     }
 }

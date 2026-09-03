@@ -22,7 +22,7 @@ MonoBehaviour:
     RewardMoney: 25
   Armor:
     PhysicalMultiplier: 1
-    EnergyMultiplier: 1
+    EnergyMultiplier: 0
     ExplosiveMultiplier: 1
   StatusResist:
     ControlMultiplier: 0

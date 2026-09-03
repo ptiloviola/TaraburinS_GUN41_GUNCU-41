@@ -3,6 +3,7 @@ using Gameplay.Projectiles;
 // НОВОЕ: Подключаем контракты и полезные нагрузки для создания фиктивной посылки
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Projectiles.Payloads;
+using Gameplay.Core;
 
 namespace Gameplay.Towers.Visuals
 {
@@ -82,7 +83,7 @@ namespace Gameplay.Towers.Visuals
                     var projectile = Instantiate(_projectilePrefab, spawnPoint.position, spawnPoint.rotation);
                     
                     // ИСПРАВЛЕНО: Создаем фиктивную посылку с нулевым уроном для теста
-                    IProjectilePayload testPayload = new SingleTargetPayload(0f);
+                    IProjectilePayload testPayload = new SingleTargetPayload(new DamagePayload(0f, DamageType.Physical));
                     
                     // Запускаем ядро лететь в невидимую цель, передавая правильный интерфейс
                     projectile.Launch(fakeTargetObj.transform, testPayload, null);
