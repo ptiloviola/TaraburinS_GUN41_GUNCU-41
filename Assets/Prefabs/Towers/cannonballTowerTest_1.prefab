@@ -11,10 +11,6 @@ GameObject:
   - component: {fileID: 2013802512576192232}
   - component: {fileID: 8468681026833485568}
   - component: {fileID: 560816281410731767}
-  - component: {fileID: 502628343501612847}
-  - component: {fileID: 8656887004606460776}
-  - component: {fileID: 1873286070362832462}
-  - component: {fileID: 7021062747609506856}
   m_Layer: 7
   m_Name: Visual_Root
   m_TagString: Untagged
@@ -155,77 +151,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94e90adc59076cd49b34aa6f17df3e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &502628343501612847
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920876942324204923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d3f05380819835448d9473041e3c5c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _setup: {fileID: 0}
   _logicalRotator: {fileID: 0}
+  _baseTransform: {fileID: 0}
   _turretTransform: {fileID: 0}
-  _rotationOffset: -90
-  _usePitch: 0
   _elevationPivot: {fileID: 0}
-  _localPitchAxis: {x: 0, y: 0, z: -1}
---- !u!114 &8656887004606460776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920876942324204923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc0d2440baa935a4ba52d0bee50b5b32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseTransform: {fileID: 239661865440609367}
-  _turretTransform: {fileID: 7879057351727019545}
-  _buildDuration: 0.5
-  _buildEase: 27
---- !u!114 &1873286070362832462
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920876942324204923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d3f05380819835448d9473041e3c5c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _logicalRotator: {fileID: 1355285404530712234}
-  _turretTransform: {fileID: 7879057351727019545}
-  _rotationOffset: -90
-  _usePitch: 0
-  _elevationPivot: {fileID: 0}
-  _localPitchAxis: {x: 0, y: 0, z: -1}
---- !u!114 &7021062747609506856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920876942324204923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c71dd3708027e445bbd641432451e2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _barrelTransforms:
-  - {fileID: 290366890347110676}
+  _barrelTransforms: []
   _muzzleFlashes: []
-  _shootDuration: 0.2
-  _recoilDistance: 0.4
-  _recoilEase: 6
-  _returnEase: 6
 --- !u!1 &1926724689136184970
 GameObject:
   m_ObjectHideFlags: 0

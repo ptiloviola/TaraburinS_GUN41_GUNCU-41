@@ -177,7 +177,6 @@ GameObject:
   - component: {fileID: 3808420336545801084}
   - component: {fileID: 8850315578983818319}
   - component: {fileID: 4560209409901334266}
-  - component: {fileID: 8236896496195198533}
   m_Layer: 7
   m_Name: Base.001
   m_TagString: Untagged
@@ -262,19 +261,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94e90adc59076cd49b34aa6f17df3e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8236896496195198533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8044796459560283508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc0d2440baa935a4ba52d0bee50b5b32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseTransform: {fileID: 461588680095145121}
+  _setup: {fileID: 0}
+  _logicalRotator: {fileID: 0}
+  _baseTransform: {fileID: 0}
   _turretTransform: {fileID: 0}
-  _buildDuration: 0.5
-  _buildEase: 27
+  _elevationPivot: {fileID: 0}
+  _barrelTransforms: []
+  _muzzleFlashes: []

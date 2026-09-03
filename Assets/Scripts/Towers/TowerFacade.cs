@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Gameplay.Towers.Behaviors;
+using Gameplay.Towers.Visuals;
 
 namespace Gameplay.Towers
 {
@@ -36,12 +37,30 @@ namespace Gameplay.Towers
             
             _behaviors.Clear();
 
-            // Ищем глупые адаптеры (WeaponAdapter, BarracksAdapter и т.д.)
+            // 1. Собираем всех актеров (ищем адаптеры)
             var adapters = GetComponentsInChildren<IBehaviorAdapter>(true);
+            WeaponAdapter foundWeaponAdapter = null;
 
             foreach (var adapter in adapters)
             {
-                // Адаптер рождает чистый C# класс (например, AttackController)
+                if (adapter is WeaponAdapter wa) 
+                {
+                    foundWeaponAdapter = wa;
+                }
+            }
+
+            // 2. ИСТИННЫЙ ПУТЬ: СНАЧАЛА инициализируем Визуал!
+            // Чтобы он успел подписаться на все события (расселся в зале)
+            var visuals = GetComponentInChildren<ITowerVisuals>(true);
+            if (visuals != null)
+            {
+                visuals.Initialize(foundWeaponAdapter);
+            }
+
+            // 3. ПОТОМ инициализируем Логику (начинаем спектакль)
+            // Теперь, когда логика крикнет OnBuildStarted, визуал точно это услышит!
+            foreach (var adapter in adapters)
+            {
                 ITowerBehavior behavior = adapter.CreateBehavior();
                 behavior.Initialize(this);
                 _behaviors.Add(behavior);

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Gameplay.Towers.Data
 {
-    [CreateAssetMenu(fileName = "NewTowerConfig", menuName = "TD/Tower Config")]
+    [CreateAssetMenu(fileName = "NewTowerConfig", menuName = "TD/Towers/Tower Config")]
     public class TowerConfig : ScriptableObject
     {
         [Header("Базовая информация")]

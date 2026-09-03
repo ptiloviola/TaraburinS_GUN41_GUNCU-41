@@ -92,7 +92,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4948790352228714512}
-  - component: {fileID: 3941470187196837383}
   - component: {fileID: 2767537639249881226}
   m_Layer: 7
   m_Name: Visual_Root
@@ -118,41 +117,6 @@ Transform:
   - {fileID: 1977375066299048576}
   m_Father: {fileID: 5932089929565763045}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3941470187196837383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 803676773475448351}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 078716e3d862b614abe7d4e17c646255, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseTransform: {fileID: 7209307938038716687}
-  _turretTransform: {fileID: 1977375066299048576}
-  _barrelTransforms:
-  - {fileID: 407547282258650299}
-  - {fileID: 4059981341746222137}
-  _logicalRotator: {fileID: 8694569178857730175}
-  _copyPitch: 1
-  _elevationPivot: {fileID: 7017893385741540974}
-  _localPitchAxis: {x: 0, y: 0, z: -1}
-  _rotationOffset: -90
-  _buildDuration: 0.5
-  _buildEase: 27
-  _shootDuration: 0.256
-  _recoilDistance: 0.576
-  _turretSquashY: 0.971
-  _recoilEase: 6
-  _barrelReturnEase: 6
-  _turretReturnEase: 6
-  _laserRenderer: {fileID: 2767537639249881226}
-  _laserMaxWidth: 0.3
-  _steamParticles:
-  - {fileID: 5261946610394184294}
-  - {fileID: 6286558492475144204}
 --- !u!120 &2767537639249881226
 LineRenderer:
   serializedVersion: 2
@@ -321,13 +285,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cba020d2881018549bbc23a2627853af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _visuals: {fileID: 3941470187196837383}
-  _logicalRotator: {fileID: 8694569178857730175}
-  _rotationValue: 0
-  _triggerBuild: 0
-  _triggerShoot: 0
-  _projectilePrefab: {fileID: 0}
-  _firePoint: {fileID: 0}
 --- !u!114 &4502546087185729095
 MonoBehaviour:
   m_ObjectHideFlags: 0

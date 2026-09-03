@@ -1,21 +1,16 @@
-using UnityEngine;
+using System;
+using Gameplay.Towers.Behaviors;
 
 namespace Gameplay.Towers.Visuals
 {
-    // Это наш "API" для общения логики с графикой
     public interface ITowerVisuals
     {
+        // 1. Инициализация (связываем визуал с боевой логикой)
+        void Initialize(WeaponAdapter adapter);
 
-        // C# Событие, на которое сможет подписаться геймплейный код
-        event System.Action OnAttackImpact;
-        
-        // Метод для инициализации визуала (передаем ссылку на данные, если нужно)
-        void Initialize();
-        
-        // Воспроизвести анимацию выстрела (отдача, эффекты, звук, след выстрела)
-        void PlayShootAnimation(Vector3 targetPosition);
-        
-        // Воспроизвести анимацию строительства/появления башни
-        void PlayBuildAnimation();
+        // 2. Событие для башен ближнего боя (Мечники/Казармы).
+        // Срабатывает из Unity Animation Event на нужном кадре замаха.
+        event Action OnAttackImpact;
+        void TriggerAttackImpact();
     }
 }

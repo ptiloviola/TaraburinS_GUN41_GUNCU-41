@@ -5,7 +5,7 @@ using System.Linq; // Нужно для удобного поиска
 
 namespace Gameplay.Towers.Data
 {
-    [CreateAssetMenu(fileName = "NewTowerRegistry", menuName = "TD/Tower Registry", order = 50)]
+    [CreateAssetMenu(fileName = "NewTowerRegistry", menuName = "TD/Towers/Tower Registry", order = 50)]
     public class TowerRegistry : ScriptableObject
     {
         [Header("Каталог всех доступных башен")]

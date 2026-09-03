@@ -10,9 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1234650078190084447}
   - component: {fileID: 5520333193517597493}
-  - component: {fileID: 7724263780140419081}
-  - component: {fileID: 7335718127156780519}
-  - component: {fileID: 6411568816051184670}
   m_Layer: 7
   m_Name: Visual_Root
   m_TagString: Untagged
@@ -49,59 +46,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94e90adc59076cd49b34aa6f17df3e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7724263780140419081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 929399789925135957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d3f05380819835448d9473041e3c5c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _logicalRotator: {fileID: 7719654304960999622}
-  _turretTransform: {fileID: 5337976988180364402}
-  _rotationOffset: -90
-  _usePitch: 0
+  _setup: {fileID: 0}
+  _logicalRotator: {fileID: 0}
+  _baseTransform: {fileID: 0}
+  _turretTransform: {fileID: 0}
   _elevationPivot: {fileID: 0}
-  _localPitchAxis: {x: 0, y: 0, z: -1}
---- !u!114 &7335718127156780519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 929399789925135957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc0d2440baa935a4ba52d0bee50b5b32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseTransform: {fileID: 3397754600758017836}
-  _turretTransform: {fileID: 5337976988180364402}
-  _buildDuration: 0.5
-  _buildEase: 27
---- !u!114 &6411568816051184670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 929399789925135957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c71dd3708027e445bbd641432451e2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _barrelTransforms:
-  - {fileID: 5224069891382285833}
+  _barrelTransforms: []
   _muzzleFlashes: []
-  _shootDuration: 0.279
-  _recoilDistance: 0.389
-  _recoilEase: 6
-  _returnEase: 6
 --- !u!1 &1206027748422666790
 GameObject:
   m_ObjectHideFlags: 0
