@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38dda6fbbf0360446aa4664395f1e306, type: 3}
   m_Name: DamageVisualSettings
   m_EditorClassIdentifier: 
-  PhysicalColor: {r: 1, g: 1, b: 1, a: 1}
-  EnergyColor: {r: 0, g: 1, b: 1, a: 1}
-  ExplosiveColor: {r: 1, g: 0.5, b: 0, a: 1}
+  PhysicalColor: {r: 1.4980394, g: 1.4980394, b: 1.4980394, a: 1}
+  EnergyColor: {r: 0, g: 1.4980394, b: 1.4980394, a: 1}
+  ExplosiveColor: {r: 1.4980394, g: 0.7490197, b: 0, a: 1}
   FlashDuration: 0.15

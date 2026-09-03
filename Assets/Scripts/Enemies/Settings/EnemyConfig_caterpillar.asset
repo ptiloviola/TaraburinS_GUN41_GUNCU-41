@@ -23,7 +23,7 @@ MonoBehaviour:
   Armor:
     PhysicalMultiplier: 1
     EnergyMultiplier: 0
-    ExplosiveMultiplier: 1
+    ExplosiveMultiplier: 4
   StatusResist:
     ControlMultiplier: 0
     DoTMultiplier: 1

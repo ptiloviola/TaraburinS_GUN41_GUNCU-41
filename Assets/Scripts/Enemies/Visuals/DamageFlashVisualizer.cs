@@ -3,13 +3,11 @@ using Gameplay.Core;
 
 namespace Gameplay.Enemies.Visuals
 {
-    // Меняем зависимость с HealthComponent на DamageReceiver
     [RequireComponent(typeof(DamageReceiver))]
     public class DamageFlashVisualizer : MonoBehaviour
     {
         [Header("Настройки вспышек")]
         [SerializeField] private DamageVisualSettings _settings;
-      
         
         private Renderer[] _renderers;
         private Color[] _originalColors;
@@ -19,7 +17,7 @@ namespace Gameplay.Enemies.Visuals
         
         private float _currentFlashTimer;
         private bool _isFlashing;
-        private Color _currentFlashColor; // Храним цвет текущей вспышки
+        private Color _currentFlashColor; 
 
         private void Awake()
         {
@@ -58,16 +56,9 @@ namespace Gameplay.Enemies.Visuals
 
         private void PlayFlash(DamagePayload payload)
         {
-            // Динамически выбираем цвет на основе типа входящего урона
-            _currentFlashColor = payload.Type switch
-            {
-                DamageType.Physical => _settings.GetColor(payload.Type),
-                DamageType.Energy => _settings.GetColor(payload.Type),
-                DamageType.Explosive => _settings.GetColor(payload.Type),
-                _ => _settings.PhysicalColor
-            };
-
-            _currentFlashTimer = _settings.FlashDuration;
+            // МАГИЯ ООП: Мы просто просим конфиг дать нужный цвет!
+            _currentFlashColor = _settings != null ? _settings.GetColor(payload.Type) : Color.white;
+            _currentFlashTimer = _settings != null ? _settings.FlashDuration : 0.15f;
             _isFlashing = true;
         }
 
@@ -84,9 +75,10 @@ namespace Gameplay.Enemies.Visuals
                 return;
             }
 
-            float halfDuration = _settings.FlashDuration / 2f;
+            float duration = _settings != null ? _settings.FlashDuration : 0.15f;
+            float halfDuration = duration / 2f;
             float intensity = _currentFlashTimer > halfDuration 
-                ? Mathf.InverseLerp(_settings.FlashDuration, halfDuration, _currentFlashTimer) 
+                ? Mathf.InverseLerp(duration, halfDuration, _currentFlashTimer) 
                 : Mathf.InverseLerp(0f, halfDuration, _currentFlashTimer);
 
             ApplyFlashIntensity(intensity);

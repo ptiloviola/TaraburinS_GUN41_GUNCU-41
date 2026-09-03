@@ -1606,6 +1606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad9d241845e4764580d288c60c9f45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _damageSettings: {fileID: 11400000, guid: d15d2b20b8c7a3b4687238adaea834fa, type: 2}
   _floatingTextPrefab: {fileID: 6599539361249439198, guid: 87bb3c850e191ac4abb324f3016c277a,
     type: 3}
 --- !u!1 &695296226
