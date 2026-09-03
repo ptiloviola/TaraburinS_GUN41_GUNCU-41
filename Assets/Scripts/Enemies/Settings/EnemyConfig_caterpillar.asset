@@ -24,5 +24,9 @@ MonoBehaviour:
     PhysicalMultiplier: 1
     EnergyMultiplier: 1
     ExplosiveMultiplier: 1
+  StatusResist:
+    ControlMultiplier: 0
+    DoTMultiplier: 1
+    DebuffMultiplier: 1
   Movement: {fileID: 11400000, guid: 64b6d32b61aebca46b69b72d746d80a7, type: 2}
   DeathBehavior: {fileID: 11400000, guid: 62a206b8c68b6dd42bda2cfd8769a4eb, type: 2}

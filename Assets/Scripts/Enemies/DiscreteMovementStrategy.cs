@@ -19,6 +19,7 @@ namespace Gameplay.Enemies
 
         private const string CustomPathArea = "CustomPath";
         private const string CustomGroundArea = "CustomGround";
+        private EnemyFacade _enemy;
 
         public DiscreteMovementStrategy(Vector3 targetPosition, DiscreteMovementConfig config)
         {
@@ -29,6 +30,7 @@ namespace Gameplay.Enemies
         public void Initialize(EnemyFacade enemy)
         {
             _agent = enemy.Agent;
+            _enemy = enemy;
             if (_agent != null)
             {
                 _agent.enabled = true;
@@ -67,6 +69,11 @@ namespace Gameplay.Enemies
         {
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) return;
 
+            // Динамически применяем множитель скорости и для прыгунов!
+            // Важно: чтобы получить доступ к Фасаду здесь, тебе нужно сохранить его в локальную переменную _enemy внутри метода Initialize, как это сделано в ContinuousMovementStrategy
+            float totalCycleTime = _config.JumpDuration + _config.PauseDuration;
+            float baseSpeedMultiplier = totalCycleTime / _config.JumpDuration;
+            _agent.speed = _enemy.Config.Movement.MoveSpeed * baseSpeedMultiplier * _enemy.StatusController.SpeedMultiplier;
             _timer -= deltaTime;
 
             if (_isJumping)

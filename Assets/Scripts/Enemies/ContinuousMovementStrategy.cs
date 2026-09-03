@@ -65,6 +65,9 @@ namespace Gameplay.Enemies
         {
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) 
                 return;
+            // Динамически применяем множитель скорости из статусов
+            _agent.speed = _enemy.Config.Movement.MoveSpeed * _enemy.StatusController.SpeedMultiplier;
+        
         }
     }
 }

@@ -7,6 +7,7 @@ using Infrastructure.Signals;
 using Gameplay.Enemies.Data;
 using Gameplay.Enemies.FSM;
 using Gameplay.Base;
+using Gameplay.Enemies.Statuses;
 
 namespace Gameplay.Enemies
 {
@@ -33,6 +34,7 @@ namespace Gameplay.Enemies
         public HealthComponent Health => _health;
         public SignalBus SignalBus => _signalBus; // Чтобы стейты могли кидать сигналы
         public IMovementStrategy MovementStrategy => _movementStrategy;
+        public EnemyStatusController StatusController { get; private set; }
         // --- СОБЫТИЯ ДЛЯ ВИЗУАЛА ---
         public event Action<EnemyStateType> OnStateChanged;
 
@@ -76,6 +78,8 @@ namespace Gameplay.Enemies
             {
                 _health.OnDied -= HandleDeath;
             }
+
+            StatusController?.Cleanup();
             
             // ОБЯЗАТЕЛЬНО ставим знак вопроса ?. 
             // Zenject вызовет OnDisable при добавлении в пул ДО того, как вызовется InitializeMovement
@@ -117,10 +121,14 @@ namespace Gameplay.Enemies
             // 2. ПЕРЕНЕСЛИ СЮДА: Подписываемся на события только когда машина уже существует
             _stateMachine.OnStateChanged += state => OnStateChanged?.Invoke(state);
 
+            //
+            StatusController = new EnemyStatusController(this);
+
             // 3. Добавляем стейты
             _stateMachine.AddState(new MoveState(this, _movementStrategy));
             _stateMachine.AddState(new DeathState(this));
             _stateMachine.AddState(new ReachedBaseState(this));
+            
             
             // 4. Стартуем
             _stateMachine.ChangeState(EnemyStateType.Move);
@@ -128,6 +136,7 @@ namespace Gameplay.Enemies
 
         private void Update()
         {
+            StatusController?.Tick(Time.deltaTime);
             _stateMachine.Tick(Time.deltaTime);
         }
 
