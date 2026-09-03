@@ -235,7 +235,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2544779564035697183}
-  - component: {fileID: 2919795509573063343}
   - component: {fileID: 8172699972568849139}
   - component: {fileID: 7977650445509351927}
   - component: {fileID: 2592835290429401131}
@@ -243,6 +242,7 @@ GameObject:
   - component: {fileID: 1996542747888263960}
   - component: {fileID: -761134238866531938}
   - component: {fileID: 5741610501096224611}
+  - component: {fileID: 3206325978456618450}
   m_Layer: 7
   m_Name: cannonballTowerTest_1
   m_TagString: Untagged
@@ -269,24 +269,6 @@ Transform:
   - {fileID: 4406181998694191923}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2919795509573063343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1926724689136184970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e261bc6840a76a84993bca766b8d3f32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _logicalRotator: {fileID: 1355285404530712234}
-  _firePoint: {fileID: 1957830981407176550}
-  _enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 512
-  _turnSpeed: 10
 --- !u!114 &8172699972568849139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,6 +368,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentRadiusObj: {fileID: 2669954267687987071}
   _upgradedRadiusObj: {fileID: 9042507272533756312}
+--- !u!114 &3206325978456618450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926724689136184970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 293972cfda9ea024593c501c83c8bc2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _logicalRotator: {fileID: 1355285404530712234}
+  _firePoint: {fileID: 1957830981407176550}
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  _turnSpeed: 7
 --- !u!1 &2825307496775094794
 GameObject:
   m_ObjectHideFlags: 0

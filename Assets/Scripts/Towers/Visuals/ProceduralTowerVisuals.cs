@@ -71,7 +71,7 @@ namespace Gameplay.Towers.Visuals
         private float _targetYRotation;
 
         public event Action OnAttackImpact;
-        private AttackBehavior _attackBehavior;
+        private WeaponAdapter _attackBehavior;
 
         public void Initialize()
         {
@@ -107,7 +107,7 @@ namespace Gameplay.Towers.Visuals
         private void Awake()
         {
             // Ищем логику на этом же префабе
-            _attackBehavior = GetComponentInParent<AttackBehavior>();
+            _attackBehavior = GetComponentInParent<WeaponAdapter>();
             // ВОТ ОНО! Вызываем твой метод инициализации сами, при рождении объекта
             Initialize();
         }

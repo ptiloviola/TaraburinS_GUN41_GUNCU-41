@@ -302,7 +302,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5932089929565763045}
-  - component: {fileID: 8216538976048658775}
   - component: {fileID: 872484802250476112}
   - component: {fileID: 1056408956578757508}
   - component: {fileID: 3185065552530650880}
@@ -311,6 +310,7 @@ GameObject:
   - component: {fileID: 4502546087185729095}
   - component: {fileID: 82799684455489566}
   - component: {fileID: 8282581552577450488}
+  - component: {fileID: 2525560976609767543}
   m_Layer: 7
   m_Name: RangeTower2barrels
   m_TagString: Untagged
@@ -337,24 +337,6 @@ Transform:
   - {fileID: 7449372994175835998}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8216538976048658775
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3929638890925405715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e261bc6840a76a84993bca766b8d3f32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _logicalRotator: {fileID: 8694569178857730175}
-  _firePoint: {fileID: 51284356758595256}
-  _enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 512
-  _turnSpeed: 10
 --- !u!114 &872484802250476112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -471,6 +453,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11240d2df3a4a664dac4a7620a939b6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2525560976609767543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3929638890925405715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 293972cfda9ea024593c501c83c8bc2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _logicalRotator: {fileID: 8694569178857730175}
+  _firePoint: {fileID: 51284356758595256}
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  _turnSpeed: 10
 --- !u!1 &5931894481428781462
 GameObject:
   m_ObjectHideFlags: 0

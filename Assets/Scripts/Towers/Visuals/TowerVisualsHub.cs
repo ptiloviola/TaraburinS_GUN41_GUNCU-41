@@ -15,12 +15,12 @@ namespace Gameplay.Towers.Visuals
         public event Action OnBuild;
         public event Action<Vector3> OnShoot;
 
-        private AttackBehavior _attackBehavior;
+        private WeaponAdapter _attackBehavior;
 
         private void Awake()
         {
             // Пытаемся найти логику, если она есть на этом же объекте или родителе
-            _attackBehavior = GetComponentInParent<AttackBehavior>();
+            _attackBehavior = GetComponentInParent<WeaponAdapter>();
         }
 
         private void OnEnable()

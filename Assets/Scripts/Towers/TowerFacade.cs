@@ -1,6 +1,8 @@
 using Gameplay.Towers.Data;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
+using Gameplay.Towers.Behaviors;
 
 namespace Gameplay.Towers
 {
@@ -10,30 +12,20 @@ namespace Gameplay.Towers
         
         public int CurrentLevel { get; private set; }
         public TowerConfig Config => _config;
-
-        // НОВОЕ: Перенесли координату клетки прямо сюда!
         public Vector2Int GridPosition { get; private set; }
 
-        private ITowerBehavior[] _behaviors; // Массив всех модулей башни
-        // НОВОЕ: Событие для обновления UI-панели магазина
+        private readonly List<ITowerBehavior> _behaviors = new List<ITowerBehavior>();
+        
         public event Action OnLevelChanged;
 
-
-        // Добавляем Unity-метод Start для автономного дебага
         private void Start()
         {
-            // Если массив поведений еще не создан, значит Initialize не вызывался извне.
-            // Инициализируем башню самостоятельно дефолтным конфигом из инспектора.
-            if (_behaviors == null)
+            if (_behaviors.Count == 0)
             {
-                if (_config != null)
-                {
-                    Initialize(_config, Vector2Int.zero);
-                }
-                else
-                {
-                    Debug.LogError($"[TowerFacade] На объекте {name} нет конфигурации TowerConfig!");
-                }
+                if (_config != null) Initialize(_config, Vector2Int.zero);
+#if UNITY_EDITOR
+                else Debug.LogError($"[TowerFacade] На объекте {name} нет TowerConfig!");
+#endif
             }
         }
 
@@ -42,28 +34,25 @@ namespace Gameplay.Towers
             _config = config;
             GridPosition = gridPos;
             
-            Debug.Log($"<color=cyan>[TowerFacade] Начинаем сборку башни {_config.DisplayName} на клетке {gridPos}</color>");
+            _behaviors.Clear();
 
-            // Ищем модули, включив поиск по неактивным объектам (true)
-            _behaviors = GetComponentsInChildren<ITowerBehavior>(true);
+            // Ищем глупые адаптеры (WeaponAdapter, BarracksAdapter и т.д.)
+            var adapters = GetComponentsInChildren<IBehaviorAdapter>(true);
 
-            Debug.Log($"<color=cyan>[TowerFacade] Итог: Найдено модулей: {_behaviors.Length}</color>");
-
-            foreach (var behavior in _behaviors)
+            foreach (var adapter in adapters)
             {
-                Debug.Log($"<color=cyan>[TowerFacade] Запускаем модуль: {behavior.GetType().Name}</color>");
+                // Адаптер рождает чистый C# класс (например, AttackController)
+                ITowerBehavior behavior = adapter.CreateBehavior();
                 behavior.Initialize(this);
+                _behaviors.Add(behavior);
             }
         }
 
         private void Update()
         {
-            if (_behaviors == null) return;
-
-            // Каждый кадр заставляем работать только те модули, которые висят на башне
-            foreach (var behavior in _behaviors)
+            for (int i = 0; i < _behaviors.Count; i++)
             {
-                behavior.Tick();
+                _behaviors[i].Tick(Time.deltaTime);
             }
         }
 
@@ -74,18 +63,25 @@ namespace Gameplay.Towers
         {
             if (!CanUpgrade()) return;
             CurrentLevel++;
-            // НОВОЕ: Заставляем все модули перечитать статы из конфига!
-            // Так как CurrentLevel увеличился, GetCurrentStats() теперь вернет новые данные.
-            foreach (var behavior in _behaviors)
+            
+            // Перезапускаем чистые классы, чтобы они прочитали новые статы
+            for (int i = 0; i < _behaviors.Count; i++)
             {
-                behavior.Initialize(this); 
+                _behaviors[i].Initialize(this); 
             }
 
-            // Оповещаем UI, что уровень изменился
             OnLevelChanged?.Invoke();
-            
-            Debug.Log($"<color=green>[TowerFacade] {_config.DisplayName} улучшена до уровня {CurrentLevel + 1}!</color>");
-            // Здесь в будущем добавим перерисовку VisualPrefab
+        }
+        private void OnDestroy()
+        {
+            foreach (var behavior in _behaviors)
+            {
+                // Проверяем, реализует ли контроллер очистку (паттерн Type Checking)
+                if (behavior is BarracksController barracks)
+                {
+                    barracks.Cleanup();
+                }
+            }
         }
     }
 }

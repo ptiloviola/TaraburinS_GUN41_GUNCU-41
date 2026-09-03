@@ -266,13 +266,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5932089929565763045}
-  - component: {fileID: 8216538976048658775}
   - component: {fileID: 3185065552530650880}
   - component: {fileID: 7400648276859534693}
   - component: {fileID: 4502546087185729095}
   - component: {fileID: 6045899560580821848}
   - component: {fileID: 2809589193535906250}
   - component: {fileID: 5406174641817209473}
+  - component: {fileID: 1212883310669101430}
   m_Layer: 7
   m_Name: AntiAirTower
   m_TagString: Untagged
@@ -297,24 +297,6 @@ Transform:
   - {fileID: 4948790352228714512}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8216538976048658775
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3929638890925405715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e261bc6840a76a84993bca766b8d3f32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _logicalRotator: {fileID: 8694569178857730175}
-  _firePoint: {fileID: 51284356758595256}
-  _enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 512
-  _turnSpeed: 10
 --- !u!114 &3185065552530650880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,6 +388,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11240d2df3a4a664dac4a7620a939b6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1212883310669101430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3929638890925405715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 293972cfda9ea024593c501c83c8bc2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _logicalRotator: {fileID: 8694569178857730175}
+  _firePoint: {fileID: 51284356758595256}
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  _turnSpeed: 10
 --- !u!1 &5931894481428781462
 GameObject:
   m_ObjectHideFlags: 0
