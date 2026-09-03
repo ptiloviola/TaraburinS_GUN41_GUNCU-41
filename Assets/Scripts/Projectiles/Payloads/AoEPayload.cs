@@ -27,7 +27,7 @@ namespace Gameplay.Projectiles.Payloads
                 var damageable = hit.GetComponentInParent<IDamageable>();
                 if (damageable != null)
                 {
-                    damageable.TakeDamage(_damage);
+                    damageable.TakeDamage(new DamagePayload(_damage, DamageType.Physical));
                 }
             }
             

@@ -17,11 +17,14 @@ namespace Gameplay.Enemies
         [SerializeField] private HealthComponent _health;
         [SerializeField] private NavMeshAgent _agent;
         [SerializeField] private Collider _collider;
+        [SerializeField] private DamageReceiver _damageReceiver;
 
         private Pool _pool;
         private SignalBus _signalBus;
         private EnemyStateMachine _stateMachine;
         private IMovementStrategy _movementStrategy;
+
+        private ArmorCalculator _armorCalculator;
 
         private static int _spawnCounter = 0;
 
@@ -44,6 +47,7 @@ namespace Gameplay.Enemies
             if (_agent == null) _agent = GetComponent<NavMeshAgent>();
             if (_health == null) _health = GetComponent<HealthComponent>();
             if (_collider == null) _collider = GetComponent<Collider>();
+            if (_damageReceiver == null) _damageReceiver = GetComponent<DamageReceiver>();
         }
 
         public void SetPool(Pool pool)
@@ -84,10 +88,21 @@ namespace Gameplay.Enemies
         public void InitConfig(EnemyConfig config)
         {
             Config = config;
+            
+            // Создаем чистую бизнес-логику
+            _armorCalculator = new ArmorCalculator(config.Armor);
+            
             if (_health != null)
             {
                 _health.Initialize(config.Stats.MaxHealth);
             }
+            
+            // Передаем зависимости в ресивер урона
+            if (_damageReceiver != null)
+            {
+                _damageReceiver.Initialize(_health, _armorCalculator);
+            }
+
             _agent.speed = Config.Movement.MoveSpeed;
         }
 

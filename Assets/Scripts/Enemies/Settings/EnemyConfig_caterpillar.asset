@@ -17,8 +17,12 @@ MonoBehaviour:
   UIIcon: {fileID: 0}
   Prefab: {fileID: 2746841710687665809, guid: 848d03498833dfe43ba4de1369516dbf, type: 3}
   Stats:
-    MaxHealth: 100
-    DamageToBase: 1
-    RewardMoney: 15
+    MaxHealth: 420
+    DamageToBase: 3
+    RewardMoney: 25
+  Armor:
+    PhysicalMultiplier: 1
+    EnergyMultiplier: 1
+    ExplosiveMultiplier: 1
   Movement: {fileID: 11400000, guid: 64b6d32b61aebca46b69b72d746d80a7, type: 2}
   DeathBehavior: {fileID: 11400000, guid: 62a206b8c68b6dd42bda2cfd8769a4eb, type: 2}
