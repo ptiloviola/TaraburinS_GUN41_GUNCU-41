@@ -3,11 +3,11 @@ using Gameplay.Towers.Behaviors.Aiming;
 
 namespace Gameplay.Towers.Behaviors.Targeting
 {
-    // Компонент, который ищет ближайшего врага
-    public class ClosestTargetStrategy : MonoBehaviour, ITargetingStrategy
+    // Теперь это чистый C# класс. Никакого MonoBehaviour.
+    public class ClosestTargetStrategy : ITargetingStrategy
     {
-        // Массив живет здесь, не засоряя боевой модуль
-        private Collider[] _targetColliders = new Collider[20];
+        // Массив живет в оперативной памяти конкретного экземпляра стратегии
+        private readonly Collider[] _targetColliders = new Collider[20];
 
         public Transform FindTarget(Transform center, float range, LayerMask enemyMask, IAimStrategy aimStrategy)
         {
@@ -23,7 +23,6 @@ namespace Gameplay.Towers.Behaviors.Targeting
                 
                 if (sqrDistance < closestSqrDistance)
                 {
-                    // Проверяем, может ли башня физически туда повернуться
                     if (aimStrategy == null || aimStrategy.CanAimAt(center, hit.transform))
                     {
                         closestSqrDistance = sqrDistance;
@@ -48,4 +47,3 @@ namespace Gameplay.Towers.Behaviors.Targeting
         }
     }
 }
-

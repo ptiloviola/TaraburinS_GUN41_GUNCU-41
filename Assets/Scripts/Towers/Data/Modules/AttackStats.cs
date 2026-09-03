@@ -1,5 +1,5 @@
 using UnityEngine;
-using Gameplay.Core; // Для DamageType
+using Gameplay.Core; 
 using Gameplay.Projectiles.Data;
 
 namespace Gameplay.Towers.Data.Modules
@@ -9,11 +9,13 @@ namespace Gameplay.Towers.Data.Modules
     {
         [Header("Базовые характеристики")]
         public float Damage = 10f;
-        public DamageType Type = DamageType.Physical; // НОВОЕ: Тип урона
+        public DamageType Type = DamageType.Physical; 
         public float Range = 3f;
         public float Cooldown = 1f;
 
-        [Header("Тип атаки (Логика)")]
+        [Header("Логика поведения (Стратегии)")]
+        public TargetingType Targeting = TargetingType.Closest;
+        public AimingType Aiming = AimingType.Omni;
         public PayloadConfig PayloadStrategy;
 
         public string GetStatsDescription()
