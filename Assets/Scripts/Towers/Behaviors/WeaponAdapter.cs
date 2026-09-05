@@ -1,8 +1,7 @@
 using UnityEngine;
 using System;
-using Gameplay.Towers.Behaviors.Weapons;
+using Zenject;
 using Gameplay.Towers.Behaviors.Aiming;
-using Gameplay.Towers.Behaviors.Targeting;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -17,29 +16,28 @@ namespace Gameplay.Towers.Behaviors
         public event Action OnBuildStarted;
         public event Action<Vector3> OnShotFired;
 
-        // Открываем доступ для чистого класса через свойства
         public Transform LogicalRotator => _logicalRotator;
         public Transform FirePoint => _firePoint;
         public LayerMask EnemyMask => _enemyLayerMask;
         public float TurnSpeed => _turnSpeed;
 
-        public IAttackExecutor Executor { get; private set; }
-        public IAimStrategy Aiming { get; private set; }
-        public ITargetingStrategy Targeting { get; private set; }
+        private IInstantiator _instantiator;
+        
+        // Ссылка на контроллер для отрисовки Gizmos
+        public AttackController ActiveController { get; private set; }
 
-        private void Awake()
+        [Inject]
+        public void Construct(IInstantiator instantiator)
         {
-            // Кэшируем зависимости один раз при старте игры (Оптимизация)
-            Executor = GetComponentInChildren<IAttackExecutor>();
-            Aiming = GetComponentInChildren<IAimStrategy>();
-            Targeting = GetComponentInChildren<ITargetingStrategy>();
+            // Zenject прокинет сюда инстанциатор при спавне башни
+            _instantiator = instantiator;
         }
 
-        // Выполняем контракт IBehaviorAdapter
         public ITowerBehavior CreateBehavior()
         {
-            // Рождаем чистую логику и отдаем Фасаду
-            return new AttackController(this);
+            // Передаем инстанциатор в контроллер
+            ActiveController = new AttackController(this, _instantiator);
+            return ActiveController;
         }
 
         public void TriggerBuildStarted() => OnBuildStarted?.Invoke();
@@ -58,8 +56,11 @@ namespace Gameplay.Towers.Behaviors
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(center, drawRange);
 
-            var aim = GetComponentInChildren<IAimStrategy>();
-            aim?.DrawAimGizmo(_logicalRotator != null ? _logicalRotator : transform, drawRange);
+            // Теперь запрашиваем стратегию прицеливания напрямую из живого контроллера, а не ищем компонент
+            if (Application.isPlaying && ActiveController != null)
+            {
+                ActiveController.AimStrategy?.DrawAimGizmo(_logicalRotator != null ? _logicalRotator : transform, drawRange);
+            }
         }
     }
 }

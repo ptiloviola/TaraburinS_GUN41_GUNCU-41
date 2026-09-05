@@ -1,6 +1,7 @@
 using UnityEngine;
 using Gameplay.Core; 
 using Gameplay.Projectiles.Data;
+using Gameplay.Projectiles; // Для ModularProjectile
 
 namespace Gameplay.Towers.Data.Modules
 {
@@ -16,6 +17,11 @@ namespace Gameplay.Towers.Data.Modules
         [Header("Логика поведения (Стратегии)")]
         public TargetingType Targeting = TargetingType.Closest;
         public AimingType Aiming = AimingType.Omni;
+        
+        [Header("Логика выстрела (Экзекутор)")]
+        public ExecutorType Executor = ExecutorType.Hitscan;
+        [Tooltip("Нужен только если выбран тип Projectile")]
+        public ModularProjectile ProjectilePrefab;
         public PayloadConfig PayloadStrategy;
 
         public string GetStatsDescription()

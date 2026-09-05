@@ -1,29 +1,37 @@
 using UnityEngine;
+using Zenject;
 using Gameplay.Towers.Data;
 using Gameplay.Towers.Data.Modules;
 using Gameplay.Core;
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Towers.Behaviors.Targeting;
+using Gameplay.Towers.Behaviors.Weapons; // Не забываем неймспейс экзекуторов
 
 namespace Gameplay.Towers.Behaviors
 {
     public class AttackController : ITowerBehavior
     {
         private readonly WeaponAdapter _adapter;
+        private readonly IInstantiator _instantiator; // Сохраняем инстанциатор
         private TowerFacade _facade;
         
         private Transform _currentTarget;
         private float _cooldownTimer;
         private AttackStats _currentStats;
 
-        // Чистые стратегии живут прямо в памяти контроллера
         private ITargetingStrategy _targetingStrategy;
-        private IAimStrategy _aimStrategy;
+        
+        // Делаем свойство публичным, чтобы Адаптер мог рисовать по нему Gizmos
+        public IAimStrategy AimStrategy { get; private set; }
+        
+        // Наш новый чистый экзекутор
+        private IAttackExecutor _executor;
 
-        public AttackController(WeaponAdapter adapter)
+        public AttackController(WeaponAdapter adapter, IInstantiator instantiator)
         {
             _adapter = adapter;
+            _instantiator = instantiator;
         }
 
         public void Initialize(TowerFacade facade)
@@ -32,18 +40,25 @@ namespace Gameplay.Towers.Behaviors
             _cooldownTimer = 0f;
             _currentStats = _facade.GetCurrentStats().Attack;
             
-            // 1. Фабрика стратегий на лету (читаем из конфига)
             _targetingStrategy = _currentStats.Targeting switch
             {
                 TargetingType.Closest => new ClosestTargetStrategy(),
                 _ => new ClosestTargetStrategy()
             };
 
-            _aimStrategy = _currentStats.Aiming switch
+            AimStrategy = _currentStats.Aiming switch
             {
                 AimingType.Horizontal => new HorizontalAimStrategy(15f), 
                 AimingType.Omni => new OmniAimStrategy(),
                 _ => new OmniAimStrategy()
+            };
+
+            // 1. ФАБРИКА ЭКЗЕКУТОРОВ: Собираем оружие из конфига
+            _executor = _currentStats.Executor switch
+            {
+                ExecutorType.Hitscan => new HitscanExecutor(),
+                ExecutorType.Projectile => new ProjectileExecutor(_currentStats.ProjectilePrefab, _instantiator),
+                _ => new HitscanExecutor()
             };
 
             _adapter.TriggerBuildStarted();
@@ -51,23 +66,20 @@ namespace Gameplay.Towers.Behaviors
 
         public void Tick(float deltaTime)
         {
-            // ИСПРАВЛЕНО: Проверяем локальную стратегию, а не адаптер!
             if (_currentStats == null || _targetingStrategy == null) return;
 
             _cooldownTimer -= deltaTime;
 
-            // 2. Делегируем поиск чистой стратегии
-            if (!_targetingStrategy.IsTargetValid(_currentTarget, _adapter.LogicalRotator, _currentStats.Range, _aimStrategy))
+            if (!_targetingStrategy.IsTargetValid(_currentTarget, _adapter.LogicalRotator, _currentStats.Range, AimStrategy))
             {
-                _currentTarget = _targetingStrategy.FindTarget(_adapter.LogicalRotator, _currentStats.Range, _adapter.EnemyMask, _aimStrategy);
+                _currentTarget = _targetingStrategy.FindTarget(_adapter.LogicalRotator, _currentStats.Range, _adapter.EnemyMask, AimStrategy);
             }
 
-            // 3. Цель найдена — наводимся и стреляем
             if (_currentTarget != null)
             {
-                _aimStrategy?.AimAtTarget(_adapter.LogicalRotator, _currentTarget, _adapter.TurnSpeed);
+                AimStrategy?.AimAtTarget(_adapter.LogicalRotator, _currentTarget, _adapter.TurnSpeed);
 
-                bool isFacing = _aimStrategy == null || _aimStrategy.IsFacingTarget(_adapter.LogicalRotator, _currentTarget);
+                bool isFacing = AimStrategy == null || AimStrategy.IsFacingTarget(_adapter.LogicalRotator, _currentTarget);
 
                 if (_cooldownTimer <= 0f && isFacing)
                 {
@@ -79,19 +91,14 @@ namespace Gameplay.Towers.Behaviors
 
         private void ExecuteShot()
         {
-            if (_currentStats.PayloadStrategy == null)
-            {
-#if UNITY_EDITOR
-                Debug.LogError($"[AttackController] Нет PayloadStrategy на башне {_facade.name}!");
-#endif
-                return;
-            }
+            if (_currentStats.PayloadStrategy == null) return;
 
-            // Собираем Data-Driven урон и стреляем
             DamagePayload damagePayload = new DamagePayload(_currentStats.Damage, _currentStats.Type);
             IProjectilePayload payload = _currentStats.PayloadStrategy.CreatePayload(damagePayload);
             
-            _adapter.Executor?.ExecuteAttack(_currentTarget, payload, _adapter.FirePoint);
+            // Дергаем наш свежий POCO-экзекутор
+            _executor?.ExecuteAttack(_currentTarget, payload, _adapter.FirePoint);
+            
             _adapter.TriggerShotFired(_currentTarget.position);
         }
     }

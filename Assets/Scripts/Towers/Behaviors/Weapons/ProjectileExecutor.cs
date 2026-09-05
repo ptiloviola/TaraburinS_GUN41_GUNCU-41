@@ -5,33 +5,30 @@ using Gameplay.Projectiles.Contracts;
 
 namespace Gameplay.Towers.Behaviors.Weapons
 {
-    public class ProjectileExecutor : MonoBehaviour, IAttackExecutor
+    // Никакого MonoBehaviour!
+    public class ProjectileExecutor : IAttackExecutor
     {
-        [Header("Боеприпас")]
-        [Tooltip("Перетащите сюда префаб снаряда, которым должна стрелять эта башня")]
-        [SerializeField] private ModularProjectile _projectilePrefab;
+        private readonly ModularProjectile _projectilePrefab;
+        private readonly IInstantiator _instantiator;
         
-        private IInstantiator _instantiator;
-        
-        [Inject]
-        public void Construct(IInstantiator instantiator)
+        // Передаем префаб из конфига и инстанциатор от адаптера
+        public ProjectileExecutor(ModularProjectile projectilePrefab, IInstantiator instantiator)
         {
+            _projectilePrefab = projectilePrefab;
             _instantiator = instantiator;
-        }   
+        }
 
         public void ExecuteAttack(Transform target, IProjectilePayload payload, Transform firePoint)
         {
             if (_projectilePrefab == null)
             {
-                Debug.LogError($"[ProjectileExecutor] На башне {gameObject.name} не назначен префаб снаряда!");
+                Debug.LogError("[ProjectileExecutor] Префаб снаряда не назначен в AttackStats!");
                 return;
             }
 
-            // 1. Просим Zenject создать конкретный префаб снаряда (он автоматически прокинет в него зависимости, если нужно)
             var projectile = _instantiator.InstantiatePrefabForComponent<ModularProjectile>(
                 _projectilePrefab, firePoint.position, firePoint.rotation, null);
             
-            // 2. Запускаем! (Передаем null вместо пула. Снаряд сам вызовет Destroy при попадании)
             projectile.Launch(target, payload, null);
         }
     }

@@ -12,4 +12,10 @@ namespace Gameplay.Towers.Data
         Omni,       // Вращается во все стороны (ПВО, Магия)
         Horizontal  // Вращается только по оси Y (Пушки, Арбалеты)
     }
+
+    public enum ExecutorType
+    {
+        Hitscan,
+        Projectile
+    }
 }
