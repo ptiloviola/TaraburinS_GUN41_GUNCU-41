@@ -4102,6 +4102,8 @@ MonoBehaviour:
       type: 3}
     RadiusIndicatorPrefab: {fileID: 4508128813081476246, guid: 3908adae3b577e24ca0daeeb8d5e23de,
       type: 3}
+    MinRadiusIndicatorPrefab: {fileID: 4508128813081476246, guid: f0386ca012089644484ce519eef76aa9,
+      type: 3}
     HeightOffset: 0.05
   _towerRegistry: {fileID: 11400000, guid: ab8b36f6173127643b66457f9beb3d9d, type: 2}
   _towerLayerMask:

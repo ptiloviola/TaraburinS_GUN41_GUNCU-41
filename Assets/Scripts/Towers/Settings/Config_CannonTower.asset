@@ -25,8 +25,13 @@ MonoBehaviour:
     Attack:
       Damage: 21
       Type: 2
+      MinRange: 2
       Range: 5
       Cooldown: 2
+      FieldOfView: 360
+      MinPitch: -10
+      MaxPitch: 80
+      CheckLineOfSight: 1
       Targeting: 0
       Aiming: 1
       Executor: 1
@@ -49,8 +54,13 @@ MonoBehaviour:
     Attack:
       Damage: 25
       Type: 2
+      MinRange: 0
       Range: 6
       Cooldown: 1.8
+      FieldOfView: 360
+      MinPitch: -10
+      MaxPitch: 80
+      CheckLineOfSight: 1
       Targeting: 0
       Aiming: 1
       Executor: 1

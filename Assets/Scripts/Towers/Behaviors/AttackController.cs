@@ -46,11 +46,18 @@ namespace Gameplay.Towers.Behaviors
                 _ => new ClosestTargetStrategy()
             };
 
+            // Передаем все физические параметры в стратегии прицеливания
             AimStrategy = _currentStats.Aiming switch
             {
-                AimingType.Horizontal => new HorizontalAimStrategy(15f), 
-                AimingType.Omni => new OmniAimStrategy(),
-                _ => new OmniAimStrategy()
+                AimingType.Horizontal => new HorizontalAimStrategy(
+                    _adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, 
+                    _currentStats.MinPitch, _currentStats.MaxPitch, _currentStats.FieldOfView, _currentStats.CheckLineOfSight),
+                    
+                AimingType.Omni => new OmniAimStrategy(
+                    _adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, 
+                    _currentStats.MinPitch, _currentStats.MaxPitch, _currentStats.FieldOfView, _currentStats.CheckLineOfSight),
+                    
+                _ => new OmniAimStrategy(_adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, -10f, 80f, 360f, false)
             };
 
             // 1. ФАБРИКА ЭКЗЕКУТОРОВ: Собираем оружие из конфига
@@ -70,9 +77,9 @@ namespace Gameplay.Towers.Behaviors
 
             _cooldownTimer -= deltaTime;
 
-            if (!_targetingStrategy.IsTargetValid(_currentTarget, _adapter.LogicalRotator, _currentStats.Range, AimStrategy))
+            if (!_targetingStrategy.IsTargetValid(_currentTarget, _adapter.LogicalRotator, _currentStats, AimStrategy))
             {
-                _currentTarget = _targetingStrategy.FindTarget(_adapter.LogicalRotator, _currentStats.Range, _adapter.EnemyMask, AimStrategy);
+                _currentTarget = _targetingStrategy.FindTarget(_adapter.LogicalRotator, _currentStats, _adapter.EnemyMask, AimStrategy);
             }
 
             if (_currentTarget != null)

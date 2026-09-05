@@ -36,6 +36,7 @@ namespace Gameplay.Interaction
             public GameObject ValidCursorPrefab;
             public GameObject InvalidCursorPrefab;
             public GameObject RadiusIndicatorPrefab;
+            public GameObject MinRadiusIndicatorPrefab;
             public float HeightOffset = 0.05f; 
         }
 
@@ -63,12 +64,14 @@ namespace Gameplay.Interaction
             var valid = _instantiator.InstantiatePrefab(_settings.ValidCursorPrefab);
             var invalid = _instantiator.InstantiatePrefab(_settings.InvalidCursorPrefab);
             var radius = _instantiator.InstantiatePrefab(_settings.RadiusIndicatorPrefab);
-            
+            var minRadius = _instantiator.InstantiatePrefab(_settings.MinRadiusIndicatorPrefab);
+
             valid.SetActive(false);
             invalid.SetActive(false);
             radius.SetActive(false);
+            minRadius.SetActive(false);
 
-            _visualizer = new PlacementVisualizer(valid, invalid, radius, _settings.HeightOffset);
+            _visualizer = new PlacementVisualizer(valid, invalid, radius, minRadius, _settings.HeightOffset);
         }
 
         public void SelectTower(string towerId)

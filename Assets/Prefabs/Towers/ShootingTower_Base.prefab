@@ -499,3 +499,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   _turnSpeed: 10
+  _environmentLayerMask:
+    serializedVersion: 2
+    m_Bits: 1024

@@ -12,6 +12,7 @@ namespace Gameplay.Towers.Behaviors
         [SerializeField] private Transform _firePoint;
         [SerializeField] private LayerMask _enemyLayerMask;
         [SerializeField] private float _turnSpeed = 10f;
+        [SerializeField] private LayerMask _environmentLayerMask;
 
         public event Action OnBuildStarted;
         public event Action<Vector3> OnShotFired;
@@ -25,6 +26,7 @@ namespace Gameplay.Towers.Behaviors
         
         // Ссылка на контроллер для отрисовки Gizmos
         public AttackController ActiveController { get; private set; }
+        public LayerMask EnvironmentMask => _environmentLayerMask;
 
         [Inject]
         public void Construct(IInstantiator instantiator)

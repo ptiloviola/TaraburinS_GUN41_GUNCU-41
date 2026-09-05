@@ -1,26 +1,30 @@
 using UnityEngine;
 using Gameplay.Towers.Behaviors.Aiming;
+using Gameplay.Towers.Data.Modules;
 
 namespace Gameplay.Towers.Behaviors.Targeting
 {
-    // Теперь это чистый C# класс. Никакого MonoBehaviour.
     public class ClosestTargetStrategy : ITargetingStrategy
     {
-        // Массив живет в оперативной памяти конкретного экземпляра стратегии
         private readonly Collider[] _targetColliders = new Collider[20];
 
-        public Transform FindTarget(Transform center, float range, LayerMask enemyMask, IAimStrategy aimStrategy)
+        public Transform FindTarget(Transform center, AttackStats stats, LayerMask enemyMask, IAimStrategy aimStrategy)
         {
-            int hitsCount = Physics.OverlapSphereNonAlloc(center.position, range, _targetColliders, enemyMask);
+            int hitsCount = Physics.OverlapSphereNonAlloc(center.position, stats.Range, _targetColliders, enemyMask);
             
             Transform bestTarget = null;
             float closestSqrDistance = Mathf.Infinity;
+
+            float minRangeSqr = stats.MinRange * stats.MinRange;
 
             for (int i = 0; i < hitsCount; i++)
             {
                 Collider hit = _targetColliders[i];
                 float sqrDistance = (hit.transform.position - center.position).sqrMagnitude;
                 
+                // Пропускаем врага, если он зашел в мертвую зону мортиры
+                if (sqrDistance < minRangeSqr) continue;
+
                 if (sqrDistance < closestSqrDistance)
                 {
                     if (aimStrategy == null || aimStrategy.CanAimAt(center, hit.transform))
@@ -34,12 +38,15 @@ namespace Gameplay.Towers.Behaviors.Targeting
             return bestTarget;
         }
 
-        public bool IsTargetValid(Transform target, Transform center, float range, IAimStrategy aimStrategy)
+        public bool IsTargetValid(Transform target, Transform center, AttackStats stats, IAimStrategy aimStrategy)
         {
             if (target == null || !target.gameObject.activeInHierarchy) return false;
             
             float sqrDistance = (target.position - center.position).sqrMagnitude;
-            if (sqrDistance > (range * range)) return false;
+            
+            // Цель невалидна, если вышла из радиуса ИЛИ подошла слишком близко
+            if (sqrDistance > (stats.Range * stats.Range) || sqrDistance < (stats.MinRange * stats.MinRange)) 
+                return false;
 
             if (aimStrategy != null && !aimStrategy.CanAimAt(center, target)) return false;
 

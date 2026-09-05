@@ -147,8 +147,11 @@ namespace Gameplay.UI
         {
             if (_currentTower != null && _currentTower.TryGetComponent(out TowerRadiusVisualizer visualizer))
             {
-                float currentRadius = GetRadiusFromLevel(_currentTower.GetCurrentStats());
-                visualizer.ShowPreview(currentRadius, 0f); 
+                TowerLevelData currentStats = _currentTower.GetCurrentStats();
+                float currentRadius = GetRadiusFromLevel(currentStats);
+                float minRadius = GetMinRadiusFromLevel(currentStats); // Достаем мертвую зону
+                
+                visualizer.ShowPreview(currentRadius, 0f, minRadius); // Передаем третьим параметром
             }
         }
 
@@ -158,12 +161,14 @@ namespace Gameplay.UI
 
             if (_currentTower.TryGetComponent(out TowerRadiusVisualizer visualizer))
             {
-                float currentRadius = GetRadiusFromLevel(_currentTower.GetCurrentStats());
+                TowerLevelData currentStats = _currentTower.GetCurrentStats();
+                float currentRadius = GetRadiusFromLevel(currentStats);
+                float minRadius = GetMinRadiusFromLevel(currentStats); // Достаем мертвую зону
                 
                 TowerLevelData nextLevel = _currentTower.Config.Levels[_currentTower.CurrentLevel + 1];
                 float nextRadius = GetRadiusFromLevel(nextLevel);
                 
-                visualizer.ShowPreview(currentRadius, nextRadius);
+                visualizer.ShowPreview(currentRadius, nextRadius, minRadius); // Передаем третьим параметром
             }
         }
 
@@ -176,6 +181,14 @@ namespace Gameplay.UI
         {
             if (levelData.Attack != null && levelData.Attack.Range > 0) return levelData.Attack.Range;
             if (levelData.Aura != null && levelData.Aura.Radius > 0) return levelData.Aura.Radius;
+            return 0f;
+        }
+
+        // НОВОЕ: Вспомогательный метод для получения мертвой зоны
+        private float GetMinRadiusFromLevel(TowerLevelData levelData)
+        {
+            if (levelData.Attack != null && levelData.Attack.MinRange > 0) return levelData.Attack.MinRange;
+            // Аур с мертвой зоной у нас пока нет, поэтому просто возвращаем 0
             return 0f;
         }
 

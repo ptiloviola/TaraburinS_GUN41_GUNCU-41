@@ -10,9 +10,19 @@ namespace Gameplay.Towers.Data.Modules
     {
         [Header("Базовые характеристики")]
         public float Damage = 10f;
-        public DamageType Type = DamageType.Physical; 
+        public DamageType Type = DamageType.Physical;
+        public float MinRange = 0f; // НОВОЕ: Мертвая зона
         public float Range = 3f;
         public float Cooldown = 1f;
+
+        // НОВОЕ: Настройки геометрии и обзора
+        [Header("Ограничения прицеливания")]
+        [Range(0f, 360f)] 
+        [Tooltip("Сектор обстрела по горизонтали (360 - круговой)")]
+        public float FieldOfView = 360f; 
+        public float MinPitch = -10f; // Насколько низко может опустить ствол
+        public float MaxPitch = 80f;  // Насколько высоко может задрать ствол
+        public bool CheckLineOfSight = true; // Нужна ли прямая видимость (Raycast)
 
         [Header("Логика поведения (Стратегии)")]
         public TargetingType Targeting = TargetingType.Closest;
