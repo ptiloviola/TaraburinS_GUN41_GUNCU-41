@@ -19,30 +19,29 @@ namespace Gameplay.Towers.Factories
             _gridService = gridService;
         }
 
-        public bool TryBuildTower(TowerShopData shopData, Vector2Int gridPos, Vector3 spawnPosition)
+        // ИЗМЕНЕНО: Принимаем TowerConfig
+        public bool TryBuildTower(TowerConfig config, Vector2Int gridPos, Vector3 spawnPosition)
         {
-            // Проверяем экономику и сетку в одном безопасном месте
-            if (!_gridService.CanBuildAt(gridPos) || _bankService.CurrentBalance < shopData.Cost)
+            if (!_gridService.CanBuildAt(gridPos) || _bankService.CurrentBalance < config.BaseCost)
             {
                 return false;
             }
 
-            // Списываем деньги
-            if (!_bankService.SpendMoney(shopData.Cost)) return false;
+            if (!_bankService.SpendMoney(config.BaseCost)) return false;
 
-            // Регистрируем занятость клетки
             GridNode node = _gridService.GetNode(gridPos);
             node.IsOccupied = true;
 
-            // Спавним башню
-            GameObject towerGo = _instantiator.InstantiatePrefab(shopData.Prefab, spawnPosition, Quaternion.identity, null);
+            // Спавним башню из конфига
+            GameObject towerGo = _instantiator.InstantiatePrefab(config.Prefab, spawnPosition, Quaternion.identity, null);
             
             if (towerGo.TryGetComponent(out TowerFacade towerFacade))
             {
-                towerFacade.Initialize(shopData.TowerConfig, gridPos);
+                // Передаем сам конфиг
+                towerFacade.Initialize(config, gridPos);
             }
 
-            Debug.Log($"<color=green>[TowerFactory] Успешно создана {shopData.TowerConfig.DisplayName} на {gridPos}</color>");
+            Debug.Log($"<color=green>[TowerFactory] Успешно создана {config.DisplayName} на {gridPos}</color>");
             return true;
         }
     }

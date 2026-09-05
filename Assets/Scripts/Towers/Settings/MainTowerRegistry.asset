@@ -13,33 +13,5 @@ MonoBehaviour:
   m_Name: MainTowerRegistry
   m_EditorClassIdentifier: 
   Towers:
-  - Cost: 50
-    SellRefundMultiplier: 0.5
-    Icon: {fileID: 21300000, guid: 76b2b3623875b22488d7152125b46e71, type: 3}
-    Prefab: {fileID: 3929638890925405715, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7,
-      type: 3}
-    TowerConfig: {fileID: 11400000, guid: e21c2c6eaa9ef04458b86dfb71ca06f0, type: 2}
-  - Cost: 80
-    SellRefundMultiplier: 0.106
-    Icon: {fileID: 21300000, guid: b857fcf2c0acd1e42a6c5536cfe0251d, type: 3}
-    Prefab: {fileID: 1926724689136184970, guid: 8faeee0504cf3d74fb41a207e19c7325,
-      type: 3}
-    TowerConfig: {fileID: 11400000, guid: 19fd970d01f3eec4a96712905c13cca7, type: 2}
-  - Cost: 20
-    SellRefundMultiplier: 0.106
-    Icon: {fileID: 21300000, guid: 9163d7efa6a22dd459d8cf304b3e3fa0, type: 3}
-    Prefab: {fileID: 5441004498453907254, guid: cdf64f6fc67cd5d44b088fcda92fbb4c,
-      type: 3}
-    TowerConfig: {fileID: 11400000, guid: 97a9d5b12eb88114e9c4fba72bb2425b, type: 2}
-  - Cost: 12
-    SellRefundMultiplier: 0.106
-    Icon: {fileID: 21300000, guid: 91184e91047616342982a2313e5a7bec, type: 3}
-    Prefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
-      type: 3}
-    TowerConfig: {fileID: 11400000, guid: 589f190a8f9969e4c9a75b3bb9109201, type: 2}
-  - Cost: 12
-    SellRefundMultiplier: 0.106
-    Icon: {fileID: 21300000, guid: 54711a5a5c26ab346a090a7ea78573da, type: 3}
-    Prefab: {fileID: 1639526263182489211, guid: 80d9309e2f4898c4bb3b38eef8baf050,
-      type: 3}
-    TowerConfig: {fileID: 11400000, guid: afaf29af01e218a45927626ed112f50f, type: 2}
+  - {fileID: 11400000, guid: 589f190a8f9969e4c9a75b3bb9109201, type: 2}
+  - {fileID: 11400000, guid: e21c2c6eaa9ef04458b86dfb71ca06f0, type: 2}

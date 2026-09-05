@@ -13,7 +13,7 @@ namespace Gameplay.Interaction
     public class TowerPlacementSystem : ITickable, IInitializable 
     {
         private readonly IGridService _gridService;
-        private readonly GridSceneReferences _sceneReferences; // ИЗМЕНЕНО
+        private readonly GridSceneReferences _sceneReferences;
         private readonly Camera _mainCamera;
         private readonly Settings _settings;
         private readonly IInstantiator _instantiator;
@@ -21,10 +21,11 @@ namespace Gameplay.Interaction
         private readonly TowerRegistry _towerRegistry;
         private readonly TowerFactory _towerFactory;
 
-        private TowerShopData _selectedTowerData;
+        // ИЗМЕНЕНО: Используем TowerConfig напрямую
+        private TowerConfig _selectedTowerConfig;
         private PlacementVisualizer _visualizer;
 
-        public bool IsBuildingMode => _selectedTowerData != null;
+        public bool IsBuildingMode => _selectedTowerConfig != null;
 
         public event Action OnTowerDeselected;
 
@@ -40,7 +41,7 @@ namespace Gameplay.Interaction
 
         public TowerPlacementSystem(
             IGridService gridService, 
-            GridSceneReferences sceneReferences, // ИЗМЕНЕНО
+            GridSceneReferences sceneReferences,
             Settings settings,
             IInstantiator instantiator,
             BankService bankService,
@@ -48,7 +49,7 @@ namespace Gameplay.Interaction
             TowerFactory towerFactory)
         {
             _gridService = gridService;
-            _sceneReferences = sceneReferences; // ИЗМЕНЕНО
+            _sceneReferences = sceneReferences;
             _settings = settings;
             _instantiator = instantiator;
             _bankService = bankService;
@@ -72,16 +73,16 @@ namespace Gameplay.Interaction
 
         public void SelectTower(string towerId)
         {
-            _selectedTowerData = _towerRegistry.GetTowerById(towerId);
-            if (_selectedTowerData != null)
+            _selectedTowerConfig = _towerRegistry.GetTowerById(towerId);
+            if (_selectedTowerConfig != null)
             {
-                _visualizer.SetSelectedTower(_selectedTowerData);
+                _visualizer.SetSelectedTower(_selectedTowerConfig);
             }
         }
 
         public void DeselectTower()
         {
-            _selectedTowerData = null;
+            _selectedTowerConfig = null;
             _visualizer.Hide();
             OnTowerDeselected?.Invoke(); 
         }
@@ -90,10 +91,10 @@ namespace Gameplay.Interaction
         {
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
-                if (_selectedTowerData != null) DeselectTower();
+                if (_selectedTowerConfig != null) DeselectTower();
             }
 
-            if (_selectedTowerData == null) return;
+            if (_selectedTowerConfig == null) return;
 
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
@@ -110,13 +111,13 @@ namespace Gameplay.Interaction
 
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, _settings.GridLayerMask))
             {
-                // ИЗМЕНЕНО: Используем Spacing из GridSceneReferences
                 int gridX = Mathf.RoundToInt(hit.transform.position.x / _sceneReferences.Spacing);
                 int gridZ = Mathf.RoundToInt(hit.transform.position.z / _sceneReferences.Spacing);
                 Vector2Int gridPos = new Vector2Int(gridX, gridZ);
 
                 bool isCellFree = _gridService.CanBuildAt(gridPos);
-                bool hasEnoughMoney = _bankService.CurrentBalance >= _selectedTowerData.Cost;
+                // ИЗМЕНЕНО: Обращаемся к BaseCost
+                bool hasEnoughMoney = _bankService.CurrentBalance >= _selectedTowerConfig.BaseCost;
                 bool canBuild = isCellFree && hasEnoughMoney;
 
                 _visualizer.UpdateVisuals(hit.collider.transform.position, hit.collider.bounds.max.y, canBuild);
@@ -125,7 +126,7 @@ namespace Gameplay.Interaction
                 {
                     Vector3 spawnPosition = new Vector3(hit.collider.transform.position.x, hit.collider.bounds.max.y, hit.collider.transform.position.z);
                     
-                    if (_towerFactory.TryBuildTower(_selectedTowerData, gridPos, spawnPosition))
+                    if (_towerFactory.TryBuildTower(_selectedTowerConfig, gridPos, spawnPosition))
                     {
                         _visualizer.UpdateVisuals(hit.collider.transform.position, hit.collider.bounds.max.y, false); 
                     }

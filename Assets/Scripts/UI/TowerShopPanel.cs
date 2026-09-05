@@ -1,7 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Gameplay.Towers.Data;
-using Gameplay.Towers; // Для доступа к TowerPlacementSystem
+using Gameplay.Towers; 
 using System.Collections.Generic;
 using TMPro; 
 using Gameplay.Towers.Data.Modules;
@@ -21,8 +21,6 @@ namespace Gameplay.UI
         [SerializeField] private TMP_Text _tooltipStatsText; 
 
         private TowerRegistry _towerRegistry;
-        
-        // НОВОЕ: Теперь мы зависим от чистой системы постройки
         private TowerPlacementSystem _placementSystem;
 
         private List<TowerButtonView> _spawnedButtons = new List<TowerButtonView>();
@@ -32,14 +30,13 @@ namespace Gameplay.UI
         public void Construct(TowerRegistry towerRegistry, TowerPlacementSystem placementSystem)
         {
             _towerRegistry = towerRegistry;
-            _placementSystem = placementSystem; // Сохраняем новую систему
+            _placementSystem = placementSystem; 
         }
 
         private void Start()
         {
             GenerateShopButtons();
             
-            // Подписываемся на новую систему
             _placementSystem.OnTowerDeselected += HandleDeselectFromGrid;
 
             if (_tooltipPanel != null) _tooltipPanel.SetActive(false);
@@ -61,10 +58,11 @@ namespace Gameplay.UI
                 return;
             }
 
-            foreach (TowerShopData towerData in _towerRegistry.Towers)
+            // ИЗМЕНЕНО: Перебираем TowerConfig
+            foreach (TowerConfig config in _towerRegistry.Towers)
             {
                 TowerButtonView newButton = Instantiate(_buttonPrefab, _buttonsContainer);
-                newButton.Init(towerData, OnTowerButtonClicked, OnButtonHoverEnter, OnButtonHoverExit);
+                newButton.Init(config, OnTowerButtonClicked, OnButtonHoverEnter, OnButtonHoverExit);
                 _spawnedButtons.Add(newButton); 
                 newButton.transform.SetSiblingIndex(_buttonsContainer.childCount - 2);
             }
@@ -86,7 +84,6 @@ namespace Gameplay.UI
         {
             if (_currentSelectedId == clickedTowerId)
             {
-                // Используем новую систему
                 _placementSystem.DeselectTower();
                 return;
             }
@@ -95,7 +92,6 @@ namespace Gameplay.UI
             
             Debug.Log($"<color=yellow>[TowerShopPanel] Игрок выбрал башню: {clickedTowerId}</color>");
             
-            // Используем новую систему
             _placementSystem.SelectTower(clickedTowerId);
             
             foreach (var btn in _spawnedButtons)
@@ -107,11 +103,14 @@ namespace Gameplay.UI
         private void OnButtonHoverEnter(string hoveredTowerId)
         {
             if (_tooltipPanel == null) return;
-            TowerShopData data = _towerRegistry.GetTowerById(hoveredTowerId);
-            if (data != null && data.TowerConfig != null && data.TowerConfig.Levels.Count > 0)
+            
+            // ИЗМЕНЕНО: Сразу достаем TowerConfig
+            TowerConfig config = _towerRegistry.GetTowerById(hoveredTowerId);
+            
+            if (config != null && config.Levels != null && config.Levels.Count > 0)
             {
-                TowerLevelData baseLevel = data.TowerConfig.Levels[0];
-                _tooltipNameText.text = data.TowerConfig.DisplayName;
+                TowerLevelData baseLevel = config.Levels[0];
+                _tooltipNameText.text = config.DisplayName;
                 string statsStr = "";
                 
                 foreach (IModuleDescriptor module in baseLevel.GetActiveModules())

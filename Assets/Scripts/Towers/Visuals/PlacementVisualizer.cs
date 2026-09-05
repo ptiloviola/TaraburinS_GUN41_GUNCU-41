@@ -20,12 +20,13 @@ namespace Gameplay.Towers.Visuals
             _heightOffset = heightOffset;
         }
 
-        public void SetSelectedTower(TowerShopData shopData)
+        // ИЗМЕНЕНО: Принимаем TowerConfig
+        public void SetSelectedTower(TowerConfig config)
         {
-            if (shopData?.TowerConfig == null) return;
+            if (config == null || config.Levels == null || config.Levels.Count == 0) return;
 
-            // Расчет диаметра круга для визуала радиуса
-            TowerLevelData baseLevel = shopData.TowerConfig.Levels[0];
+            // Расчет диаметра круга напрямую из конфига башни
+            TowerLevelData baseLevel = config.Levels[0];
             float range = baseLevel.Attack != null ? baseLevel.Attack.Range : 
                           baseLevel.Barracks != null ? baseLevel.Barracks.RallyPointRadius : 0f;
             

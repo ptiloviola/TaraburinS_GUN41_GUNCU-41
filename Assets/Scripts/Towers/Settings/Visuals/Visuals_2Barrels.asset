@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5145a890a18597c489dc449272e986b5, type: 3}
-  m_Name: 2barrels_visual
+  m_Name: Visuals_2Barrels
   m_EditorClassIdentifier: 
   Build:
     Duration: 0.33

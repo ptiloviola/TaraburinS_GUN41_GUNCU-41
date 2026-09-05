@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adcdef347df95d84c8f123578d9d3d57, type: 3}
   m_Name: OneBarrelTowerConfig
   m_EditorClassIdentifier: 
-  TowerId: 1_barrel_gun
+  TowerId: 1barrel_tower
   DisplayName: "\u043E\u0434\u043D\u043E\u0441\u0442\u0432\u043E\u043B\u043A\u0430"
+  BaseCost: 12
+  SellRefundMultiplier: 0.5
+  Icon: {fileID: 21300000, guid: 91184e91047616342982a2313e5a7bec, type: 3}
+  Prefab: {fileID: 5630816600719798732, guid: d5203654f867ddd46b11f171e2350a42, type: 3}
   Levels:
   - UpgradeCost: 3
     VisualPrefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
@@ -21,10 +25,12 @@ MonoBehaviour:
     Attack:
       Damage: 7
       Type: 1
-      Range: 15
-      Cooldown: 0.5
+      Range: 9
+      Cooldown: 1
       Targeting: 0
       Aiming: 1
+      Executor: 0
+      ProjectilePrefab: {fileID: 0}
       PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
         type: 2}
     Aura:
@@ -40,12 +46,14 @@ MonoBehaviour:
     VisualPrefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
       type: 3}
     Attack:
-      Damage: 17
+      Damage: 9
       Type: 0
-      Range: 20
-      Cooldown: 0.1
+      Range: 13
+      Cooldown: 0.7
       Targeting: 0
-      Aiming: 0
+      Aiming: 1
+      Executor: 0
+      ProjectilePrefab: {fileID: 0}
       PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
         type: 2}
     Aura:
