@@ -6,6 +6,7 @@ using Gameplay.Units;
 using Gameplay.Units.Data;
 using Gameplay.Spawning;
 using Gameplay.Base;
+using Gameplay.Spawning.Factories;
 
 namespace Gameplay.Spawning.Installers
 {
@@ -48,6 +49,8 @@ namespace Gameplay.Spawning.Installers
                     }
                 }
             }
+
+            Container.Bind<EnemyFactory>().AsSingle();
 
             // Настройка пулов Защитников
             if (_defenderRegistry != null)

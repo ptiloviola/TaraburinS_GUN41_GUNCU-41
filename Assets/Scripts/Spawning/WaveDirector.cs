@@ -4,11 +4,11 @@ using System.Linq;
 using UnityEngine;
 using Gameplay.Spawning.Data;
 using Zenject;
-using Gameplay.Enemies;
-using Gameplay.Base;
 using Infrastructure.Signals;
 using Gameplay.Economy;
-using Gameplay.Enemies.Data;
+using Gameplay.Base;
+using Gameplay.Spawning.Factories;
+using Gameplay.Enemies;
 
 namespace Gameplay.Spawning
 {
@@ -20,31 +20,29 @@ namespace Gameplay.Spawning
         private IWaveProvider _waveProvider;
         private SpawnRegistry _spawnRegistry;
         private BaseRegistry _baseRegistry; 
-        private BaseLocatorService _baseLocatorService; 
         private SignalBus _signalBus;
-        private DiContainer _container; 
         private BankService _bankService;
         private EnemyTrackerService _enemyTracker; 
+        private EnemyFactory _enemyFactory; 
 
         private int _currentWaveNumber = 0;
         private bool _isForceStartRequested = false;
-        private EnemyRegistry _enemyRegistry;
 
         [Inject]
-        public void Construct(SpawnRegistry spawnRegistry, 
+        public void Construct(
+            SpawnRegistry spawnRegistry, 
             BaseRegistry baseRegistry, 
-            BaseLocatorService baseLocatorService, SignalBus signalBus, DiContainer container,
-            BankService bankService, EnemyTrackerService enemyTracker, 
-            EnemyRegistry enemyRegistry)
+            SignalBus signalBus, 
+            BankService bankService, 
+            EnemyTrackerService enemyTracker, 
+            EnemyFactory enemyFactory) 
         {
             _spawnRegistry = spawnRegistry;
             _baseRegistry = baseRegistry;
-            _baseLocatorService = baseLocatorService;
             _signalBus = signalBus;
-            _container = container;
             _bankService = bankService;
             _enemyTracker = enemyTracker;
-            _enemyRegistry = enemyRegistry;
+            _enemyFactory = enemyFactory;
         }
 
         private void Start()
@@ -57,7 +55,6 @@ namespace Gameplay.Spawning
         private void OnEnable()
         {
             _signalBus.Subscribe<SignalForceStartWave>(OnForceStartRequested);
-            // НОВОЕ: Подписываемся на запросы динамического спавна (от боссов)
             _signalBus.Subscribe<SignalSpawnEnemyRequest>(OnSpawnEnemyRequested);
         }
 
@@ -72,10 +69,9 @@ namespace Gameplay.Spawning
             _isForceStartRequested = true;
         }
 
-        // НОВОЕ: Обработчик сигнала
         private void OnSpawnEnemyRequested(SignalSpawnEnemyRequest request)
         {
-            SpawnPhysicalEnemyAtPosition(request.EnemyId, request.Position, request.TargetBaseId);
+            _enemyFactory.SpawnEnemy(request.EnemyId, request.Position, request.TargetBaseId);
         }
 
         private IEnumerator DirectorRoutine()
@@ -194,7 +190,6 @@ namespace Gameplay.Spawning
             }
         }
 
-        // Этот метод остался для классических волн (ищет точку по ID)
         private void SpawnPhysicalEnemy(string enemyId, string spawnPointId, string targetBaseId)
         {
             if (!_spawnRegistry.TryGetSpawnPosition(spawnPointId, out Vector3 spawnPos))
@@ -203,56 +198,7 @@ namespace Gameplay.Spawning
                 spawnPos = Vector3.zero; 
             }
             
-            SpawnPhysicalEnemyAtPosition(enemyId, spawnPos, targetBaseId);
-        }
-
-        // НОВОЕ: Переиспользуемый метод чистого спавна по вектору координат
-        private void SpawnPhysicalEnemyAtPosition(string enemyId, Vector3 spawnPos, string targetBaseId)
-        {
-            try
-            {
-                EnemyConfig config = _enemyRegistry.GetEnemyById(enemyId);
-                if (config == null)
-                {
-                    Debug.LogError($"[Director] Враг '{enemyId}' не найден в EnemyRegistry!");
-                    return;
-                }
-                
-                EnemyFacade.Pool specificPool = _container.ResolveId<EnemyFacade.Pool>(enemyId);
-                EnemyFacade enemy = specificPool.Spawn();
-                
-                enemy.SetPool(specificPool);
-                enemy.InitConfig(config);
-                _signalBus.Fire<SignalEnemySpawned>();
-                
-                var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
-                if (agent != null)
-                {
-                    agent.Warp(spawnPos);
-                }
-
-                // Если босс не передал цель для своих осколков, направляем их на ближайшую базу
-                if (string.IsNullOrEmpty(targetBaseId))
-                {
-                    targetBaseId = BaseLocatorService.NearestByPathTag; 
-                }
-                
-                BaseCore targetBase = _baseLocatorService.LocateTargetBase(targetBaseId, spawnPos);
-                
-                if (targetBase != null)
-                {
-                    IMovementStrategy movement = config.Movement.CreateStrategy(targetBase.transform.position);
-                    enemy.InitializeMovement(movement);
-                }
-                else
-                {
-                    Debug.LogError("[Director] Ошибка! Враг заспавнен, но в реестре BaseRegistry нет ни одной активной базы для атаки!");
-                }
-            }
-            catch (ZenjectException)
-            {
-                Debug.LogError($"[Director] Ошибка спавна! Пул для врага '{enemyId}' не найден. Проверь EnemyRegistry и Installer!");
-            }
+            _enemyFactory.SpawnEnemy(enemyId, spawnPos, targetBaseId);
         }
     }
 }
