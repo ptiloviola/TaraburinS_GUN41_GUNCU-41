@@ -108,5 +108,10 @@ namespace Gameplay.Towers.Behaviors
             
             _adapter.TriggerShotFired(_currentTarget.position);
         }
+
+        
+
+
+
     }
 }

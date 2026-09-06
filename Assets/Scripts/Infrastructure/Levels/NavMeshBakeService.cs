@@ -17,9 +17,23 @@ namespace Infrastructure.Levels
         {
             if (_references.NavMeshSurface != null)
             {
-                _references.NavMeshSurface.BuildNavMesh();
+                var surfaceType = _references.NavMeshSurface.GetType();
+                var allSurfaces = _references.NavMeshSurface.gameObject.GetComponents(surfaceType);
+                
+                int bakedCount = 0;
+                foreach (var component in allSurfaces)
+                {
+                    // Вызываем метод BuildNavMesh напрямую и надежно
+                    var buildMethod = surfaceType.GetMethod("BuildNavMesh");
+                    if (buildMethod != null)
+                    {
+                        buildMethod.Invoke(component, null);
+                        bakedCount++;
+                    }
+                }
+                
 #if UNITY_EDITOR
-                Debug.Log("<color=magenta>[NavMeshBakeService] NavMesh успешно запечен в Runtime!</color>");
+                Debug.Log($"<color=magenta>[NavMeshBakeService] Успешно запечено поверхностей NavMesh: {bakedCount} в Runtime!</color>");
 #endif
             }
             else

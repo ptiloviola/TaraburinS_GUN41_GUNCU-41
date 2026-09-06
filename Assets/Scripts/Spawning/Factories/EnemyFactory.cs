@@ -47,7 +47,15 @@ namespace Gameplay.Spawning.Factories
                 var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
                 if (agent != null)
                 {
-                    agent.Warp(spawnPos);
+                    agent.enabled = false;
+                    
+                    // ИСПРАВЛЕНО: Поднимаем точку спавна на высоту полета (Base Offset),
+                    // чтобы невидимые "ноги" агента точно попали на NavMesh, а тушка была в небе
+                    Vector3 finalPos = spawnPos;
+                    finalPos.y += agent.baseOffset;
+                    
+                    enemy.transform.position = finalPos;
+                    agent.enabled = true;
                 }
 
                 if (string.IsNullOrEmpty(targetBaseId))

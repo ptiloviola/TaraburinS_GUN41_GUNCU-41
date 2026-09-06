@@ -31,7 +31,6 @@ namespace Gameplay.Towers.Behaviors.Aiming
 
             Vector3 directionToTarget = target.position - rotator.position;
             
-            // 1. Проверка горизонтального сектора (Yaw / FOV)
             if (_fov < 360f)
             {
                 Vector3 flatDirection = new Vector3(directionToTarget.x, 0, directionToTarget.z);
@@ -40,13 +39,11 @@ namespace Gameplay.Towers.Behaviors.Aiming
                 if (Vector3.Angle(flatForward, flatDirection) > _fov * 0.5f) return false;
             }
 
-            // 2. Проверка вертикального угла (Pitch)
             float distanceXZ = new Vector2(directionToTarget.x, directionToTarget.z).magnitude;
             float pitchAngle = Mathf.Atan2(directionToTarget.y, distanceXZ) * Mathf.Rad2Deg;
             
             if (pitchAngle < _minPitch || pitchAngle > _maxPitch) return false;
 
-            // 3. Проверка Line of Sight (Raycast)
             if (_checkLoS && _firePoint != null)
             {
                 Vector3 rayDirection = target.position - _firePoint.position;
@@ -62,7 +59,7 @@ namespace Gameplay.Towers.Behaviors.Aiming
         public void AimAtTarget(Transform rotator, Transform target, float turnSpeed)
         {
             Vector3 direction = target.position - rotator.position;
-            direction.y = 0f; // ВАЖНО: Игнорируем высоту для вращения базы башни
+            direction.y = 0f; 
 
             if (direction != Vector3.zero)
             {
@@ -74,14 +71,14 @@ namespace Gameplay.Towers.Behaviors.Aiming
         public bool IsFacingTarget(Transform rotator, Transform target)
         {
             Vector3 directionToTarget = (target.position - rotator.position).normalized;
-            directionToTarget.y = 0f; // Игнорируем высоту при проверке угла поворота базы
+            directionToTarget.y = 0f; 
             
             if (directionToTarget == Vector3.zero) return true; 
 
             return Vector3.Dot(rotator.forward, directionToTarget.normalized) > 0.99f;
         }
 
-        public void DrawAimGizmo(Transform rotator, float range)
+public void DrawAimGizmo(Transform rotator, float range)
         {
             if (rotator == null || _baseTransform == null) return;
             
@@ -89,34 +86,62 @@ namespace Gameplay.Towers.Behaviors.Aiming
             Vector3 baseForward = new Vector3(_baseTransform.forward.x, 0, _baseTransform.forward.z).normalized;
             if (baseForward == Vector3.zero) baseForward = _baseTransform.up; 
             
-            // Отрисовка сектора FOV (Голубые линии)
-            Gizmos.color = new Color(0f, 1f, 1f, 0.5f);
+            // 1. Отрисовка сектора FOV
             if (_fov < 360f)
             {
+                Gizmos.color = new Color(0f, 1f, 1f, 0.5f);
                 Vector3 leftLimit = Quaternion.AngleAxis(-_fov * 0.5f, Vector3.up) * baseForward;
                 Vector3 rightLimit = Quaternion.AngleAxis(_fov * 0.5f, Vector3.up) * baseForward;
                 Gizmos.DrawRay(pos, leftLimit * range);
                 Gizmos.DrawRay(pos, rightLimit * range);
             }
 
-            // Отрисовка Pitch лимитов (Пурпурные линии)
-            Gizmos.color = new Color(1f, 0f, 1f, 0.8f);
-            Vector3 flatRotatorForward = new Vector3(rotator.forward.x, 0, rotator.forward.z).normalized;
-            if (flatRotatorForward != Vector3.zero)
-            {
-                Vector3 upLimit = Quaternion.AngleAxis(-_maxPitch, rotator.right) * flatRotatorForward;
-                Vector3 downLimit = Quaternion.AngleAxis(-_minPitch, rotator.right) * flatRotatorForward;
-                
-                Gizmos.DrawRay(pos, upLimit * range);
-                Gizmos.DrawRay(pos, downLimit * range);
-            }
-            
-            // Проверка LoS
+#if UNITY_EDITOR
+            // 2. Чистый 3D-конус прицеливания
+            DrawCleanRadarCone(pos, range, _minPitch, _maxPitch);
+#endif
+
+            // 3. Проверка LoS
             if (_checkLoS && _firePoint != null)
             {
                 Gizmos.color = new Color(1f, 0.9f, 0f, 0.4f);
                 Gizmos.DrawRay(_firePoint.position, rotator.forward * (range * 0.5f));
             }
         }
+
+#if UNITY_EDITOR
+        private void DrawCleanRadarCone(Vector3 center, float range, float minPitch, float maxPitch)
+        {
+            // Бледная сфера, показывающая максимальную границу дистанции (Range)
+            Gizmos.color = new Color(1f, 1f, 1f, 0.05f);
+            Gizmos.DrawWireSphere(center, range);
+
+            // Верхнее кольцо (Зеленое) - максимальная высота
+            float maxRad = maxPitch * Mathf.Deg2Rad;
+            Vector3 maxCenter = center + Vector3.up * (Mathf.Sin(maxRad) * range);
+            float maxRadius = Mathf.Cos(maxRad) * range;
+
+            UnityEditor.Handles.color = new Color(0f, 1f, 0f, 0.8f);
+            UnityEditor.Handles.DrawWireDisc(maxCenter, Vector3.up, maxRadius);
+
+            // Нижнее кольцо (Красное) - минимальная высота
+            float minRad = minPitch * Mathf.Deg2Rad;
+            Vector3 minCenter = center + Vector3.up * (Mathf.Sin(minRad) * range);
+            float minRadius = Mathf.Cos(minRad) * range;
+
+            UnityEditor.Handles.color = new Color(1f, 0f, 0f, 0.8f);
+            UnityEditor.Handles.DrawWireDisc(minCenter, Vector3.up, minRadius);
+
+            // 4 тонкие направляющие линии для формирования каркаса конуса
+            UnityEditor.Handles.color = new Color(1f, 1f, 0f, 0.2f);
+            Vector3[] directions = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
+            
+            foreach (var dir in directions)
+            {
+                UnityEditor.Handles.DrawLine(center, maxCenter + dir * maxRadius);
+                UnityEditor.Handles.DrawLine(center, minCenter + dir * minRadius);
+            }
+        }
+#endif
     }
 }

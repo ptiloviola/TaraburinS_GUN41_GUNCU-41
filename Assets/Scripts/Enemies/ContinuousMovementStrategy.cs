@@ -41,9 +41,6 @@ namespace Gameplay.Enemies
 
                 if (pathArea == -1 || groundArea == -1)
                 {
-#if UNITY_EDITOR
-                    Debug.LogError($"[ContinuousMovement] Зоны '{_pathAreaName}' или '{_groundAreaName}' не найдены!");
-#endif
                     pathArea = 0;
                     groundArea = 0;
                 }
@@ -57,7 +54,15 @@ namespace Gameplay.Enemies
                     _agent.areaMask = (1 << pathArea) | (1 << groundArea);
                 }
                 
-                _agent.SetDestination(_targetPosition);
+                // ЗАЩИТА: Проверяем, удалось ли агенту прицепиться к сетке после Warp
+                if (_agent.isOnNavMesh)
+                {
+                    _agent.SetDestination(_targetPosition);
+                }
+                else
+                {
+                    Debug.LogError($"[ContinuousMovement] Агент {_enemy.gameObject.name} не на NavMesh! Проверь запекание сетки Air/Ground.");
+                }
             }
         }
 
