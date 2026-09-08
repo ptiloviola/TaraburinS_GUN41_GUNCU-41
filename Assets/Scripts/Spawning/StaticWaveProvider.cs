@@ -7,6 +7,8 @@ namespace Gameplay.Spawning
     private readonly LevelWavesConfig _config;
     private int _currentWaveIndex = 0;
 
+    public int TotalWaves => _config.Waves.Count;
+
     public StaticWaveProvider(LevelWavesConfig config)
     {
         _config = config;

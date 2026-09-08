@@ -1232,7 +1232,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543242751}
-  - component: {fileID: 543242750}
   - component: {fileID: 543242752}
   m_Layer: 0
   m_Name: '[SPAWNING_SYSTEM]'
@@ -1241,19 +1240,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &543242750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 543242748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac961f3c7abdcbe4cb019f0c2f567124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _levelConfig: {fileID: 11400000, guid: b4fb8f3ae972e9743b676ab6d3ada3b5, type: 2}
 --- !u!4 &543242751
 Transform:
   m_ObjectHideFlags: 0
@@ -4433,6 +4419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2755c59f9c4a8f043a08260e44430e36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levelWavesConfig: {fileID: 11400000, guid: b4fb8f3ae972e9743b676ab6d3ada3b5, type: 2}
   _enemyRegistry: {fileID: 11400000, guid: ae201c037a1ccd84d95230aa2cbcd63a, type: 2}
   _defenderRegistry: {fileID: 11400000, guid: 33f32a2d06b0a4548836867dbae9f05a, type: 2}
   _basePrefab: {fileID: 8824246545245860079, guid: 7c265b5839dc7204598b286044171e21,

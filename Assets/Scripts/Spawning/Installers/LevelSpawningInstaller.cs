@@ -7,13 +7,21 @@ using Gameplay.Units.Data;
 using Gameplay.Spawning;
 using Gameplay.Base;
 using Gameplay.Spawning.Factories;
+using Gameplay.Spawning.Services;
+using Gameplay.Spawning.Data; // Добавлено для LevelWavesConfig
 
 namespace Gameplay.Spawning.Installers
 {
     public class LevelSpawningInstaller : MonoInstaller
     {
+        [Header("Конфиги уровня")]
+        [SerializeField] private LevelWavesConfig _levelWavesConfig; // НОВОЕ ПОЛЕ ДЛЯ ИНСПЕКТОРА
+
+        [Header("Реестры")]
         [SerializeField] private EnemyRegistry _enemyRegistry;
         [SerializeField] private DefenderRegistry _defenderRegistry;
+        
+        [Header("Префабы")]
         [SerializeField] private BaseCore _basePrefab;
         [SerializeField] private EnemySpawnPoint _spawnMarkerPrefab;
 
@@ -25,8 +33,22 @@ namespace Gameplay.Spawning.Installers
             // Реестры сущностей уровня
             Container.Bind<BaseRegistry>().AsSingle();
             Container.Bind<SpawnRegistry>().AsSingle();
-
             Container.Bind<BaseLocatorService>().AsSingle();
+
+            // === НОВЫЙ БЛОК: СИСТЕМА ВОЛН ===
+            // 1. Отдаем конфиг волн в контейнер (взяв его из инспектора)
+            Container.BindInstance(_levelWavesConfig).AsSingle();
+            
+            // 2. Биндим Провайдер волн. Когда кто-то попросит IWaveProvider, Zenject выдаст StaticWaveProvider
+            Container.Bind<IWaveProvider>().To<StaticWaveProvider>().AsSingle();
+
+            // 3. Регистрируем наши новые сервисы
+            Container.Bind<WaveTimerService>().AsSingle();
+            Container.Bind<WaveSpawnerService>().AsSingle();
+
+            // 4. Биндим Дирижера к интерфейсам IInitializable и IDisposable
+            Container.BindInterfacesAndSelfTo<WaveStateController>().AsSingle();
+            // ================================
 
             // Фабрики для спавна маркеров/баз на этапе генерации уровня
             Container.BindFactory<BaseCore, BaseCore.Factory>()
