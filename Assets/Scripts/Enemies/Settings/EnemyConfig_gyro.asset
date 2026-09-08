@@ -28,5 +28,5 @@ MonoBehaviour:
     ControlMultiplier: 1
     DoTMultiplier: 1
     DebuffMultiplier: 1
-  Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}
+  Movement: {fileID: 11400000, guid: 99da81030d2920646b342bef716a7945, type: 2}
   DeathBehavior: {fileID: 0}

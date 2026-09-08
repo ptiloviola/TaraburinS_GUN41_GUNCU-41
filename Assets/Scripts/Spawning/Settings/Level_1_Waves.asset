@@ -18,8 +18,13 @@ MonoBehaviour:
     DelayBeforeWave: 5
     Squads:
     - EnemyId: gyro
-      Count: 5
+      Count: 3
       SpawnInterval: 5
+      SpawnPointId: Spawn_1_2
+      TargetBaseId: Base_2_20
+    - EnemyId: jumper
+      Count: 4
+      SpawnInterval: 2
       SpawnPointId: Spawn_1_2
       TargetBaseId: Base_2_20
     - EnemyId: caterpillar
@@ -27,16 +32,11 @@ MonoBehaviour:
       SpawnInterval: 3
       SpawnPointId: Spawn_1_2
       TargetBaseId: Base_18_4
-    - EnemyId: jumper
-      Count: 4
-      SpawnInterval: 2
-      SpawnPointId: Spawn_12_12
-      TargetBaseId: Base_9_17
     - EnemyId: sphere
       Count: 7
       SpawnInterval: 1
       SpawnPointId: Spawn_1_2
-      TargetBaseId: Base_2_20
+      TargetBaseId: Base_9_17
     ClearReward: 0
   - StartMode: 0
     ActiveWaveDuration: 5
