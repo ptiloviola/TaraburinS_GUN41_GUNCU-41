@@ -10,7 +10,8 @@ namespace Gameplay.Towers.Data
     public enum AimingType
     {
         Omni,       // Вращается во все стороны (ПВО, Магия)
-        Horizontal  // Вращается только по оси Y (Пушки, Арбалеты)
+        Horizontal,  // Вращается только по оси Y (Пушки, Арбалеты)
+        DualAxis
     }
 
     public enum ExecutorType

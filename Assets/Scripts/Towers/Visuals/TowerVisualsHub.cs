@@ -50,7 +50,15 @@ namespace Gameplay.Towers.Visuals
                     _barrelAnimator = new MultiBarrelAnimator(_barrelTransforms, _muzzleFlashes, _setup.Recoil);
 
                 if (_setup.Rotation != null && _setup.Rotation.Enabled && _turretTransform != null)
-                    _visualRotator = new VisualRotator(_logicalRotator, _turretTransform, _elevationPivot, _setup.Rotation);
+                {
+                    _visualRotator = new VisualRotator(
+                        _logicalRotator, 
+                        _turretTransform, 
+                        _weaponAdapter?.ElevationPivot, // НОВОЕ: Передаем невидимый логический ствол
+                        _elevationPivot,                // Наш визуальный ствол
+                        _setup.Rotation
+                    );
+                }
             }
 
             // 2. Подписываемся на события логики

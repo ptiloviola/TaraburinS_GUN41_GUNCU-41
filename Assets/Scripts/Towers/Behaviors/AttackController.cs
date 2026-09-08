@@ -53,10 +53,15 @@ namespace Gameplay.Towers.Behaviors
                     _adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, 
                     _currentStats.MinPitch, _currentStats.MaxPitch, _currentStats.FieldOfView, _currentStats.CheckLineOfSight),
                     
+                AimingType.DualAxis => new DualAxisAimStrategy(
+                    _adapter.transform, _adapter.ElevationPivot, _adapter.FirePoint, _adapter.EnvironmentMask, 
+                    _currentStats.MinPitch, _currentStats.MaxPitch, _currentStats.FieldOfView, _currentStats.CheckLineOfSight),
+                    
                 AimingType.Omni => new OmniAimStrategy(
                     _adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, 
                     _currentStats.MinPitch, _currentStats.MaxPitch, _currentStats.FieldOfView, _currentStats.CheckLineOfSight),
                     
+                // ДЕФОЛТ НЕ ТРОГАЕМ: Старые башни продолжают работать как часы
                 _ => new OmniAimStrategy(_adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, -10f, 80f, 360f, false)
             };
 

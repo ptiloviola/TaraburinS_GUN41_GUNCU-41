@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adcdef347df95d84c8f123578d9d3d57, type: 3}
+  m_Name: Config_AniAirTower
+  m_EditorClassIdentifier: 
+  TowerId: AniAirTower
+  DisplayName: AniAirTower
+  BaseCost: 27
+  SellRefundMultiplier: 0.5
+  Icon: {fileID: 21300000, guid: a6da51e8dfe562f48844e820dd107251, type: 3}
+  Prefab: {fileID: 5181870763824373380, guid: 64bab2eedf655874696bf641f6a783b8, type: 3}
+  Levels:
+  - UpgradeCost: 0
+    VisualPrefab: {fileID: 5181870763824373380, guid: 64bab2eedf655874696bf641f6a783b8,
+      type: 3}
+    Attack:
+      Damage: 9
+      Type: 0
+      MinRange: 0
+      Range: 15
+      Cooldown: 0.3
+      FieldOfView: 340.2
+      MinPitch: 10
+      MaxPitch: 80
+      CheckLineOfSight: 1
+      Targeting: 0
+      Aiming: 2
+      Executor: 0
+      ProjectilePrefab: {fileID: 0}
+      PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
+        type: 2}
+    Aura:
+      Radius: 0
+      TickRate: 0
+      SlowdownMultiplier: 0
+    Barracks:
+      DefenderData: {fileID: 0}
+      MaxDefenders: 0
+      RespawnCooldown: 0
+      RallyPointRadius: 0

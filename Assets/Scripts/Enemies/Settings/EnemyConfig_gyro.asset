@@ -20,4 +20,13 @@ MonoBehaviour:
     MaxHealth: 100
     DamageToBase: 1
     RewardMoney: 20
+  Armor:
+    PhysicalMultiplier: 1
+    EnergyMultiplier: 2
+    ExplosiveMultiplier: 1
+  StatusResist:
+    ControlMultiplier: 1
+    DoTMultiplier: 1
+    DebuffMultiplier: 1
   Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}
+  DeathBehavior: {fileID: 0}

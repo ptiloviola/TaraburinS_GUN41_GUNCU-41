@@ -31,9 +31,9 @@ MonoBehaviour:
       FieldOfView: 360
       MinPitch: -10
       MaxPitch: 20
-      CheckLineOfSight: 1
+      CheckLineOfSight: 0
       Targeting: 0
-      Aiming: 1
+      Aiming: 0
       Executor: 0
       ProjectilePrefab: {fileID: 0}
       PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,

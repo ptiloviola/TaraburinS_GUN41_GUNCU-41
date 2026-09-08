@@ -19,6 +19,7 @@ namespace Gameplay.Towers.Behaviors
 
         public Transform LogicalRotator => _logicalRotator;
         public Transform FirePoint => _firePoint;
+        public Transform ElevationPivot; // Для зенитки. У обычных башен оставляем None!
         public LayerMask EnemyMask => _enemyLayerMask;
         public float TurnSpeed => _turnSpeed;
 
