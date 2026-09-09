@@ -1,29 +1,32 @@
-using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Gameplay.Spawning.Visuals
 {
     public class SpawnRingVisuals : MonoBehaviour, ISpawnVisuals
     {
+        private static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
+
         [Header("Ссылки")]
-        [Tooltip("Плоский цилиндр, который будет расширяться")]
         [SerializeField] private Renderer _ringRenderer; 
 
         [Header("Настройки колец")]
-        [SerializeField] private Color _ringColor = new Color(1f, 0f, 0f, 0.8f); // Красный
-        [SerializeField] private float _maxScale = 3f; // Насколько широко расходится круг
-        [SerializeField] private float _pingSpeed = 0.5f; // Время одного расширения (секунды)
+        [SerializeField] private Color _ringColor = new Color(1f, 0f, 0f, 0.8f);
+        [SerializeField] private float _maxScale = 3f; 
+        [SerializeField] private float _pingSpeed = 0.5f; 
 
-        private Material _ringMaterial;
-        private Coroutine _warningRoutine;
+        private MaterialPropertyBlock _propertyBlock;
+        private CancellationTokenSource _effectCts;
         private Vector3 _initialScale;
 
         private void Awake()
         {
+            _propertyBlock = new MaterialPropertyBlock();
+
             if (_ringRenderer != null)
             {
-                _ringMaterial = _ringRenderer.material;
-                _ringMaterial.color = new Color(_ringColor.r, _ringColor.g, _ringColor.b, 0f);
+                SetRingAlpha(0f);
                 _initialScale = _ringRenderer.transform.localScale;
                 _ringRenderer.gameObject.SetActive(false);
             }
@@ -31,50 +34,57 @@ namespace Gameplay.Spawning.Visuals
 
         public void PlayWarningEffect(float duration)
         {
-            if (_warningRoutine != null) StopCoroutine(_warningRoutine);
-            _warningRoutine = StartCoroutine(WarningRoutine(duration));
+            _effectCts?.Cancel();
+            _effectCts?.Dispose();
+            _effectCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+            
+            WarningRoutineAsync(duration, _effectCts.Token).Forget();
         }
 
-        private IEnumerator WarningRoutine(float duration)
+        private async UniTaskVoid WarningRoutineAsync(float duration, CancellationToken ct)
         {
-            if (_ringRenderer == null) yield break;
-            
-            _ringRenderer.gameObject.SetActive(true);
+            if (_ringRenderer == null) return;
 
-            float totalElapsed = 0f;
-            float currentPingTimer = 0f;
-
-            // Крутимся, пока не выйдет общее время предупреждения (например, 2 секунды)
-            while (totalElapsed < duration)
+            try
             {
-                totalElapsed += Time.deltaTime;
-                currentPingTimer += Time.deltaTime;
+                _ringRenderer.gameObject.SetActive(true);
 
-                // Если один "пинг" закончился, начинаем кольцо заново
-                if (currentPingTimer >= _pingSpeed)
+                float totalElapsed = 0f;
+                float currentPingTimer = 0f;
+
+                while (totalElapsed < duration)
                 {
-                    currentPingTimer = 0f;
+                    totalElapsed += Time.deltaTime;
+                    currentPingTimer += Time.deltaTime;
+
+                    if (currentPingTimer >= _pingSpeed)
+                    {
+                        currentPingTimer = 0f;
+                    }
+
+                    float progress = currentPingTimer / _pingSpeed;
+
+                    float currentScale = Mathf.Lerp(0f, _maxScale, progress);
+                    _ringRenderer.transform.localScale = new Vector3(currentScale, _initialScale.y, currentScale);
+
+                    SetRingAlpha(Mathf.Lerp(_ringColor.a, 0f, progress));
+
+                    await UniTask.Yield(PlayerLoopTiming.Update, ct);
                 }
-
-                // Вычисляем прогресс текущего круга (от 0 до 1)
-                float progress = currentPingTimer / _pingSpeed;
-
-                // 1. Увеличиваем масштаб
-                float currentScale = Mathf.Lerp(0f, _maxScale, progress);
-                // Сохраняем высоту (Y) неизменной, чтобы диск оставался плоским
-                _ringRenderer.transform.localScale = new Vector3(currentScale, _initialScale.y, currentScale);
-
-                // 2. Растворяем цвет (в начале яркий, к концу прозрачный)
-                Color c = _ringMaterial.color;
-                // Используем небольшую математическую хитрость: плавно гасим альфу к краям
-                c.a = Mathf.Lerp(_ringColor.a, 0f, progress); 
-                _ringMaterial.color = c;
-
-                yield return null;
             }
+            finally
+            {
+                if (_ringRenderer != null) _ringRenderer.gameObject.SetActive(false);
+            }
+        }
 
-            // Выключаем кольцо по завершении
-            _ringRenderer.gameObject.SetActive(false);
+        private void SetRingAlpha(float alpha)
+        {
+            _ringRenderer.GetPropertyBlock(_propertyBlock);
+            Color c = _ringColor;
+            c.a = alpha;
+            _propertyBlock.SetColor(ColorPropertyId, c);
+            _ringRenderer.SetPropertyBlock(_propertyBlock);
         }
     }
 }

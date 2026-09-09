@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _waves:
   - _startMode: 0
-    _activeWaveDuration: 15
-    _delayBeforeWave: 2
+    _activeWaveDuration: 20
+    _delayBeforeWave: 7
     _squads:
     - _enemyId: gyro
       _count: 3
@@ -31,7 +31,7 @@ MonoBehaviour:
     _clearReward: 5
   - _startMode: 0
     _activeWaveDuration: 20
-    _delayBeforeWave: 5
+    _delayBeforeWave: 8
     _squads:
     - _enemyId: jumper
       _count: 3
