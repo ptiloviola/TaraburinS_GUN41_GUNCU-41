@@ -11,49 +11,31 @@ namespace Gameplay.Projectiles
         [SerializeField] private float _hitDistance = 0.2f; 
 
         private Transform _target;
-        private IProjectilePayload _payload; // Бывший IHitEffect
-        private IFlightStrategy _flightStrategy; // НОВОЕ: Стратегия полета
+        private IProjectilePayload _payload; 
+        private IFlightStrategy _flightStrategy; 
         private IMemoryPool _pool;
+        
         private bool _hasHit; 
 
         private void Awake()
         {
-            // Ищем стратегию полета на самом префабе
             _flightStrategy = GetComponent<IFlightStrategy>();
+#if UNITY_EDITOR
             if (_flightStrategy == null)
             {
                 Debug.LogError($"[ModularProjectile] На {gameObject.name} не висит компонент IFlightStrategy!");
             }
+#endif
         }
-
-        public void Dispose()
-        {
-            if (_pool != null) _pool.Despawn(this); 
-            else Destroy(gameObject); 
-        }
-
-        public void OnDespawned()
-        {
-            _pool = null;
-            _target = null;
-            _payload = null;
-        }
-
-        public void OnSpawned(IMemoryPool pool)
-        {
-            _pool = pool;
-        }
-
-
 
         public void Launch(Transform target, IProjectilePayload payload, IMemoryPool pool)
         {
+            // ЖЕСТКИЙ СБРОС СОСТОЯНИЯ: Очищаем "карму" снаряда перед каждым выстрелом
             _target = target;
             _payload = payload;
             _pool = pool;
             _hasHit = false; 
 
-            // НОВОЕ: Говорим стратегии подготовиться к полету
             _flightStrategy?.Initialize(transform, target);
         }
 
@@ -67,7 +49,6 @@ namespace Gameplay.Projectiles
                 return;
             }
 
-            // НОВОЕ: Делегируем полет стратегии. Если она вернула true — мы попали!
             if (_flightStrategy.ExecuteFlight(transform, _target, _speed, _hitDistance))
             {
                 HitTarget();
@@ -81,6 +62,20 @@ namespace Gameplay.Projectiles
             Dispose(); 
         }
 
+        private void Dispose()
+        {
+            // Возвращаем в пул (MonoMemoryPool сам сделает SetActive(false))
+            if (_pool != null) 
+            {
+                _pool.Despawn(this); 
+            }
+            else 
+            {
+                Destroy(gameObject); 
+            }
+        }
+
+        // Чистый класс пула. Zenject сам управляет SetActive(true/false)
         public class Pool : MonoMemoryPool<ModularProjectile> {}
     }
 }

@@ -4,6 +4,7 @@ using Gameplay.Towers;
 using Gameplay.Towers.Data;
 using Gameplay.Towers.Factories;
 using Gameplay.Interaction;
+using Gameplay.Projectiles.Factories;
 
 namespace Gameplay.Towers.Installers
 {
@@ -18,6 +19,8 @@ namespace Gameplay.Towers.Installers
             // Данные и настройки
             Container.BindInstance(_placementSettings).IfNotBound();
             Container.BindInstance(_towerRegistry).AsSingle();
+
+            Container.Bind<ProjectileFactory>().AsSingle();
 
             // Фабрики
             Container.Bind<TowerFactory>().AsSingle();

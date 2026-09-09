@@ -6,32 +6,34 @@ using Gameplay.Core;
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Towers.Behaviors.Targeting;
-using Gameplay.Towers.Behaviors.Weapons; // Не забываем неймспейс экзекуторов
+using Gameplay.Towers.Behaviors.Weapons;
+using Gameplay.Projectiles.Factories; // Подключаем твой новый неймспейс фабрики
 
 namespace Gameplay.Towers.Behaviors
 {
     public class AttackController : ITowerBehavior
     {
         private readonly WeaponAdapter _adapter;
-        private readonly IInstantiator _instantiator; // Сохраняем инстанциатор
-        private TowerFacade _facade;
         
+        // 1. ИНЖЕКТИМ ФАБРИКУ вместо Инстанциатора
+        private readonly ProjectileFactory _projectileFactory; 
+        
+        private TowerFacade _facade;
         private Transform _currentTarget;
         private float _cooldownTimer;
         private AttackStats _currentStats;
 
         private ITargetingStrategy _targetingStrategy;
         
-        // Делаем свойство публичным, чтобы Адаптер мог рисовать по нему Gizmos
         public IAimStrategy AimStrategy { get; private set; }
         
-        // Наш новый чистый экзекутор
         private IAttackExecutor _executor;
 
-        public AttackController(WeaponAdapter adapter, IInstantiator instantiator)
+        // 2. Обновляем конструктор
+        public AttackController(WeaponAdapter adapter, ProjectileFactory projectileFactory)
         {
             _adapter = adapter;
-            _instantiator = instantiator;
+            _projectileFactory = projectileFactory;
         }
 
         public void Initialize(TowerFacade facade)
@@ -46,7 +48,6 @@ namespace Gameplay.Towers.Behaviors
                 _ => new ClosestTargetStrategy()
             };
 
-            // Передаем все физические параметры в стратегии прицеливания
             AimStrategy = _currentStats.Aiming switch
             {
                 AimingType.Horizontal => new HorizontalAimStrategy(
@@ -61,15 +62,14 @@ namespace Gameplay.Towers.Behaviors
                     _adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, 
                     _currentStats.MinPitch, _currentStats.MaxPitch, _currentStats.FieldOfView, _currentStats.CheckLineOfSight),
                     
-                // ДЕФОЛТ НЕ ТРОГАЕМ: Старые башни продолжают работать как часы
                 _ => new OmniAimStrategy(_adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, -10f, 80f, 360f, false)
             };
 
-            // 1. ФАБРИКА ЭКЗЕКУТОРОВ: Собираем оружие из конфига
+            // 3. ПЕРЕДАЕМ ФАБРИКУ В ЭКЗЕКУТОР
             _executor = _currentStats.Executor switch
             {
                 ExecutorType.Hitscan => new HitscanExecutor(),
-                ExecutorType.Projectile => new ProjectileExecutor(_currentStats.ProjectilePrefab, _instantiator),
+                ExecutorType.Projectile => new ProjectileExecutor(_currentStats.ProjectilePrefab, _projectileFactory),
                 _ => new HitscanExecutor()
             };
 
@@ -108,15 +108,9 @@ namespace Gameplay.Towers.Behaviors
             DamagePayload damagePayload = new DamagePayload(_currentStats.Damage, _currentStats.Type);
             IProjectilePayload payload = _currentStats.PayloadStrategy.CreatePayload(damagePayload);
             
-            // Дергаем наш свежий POCO-экзекутор
             _executor?.ExecuteAttack(_currentTarget, payload, _adapter.FirePoint);
             
             _adapter.TriggerShotFired(_currentTarget.position);
         }
-
-        
-
-
-
     }
 }

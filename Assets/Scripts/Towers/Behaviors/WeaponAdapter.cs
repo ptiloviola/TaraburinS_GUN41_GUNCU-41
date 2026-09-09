@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using Zenject;
 using Gameplay.Towers.Behaviors.Aiming;
+using Gameplay.Projectiles.Factories; // Подключаем пространство имен нашей фабрики
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -22,24 +23,24 @@ namespace Gameplay.Towers.Behaviors
         public Transform ElevationPivot; // Для зенитки. У обычных башен оставляем None!
         public LayerMask EnemyMask => _enemyLayerMask;
         public float TurnSpeed => _turnSpeed;
-
-        private IInstantiator _instantiator;
-        
-        // Ссылка на контроллер для отрисовки Gizmos
-        public AttackController ActiveController { get; private set; }
         public LayerMask EnvironmentMask => _environmentLayerMask;
 
+        // 1. УБИРАЕМ IInstantiator, ДОБАВЛЯЕМ ProjectileFactory
+        private ProjectileFactory _projectileFactory;
+        
+        public AttackController ActiveController { get; private set; }
+
         [Inject]
-        public void Construct(IInstantiator instantiator)
+        public void Construct(ProjectileFactory projectileFactory)
         {
-            // Zenject прокинет сюда инстанциатор при спавне башни
-            _instantiator = instantiator;
+            // 2. Zenject прокинет сюда нашу глобальную фабрику снарядов при спавне башни
+            _projectileFactory = projectileFactory;
         }
 
         public ITowerBehavior CreateBehavior()
         {
-            // Передаем инстанциатор в контроллер
-            ActiveController = new AttackController(this, _instantiator);
+            // 3. Передаем фабрику в контроллер
+            ActiveController = new AttackController(this, _projectileFactory);
             return ActiveController;
         }
 
@@ -59,7 +60,6 @@ namespace Gameplay.Towers.Behaviors
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(center, drawRange);
 
-            // Теперь запрашиваем стратегию прицеливания напрямую из живого контроллера, а не ищем компонент
             if (Application.isPlaying && ActiveController != null)
             {
                 ActiveController.AimStrategy?.DrawAimGizmo(_logicalRotator != null ? _logicalRotator : transform, drawRange);

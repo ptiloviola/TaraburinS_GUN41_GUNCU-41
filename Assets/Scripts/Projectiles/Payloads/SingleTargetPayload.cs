@@ -17,9 +17,11 @@ namespace Gameplay.Projectiles.Payloads
         {
             if (target == null) return;
 
-            // Используем ?. (null-conditional) для краткости
-            var damageable = target.GetComponent<IDamageable>();
-            damageable?.TakeDamage(_damagePayload);
+            // TryGetComponent работает быстрее и не создает мусор в памяти
+            if (target.TryGetComponent(out IDamageable damageable))
+            {
+                damageable.TakeDamage(_damagePayload);
+            }
         }
     }
 }

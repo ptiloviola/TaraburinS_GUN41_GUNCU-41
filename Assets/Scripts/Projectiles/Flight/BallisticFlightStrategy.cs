@@ -5,6 +5,10 @@ namespace Gameplay.Projectiles.Flight
 {
     public class BallisticFlightStrategy : MonoBehaviour, IFlightStrategy
     {
+        // Избавляемся от магических чисел
+        private const float MinDistanceToTarget = 0.1f;
+        private const float MaxProgress = 1f;
+
         [Header("Настройки дуги")]
         [SerializeField] private float _arcHeight = 4f; 
 
@@ -21,11 +25,11 @@ namespace Gameplay.Projectiles.Flight
         {
             if (target == null) return false;
 
-            // Вычисляем процент завершения пути (от 0 до 1)
+            // Вычисляем процент завершения пути
             float totalDistance = Vector3.Distance(_startPosition, target.position);
             
-            // Защита от деления на ноль, если цель в упор
-            if (totalDistance < 0.1f) return true; 
+            // Защита от деления на ноль через константу
+            if (totalDistance < MinDistanceToTarget) return true; 
 
             // Увеличиваем прогресс пропорционально скорости
             _progress += (speed * Time.deltaTime) / totalDistance;
@@ -33,7 +37,7 @@ namespace Gameplay.Projectiles.Flight
             // 1. Двигаемся по прямой линии (Lerp)
             Vector3 currentPos = Vector3.Lerp(_startPosition, target.position, _progress);
             
-            // 2. Добавляем высоту по синусоиде! (Sin от 0 до PI дает идеальную дугу)
+            // 2. Добавляем высоту по синусоиде
             currentPos.y += Mathf.Sin(_progress * Mathf.PI) * _arcHeight;
 
             // 3. Поворачиваем ядро носом по вектору движения
@@ -46,8 +50,8 @@ namespace Gameplay.Projectiles.Flight
             // 4. Применяем позицию
             projectile.position = currentPos;
 
-            // Если прогресс достиг 100% - долетели
-            return _progress >= 1f;
+            // Если прогресс достиг максимума - долетели
+            return _progress >= MaxProgress;
         }
     }
 }

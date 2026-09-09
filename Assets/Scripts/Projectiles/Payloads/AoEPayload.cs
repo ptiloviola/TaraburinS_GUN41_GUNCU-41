@@ -6,6 +6,9 @@ namespace Gameplay.Projectiles.Payloads
 {
     public class AoEPayload : IProjectilePayload
     {
+        // Единый статический буфер для всех взрывов в игре (Zero Allocation)
+        private static readonly Collider[] HitBuffer = new Collider[32];
+        
         private readonly DamagePayload _damagePayload;
         private readonly float _radius;
         private readonly LayerMask _enemyMask;
@@ -19,16 +22,19 @@ namespace Gameplay.Projectiles.Payloads
 
         public void Apply(Transform target, Vector3 hitPoint)
         {
-            Collider[] hits = Physics.OverlapSphere(hitPoint, _radius, _enemyMask);
+            // Используем NonAlloc версию, чтобы не создавать новые массивы
+            int hitCount = Physics.OverlapSphereNonAlloc(hitPoint, _radius, HitBuffer, _enemyMask);
             
-            foreach (var hit in hits)
+            for (int i = 0; i < hitCount; i++)
             {
-                // Ищем IDamageable на самом объекте или родителе (наш DamageReceiver)
+                Collider hit = HitBuffer[i];
                 var damageable = hit.GetComponentInParent<IDamageable>();
                 damageable?.TakeDamage(_damagePayload);
             }
             
-            Debug.Log($"<color=orange>[AoE] Взрыв на {hitPoint}! Задето объектов: {hits.Length}</color>");
+#if UNITY_EDITOR
+            Debug.Log($"<color=orange>[AoE] Взрыв на {hitPoint}! Задето объектов: {hitCount}</color>");
+#endif
         }
     }
 }

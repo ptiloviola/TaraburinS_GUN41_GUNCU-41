@@ -2,34 +2,41 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Projectiles;
 using Gameplay.Projectiles.Contracts;
+using Gameplay.Projectiles.Factories;
 
 namespace Gameplay.Towers.Behaviors.Weapons
 {
-    // Никакого MonoBehaviour!
     public class ProjectileExecutor : IAttackExecutor
     {
         private readonly ModularProjectile _projectilePrefab;
-        private readonly IInstantiator _instantiator;
+        private readonly ModularProjectile.Pool _pool;
         
-        // Передаем префаб из конфига и инстанциатор от адаптера
-        public ProjectileExecutor(ModularProjectile projectilePrefab, IInstantiator instantiator)
+        // ИНЖЕКТИМ ТОЛЬКО ФАБРИКУ, никакой грязи!
+        public ProjectileExecutor(ModularProjectile projectilePrefab, ProjectileFactory factory)
         {
             _projectilePrefab = projectilePrefab;
-            _instantiator = instantiator;
-        }
 
-        public void ExecuteAttack(Transform target, IProjectilePayload payload, Transform firePoint)
-        {
+#if UNITY_EDITOR
             if (_projectilePrefab == null)
             {
                 Debug.LogError("[ProjectileExecutor] Префаб снаряда не назначен в AttackStats!");
                 return;
             }
+#endif
+            // Просим фабрику выдать нам пул для этого конкретного префаба
+            _pool = factory.GetPool(_projectilePrefab);
+        }
 
-            var projectile = _instantiator.InstantiatePrefabForComponent<ModularProjectile>(
-                _projectilePrefab, firePoint.position, firePoint.rotation, null);
+        public void ExecuteAttack(Transform target, IProjectilePayload payload, Transform firePoint)
+        {
+            if (_pool == null) return;
+
+            ModularProjectile projectile = _pool.Spawn();
             
-            projectile.Launch(target, payload, null);
+            projectile.transform.position = firePoint.position;
+            projectile.transform.rotation = firePoint.rotation;
+            
+            projectile.Launch(target, payload, _pool);
         }
     }
 }
