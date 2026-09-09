@@ -1,26 +1,33 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-
 namespace Gameplay.Spawning
 {
+    /// <summary>
+    /// Реестр всех активных точек спавна на уровне.
+    /// POCO-класс, не зависящий от MonoBehaviour.
+    /// </summary>
     public class SpawnRegistry
     {
-        // Храним спавны в словаре (Dictionary) для мгновенного поиска по ID
         private readonly Dictionary<string, EnemySpawnPoint> _spawns = new Dictionary<string, EnemySpawnPoint>();
         
         public void Register(EnemySpawnPoint spawn)
         {
-            if (!_spawns.ContainsKey(spawn.PointId))
+            // Защита от дурака: не регистрируем пустышки
+            if (spawn == null || string.IsNullOrEmpty(spawn.PointId)) return;
+
+            // TryAdd безопаснее, чем ContainsKey + Add
+            if (_spawns.TryAdd(spawn.PointId, spawn))
             {
-                _spawns.Add(spawn.PointId, spawn);
+#if UNITY_EDITOR
                 Debug.Log($"<color=purple>[SpawnRegistry] Зарегистрирован спавн: {spawn.PointId}</color>");
+#endif
             }
         }
 
         public void Unregister(EnemySpawnPoint spawn)
         {
-            if (_spawns.ContainsKey(spawn.PointId))
+            if (spawn != null && !string.IsNullOrEmpty(spawn.PointId))
             {
                 _spawns.Remove(spawn.PointId);
             }
@@ -40,16 +47,10 @@ namespace Gameplay.Spawning
 
         public void TriggerWarning(string spawnId, float duration)
         {
-            // Убедись, что твоя коллекция спавнов называется _spawns (или поправь под свое название)
             if (_spawns.TryGetValue(spawnId, out EnemySpawnPoint point))
             {
                 point.TriggerWarning(duration);
             }
         }
-
-
-
-
     }
 }
-

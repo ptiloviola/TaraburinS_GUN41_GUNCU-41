@@ -1267,7 +1267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a706533ba90a564baa89dd2a61cb57f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PointId: DefaultSpawn
+  _pointId: DefaultSpawn
 --- !u!1 &562171294
 GameObject:
   m_ObjectHideFlags: 0

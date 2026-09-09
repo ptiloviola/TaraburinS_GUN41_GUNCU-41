@@ -7,6 +7,9 @@ using Gameplay.Enemies.Data;
 
 namespace Gameplay.Spawning.Factories
 {
+    /// <summary>
+    /// Фабрика для безопасного извлечения врагов из Zenject MemoryPool и их инициализации.
+    /// </summary>
     public class EnemyFactory
     {
         private readonly DiContainer _container;
@@ -33,31 +36,35 @@ namespace Gameplay.Spawning.Factories
                 EnemyConfig config = _enemyRegistry.GetEnemyById(enemyId);
                 if (config == null)
                 {
+#if UNITY_EDITOR
                     Debug.LogError($"[EnemyFactory] Враг '{enemyId}' не найден в EnemyRegistry!");
+#endif
                     return;
                 }
                 
+                // 1. Извлекаем врага из пула по его ID
                 EnemyFacade.Pool specificPool = _container.ResolveId<EnemyFacade.Pool>(enemyId);
                 EnemyFacade enemy = specificPool.Spawn();
                 
+                // 2. Инициализация базовых данных (связь с пулом и конфигом)
                 enemy.SetPool(specificPool);
                 enemy.InitConfig(config);
-                _signalBus.Fire<SignalEnemySpawned>();
                 
-                var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
-                if (agent != null)
+                // 3. Установка позиции через инкапсулированное свойство агента (без GetComponent!)
+                if (enemy.Agent != null)
                 {
-                    agent.enabled = false;
+                    enemy.Agent.enabled = false;
                     
-                    // ИСПРАВЛЕНО: Поднимаем точку спавна на высоту полета (Base Offset),
-                    // чтобы невидимые "ноги" агента точно попали на NavMesh, а тушка была в небе
+                    // Поднимаем точку спавна на высоту полета (Base Offset),
+                    // чтобы невидимые "ноги" агента точно попали на NavMesh
                     Vector3 finalPos = spawnPos;
-                    finalPos.y += agent.baseOffset;
+                    finalPos.y += enemy.Agent.baseOffset;
                     
                     enemy.transform.position = finalPos;
-                    agent.enabled = true;
+                    enemy.Agent.enabled = true;
                 }
 
+                // 4. Поиск цели
                 if (string.IsNullOrEmpty(targetBaseId))
                 {
                     targetBaseId = BaseLocatorService.NearestByPathTag; 
@@ -65,6 +72,7 @@ namespace Gameplay.Spawning.Factories
                 
                 BaseCore targetBase = _baseLocatorService.LocateTargetBase(targetBaseId, spawnPos);
                 
+                // 5. Выдача приказа на движение
                 if (targetBase != null)
                 {
                     IMovementStrategy movement = config.Movement.CreateStrategy(targetBase.transform.position);
@@ -72,12 +80,19 @@ namespace Gameplay.Spawning.Factories
                 }
                 else
                 {
+#if UNITY_EDITOR
                     Debug.LogError("[EnemyFactory] Ошибка! Враг заспавнен, но в реестре BaseRegistry нет активной базы!");
+#endif
                 }
+
+                // 6. Уведомляем систему ТОЛЬКО когда враг полностью готов к бою
+                _signalBus.Fire<SignalEnemySpawned>();
             }
             catch (ZenjectException)
             {
+#if UNITY_EDITOR
                 Debug.LogError($"[EnemyFactory] Ошибка спавна! Пул для врага '{enemyId}' не найден. Проверь Installer!");
+#endif
             }
         }
     }

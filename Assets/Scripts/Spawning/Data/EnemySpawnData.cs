@@ -7,10 +7,20 @@ namespace Gameplay.Spawning.Data
     public class EnemySpawnData
     {
         [Tooltip("ID врага, который мы пишем в WaveConfig (например: enemy_1)")]
-        public string EnemyId;
+        [SerializeField] private string _enemyId;
         
         [Tooltip("Префаб этого врага")]
-        public GameObject Prefab;
-    }
+        [SerializeField] private GameObject _prefab;
 
+        public EnemySpawnData() { }
+
+        public EnemySpawnData(string enemyId, GameObject prefab)
+        {
+            _enemyId = enemyId;
+            _prefab = prefab;
+        }
+
+        public string EnemyId => _enemyId;
+        public GameObject Prefab => _prefab;
+    }
 }

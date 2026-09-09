@@ -52,7 +52,10 @@ namespace Infrastructure.Levels
                 EnemySpawnPoint spawnInstance = _spawnFactory.Create();
                 spawnInstance.transform.position = _gridService.GetWorldPosition(node);
                 spawnInstance.transform.SetParent(_references.GridParent);
-                spawnInstance.PointId = string.Format(SpawnIdFormat, node.Position.x, node.Position.y);
+                
+                // ИСПРАВЛЕНИЕ: Используем метод SetId для соблюдения строгой инкапсуляции
+                spawnInstance.SetId(string.Format(SpawnIdFormat, node.Position.x, node.Position.y));
+                
                 spawnInstance.gameObject.name = string.Format(SpawnNameFormat, node.Position.x, node.Position.y);
             }
         }

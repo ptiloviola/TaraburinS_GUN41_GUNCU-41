@@ -1,34 +1,52 @@
 using System;
 using UnityEngine;
 using Gameplay.Grid;
+using UnityEngine.Serialization;
 
 namespace Gameplay.Spawning.Data
 {
     [Serializable]
     public class SquadData
     {
-        [Tooltip("ID врага из реестра (например, 'goblin_basic')")]
-        public string EnemyId; 
+        [EnemyId] // НОВОЕ: Добавили наш атрибут
+        [Tooltip("ID врага из реестра (выбирается из списка)")]
+        [FormerlySerializedAs("EnemyId")]
+        [SerializeField] private string _enemyId;
         
         [Tooltip("Количество врагов в этом отряде")]
-        public int Count = 5;
+        [SerializeField] private int _count = 5;
         
         [Tooltip("Пауза между спавном каждого врага в отряде")]
-        public float SpawnInterval = 1.0f;
-        
-        // [Tooltip("ID точки старта (например: Spawn_0_4)")]
-        // public string SpawnPointId = "Spawn_0_0"; 
-        
-        // [Tooltip("ID Базы, которую пойдут атаковать (оставь пустым для ближайшей/главной)")]
-        // public string TargetBaseId = ""; // НОВОЕ
+        [SerializeField] private float _spawnInterval = 1.0f;
 
-        [GridPointId(NodeType.Spawn)] // НОВОЕ: Говорим инспектору искать Спавны
+        [GridPointId(NodeType.Spawn)] 
         [Tooltip("ID точки старта")]
-        public string SpawnPointId = ""; 
+        [SerializeField] private string _spawnPointId = ""; 
         
-        [GridPointId(NodeType.Base)] // НОВОЕ: Говорим инспектору искать Базы
+        [GridPointId(NodeType.Base)] 
         [Tooltip("ID Базы (оставь пустым для ближайшей)")]
-        public string TargetBaseId = "";
+        [SerializeField] private string _targetBaseId = "";
 
+        
+
+        // 1. Пустой конструктор для сериализации Unity Инспектора
+        public SquadData() { }
+
+        // 2. Конструктор для процедурной генерации рогалика
+        public SquadData(string enemyId, int count, float spawnInterval, string spawnPointId, string targetBaseId = "")
+        {
+            _enemyId = enemyId;
+            _count = count;
+            _spawnInterval = spawnInterval;
+            _spawnPointId = spawnPointId;
+            _targetBaseId = targetBaseId;
+        }
+
+        // Публичные свойства только для чтения
+        public string EnemyId => _enemyId;
+        public int Count => _count;
+        public float SpawnInterval => _spawnInterval;
+        public string SpawnPointId => _spawnPointId;
+        public string TargetBaseId => _targetBaseId;
     }
 }

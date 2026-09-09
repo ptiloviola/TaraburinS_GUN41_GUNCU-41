@@ -16,7 +16,7 @@ MonoBehaviour:
   height: 21
   rows:
   - columns:
-    - elevation: 0
+    - elevation: 1
       type: 0
     - elevation: 0
       type: 0

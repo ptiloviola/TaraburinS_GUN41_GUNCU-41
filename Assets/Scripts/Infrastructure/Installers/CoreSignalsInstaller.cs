@@ -16,7 +16,7 @@ namespace Infrastructure.Installers
             Container.DeclareSignal<SignalBalanceChanged>();
             Container.DeclareSignal<SignalWaveStarted>();
             Container.DeclareSignal<SignalWaveTimerUpdated>();
-            Container.DeclareSignal<SignalForceStartWave>();
+            Container.DeclareSignal<SignalForceStartWave>().OptionalSubscriber();
             Container.DeclareSignal<SignalWaveStateChanged>();
             
             Container.DeclareSignal<SignalEnemySpawned>();

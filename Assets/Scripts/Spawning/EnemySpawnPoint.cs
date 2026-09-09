@@ -4,13 +4,31 @@ using Gameplay.Spawning.Visuals;
 
 namespace Gameplay.Spawning
 {
+    /// <summary>
+    /// Humble Object. Физическая точка спавна на сцене.
+    /// Отвечает только за саморегистрацию в реестре и проброс визуальных эффектов.
+    /// </summary>
     public class EnemySpawnPoint : MonoBehaviour
     {
-        public string PointId = "DefaultSpawn";
-        private SpawnRegistry _registry;
+        // Избавляемся от магических чисел
+        private static readonly Color GizmoColor = new Color(1f, 0f, 1f, 0.5f);
+        private const float GizmoRadius = 0.5f;
+        private const float GizmoHeightOffset = 0.5f;
 
-        // Ссылка на компонент визуала (через абстракцию!)
+        [Header("Настройки")]
+        // Строгая инкапсуляция: поле видно в инспекторе, но изменить извне его нельзя (только чтение)
+        [SerializeField] private string _pointId = "DefaultSpawn";
+        
+        private SpawnRegistry _registry;
         private ISpawnVisuals _visuals;
+
+        public string PointId => _pointId;
+
+        // Позволяем генератору уровня задать ID при спавне
+        public void SetId(string newId)
+        {
+            _pointId = newId;
+        }
 
         [Inject]
         public void Construct(SpawnRegistry registry)
@@ -20,31 +38,33 @@ namespace Gameplay.Spawning
 
         private void Awake()
         {
-            // Ищем любой скрипт, реализующий ISpawnVisuals на этом объекте или детях
             _visuals = GetComponentInChildren<ISpawnVisuals>();
         }
 
-        // ИСПРАВЛЕНИЕ: Переносим регистрацию в Start()
-        private void Start() => _registry?.Register(this);
-        // ИСПРАВЛЕНИЕ: Раз регистрируемся в Start, выписываемся в OnDestroy
-        private void OnDestroy() => _registry?.Unregister(this);
+        private void Start()
+        {
+            _registry?.Register(this);
+        }
 
-        // Публичный метод для Реестра
+        private void OnDestroy()
+        {
+            _registry?.Unregister(this);
+        }
+
         public void TriggerWarning(float duration)
         {
             _visuals?.PlayWarningEffect(duration);
         }
 
-        
-
+// Оборачиваем Gizmos, чтобы они полностью вырезались при сборке релизного билда
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            Gizmos.color = new Color(1f, 0f, 1f, 0.5f); // Пурпурный
-            Gizmos.DrawSphere(transform.position + Vector3.up * 0.5f, 0.5f);
+            Gizmos.color = GizmoColor;
+            Gizmos.DrawSphere(transform.position + Vector3.up * GizmoHeightOffset, GizmoRadius);
         }
+#endif
 
-        // Фабрика для генерации из GridGenerator
         public class Factory : PlaceholderFactory<EnemySpawnPoint> { }
-
     }
 }
