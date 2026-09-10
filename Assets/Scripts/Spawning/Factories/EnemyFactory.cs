@@ -95,5 +95,9 @@ namespace Gameplay.Spawning.Factories
 #endif
             }
         }
+        public void OnSpawnEnemyRequested(SignalSpawnEnemyRequest request)
+        {
+            SpawnEnemy(request.EnemyId, request.Position, request.TargetBaseId);
+        }
     }
 }

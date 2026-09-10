@@ -9,6 +9,7 @@ using Gameplay.Base;
 using Gameplay.Spawning.Factories;
 using Gameplay.Spawning.Services;
 using Gameplay.Spawning.Data; // Добавлено для LevelWavesConfig
+using Infrastructure.Signals;
 
 namespace Gameplay.Spawning.Installers
 {
@@ -73,6 +74,11 @@ namespace Gameplay.Spawning.Installers
             }
 
             Container.Bind<EnemyFactory>().AsSingle();
+
+            // Привязываем сигнал к методу OnSpawnEnemyRequested фабрики EnemyFactory:
+            Container.BindSignal<SignalSpawnEnemyRequest>()
+                .ToMethod<EnemyFactory>(x => x.OnSpawnEnemyRequested)
+                .FromResolve();
 
             // Настройка пулов Защитников
             if (_defenderRegistry != null)
