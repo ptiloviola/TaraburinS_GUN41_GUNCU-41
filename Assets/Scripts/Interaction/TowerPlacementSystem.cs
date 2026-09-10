@@ -7,11 +7,14 @@ using Gameplay.Towers.Factories;
 using Gameplay.Towers.Visuals;
 using System;
 using UnityEngine.EventSystems;
+using Gameplay.Infrastructure.Input; // НОВОЕ: Подключаем наш инпут
 
 namespace Gameplay.Interaction
 {
     public class TowerPlacementSystem : ITickable, IInitializable 
     {
+        private const float MaxRaycastDistance = 100f; // Избавляемся от магических чисел
+
         private readonly IGridService _gridService;
         private readonly GridSceneReferences _sceneReferences;
         private readonly Camera _mainCamera;
@@ -20,12 +23,13 @@ namespace Gameplay.Interaction
         private readonly BankService _bankService;
         private readonly TowerRegistry _towerRegistry;
         private readonly TowerFactory _towerFactory;
+        
+        // НОВОЕ: Внедряем сервисы взаимодействия
+        private readonly IInputService _inputService;
+        private readonly InteractionStateModel _interactionState;
 
-        // ИЗМЕНЕНО: Используем TowerConfig напрямую
         private TowerConfig _selectedTowerConfig;
         private PlacementVisualizer _visualizer;
-
-        public bool IsBuildingMode => _selectedTowerConfig != null;
 
         public event Action OnTowerDeselected;
 
@@ -47,7 +51,9 @@ namespace Gameplay.Interaction
             IInstantiator instantiator,
             BankService bankService,
             TowerRegistry towerRegistry,
-            TowerFactory towerFactory)
+            TowerFactory towerFactory,
+            IInputService inputService,
+            InteractionStateModel interactionState)
         {
             _gridService = gridService;
             _sceneReferences = sceneReferences;
@@ -56,6 +62,8 @@ namespace Gameplay.Interaction
             _bankService = bankService;
             _towerRegistry = towerRegistry;
             _towerFactory = towerFactory;
+            _inputService = inputService;
+            _interactionState = interactionState;
             _mainCamera = Camera.main;
         }
 
@@ -79,6 +87,8 @@ namespace Gameplay.Interaction
             _selectedTowerConfig = _towerRegistry.GetTowerById(towerId);
             if (_selectedTowerConfig != null)
             {
+                // Переключаем глобальный стейт, чтобы другие системы заблокировались
+                _interactionState.CurrentMode = InteractionMode.Building;
                 _visualizer.SetSelectedTower(_selectedTowerConfig);
             }
         }
@@ -86,13 +96,17 @@ namespace Gameplay.Interaction
         public void DeselectTower()
         {
             _selectedTowerConfig = null;
+            // Возвращаем обычный стейт
+            _interactionState.CurrentMode = InteractionMode.Normal;
+            
             _visualizer.Hide();
             OnTowerDeselected?.Invoke(); 
         }
 
         public void Tick()
         {
-            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            // Отменяем стройку по ПКМ или Esc через абстракцию
+            if (_inputService.IsCancelActionDown)
             {
                 if (_selectedTowerConfig != null) DeselectTower();
             }
@@ -110,22 +124,23 @@ namespace Gameplay.Interaction
 
         private void HandleMouseInteraction()
         {
-            Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+            // Берем координаты мыши/пальца из нового инпута
+            Ray ray = _mainCamera.ScreenPointToRay(_inputService.PointerPosition);
 
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, _settings.GridLayerMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, MaxRaycastDistance, _settings.GridLayerMask))
             {
                 int gridX = Mathf.RoundToInt(hit.transform.position.x / _sceneReferences.Spacing);
                 int gridZ = Mathf.RoundToInt(hit.transform.position.z / _sceneReferences.Spacing);
                 Vector2Int gridPos = new Vector2Int(gridX, gridZ);
 
                 bool isCellFree = _gridService.CanBuildAt(gridPos);
-                // ИЗМЕНЕНО: Обращаемся к BaseCost
                 bool hasEnoughMoney = _bankService.CurrentBalance >= _selectedTowerConfig.BaseCost;
                 bool canBuild = isCellFree && hasEnoughMoney;
 
                 _visualizer.UpdateVisuals(hit.collider.transform.position, hit.collider.bounds.max.y, canBuild);
 
-                if (Input.GetMouseButtonDown(0) && canBuild)
+                // Слушаем клик ЛКМ или тап
+                if (_inputService.IsPrimaryActionDown && canBuild)
                 {
                     Vector3 spawnPosition = new Vector3(hit.collider.transform.position.x, hit.collider.bounds.max.y, hit.collider.transform.position.z);
                     

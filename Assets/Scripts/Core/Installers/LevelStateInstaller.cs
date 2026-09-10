@@ -3,6 +3,8 @@ using Zenject;
 using Gameplay.Economy;
 using Gameplay.Base;
 using Gameplay.UI;
+using Gameplay.Infrastructure.Input;
+using Gameplay.Interaction;
 
 namespace Gameplay.Core.Installers
 {
@@ -18,6 +20,12 @@ namespace Gameplay.Core.Installers
 
             Container.BindFactory<ForecastIconView, ForecastIconView.Factory>()
                      .FromComponentInNewPrefab(_forecastIconPrefab);
+
+            // Регистрируем систему ввода, привязывая ее к интерфейсу и всем интерфейсам Zenject (IInitializable, IDisposable)
+            Container.BindInterfacesTo<StandaloneInputService>().AsSingle();
+
+            // Регистрируем модель состояния взаимодействия как Singleton
+            Container.Bind<InteractionStateModel>().AsSingle();
 
 
             Debug.Log("<color=green>[Zenject] LevelStateInstaller: Экономика и UI зарегистрированы.</color>");
