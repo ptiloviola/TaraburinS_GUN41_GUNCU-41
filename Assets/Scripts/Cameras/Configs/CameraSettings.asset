@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4d18229c6dc0524f805e0ffb7c15007, type: 3}
   m_Name: CameraSettings
   m_EditorClassIdentifier: 
-  InitialFocusBaseId: Base_9_17
-  CameraPitch: 12.700002
-  CameraYaw: 180
+  UseAbsoluteManualStart: 1
+  AbsolutePosition: {x: 11.159992, y: 10.728481, z: 29.610544}
+  AbsoluteRotation: {x: 37.32, y: 180, z: -1.2798015e-13}
+  AbsoluteZoom: 17.695997
+  InitialFocusBaseId: Base_2_20
   BaseFocusOffset: {x: 0, y: 0, z: 10}
   PanSpeed: 20
   PanSmoothness: 10
   DragSpeed: 0.01
   ZoomSpeed: 50
-  MinZoomY: 10
-  MaxZoomY: 40
-  ZoomSmoothness: 8
+  MinZoomY: 16.350838
+  MaxZoomY: 46.350838
   BoundaryPadding: {x: 0, y: 0}

@@ -1,50 +1,65 @@
 using UnityEngine;
-using Gameplay.Grid; // Подключаем твой домен с NodeType
+using Gameplay.Grid;
 using Gameplay.Spawning.Data;
-
 
 namespace Gameplay.Cameras.Data
 {
     [CreateAssetMenu(fileName = "CameraSettings", menuName = "TD/Camera/Settings")]
     public class CameraSettingsConfig : ScriptableObject
     {
-        [Header("Стартовый вид")]
-        [GridPointId(NodeType.Base)] // ТВОЯ МАГИЯ: Теперь тут выпадающий список!
-        public string InitialFocusBaseId;
+        [Header("Режим старта")]
+        [Tooltip("Если включено, камера стартует строго по координатам ниже, игнорируя базу.")]
+        public bool UseAbsoluteManualStart = true;
         
-        [Header("Ракурс (Pitch/Yaw)")]
-        [Range(10f, 85f)] public float CameraPitch = 50f;
-        [Range(-180f, 180f)] public float CameraYaw = 0f;
+        [Header("Жесткие координаты (Заполняется кнопкой)")]
+        public Vector3 AbsolutePosition;
+        public Vector3 AbsoluteRotation;
+        public float AbsoluteZoom = 25f;
 
-        [Header("Кадрирование (Сдвиг фокуса)")]
-        [Tooltip("Сдвигает фокус относительно базы. Z > 0 опустит базу вниз экрана.")]
+        [Header("Динамический старт (Если галочка выше снята)")]
+        [GridPointId(NodeType.Base)] 
+        public string InitialFocusBaseId;
         public Vector3 BaseFocusOffset = new Vector3(0f, 0f, 10f);
 
         [Header("Перемещение (Pan)")]
         public float PanSpeed = 20f;
         public float PanSmoothness = 10f;
-        public float DragSpeed = 0.05f; 
+        public float DragSpeed = 0.01f; 
 
         [Header("Масштабирование (Zoom)")]
-        public float ZoomSpeed = 15f;
+        public float ZoomSpeed = 30f;
         public float MinZoomY = 5f; 
-        public float MaxZoomY = 25f; 
-        public float ZoomSmoothness = 8f;
+        public float MaxZoomY = 50f; 
 
         [Header("Ограничения карты")]
-        [Tooltip("ВАЖНО: Должно быть достаточно большим (например, 15-20), чтобы камера могла отъехать от краев карты!")]
+        [Tooltip("Ставь минимум 10, 10! Иначе камера будет отскакивать от краев.")]
         public Vector2 BoundaryPadding = new Vector2(15f, 15f);
 
-        // СКРИПТ-ПОМОЩНИК: Копирует настройки со сцены
-        [ContextMenu("Скопировать ракурс с Main Camera")]
+        [ContextMenu("🔥 Скопировать ИДЕАЛЬНЫЙ ракурс с Main Camera")]
         private void CopyFromMainCamera()
         {
-            if (Camera.main != null)
+            Camera cam = Camera.main;
+            if (cam == null) return;
+
+            // Просто в лоб копируем то, что видим
+            AbsolutePosition = cam.transform.position;
+            AbsoluteRotation = cam.transform.eulerAngles;
+
+            // Считаем дистанцию до земли для зума
+            Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+            Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+
+            if (groundPlane.Raycast(ray, out float distance))
             {
-                CameraPitch = Camera.main.transform.eulerAngles.x;
-                CameraYaw = Camera.main.transform.eulerAngles.y;
-                Debug.Log($"<color=green>[CameraSettings] Ракурс скопирован: Pitch = {CameraPitch:F1}, Yaw = {CameraYaw:F1}</color>");
+                AbsoluteZoom = distance;
+                Debug.Log($"<color=green>[Camera] СОХРАНЕНО: Позиция {AbsolutePosition}, Углы {AbsoluteRotation}. Зум: {distance}</color>");
             }
+            else
+            {
+                AbsoluteZoom = 25f; // Заглушка, если смотрим в небо
+            }
+            
+            UseAbsoluteManualStart = true; // Автоматически включаем ручной режим
         }
     }
 }
