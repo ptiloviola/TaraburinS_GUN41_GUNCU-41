@@ -3,21 +3,20 @@ using System;
 
 namespace Gameplay.Infrastructure.Input
 {
-    /// <summary>
-    /// Единая точка доступа к вводу игрока.
-    /// Изолирует игровую логику от конкретных устройств (мышь, тачскрин, геймпад).
-    /// </summary>
     public interface IInputService
     {
-        // Текущая позиция курсора на экране
+        // Существующие свойства для взаимодействия
         Vector2 PointerPosition { get; }
-        
-        // Реактивные события (для UI и строгих стейт-машин)
-        event Action OnPrimaryAction;   // Например, клик ЛКМ или тап по экрану
-        event Action OnCancelAction;    // Например, клик ПКМ или кнопка Esc
-        
-        // Флаги состояния (для проверок внутри метода Tick)
+        event Action OnPrimaryAction;
+        event Action OnCancelAction;
         bool IsPrimaryActionDown { get; }
         bool IsCancelActionDown { get; }
+
+        // НОВЫЕ СВОЙСТВА ДЛЯ КАМЕРЫ
+        Vector2 PanDelta { get; } // Вектор движения (WASD/Стрелки)
+        float ZoomDelta { get; }  // Прокрутка колесика (Scroll)
+
+        bool IsDragPanning { get; } // Зажато ли колесико
+        Vector2 PointerDelta { get; } // Смещение мыши за кадр
     }
 }

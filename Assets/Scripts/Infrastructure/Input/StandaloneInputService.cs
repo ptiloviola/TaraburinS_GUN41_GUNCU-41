@@ -1,56 +1,53 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace Gameplay.Infrastructure.Input
 {
     public class StandaloneInputService : IInputService, IInitializable, IDisposable
     {
-        private InputAction _primaryAction;
-        private InputAction _cancelAction;
-        private InputAction _pointerPosition;
+        // Ссылка на наш автосгенерированный класс настроек ввода
+        private GameInput _gameInput;
 
         public event Action OnPrimaryAction;
         public event Action OnCancelAction;
 
-        public Vector2 PointerPosition => _pointerPosition.ReadValue<Vector2>();
-        public bool IsPrimaryActionDown => _primaryAction.WasPressedThisFrame();
-        public bool IsCancelActionDown => _cancelAction.WasPressedThisFrame();
+        // Читаем данные напрямую из сгенерированного класса
+        public Vector2 PointerPosition => _gameInput.Gameplay.PointerPosition.ReadValue<Vector2>();
+        public bool IsPrimaryActionDown => _gameInput.Gameplay.PrimaryAction.WasPressedThisFrame();
+        public bool IsCancelActionDown => _gameInput.Gameplay.CancelAction.WasPressedThisFrame();
+
+        // Метод IsPressed() отлично подходит для проверки удержания кнопки (Drag)
+        public bool IsDragPanning => _gameInput.Gameplay.MiddleClick.IsPressed();
+        public Vector2 PointerDelta => _gameInput.Gameplay.PointerDelta.ReadValue<Vector2>();
+        
+        // Новые данные для камеры
+        public Vector2 PanDelta => _gameInput.Gameplay.Move.ReadValue<Vector2>();
+        public float ZoomDelta => _gameInput.Gameplay.Zoom.ReadValue<float>();
+
+        
 
         public void Initialize()
         {
-            // Настраиваем ЛКМ и касание экрана (Touch)
-            _primaryAction = new InputAction(binding: "<Mouse>/leftButton");
-            _primaryAction.AddBinding("<Pointer>/press"); // Магия: сразу работает на мобилках!
+            // Создаем экземпляр настроек
+            _gameInput = new GameInput();
 
-            // Настраиваем ПКМ и Escape
-            _cancelAction = new InputAction(binding: "<Mouse>/rightButton");
-            _cancelAction.AddBinding("<Keyboard>/escape");
-
-            // Считываем позицию мыши или пальца
-            _pointerPosition = new InputAction(binding: "<Pointer>/position");
-
-            // Реактивная подписка на события
-            _primaryAction.performed += _ => OnPrimaryAction?.Invoke();
-            _cancelAction.performed += _ => OnCancelAction?.Invoke();
+            // Подписываемся на события кликов
+            _gameInput.Gameplay.PrimaryAction.performed += _ => OnPrimaryAction?.Invoke();
+            _gameInput.Gameplay.CancelAction.performed += _ => OnCancelAction?.Invoke();
 
             // Включаем слежение
-            _primaryAction.Enable();
-            _cancelAction.Enable();
-            _pointerPosition.Enable();
+            _gameInput.Enable();
         }
 
         public void Dispose()
         {
-            // Защита от утечек памяти при закрытии игры/сцены
-            _primaryAction.Disable();
-            _cancelAction.Disable();
-            _pointerPosition.Disable();
-            
-            _primaryAction.Dispose();
-            _cancelAction.Dispose();
-            _pointerPosition.Dispose();
+            // Корректно очищаем память при выходе
+            if (_gameInput != null)
+            {
+                _gameInput.Disable();
+                _gameInput.Dispose();
+            }
         }
     }
 }

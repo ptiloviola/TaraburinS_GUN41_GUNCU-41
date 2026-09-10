@@ -12,7 +12,6 @@ namespace Gameplay.Towers.Installers
     {
         [SerializeField] private TowerPlacementSystem.Settings _placementSettings;
         [SerializeField] private TowerRegistry _towerRegistry;
-        [SerializeField] private LayerMask _towerLayerMask;
 
         public override void InstallBindings()
         {
@@ -25,13 +24,6 @@ namespace Gameplay.Towers.Installers
             // Фабрики
             Container.Bind<TowerFactory>().AsSingle();
             Container.Bind<DefenderFactory>().AsSingle(); // Дефендеры относятся к башням (Казармы)
-
-            // Системы взаимодействия
-            Container.BindInterfacesAndSelfTo<TowerPlacementSystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<TowerSelectionService>()
-                     .AsSingle()
-                     .WithArguments(Camera.main, _towerLayerMask)
-                     .NonLazy();
 
             Debug.Log("<color=green>[Zenject] TowerDefenseInstaller: Системы башен зарегистрированы.</color>");
         }
