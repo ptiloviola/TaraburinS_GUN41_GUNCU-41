@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CameraSettings
   m_EditorClassIdentifier: 
   UseAbsoluteManualStart: 1
-  AbsolutePosition: {x: 11.159992, y: 10.728481, z: 29.610544}
-  AbsoluteRotation: {x: 37.32, y: 180, z: -1.2798015e-13}
+  AbsolutePosition: {x: 11.7, y: 14.874662, z: 26}
+  AbsoluteRotation: {x: 57.200005, y: 180, z: 0}
   AbsoluteZoom: 17.695997
   InitialFocusBaseId: Base_2_20
   BaseFocusOffset: {x: 0, y: 0, z: 10}

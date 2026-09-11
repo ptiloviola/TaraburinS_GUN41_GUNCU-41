@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Gameplay.Towers.Behaviors;
 using Gameplay.Towers.Visuals;
+using Gameplay.Towers.Services;
 
 namespace Gameplay.Towers
 {
@@ -16,6 +17,7 @@ namespace Gameplay.Towers
         public Vector2Int GridPosition { get; private set; }
 
         private readonly List<ITowerBehavior> _behaviors = new List<ITowerBehavior>();
+        private ITowerVisuals _visuals; // НОВОЕ: Сохраняем ссылку на визуал
         
         public event Action OnLevelChanged;
 
@@ -37,7 +39,6 @@ namespace Gameplay.Towers
             
             _behaviors.Clear();
 
-            // 1. Собираем всех актеров (ищем адаптеры)
             var adapters = GetComponentsInChildren<IBehaviorAdapter>(true);
             WeaponAdapter foundWeaponAdapter = null;
 
@@ -49,16 +50,13 @@ namespace Gameplay.Towers
                 }
             }
 
-            // 2. ИСТИННЫЙ ПУТЬ: СНАЧАЛА инициализируем Визуал!
-            // Чтобы он успел подписаться на все события (расселся в зале)
-            var visuals = GetComponentInChildren<ITowerVisuals>(true);
-            if (visuals != null)
+            // НОВОЕ: Ищем визуал и сохраняем ссылку на него в поле
+            _visuals = GetComponentInChildren<ITowerVisuals>(true);
+            if (_visuals != null)
             {
-                visuals.Initialize(foundWeaponAdapter);
+                _visuals.Initialize(foundWeaponAdapter);
             }
 
-            // 3. ПОТОМ инициализируем Логику (начинаем спектакль)
-            // Теперь, когда логика крикнет OnBuildStarted, визуал точно это услышит!
             foreach (var adapter in adapters)
             {
                 ITowerBehavior behavior = adapter.CreateBehavior();
@@ -83,7 +81,6 @@ namespace Gameplay.Towers
             if (!CanUpgrade()) return;
             CurrentLevel++;
             
-            // Перезапускаем чистые классы, чтобы они прочитали новые статы
             for (int i = 0; i < _behaviors.Count; i++)
             {
                 _behaviors[i].Initialize(this); 
@@ -91,20 +88,52 @@ namespace Gameplay.Towers
 
             OnLevelChanged?.Invoke();
         }
+
+        // --- НОВОЕ ПУБЛИЧНОЕ API ДЛЯ УПРАВЛЕНИЯ ВИЗУАЛОМ ---
+
+        public void ShowRadiusPreview()
+        {
+            if (_visuals == null) return;
+            
+            TowerLevelData currentStats = GetCurrentStats();
+            float currentRadius = TowerRadiusCalculator.GetMaxRadius(currentStats);
+            float minRadius = TowerRadiusCalculator.GetMinRadius(currentStats);
+            
+            _visuals.ShowRadius(currentRadius, 0f, minRadius);
+        }
+
+        public void ShowUpgradePreview()
+        {
+            if (_visuals == null) return;
+            
+            TowerLevelData currentStats = GetCurrentStats();
+            float currentRadius = TowerRadiusCalculator.GetMaxRadius(currentStats);
+            float minRadius = TowerRadiusCalculator.GetMinRadius(currentStats);
+            
+            float nextRadius = 0f;
+            if (CanUpgrade())
+            {
+                TowerLevelData nextStats = _config.Levels[CurrentLevel + 1];
+                nextRadius = TowerRadiusCalculator.GetMaxRadius(nextStats);
+            }
+            
+            _visuals.ShowRadius(currentRadius, nextRadius, minRadius);
+        }
+
+        public void HideRadiusPreview()
+        {
+            _visuals?.HideRadius();
+        }
+
         private void OnDestroy()
         {
             foreach (var behavior in _behaviors)
             {
-                // Проверяем, реализует ли контроллер очистку (паттерн Type Checking)
                 if (behavior is BarracksController barracks)
                 {
                     barracks.Cleanup();
                 }
             }
         }
-
-        
-
-
     }
 }

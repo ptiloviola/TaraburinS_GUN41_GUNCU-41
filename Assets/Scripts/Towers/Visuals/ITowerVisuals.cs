@@ -12,5 +12,9 @@ namespace Gameplay.Towers.Visuals
         // Срабатывает из Unity Animation Event на нужном кадре замаха.
         event Action OnAttackImpact;
         void TriggerAttackImpact();
+
+        // НОВОЕ: Интерфейс скрывает реализацию отрисовки радиусов
+        void ShowRadius(float currentRadius, float upgradedRadius, float minRadius = 0f);
+        void HideRadius();
     }
 }
