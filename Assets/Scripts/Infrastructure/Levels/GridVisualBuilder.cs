@@ -28,9 +28,7 @@ namespace Infrastructure.Levels
 
             if (pathAreaIndex == -1 || groundAreaIndex == -1)
             {
-#if UNITY_EDITOR
                 Debug.LogError($"[GridVisualBuilder] ОШИБКА: Зоны {CustomPathAreaName} или {CustomGroundAreaName} не найдены!");
-#endif
                 pathAreaIndex = 0;
                 groundAreaIndex = 0;
             }
@@ -43,7 +41,6 @@ namespace Infrastructure.Levels
                     float addedHeight = node.Elevation * _references.ElevationStep;
                     Vector3 spawnPosition = new Vector3(x * _references.Spacing, addedHeight / 2f, z * _references.Spacing);
 
-                    // Инстанциируем куб из префаба, сохраненного в ссылках сцены
                     GameObject block = Object.Instantiate(
                         _references.CubePrefab, 
                         spawnPosition, 
@@ -63,8 +60,18 @@ namespace Infrastructure.Levels
 
         private void SetupBlockVisuals(GameObject block, GridNode node, int pathAreaIndex, int groundAreaIndex)
         {
-            Renderer blockRenderer = block.GetComponent<Renderer>();
-            NavMeshModifier modifier = block.AddComponent<NavMeshModifier>();
+            // Оптимизация: ищем компонент, а не требуем выделения памяти. 
+            if (!block.TryGetComponent(out Renderer blockRenderer))
+            {
+                blockRenderer = block.GetComponentInChildren<Renderer>();
+            }
+            
+            // Если NavMeshModifier уже висит на префабе, мы сэкономим тысячи вызовов AddComponent!
+            if (!block.TryGetComponent(out NavMeshModifier modifier))
+            {
+                modifier = block.AddComponent<NavMeshModifier>();
+            }
+            
             modifier.overrideArea = true;
             GridTheme theme = _references.Theme;
 

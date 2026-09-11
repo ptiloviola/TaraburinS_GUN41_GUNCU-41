@@ -6,6 +6,6 @@ namespace Infrastructure.Signals
     {
         public string EnemyId;
         public Vector3 Position;
-        public string TargetBaseId; // Опционально. Если пусто, режиссер направит сегмент на ближайшую базу.
+        public string TargetBaseId;
     }
 }

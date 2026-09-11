@@ -2,7 +2,7 @@ using UnityEngine;
 using Zenject;
 using Infrastructure.Signals;
 
-namespace Infrastructure.Installers
+namespace Gameplay.Infrastructure.Installers
 {
     public class CoreSignalsInstaller : MonoInstaller
     {

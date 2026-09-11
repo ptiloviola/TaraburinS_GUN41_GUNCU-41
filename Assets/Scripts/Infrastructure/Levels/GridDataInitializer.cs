@@ -10,7 +10,6 @@ namespace Infrastructure.Levels
         private readonly GridConfig _gridConfig;
         private readonly GridSceneReferences _sceneReferences;
 
-        // Внедрение зависимостей (Constructor Injection)
         public GridDataInitializer(
             IGridService gridService, 
             GridConfig gridConfig, 
@@ -25,9 +24,8 @@ namespace Infrastructure.Levels
         {
             if (_gridConfig == null)
             {
-#if UNITY_EDITOR
+                // Убрано #if UNITY_EDITOR. Критические ошибки должны писать в лог всегда!
                 Debug.LogError("[GridDataInitializer] Конфиг сетки не передан в контейнер!");
-#endif
                 return;
             }
 
@@ -47,7 +45,6 @@ namespace Infrastructure.Levels
                 }
             }
 
-            // Инициализируем математическую модель
             _gridService.InitializeGrid(
                 w, 
                 h, 

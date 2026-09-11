@@ -1,7 +1,7 @@
 using Zenject;
 using Gameplay.Infrastructure.Input;
 
-namespace Infrastructure.Installers
+namespace Gameplay.Infrastructure.Installers
 {
     public class ProjectInstaller : MonoInstaller
     {
