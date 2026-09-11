@@ -10,9 +10,17 @@ namespace Gameplay.UI.Installers
         [Header("Магазин башен")]
         [SerializeField] private TowerShopView _shopView;
         [SerializeField] private TowerButtonView _buttonPrefab;
+        
 
         [Header("Контекстное меню")]
         [SerializeField] private TowerContextMenuView _contextMenuView;
+
+        [Header("Базовый UI (Экономика и Жизни)")]
+        [SerializeField] private BaseUIView _baseUIView;
+
+        [Header("Управление Волнами")]
+        [SerializeField] private WaveUIView _waveUIView;
+        [SerializeField] private ForecastIconView _forecastIconPrefab;
 
         public override void InstallBindings()
         {
@@ -31,6 +39,19 @@ namespace Gameplay.UI.Installers
 
             Container.BindInstance(_contextMenuView).AsSingle();
             Container.BindInterfacesAndSelfTo<TowerContextMenuPresenter>().AsSingle();
+
+            Container.BindInstance(_baseUIView).AsSingle();
+            Container.BindInterfacesAndSelfTo<BaseUIPresenter>().AsSingle();
+
+            // 1. Биндим View и Presenter волн
+            Container.BindInstance(_waveUIView).AsSingle();
+            Container.BindInterfacesAndSelfTo<WaveUIPresenter>().AsSingle();
+
+            // 2. Создаем пул иконок и сразу кладем их в ForecastContainer
+            Container.BindMemoryPool<ForecastIconView, ForecastIconView.Pool>()
+                     .WithInitialSize(3)
+                     .FromComponentInNewPrefab(_forecastIconPrefab)
+                     .UnderTransform(_waveUIView.ForecastContainer);
 
         }
     }

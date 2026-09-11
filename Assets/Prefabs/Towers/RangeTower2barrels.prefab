@@ -245,6 +245,7 @@ MonoBehaviour:
   _muzzleFlashes:
   - {fileID: 5261946610394184294}
   - {fileID: 6286558492475144204}
+  _radiusVisualizer: {fileID: 207222179972862880}
 --- !u!1 &3929638890925405715
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,6 +382,7 @@ MonoBehaviour:
   _environmentLayerMask:
     serializedVersion: 2
     m_Bits: 1024
+  ElevationPivot: {fileID: 0}
 --- !u!1 &5931894481428781462
 GameObject:
   m_ObjectHideFlags: 0

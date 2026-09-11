@@ -19,6 +19,11 @@ PrefabInstance:
       propertyPath: _barrelTransforms.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 475843314370010631, guid: 2a07224920abf704282c79a42705e579,
+        type: 3}
+      propertyPath: _barrelTransforms.Array.data[0]
+      value: 
+      objectReference: {fileID: 1902755751317592350}
     - target: {fileID: 624343194331692989, guid: 2a07224920abf704282c79a42705e579,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -170,3 +175,9 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!4 &1902755751317592350 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2830298013777585326, guid: 2a07224920abf704282c79a42705e579,
+    type: 3}
+  m_PrefabInstance: {fileID: 4404748352506903984}
+  m_PrefabAsset: {fileID: 0}

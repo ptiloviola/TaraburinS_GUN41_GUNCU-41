@@ -2,11 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-//Стандартная кнопка в Unity умеет только onClick. 
-//Нам нужен крошечный скрипт-помощник, чтобы ловить мышь. 
-
-
-namespace Gameplay.UI
+namespace Gameplay.UI.Components
 {
     public class UIHoverListener : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {

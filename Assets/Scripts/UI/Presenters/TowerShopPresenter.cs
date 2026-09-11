@@ -47,7 +47,6 @@ namespace Gameplay.UI.Presenters
 
         public void Dispose()
         {
-            // Жесткое правило: всегда отписываемся, чтобы избежать утечек памяти
             _view.OnTowerClicked -= HandleTowerClicked;
             _view.OnTowerHoverEntered -= HandleTowerHovered;
             _view.OnTowerHoverExited -= HandleHoverExited;
@@ -57,10 +56,12 @@ namespace Gameplay.UI.Presenters
                 _placementSystem.OnTowerDeselected -= HandleDeselectedFromGrid;
             }
 
-            // Возвращаем все кнопки в пул
             foreach (var button in _activeButtons)
             {
-                _buttonPool.Despawn(button);
+                if (button != null)
+                {
+                    _buttonPool.Despawn(button);
+                }
             }
             _activeButtons.Clear();
         }

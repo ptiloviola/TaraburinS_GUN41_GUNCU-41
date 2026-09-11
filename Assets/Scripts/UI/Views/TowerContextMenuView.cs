@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using Gameplay.UI.Components;
 
 namespace Gameplay.UI.Views
 {

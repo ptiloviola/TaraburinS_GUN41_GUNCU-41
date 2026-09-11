@@ -236,7 +236,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 140908225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdc3baf0f5d05384e87bc18e11b636c6, type: 3}
+  m_Script: {fileID: 11500000, guid: dc829b897e0afa74baff043bb573fef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _textLivesComponent: {fileID: 344837214}
@@ -1347,6 +1347,10 @@ MonoBehaviour:
   _buttonPrefab: {fileID: 5283461833252840693, guid: 2498fffb6f57f354ca11a7f33f0e7651,
     type: 3}
   _contextMenuView: {fileID: 1201101548}
+  _baseUIView: {fileID: 140908230}
+  _waveUIView: {fileID: 1411058277}
+  _forecastIconPrefab: {fileID: 1975636468079108028, guid: 2f481f5303b8dd5459d64f6556b4bf99,
+    type: 3}
 --- !u!1 &562171294
 GameObject:
   m_ObjectHideFlags: 0
@@ -3571,7 +3575,7 @@ GameObject:
   - component: {fileID: 1411058275}
   - component: {fileID: 1411058274}
   - component: {fileID: 1411058273}
-  - component: {fileID: 1411058272}
+  - component: {fileID: 1411058277}
   m_Layer: 5
   m_Name: '[UI]Canvas_Waves'
   m_TagString: Untagged
@@ -3579,23 +3583,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1411058272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1411058271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5e478c882620f44d8d2282525e49067, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _timerFillImage: {fileID: 695296229}
-  _timerText: {fileID: 957899370}
-  _waveNumberText: {fileID: 866517013}
-  _forceStartButton: {fileID: 370281974}
-  _forecastContainer: {fileID: 1293663307}
 --- !u!114 &1411058273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3679,6 +3666,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1411058277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411058271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee1e3ea056674a343b013ea4a6eac846, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _timerFillImage: {fileID: 695296229}
+  _timerText: {fileID: 957899370}
+  _forceStartButton: {fileID: 370281974}
+  _waveNumberText: {fileID: 866517013}
+  _forecastContainer: {fileID: 1293663307}
 --- !u!1 &1499681575
 GameObject:
   m_ObjectHideFlags: 0
@@ -3857,8 +3861,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ecb8e8242b74c2459ab934935db65a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _forecastIconPrefab: {fileID: 1975636468079108028, guid: 2f481f5303b8dd5459d64f6556b4bf99,
-    type: 3}
 --- !u!1 &1739782143
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,11 +15,10 @@ namespace Gameplay.Enemies.Visuals
 
         private CancellationTokenSource _cts;
         private IMemoryPool _pool;
-        private Camera _mainCamera; // Кэшируем камеру
+        private Camera _mainCamera; 
 
         private void Awake()
         {
-            // Находим камеру один раз при создании префаба пулом
             _mainCamera = Camera.main;
         }
 
@@ -44,30 +43,36 @@ namespace Gameplay.Enemies.Visuals
             Vector3 startPos = transform.position;
             Color startColor = _text.color;
 
-            while (elapsed < _duration)
+            // Оборачиваем в try-catch для чистоты, хотя UniTask сам глушит OperationCanceledException
+            try
             {
-                if (token.IsCancellationRequested) return;
-
-                elapsed += Time.deltaTime;
-                float progress = elapsed / _duration;
-
-                // Движение вверх
-                transform.position = startPos + Vector3.up * (_floatSpeed * progress);
-
-                // ИДЕАЛЬНЫЙ BILLBOARD: Текст всегда параллелен плоскости камеры
-                if (_mainCamera != null)
+                while (elapsed < _duration)
                 {
-                    transform.forward = _mainCamera.transform.forward;
+                    if (token.IsCancellationRequested) return;
+
+                    elapsed += Time.deltaTime;
+                    float progress = elapsed / _duration;
+
+                    transform.position = startPos + Vector3.up * (_floatSpeed * progress);
+
+                    if (_mainCamera != null)
+                    {
+                        transform.forward = _mainCamera.transform.forward;
+                    }
+
+                    startColor.a = 1f - progress;
+                    _text.color = startColor;
+
+                    // Если токен отменится во время Yield, вылетит OperationCanceledException
+                    await UniTask.Yield(PlayerLoopTiming.Update, token);
                 }
 
-                // Растворение альфа-канала
-                startColor.a = 1f - progress;
-                _text.color = startColor;
-
-                await UniTask.Yield(PlayerLoopTiming.Update, token);
+                Despawn();
             }
-
-            Despawn();
+            catch (System.OperationCanceledException)
+            {
+                // Задача была прервана (вышли из Play Mode или переиспользовали объект) - это нормально
+            }
         }
 
         private void Despawn()
@@ -75,7 +80,15 @@ namespace Gameplay.Enemies.Visuals
             _cts?.Cancel();
             _cts?.Dispose();
             _cts = null;
-            _pool.Despawn(this);
+            _pool?.Despawn(this);
+        }
+
+        // НОВОЕ: Спасительный метод при выходе из Play Mode
+        private void OnDestroy()
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
         }
 
         public class Pool : MonoMemoryPool<FloatingText> { }

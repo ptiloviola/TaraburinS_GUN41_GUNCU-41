@@ -2,18 +2,22 @@ using Gameplay.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Gameplay.UI
+namespace Gameplay.UI.Views
 {
     public class HealthBarView : MonoBehaviour
     {
         [Header("Ссылки")]
         [SerializeField] private HealthComponent _health;
-        [SerializeField] private Image _fillImage; // Ссылка на картинку полоски
+        [SerializeField] private Image _fillImage;
+
+        private Camera _cachedCamera;
 
         private void Awake()
         {
-            // Если забыли назначить в инспекторе, ищем на родителе
             if (_health == null) _health = GetComponentInParent<HealthComponent>();
+            
+            // Кэшируем камеру один раз при создании объекта!
+            _cachedCamera = Camera.main;
         }
 
         private void OnEnable()
@@ -21,7 +25,6 @@ namespace Gameplay.UI
             if (_health != null)
             {
                 _health.OnHealthChanged += UpdateFill;
-                // Принудительно обновляем UI при включении, чтобы не было старых значений
                 UpdateFill(_health.CurrentHealth, _health.MaxHealth);
             }
         }
@@ -44,10 +47,10 @@ namespace Gameplay.UI
 
         private void LateUpdate()
         {
-            // Эффект Billboard: заставляем Canvas всегда смотреть прямо в главную камеру
-            if (Camera.main != null)
+            // Используем закэшированную ссылку. Никаких поисков объектов каждый кадр!
+            if (_cachedCamera != null)
             {
-                transform.forward = Camera.main.transform.forward;
+                transform.forward = _cachedCamera.transform.forward;
             }
         }
     }
