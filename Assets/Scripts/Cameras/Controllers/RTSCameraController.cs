@@ -119,7 +119,8 @@ namespace Gameplay.Cameras.Controllers
         private void ApplyCameraPosition(float t)
         {
             Vector3 desiredPosition = _focusPoint - (_camera.transform.forward * _currentZoomDistance);
-            _camera.transform.position = Vector3.Lerp(_camera.transform.position, desiredPosition, t);
+            float lerpFactor = 1f - Mathf.Exp(-t); 
+            _camera.transform.position = Vector3.Lerp(_camera.transform.position, desiredPosition, lerpFactor);
         }
 
         private void CalculateGridBounds()

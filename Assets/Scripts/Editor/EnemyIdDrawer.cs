@@ -9,6 +9,9 @@ namespace Gameplay.Spawning.Editor
     [CustomPropertyDrawer(typeof(EnemyIdAttribute))]
     public class EnemyIdDrawer : PropertyDrawer
     {
+        // Кэшируем ссылку на реестр, чтобы не "насиловать" AssetDatabase каждый кадр
+        private EnemyRegistry _cachedRegistry;
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (property.propertyType != SerializedPropertyType.String)
@@ -17,44 +20,39 @@ namespace Gameplay.Spawning.Editor
                 return;
             }
 
+            // 1. Ищем реестр только если еще не нашли
+            if (_cachedRegistry == null)
+            {
+                string[] guids = AssetDatabase.FindAssets("t:EnemyRegistry");
+                if (guids.Length > 0)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                    _cachedRegistry = AssetDatabase.LoadAssetAtPath<EnemyRegistry>(path);
+                }
+            }
+
             List<string> enemyIds = new List<string>();
 
-            // 1. Ищем НАШ РЕЕСТР (EnemyRegistry), а не отдельные конфиги!
-            string[] guids = AssetDatabase.FindAssets("t:EnemyRegistry");
-            
-            if (guids.Length > 0)
+            // 2. Достаем ID (проход по списку в памяти работает мгновенно)
+            if (_cachedRegistry != null && _cachedRegistry.Enemies != null)
             {
-                // Берем первый найденный реестр (обычно он один на проект)
-                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                EnemyRegistry registry = AssetDatabase.LoadAssetAtPath<EnemyRegistry>(path);
-
-                // 2. Достаем ID только из официально зарегистрированных врагов
-                if (registry != null && registry.Enemies != null)
+                foreach (var enemy in _cachedRegistry.Enemies)
                 {
-                    foreach (var enemy in registry.Enemies)
+                    if (enemy != null && !string.IsNullOrEmpty(enemy.EnemyId))
                     {
-                        if (enemy != null && !string.IsNullOrEmpty(enemy.EnemyId))
-                        {
-                            enemyIds.Add(enemy.EnemyId);
-                        }
+                        enemyIds.Add(enemy.EnemyId);
                     }
                 }
             }
 
-            // Если реестр пуст или не найден — рисуем обычное текстовое поле
             if (enemyIds.Count == 0)
             {
                 EditorGUI.PropertyField(position, property, label);
                 return;
             }
 
-            // Находим индекс текущего сохраненного значения (если его нет в списке, ставим 0)
             int selectedIndex = Mathf.Max(0, enemyIds.IndexOf(property.stringValue));
-
-            // Отрисовываем выпадающий список
             selectedIndex = EditorGUI.Popup(position, label.text, selectedIndex, enemyIds.ToArray());
-
-            // Сохраняем выбранное значение обратно в property
             property.stringValue = enemyIds[selectedIndex];
         }
     }
