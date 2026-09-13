@@ -22,6 +22,9 @@ namespace Gameplay.UI.Views
         [Header("Взаимодействие")]
         [SerializeField] private UIHoverListener _upgradeButtonHoverListener;
 
+        [Header("Блокировка UI")]
+        [SerializeField] private CanvasGroup _canvasGroup;
+
         public event Action OnUpgradeClicked;
         public event Action OnSellClicked;
         public event Action OnUpgradeHoverEntered;
@@ -29,6 +32,8 @@ namespace Gameplay.UI.Views
 
         private void Awake()
         {
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+
             _upgradeButton.onClick.AddListener(() => OnUpgradeClicked?.Invoke());
             _sellButton.onClick.AddListener(() => OnSellClicked?.Invoke());
 
@@ -60,6 +65,15 @@ namespace Gameplay.UI.Views
         {
             _upgradeButton.onClick.RemoveAllListeners();
             _sellButton.onClick.RemoveAllListeners();
+        }
+
+        public void SetInteractable(bool isInteractable)
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.interactable = isInteractable;
+                _canvasGroup.blocksRaycasts = isInteractable; 
+            }
         }
     }
 }

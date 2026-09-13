@@ -1,4 +1,4 @@
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using UnityEngine;
 using Cysharp.Threading.Tasks; // Требуется UniTask
 using Gameplay.Enemies.Visuals;

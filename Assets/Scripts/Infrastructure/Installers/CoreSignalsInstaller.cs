@@ -1,6 +1,6 @@
 using UnityEngine;
 using Zenject;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 
 namespace Gameplay.Infrastructure.Installers
 {

@@ -18,6 +18,9 @@ namespace Gameplay.UI.Views
         [Header("Прогноз")]
         [SerializeField] private Transform _forecastContainer;
 
+        [Header("Блокировка UI")]
+        [SerializeField] private CanvasGroup _canvasGroup;
+
         // Открываем доступ к контейнеру для пула
         public Transform ForecastContainer => _forecastContainer;
         
@@ -25,7 +28,19 @@ namespace Gameplay.UI.Views
 
         private void Awake()
         {
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+            
             _forceStartButton.onClick.AddListener(() => OnForceStartClicked?.Invoke());
+        }
+
+        public void SetInteractable(bool isInteractable)
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.interactable = isInteractable;
+                // blocksRaycasts отключает даже физические попытки кликнуть по прозрачным зонам
+                _canvasGroup.blocksRaycasts = isInteractable; 
+            }
         }
 
         public void UpdateTimer(float progress, string timeText, bool canForceStart)

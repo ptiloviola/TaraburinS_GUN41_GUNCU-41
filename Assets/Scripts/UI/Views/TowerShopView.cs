@@ -14,12 +14,20 @@ namespace Gameplay.UI.Views
         [SerializeField] private TMP_Text _tooltipNameText;
         [SerializeField] private TMP_Text _tooltipStatsText;
 
+        [Header("Блокировка UI")]
+        [SerializeField] private CanvasGroup _canvasGroup;
+
         public Transform ButtonsContainer => _buttonsContainer;
 
         // События, через которые View общается с Презентером
         public event Action<string> OnTowerClicked;
         public event Action<string> OnTowerHoverEntered;
         public event Action OnTowerHoverExited;
+
+        private void Awake()
+        {
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+        }
 
         public void ShowTooltip(string towerName, string stats)
         {
@@ -31,6 +39,16 @@ namespace Gameplay.UI.Views
         public void HideTooltip()
         {
             _tooltipPanel.SetActive(false);
+        }
+
+        public void SetInteractable(bool isInteractable)
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.interactable = isInteractable;
+                // blocksRaycasts отключает даже физические попытки кликнуть по прозрачным зонам
+                _canvasGroup.blocksRaycasts = isInteractable; 
+            }
         }
 
         // Проброс событий от дочерних кнопок

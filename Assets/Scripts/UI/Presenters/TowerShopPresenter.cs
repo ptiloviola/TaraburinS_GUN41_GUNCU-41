@@ -6,6 +6,7 @@ using Gameplay.UI.Views;
 using Gameplay.Towers.Data;
 using Gameplay.Towers.Data.Modules;
 using Gameplay.Interaction;
+using Gameplay.Infrastructure.Signals;
 
 namespace Gameplay.UI.Presenters
 {
@@ -15,20 +16,26 @@ namespace Gameplay.UI.Presenters
         private readonly TowerRegistry _registry;
         private readonly TowerPlacementSystem _placementSystem;
         private readonly TowerButtonView.Pool _buttonPool;
+        
+        // 1. Объявляем поле для шины
+        private readonly SignalBus _signalBus;
 
         private readonly List<TowerButtonView> _activeButtons = new List<TowerButtonView>();
         private string _currentSelectedId = null;
 
+        // 2. ОБЯЗАТЕЛЬНО запрашиваем SignalBus в конструкторе!
         public TowerShopPresenter(
             TowerShopView view, 
             TowerRegistry registry, 
             TowerPlacementSystem placementSystem,
-            TowerButtonView.Pool buttonPool)
+            TowerButtonView.Pool buttonPool,
+            SignalBus signalBus) 
         {
             _view = view;
             _registry = registry;
             _placementSystem = placementSystem;
             _buttonPool = buttonPool;
+            _signalBus = signalBus; // Сохраняем переданную ссылку
         }
 
         public void Initialize()
@@ -36,13 +43,14 @@ namespace Gameplay.UI.Presenters
             _view.HideTooltip();
             GenerateButtons();
 
-            // Подписки на View
             _view.OnTowerClicked += HandleTowerClicked;
             _view.OnTowerHoverEntered += HandleTowerHovered;
             _view.OnTowerHoverExited += HandleHoverExited;
 
-            // Подписка на геймплей
             _placementSystem.OnTowerDeselected += HandleDeselectedFromGrid;
+
+            // 3. Теперь _signalBus не null, и мы можем безопасно подписаться!
+            _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
         }
 
         public void Dispose()
@@ -56,6 +64,9 @@ namespace Gameplay.UI.Presenters
                 _placementSystem.OnTowerDeselected -= HandleDeselectedFromGrid;
             }
 
+            // Отписываемся от паузы
+            _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
+
             foreach (var button in _activeButtons)
             {
                 if (button != null)
@@ -66,11 +77,17 @@ namespace Gameplay.UI.Presenters
             _activeButtons.Clear();
         }
 
+        // 4. Метод реакции на паузу
+        private void OnPauseStateChanged(SignalPauseStateChanged signal)
+        {
+            // Блокируем магазин, если игра на паузе
+            _view.SetInteractable(!signal.IsPaused);
+        }
+
         private void GenerateButtons()
         {
             foreach (TowerConfig config in _registry.Towers)
             {
-                // Больше не передаем _view, Zenject сделает это сам!
                 var button = _buttonPool.Spawn(
                     config.TowerId, 
                     config.DisplayName, 
@@ -116,7 +133,6 @@ namespace Gameplay.UI.Presenters
 
             TowerLevelData baseLevel = config.Levels[0];
             
-            // Используем StringBuilder вместо '+=' для строк, чтобы не нагружать Garbage Collector
             StringBuilder statsBuilder = new StringBuilder();
             foreach (IModuleDescriptor module in baseLevel.GetActiveModules())
             {

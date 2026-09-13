@@ -9,6 +9,7 @@ using Gameplay.Economy;
 using Gameplay.Interaction;
 using Gameplay.Towers.Economy;
 using Gameplay.Towers.Services;
+using Gameplay.Infrastructure.Signals;
 
 namespace Gameplay.UI.Presenters
 {
@@ -19,18 +20,22 @@ namespace Gameplay.UI.Presenters
         private readonly BankService _bankService;
         private readonly TowerLifecycleService _lifecycleService;
 
+        private readonly SignalBus _signalBus;
+
         private TowerFacade _currentTower;
 
         public TowerContextMenuPresenter(
             TowerContextMenuView view,
             TowerSelectionService selectionService,
             BankService bankService,
-            TowerLifecycleService lifecycleService)
+            TowerLifecycleService lifecycleService,
+            SignalBus signalBus)
         {
             _view = view;
             _selectionService = selectionService;
             _bankService = bankService;
             _lifecycleService = lifecycleService;
+            _signalBus = signalBus;
         }
 
         public void Initialize()
@@ -44,6 +49,8 @@ namespace Gameplay.UI.Presenters
             _view.OnSellClicked += HandleSellClicked;
             _view.OnUpgradeHoverEntered += HandleUpgradeHoverEnter;
             _view.OnUpgradeHoverExited += HandleUpgradeHoverExit;
+
+            _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
         }
 
         public void Dispose()
@@ -58,6 +65,8 @@ namespace Gameplay.UI.Presenters
             _view.OnSellClicked -= HandleSellClicked;
             _view.OnUpgradeHoverEntered -= HandleUpgradeHoverEnter;
             _view.OnUpgradeHoverExited -= HandleUpgradeHoverExit;
+
+            _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
         }
 
         private void HandleTowerSelected(TowerFacade tower)
@@ -66,7 +75,6 @@ namespace Gameplay.UI.Presenters
             UpdateViewData();
             _view.ShowPanel();
             
-            // Чистая команда фасаду!
             _currentTower.ShowRadiusPreview();
         }
 
@@ -74,7 +82,6 @@ namespace Gameplay.UI.Presenters
         {
             if (_currentTower != null)
             {
-                // Чистая команда фасаду!
                 _currentTower.HideRadiusPreview();
             }
             
@@ -124,7 +131,6 @@ namespace Gameplay.UI.Presenters
                 _currentTower.Upgrade();
                 UpdateViewData();
                 
-                // Обновляем радиус на земле после апгрейда
                 _currentTower.ShowRadiusPreview();
             }
         }
@@ -141,16 +147,19 @@ namespace Gameplay.UI.Presenters
         {
             if (_currentTower == null || !_currentTower.CanUpgrade()) return;
             
-            // Чистая команда фасаду!
             _currentTower.ShowUpgradePreview();
         }
 
         private void HandleUpgradeHoverExit()
         {
             if (_currentTower == null) return;
-            
-            // Возвращаем обычный радиус
+        
             _currentTower.ShowRadiusPreview();
+        }
+
+        private void OnPauseStateChanged(SignalPauseStateChanged signal)
+        {
+            _view.SetInteractable(!signal.IsPaused);
         }
     }
 }

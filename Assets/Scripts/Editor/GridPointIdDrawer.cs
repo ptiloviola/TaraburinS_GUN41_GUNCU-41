@@ -14,51 +14,66 @@ namespace Gameplay.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            GridPointIdAttribute pointAttr = (GridPointIdAttribute)attribute;
 
-            // Ищем объект на сцене только один раз
-            if (_cachedDrawer == null)
+            try
             {
-                _cachedDrawer = Object.FindObjectOfType<GridGizmosDrawer>();
-            }
+                // Если объект уже уничтожен редактором, выход
+                if (property == null || property.serializedObject == null) return;
 
-            if (_cachedDrawer != null && _cachedDrawer.EditorConfig != null)
-            {
-                List<string> availableIds = new List<string>();
-                
-                if (pointAttr.FilterType == NodeType.Base)
+                GridPointIdAttribute pointAttr = (GridPointIdAttribute)attribute;
+
+                // Ищем объект на сцене только один раз
+                if (_cachedDrawer == null)
                 {
-                    availableIds.Add("[Ближайшая по пути]"); 
-                    
-                    if (string.IsNullOrEmpty(property.stringValue))
-                        property.stringValue = "[Ближайшая по пути]";
+                    _cachedDrawer = Object.FindObjectOfType<GridGizmosDrawer>();
                 }
 
-                GridConfig config = _cachedDrawer.EditorConfig;
-                
-                // Проход по массиву в памяти - это быстро, в отличие от FindObjectOfType
-                for (int x = 0; x < config.width; x++)
+                if (_cachedDrawer != null && _cachedDrawer.EditorConfig != null)
                 {
-                    for (int z = 0; z < config.height; z++)
+                    List<string> availableIds = new List<string>();
+                    
+                    if (pointAttr.FilterType == NodeType.Base)
                     {
-                        if (config.GetCellData(x, z).type == pointAttr.FilterType)
+                        availableIds.Add("[Ближайшая по пути]"); 
+                        
+                        if (string.IsNullOrEmpty(property.stringValue))
+                            property.stringValue = "[Ближайшая по пути]";
+                    }
+
+                    GridConfig config = _cachedDrawer.EditorConfig;
+                    
+                    // Проход по массиву в памяти - это быстро, в отличие от FindObjectOfType
+                    for (int x = 0; x < config.width; x++)
+                    {
+                        for (int z = 0; z < config.height; z++)
                         {
-                            string prefix = pointAttr.FilterType == NodeType.Spawn ? "Spawn" : "Base";
-                            availableIds.Add($"{prefix}_{x}_{z}");
+                            if (config.GetCellData(x, z).type == pointAttr.FilterType)
+                            {
+                                string prefix = pointAttr.FilterType == NodeType.Spawn ? "Spawn" : "Base";
+                                availableIds.Add($"{prefix}_{x}_{z}");
+                            }
                         }
+                    }
+
+                    if (availableIds.Count > 0)
+                    {
+                        int currentIndex = Mathf.Max(0, availableIds.IndexOf(property.stringValue));
+                        currentIndex = EditorGUI.Popup(position, label.text, currentIndex, availableIds.ToArray());
+                        property.stringValue = availableIds[currentIndex];
+                        return;
                     }
                 }
 
-                if (availableIds.Count > 0)
-                {
-                    int currentIndex = Mathf.Max(0, availableIds.IndexOf(property.stringValue));
-                    currentIndex = EditorGUI.Popup(position, label.text, currentIndex, availableIds.ToArray());
-                    property.stringValue = availableIds[currentIndex];
-                    return;
-                }
+                EditorGUI.PropertyField(position, property, label);
+                
             }
 
-            EditorGUI.PropertyField(position, property, label);
+            catch (System.Exception)
+            {
+                // Тихо игнорируем ошибку отрисовки во время выхода из Play Mode
+            }
+            
+
         }
     }
 }

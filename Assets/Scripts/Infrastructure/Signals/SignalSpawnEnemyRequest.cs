@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Infrastructure.Signals
+namespace Gameplay.Infrastructure.Signals
 {
     public struct SignalSpawnEnemyRequest
     {

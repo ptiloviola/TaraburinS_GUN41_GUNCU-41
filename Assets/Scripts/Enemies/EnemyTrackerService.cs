@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using Zenject;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 
 
 namespace Gameplay.Enemies

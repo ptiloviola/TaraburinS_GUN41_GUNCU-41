@@ -9,8 +9,10 @@ namespace Gameplay.Infrastructure.Input
         Vector2 PointerPosition { get; }
         event Action OnPrimaryAction;
         event Action OnCancelAction;
+        event Action OnPauseAction;
         bool IsPrimaryActionDown { get; }
         bool IsCancelActionDown { get; }
+        
 
         // НОВЫЕ СВОЙСТВА ДЛЯ КАМЕРЫ
         Vector2 PanDelta { get; } // Вектор движения (WASD/Стрелки)

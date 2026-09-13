@@ -1,6 +1,6 @@
 using UnityEngine;
 using Gameplay.Enemies;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using Zenject;
 
 namespace Gameplay.Base

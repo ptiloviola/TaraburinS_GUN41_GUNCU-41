@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 using Gameplay.Core;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using Gameplay.Enemies.Data;
 using Gameplay.Enemies.FSM;
 using Gameplay.Base;

@@ -2,14 +2,11 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Enemies;
 using Gameplay.Base;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using Gameplay.Enemies.Data;
 
 namespace Gameplay.Spawning.Factories
 {
-    /// <summary>
-    /// Фабрика для безопасного извлечения врагов из Zenject MemoryPool и их инициализации.
-    /// </summary>
     public class EnemyFactory
     {
         private readonly DiContainer _container;

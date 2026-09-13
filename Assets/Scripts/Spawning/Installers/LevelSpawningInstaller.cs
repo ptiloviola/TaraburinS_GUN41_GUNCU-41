@@ -9,7 +9,7 @@ using Gameplay.Base;
 using Gameplay.Spawning.Factories;
 using Gameplay.Spawning.Services;
 using Gameplay.Spawning.Data; // Добавлено для LevelWavesConfig
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 
 namespace Gameplay.Spawning.Installers
 {

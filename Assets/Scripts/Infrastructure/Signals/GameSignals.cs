@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace Infrastructure.Signals
+namespace Gameplay.Infrastructure.Signals
 {
     // Сигнал вызывается, когда база получает урон
     public struct SignalBaseDamaged 

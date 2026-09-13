@@ -89,6 +89,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""PauseAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""6f81a6c0-1de7-40ed-899e-ca27727df6b5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -278,6 +287,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""PointerDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""beea38dc-e13e-498f-803d-1ba2c25cfa85"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PauseAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -293,6 +313,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_Gameplay_PointerPosition = m_Gameplay.FindAction("PointerPosition", throwIfNotFound: true);
         m_Gameplay_MiddleClick = m_Gameplay.FindAction("MiddleClick", throwIfNotFound: true);
         m_Gameplay_PointerDelta = m_Gameplay.FindAction("PointerDelta", throwIfNotFound: true);
+        m_Gameplay_PauseAction = m_Gameplay.FindAction("PauseAction", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -361,6 +382,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_PointerPosition;
     private readonly InputAction m_Gameplay_MiddleClick;
     private readonly InputAction m_Gameplay_PointerDelta;
+    private readonly InputAction m_Gameplay_PauseAction;
     public struct GameplayActions
     {
         private @GameInput m_Wrapper;
@@ -372,6 +394,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @PointerPosition => m_Wrapper.m_Gameplay_PointerPosition;
         public InputAction @MiddleClick => m_Wrapper.m_Gameplay_MiddleClick;
         public InputAction @PointerDelta => m_Wrapper.m_Gameplay_PointerDelta;
+        public InputAction @PauseAction => m_Wrapper.m_Gameplay_PauseAction;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -402,6 +425,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @PointerDelta.started += instance.OnPointerDelta;
             @PointerDelta.performed += instance.OnPointerDelta;
             @PointerDelta.canceled += instance.OnPointerDelta;
+            @PauseAction.started += instance.OnPauseAction;
+            @PauseAction.performed += instance.OnPauseAction;
+            @PauseAction.canceled += instance.OnPauseAction;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -427,6 +453,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @PointerDelta.started -= instance.OnPointerDelta;
             @PointerDelta.performed -= instance.OnPointerDelta;
             @PointerDelta.canceled -= instance.OnPointerDelta;
+            @PauseAction.started -= instance.OnPauseAction;
+            @PauseAction.performed -= instance.OnPauseAction;
+            @PauseAction.canceled -= instance.OnPauseAction;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -453,5 +482,6 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnPointerPosition(InputAction.CallbackContext context);
         void OnMiddleClick(InputAction.CallbackContext context);
         void OnPointerDelta(InputAction.CallbackContext context);
+        void OnPauseAction(InputAction.CallbackContext context);
     }
 }

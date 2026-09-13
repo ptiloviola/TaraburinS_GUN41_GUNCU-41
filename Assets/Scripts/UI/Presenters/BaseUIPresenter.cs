@@ -1,6 +1,6 @@
 using System;
 using Zenject;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using Gameplay.UI.Views;
 using Gameplay.Economy;
 using Gameplay.Base;

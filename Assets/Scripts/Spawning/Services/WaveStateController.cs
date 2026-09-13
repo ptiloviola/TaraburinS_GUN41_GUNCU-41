@@ -5,7 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using Gameplay.Spawning.Data;
 using Gameplay.Economy;
 using Gameplay.Base;

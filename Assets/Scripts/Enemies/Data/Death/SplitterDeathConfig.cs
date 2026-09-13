@@ -1,4 +1,4 @@
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using UnityEngine;
 
 namespace Gameplay.Enemies.Data.Death

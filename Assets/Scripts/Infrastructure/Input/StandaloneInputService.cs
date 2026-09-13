@@ -11,6 +11,7 @@ namespace Gameplay.Infrastructure.Input
 
         public event Action OnPrimaryAction;
         public event Action OnCancelAction;
+        public event Action OnPauseAction;
 
         public Vector2 PointerPosition => _gameInput.Gameplay.PointerPosition.ReadValue<Vector2>();
         public bool IsPrimaryActionDown => _gameInput.Gameplay.PrimaryAction.WasPressedThisFrame();
@@ -29,6 +30,7 @@ namespace Gameplay.Infrastructure.Input
             // Подписываемся именованными методами
             _gameInput.Gameplay.PrimaryAction.performed += HandlePrimaryAction;
             _gameInput.Gameplay.CancelAction.performed += HandleCancelAction;
+            _gameInput.Gameplay.PauseAction.performed += HandlePauseAction;
 
             _gameInput.Enable();
         }
@@ -40,6 +42,7 @@ namespace Gameplay.Infrastructure.Input
                 // Честно отписываемся перед уничтожением
                 _gameInput.Gameplay.PrimaryAction.performed -= HandlePrimaryAction;
                 _gameInput.Gameplay.CancelAction.performed -= HandleCancelAction;
+                _gameInput.Gameplay.PauseAction.performed -= HandlePauseAction;
 
                 _gameInput.Disable();
                 _gameInput.Dispose();
@@ -50,5 +53,6 @@ namespace Gameplay.Infrastructure.Input
         // Именованные обработчики
         private void HandlePrimaryAction(InputAction.CallbackContext context) => OnPrimaryAction?.Invoke();
         private void HandleCancelAction(InputAction.CallbackContext context) => OnCancelAction?.Invoke();
+        private void HandlePauseAction(InputAction.CallbackContext context) => OnPauseAction?.Invoke();
     }
 }

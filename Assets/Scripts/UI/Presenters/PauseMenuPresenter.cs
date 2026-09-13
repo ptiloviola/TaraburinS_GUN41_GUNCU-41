@@ -34,15 +34,13 @@ namespace Gameplay.UI.Presenters
 
         public void Initialize()
         {
-            _view.Hide(); // По умолчанию меню скрыто
+            _view.Hide();
 
             _view.OnResumeClicked += HandleResumeClicked;
             _view.OnMainMenuClicked += HandleMainMenuClicked;
             
-            // Подписываемся на кнопку Escape
-            _inputService.OnCancelAction += HandleCancelAction;
+            _inputService.OnPauseAction += HandlePauseAction;
             
-            // Подписываемся на глобальный сигнал изменения паузы
             _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
         }
 
@@ -52,9 +50,14 @@ namespace Gameplay.UI.Presenters
             _view.OnMainMenuClicked -= HandleMainMenuClicked;
             
             if (_inputService != null)
-                _inputService.OnCancelAction -= HandleCancelAction;
+                _inputService.OnPauseAction -= HandlePauseAction;
                 
             _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
+        }
+
+        private void HandlePauseAction()
+        {
+            _pauseService.TogglePause();
         }
 
         private void HandleCancelAction()
@@ -82,5 +85,6 @@ namespace Gameplay.UI.Presenters
             _pauseService.ResumeGame(); 
             _sceneLoader.LoadSceneAsync(MainMenuSceneName).Forget();
         }
+
     }
 }

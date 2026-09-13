@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-using Infrastructure.Signals;
+using Gameplay.Infrastructure.Signals;
 using Gameplay.UI.Views;
 using Gameplay.Enemies.Data;
+
 
 namespace Gameplay.UI.Presenters
 {
@@ -37,6 +38,8 @@ namespace Gameplay.UI.Presenters
             _signalBus.Subscribe<SignalWaveTimerUpdated>(OnTimerUpdated);
             _signalBus.Subscribe<SignalWaveStateChanged>(OnWaveStateChanged);
             _signalBus.Subscribe<SignalWaveForecastUpdated>(OnForecastUpdated);
+
+            _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
         }
 
         public void Dispose()
@@ -46,6 +49,8 @@ namespace Gameplay.UI.Presenters
             _signalBus.Unsubscribe<SignalWaveTimerUpdated>(OnTimerUpdated);
             _signalBus.Unsubscribe<SignalWaveStateChanged>(OnWaveStateChanged);
             _signalBus.Unsubscribe<SignalWaveForecastUpdated>(OnForecastUpdated);
+
+            _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
             
             ClearIcons();
         }
@@ -92,13 +97,17 @@ namespace Gameplay.UI.Presenters
         {
             foreach (var icon in _activeIcons)
             {
-                // Проверяем, жив ли еще объект на сцене, прежде чем возвращать его в пул
                 if (icon != null) 
                 {
                     _iconPool.Despawn(icon);
                 }
             }
             _activeIcons.Clear();
+        }
+
+        private void OnPauseStateChanged(SignalPauseStateChanged signal)
+        {
+            _view.SetInteractable(!signal.IsPaused);
         }
     }
 }

@@ -3758,6 +3758,7 @@ GameObject:
   - component: {fileID: 1201101544}
   - component: {fileID: 1201101547}
   - component: {fileID: 1201101546}
+  - component: {fileID: 1201101549}
   m_Layer: 5
   m_Name: ContextMenuPanel
   m_TagString: Untagged
@@ -3886,6 +3887,19 @@ MonoBehaviour:
   _sellButton: {fileID: 1147922654}
   _sellPriceText: {fileID: 707473791}
   _upgradeButtonHoverListener: {fileID: 716193755}
+  _canvasGroup: {fileID: 1201101549}
+--- !u!225 &1201101549
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1201101541}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1293663306
 GameObject:
   m_ObjectHideFlags: 0
@@ -4068,6 +4082,7 @@ GameObject:
   - component: {fileID: 1411058274}
   - component: {fileID: 1411058273}
   - component: {fileID: 1411058277}
+  - component: {fileID: 1411058278}
   m_Layer: 5
   m_Name: '[UI]Canvas_Waves'
   m_TagString: Untagged
@@ -4175,6 +4190,19 @@ MonoBehaviour:
   _forceStartButton: {fileID: 370281974}
   _waveNumberText: {fileID: 866517013}
   _forecastContainer: {fileID: 1293663307}
+  _canvasGroup: {fileID: 1411058278}
+--- !u!225 &1411058278
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411058271}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1499681575
 GameObject:
   m_ObjectHideFlags: 0
@@ -5150,6 +5178,7 @@ GameObject:
   - component: {fileID: 2101698953}
   - component: {fileID: 2101698952}
   - component: {fileID: 2101698956}
+  - component: {fileID: 2101698957}
   m_Layer: 5
   m_Name: TowerShopPanel
   m_TagString: Untagged
@@ -5271,6 +5300,19 @@ MonoBehaviour:
   _tooltipPanel: {fileID: 1994479010}
   _tooltipNameText: {fileID: 1188623647}
   _tooltipStatsText: {fileID: 528655434}
+  _canvasGroup: {fileID: 2101698957}
+--- !u!225 &2101698957
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101698950}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2116715265
 GameObject:
   m_ObjectHideFlags: 0

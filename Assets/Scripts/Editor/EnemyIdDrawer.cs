@@ -14,46 +14,58 @@ namespace Gameplay.Spawning.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (property.propertyType != SerializedPropertyType.String)
+            try
             {
-                EditorGUI.PropertyField(position, property, label);
-                return;
-            }
+                // Если объект уже уничтожен редактором, выход
+                if (property == null || property.serializedObject == null) return;
 
-            // 1. Ищем реестр только если еще не нашли
-            if (_cachedRegistry == null)
-            {
-                string[] guids = AssetDatabase.FindAssets("t:EnemyRegistry");
-                if (guids.Length > 0)
+                if (property.propertyType != SerializedPropertyType.String)
                 {
-                    string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                    _cachedRegistry = AssetDatabase.LoadAssetAtPath<EnemyRegistry>(path);
+                    EditorGUI.PropertyField(position, property, label);
+                    return;
                 }
-            }
 
-            List<string> enemyIds = new List<string>();
-
-            // 2. Достаем ID (проход по списку в памяти работает мгновенно)
-            if (_cachedRegistry != null && _cachedRegistry.Enemies != null)
-            {
-                foreach (var enemy in _cachedRegistry.Enemies)
+                // 1. Ищем реестр только если еще не нашли
+                if (_cachedRegistry == null)
                 {
-                    if (enemy != null && !string.IsNullOrEmpty(enemy.EnemyId))
+                    string[] guids = AssetDatabase.FindAssets("t:EnemyRegistry");
+                    if (guids.Length > 0)
                     {
-                        enemyIds.Add(enemy.EnemyId);
+                        string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                        _cachedRegistry = AssetDatabase.LoadAssetAtPath<EnemyRegistry>(path);
                     }
                 }
-            }
 
-            if (enemyIds.Count == 0)
+                List<string> enemyIds = new List<string>();
+
+                // 2. Достаем ID (проход по списку в памяти работает мгновенно)
+                if (_cachedRegistry != null && _cachedRegistry.Enemies != null)
+                {
+                    foreach (var enemy in _cachedRegistry.Enemies)
+                    {
+                        if (enemy != null && !string.IsNullOrEmpty(enemy.EnemyId))
+                        {
+                            enemyIds.Add(enemy.EnemyId);
+                        }
+                    }
+                }
+
+                if (enemyIds.Count == 0)
+                {
+                    EditorGUI.PropertyField(position, property, label);
+                    return;
+                }
+
+                int selectedIndex = Mathf.Max(0, enemyIds.IndexOf(property.stringValue));
+                selectedIndex = EditorGUI.Popup(position, label.text, selectedIndex, enemyIds.ToArray());
+                property.stringValue = enemyIds[selectedIndex];
+                
+            }
+            catch (System.Exception)
             {
-                EditorGUI.PropertyField(position, property, label);
-                return;
+                // Тихо игнорируем ошибку отрисовки во время выхода из Play Mode
             }
-
-            int selectedIndex = Mathf.Max(0, enemyIds.IndexOf(property.stringValue));
-            selectedIndex = EditorGUI.Popup(position, label.text, selectedIndex, enemyIds.ToArray());
-            property.stringValue = enemyIds[selectedIndex];
+            
         }
     }
 }
