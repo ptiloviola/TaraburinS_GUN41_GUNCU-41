@@ -22,6 +22,8 @@ namespace Gameplay.UI.Installers
         [SerializeField] private WaveUIView _waveUIView;
         [SerializeField] private ForecastIconView _forecastIconPrefab;
 
+        [SerializeField] private PauseMenuView _pauseMenuView;
+
         public override void InstallBindings()
         {
             // 1. Биндим View (глупый интерфейс на сцене)
@@ -52,6 +54,9 @@ namespace Gameplay.UI.Installers
                      .WithInitialSize(3)
                      .FromComponentInNewPrefab(_forecastIconPrefab)
                      .UnderTransform(_waveUIView.ForecastContainer);
+
+            Container.BindInstance(_pauseMenuView).AsSingle();
+            Container.BindInterfacesTo<PauseMenuPresenter>().AsSingle();
 
         }
     }
