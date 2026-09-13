@@ -8,8 +8,9 @@ namespace Gameplay.Infrastructure.Installers
     {
         public override void InstallBindings()
         {
-            SignalBusInstaller.Install(Container);
+            // УДАЛЕНО: SignalBusInstaller.Install(Container); <-- Шина уже есть в ProjectContext
 
+            // Декларируем только локальные геймплейные сигналы уровня
             Container.DeclareSignal<SignalBaseDamaged>();
             Container.DeclareSignal<SignalEnemyKilled>();
             Container.DeclareSignal<SignalGameOver>();
@@ -26,7 +27,7 @@ namespace Gameplay.Infrastructure.Installers
 
             Container.DeclareSignal<SignalSpawnEnemyRequest>();
 
-            Debug.Log("<color=green>[Zenject] CoreSignalsInstaller: Сигналы успешно зарегистрированы.</color>");
+            Debug.Log("<color=green>[Zenject] CoreSignalsInstaller: Локальные сигналы успешно зарегистрированы.</color>");
         }
     }
 }

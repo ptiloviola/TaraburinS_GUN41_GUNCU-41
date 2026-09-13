@@ -1,5 +1,6 @@
 using Zenject;
 using Gameplay.Infrastructure.Input;
+using Gameplay.Infrastructure.Services; // Добавлено
 
 namespace Gameplay.Infrastructure.Installers
 {
@@ -7,8 +8,11 @@ namespace Gameplay.Infrastructure.Installers
     {
         public override void InstallBindings()
         {
-            // Главный контроллер ввода — один на весь проект
             Container.BindInterfacesTo<StandaloneInputService>().AsSingle();
+            
+            // Биндим глобальные сервисы
+            Container.BindInterfacesTo<PauseService>().AsSingle();
+            Container.BindInterfacesTo<SceneLoaderService>().AsSingle();
         }
     }
 }
