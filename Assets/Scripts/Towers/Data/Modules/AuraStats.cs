@@ -1,39 +1,33 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Gameplay.Core.Statuses.Data;
+using Gameplay.Core.Attributes;
 
 namespace Gameplay.Towers.Data.Modules
 {
-    public enum AuraType
-    {
-        Slowdown,
-        PoisonCloud
-    }
-
-    [System.Serializable]
+    [Serializable]
     public class AuraStats : IModuleDescriptor
     {
         [Header("Настройки триггера (Башня)")]
-        public float TriggerRadius = 5f; // Как далеко башня "видит" врага
-        public float Cooldown = 4f; // Перезарядка распылителя
+        public float TriggerRadius = 5f; 
+        public float Cooldown = 4f; 
         
         [Header("Настройки облака (Зона)")]
-        public AuraType EffectType = AuraType.Slowdown;
-        public float ZoneDuration = 3f; // Сколько секунд висит облако
-        public float ZoneRadius = 2f; // Размер самого облака
-        public float TickRate = 0.5f; // Как часто облако тикает (применяет эффект)
-
-        [Header("Сила эффекта")]
-        public float SlowdownMultiplier = 0.5f; // Для заморозки
-        public int PoisonDamagePerTick = 5; // Для яда
+        public float ZoneDuration = 3f; 
+        public float ZoneRadius = 2f; 
+        public float TickRate = 0.5f; 
         
         [Header("Визуал")]
-        public GameObject ZonePrefab; // Ссылка на префаб облака
+        public GameObject ZonePrefab; 
+
+        [Header("Накладываемые эффекты")]
+        [SerializeReference, SubclassSelector] 
+        public List<IStatusConfig> StatusEffects = new List<IStatusConfig>();
 
         public string GetStatsDescription()
         {
-            if (EffectType == AuraType.Slowdown)
-                return $"Замедление: {SlowdownMultiplier}x\nВремя лужи: {ZoneDuration}с\nПерезарядка: {Cooldown}с\n";
-            else
-                return $"Урон ядом: {PoisonDamagePerTick}/тик\nВремя облака: {ZoneDuration}с\nПерезарядка: {Cooldown}с\n";
+            return $"Радиус зоны: {ZoneRadius}\nДлительность: {ZoneDuration}с\nЭффектов: {StatusEffects.Count}\n";
         }
     }
 }

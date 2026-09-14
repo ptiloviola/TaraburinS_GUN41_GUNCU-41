@@ -3,16 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Enemies.Data.Movement;
 using Gameplay.Enemies.Data.Death;
+using Gameplay.Core.Statuses;
 
 namespace Gameplay.Enemies.Data
 {
-    public enum StatusType
-    {
-        Control,       // Заморозка, оглушение
-        DamageOverTime,// Яд, горение
-        Debuff         // Снижение брони
-    }
-
     [Serializable]
     public struct StatusResistEntry
     {
@@ -53,7 +47,6 @@ namespace Gameplay.Enemies.Data
         public ArmorStats Armor = new ArmorStats { PhysicalMultiplier = 1f, EnergyMultiplier = 1f, ExplosiveMultiplier = 1f };
         
         [Header("Модуль: Сопротивления Статусам")]
-        // НОВОЕ: Гибкий список сопротивлений. Оставляем пустым по умолчанию.
         public List<StatusResistEntry> Resistances = new List<StatusResistEntry>();
 
         [Header("Модуль: Движение")]
@@ -62,14 +55,12 @@ namespace Gameplay.Enemies.Data
         [Header("Модуль: Поведение при смерти (Опционально)")]
         public DeathBehaviorConfig DeathBehavior;
 
-        // НОВОЕ: Инкапсулируем логику поиска резиста внутри конфига
         public float GetResistMultiplier(StatusType type)
         {
             foreach (var entry in Resistances)
             {
                 if (entry.Type == type) return entry.Multiplier;
             }
-            // Если в списке нет переопределения для этого статуса, возвращаем 1.0 (эффект работает на 100%)
             return 1f; 
         }
 

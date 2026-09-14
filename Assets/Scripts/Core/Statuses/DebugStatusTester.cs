@@ -1,6 +1,6 @@
 using UnityEngine;
 using Gameplay.Enemies;
-using Gameplay.Enemies.Statuses;
+using Gameplay.Core.Statuses;
 using Gameplay.Core;
 
 public class DebugStatusTester : MonoBehaviour

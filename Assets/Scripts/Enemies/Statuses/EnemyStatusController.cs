@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Gameplay.Enemies.Data;
 using UnityEngine;
+using Gameplay.Core.Statuses;
 
 namespace Gameplay.Enemies.Statuses
 {
@@ -23,10 +24,8 @@ namespace Gameplay.Enemies.Statuses
 
         public void AddStatus(IStatusEffect effect)
         {
-            // 1. Спрашиваем множитель у конфига (если иммунитета нет, вернет 1f)
             float resistMultiplier = _enemy.Config.GetResistMultiplier(effect.Type);
 
-            // 2. Если иммунитет (0) — даже не добавляем в список
             if (resistMultiplier <= 0f)
             {
 #if UNITY_EDITOR
@@ -35,7 +34,6 @@ namespace Gameplay.Enemies.Statuses
                 return;
             }
 
-            // 3. Срезаем время (или урон) и добавляем
             effect.ApplyResistance(resistMultiplier);
             
             _activeEffects.Add(effect);

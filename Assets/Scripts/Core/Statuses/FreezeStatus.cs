@@ -1,7 +1,7 @@
 using UnityEngine;
-using Gameplay.Enemies.Data;
+using Gameplay.Enemies;
 
-namespace Gameplay.Enemies.Statuses
+namespace Gameplay.Core.Statuses
 {
     public class FreezeStatus : IStatusEffect
     {
