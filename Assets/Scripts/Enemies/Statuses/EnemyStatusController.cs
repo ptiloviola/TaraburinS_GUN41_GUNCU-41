@@ -10,11 +10,9 @@ namespace Gameplay.Enemies.Statuses
         private readonly EnemyFacade _enemy;
         private readonly List<IStatusEffect> _activeEffects = new List<IStatusEffect>();
 
-        // Публичные множители для других систем (Начинаются с 1.0 = 100%)
         public float SpeedMultiplier { get; private set; } = 1f;
         public float DamageTakenMultiplier { get; private set; } = 1f;
 
-        // События для отвязанного UI и визуала
         public event Action<IStatusEffect> OnStatusAdded;
         public event Action<IStatusEffect> OnStatusRemoved;
 
@@ -25,27 +23,24 @@ namespace Gameplay.Enemies.Statuses
 
         public void AddStatus(IStatusEffect effect)
         {
-            // 1. Узнаем множитель из конфига врага на основе типа эффекта
-            float resistMultiplier = effect.Type switch
-            {
-                StatusType.Control => _enemy.Config.StatusResist.ControlMultiplier,
-                StatusType.DamageOverTime => _enemy.Config.StatusResist.DoTMultiplier,
-                StatusType.Debuff => _enemy.Config.StatusResist.DebuffMultiplier,
-                _ => 1f
-            };
+            // 1. Спрашиваем множитель у конфига (если иммунитета нет, вернет 1f)
+            float resistMultiplier = _enemy.Config.GetResistMultiplier(effect.Type);
 
             // 2. Если иммунитет (0) — даже не добавляем в список
             if (resistMultiplier <= 0f)
             {
-                Debug.Log($"<color=grey>[Status] Враг {_enemy.gameObject.name} иммунен к {effect.Type}. Статус отклонен.</color>");
+#if UNITY_EDITOR
+                Debug.Log($"<color=grey>[Status] Враг {_enemy.gameObject.name} иммунен к {effect.Type}. Статус {effect.Id} отклонен.</color>");
+#endif
                 return;
             }
 
-            // 3. Срезаем время и добавляем
+            // 3. Срезаем время (или урон) и добавляем
             effect.ApplyResistance(resistMultiplier);
             
             _activeEffects.Add(effect);
             effect.OnApply(_enemy);
+            
             RecalculateMultipliers();
             OnStatusAdded?.Invoke(effect);
         }

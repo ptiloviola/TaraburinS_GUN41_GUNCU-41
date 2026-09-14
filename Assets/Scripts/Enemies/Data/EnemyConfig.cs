@@ -1,18 +1,27 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Enemies.Data.Movement;
 using Gameplay.Enemies.Data.Death;
 
 namespace Gameplay.Enemies.Data
 {
-    // НОВОЕ: Типы статусов
     public enum StatusType
     {
-        Control,       // Заморозка, оглушение (В будущем: Заземление)
-        DamageOverTime,// Яд, горение (В будущем: Рефлексия)
-        Debuff         // Снижение брони (В будущем: Когнитивная открытость)
+        Control,       // Заморозка, оглушение
+        DamageOverTime,// Яд, горение
+        Debuff         // Снижение брони
     }
 
-    [System.Serializable]
+    [Serializable]
+    public struct StatusResistEntry
+    {
+        public StatusType Type;
+        [Tooltip("1.0 = 100% времени/урона, 0.5 = 50%, 0 = полный иммунитет")]
+        public float Multiplier;
+    }
+
+    [Serializable]
     public struct EnemyStats
     {
         public float MaxHealth;
@@ -20,23 +29,12 @@ namespace Gameplay.Enemies.Data
         public int RewardMoney;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct ArmorStats
     {
-        [Tooltip("1.0 = 100% урона, 0.5 = 50% урона, 2.0 = 200% урона")]
         public float PhysicalMultiplier;
         public float EnergyMultiplier;
         public float ExplosiveMultiplier;
-    }
-
-    // НОВОЕ: Сопротивление статусам
-    [System.Serializable]
-    public struct StatusResistances
-    {
-        [Tooltip("1.0 = 100% времени действия, 0.5 = статус висит в 2 раза меньше, 0 = полный иммунитет")]
-        public float ControlMultiplier;
-        public float DoTMultiplier;
-        public float DebuffMultiplier;
     }
 
     [CreateAssetMenu(fileName = "NewEnemyConfig", menuName = "TD/Enemies/Enemy Config", order = 51)]
@@ -54,14 +52,26 @@ namespace Gameplay.Enemies.Data
         public EnemyStats Stats = new EnemyStats { MaxHealth = 100f, DamageToBase = 1, RewardMoney = 15 };
         public ArmorStats Armor = new ArmorStats { PhysicalMultiplier = 1f, EnergyMultiplier = 1f, ExplosiveMultiplier = 1f };
         
-        // НОВОЕ: По умолчанию статусы работают на 100% времени
-        public StatusResistances StatusResist = new StatusResistances { ControlMultiplier = 1f, DoTMultiplier = 1f, DebuffMultiplier = 1f };
+        [Header("Модуль: Сопротивления Статусам")]
+        // НОВОЕ: Гибкий список сопротивлений. Оставляем пустым по умолчанию.
+        public List<StatusResistEntry> Resistances = new List<StatusResistEntry>();
 
         [Header("Модуль: Движение")]
         public MovementConfig Movement; 
 
         [Header("Модуль: Поведение при смерти (Опционально)")]
         public DeathBehaviorConfig DeathBehavior;
+
+        // НОВОЕ: Инкапсулируем логику поиска резиста внутри конфига
+        public float GetResistMultiplier(StatusType type)
+        {
+            foreach (var entry in Resistances)
+            {
+                if (entry.Type == type) return entry.Multiplier;
+            }
+            // Если в списке нет переопределения для этого статуса, возвращаем 1.0 (эффект работает на 100%)
+            return 1f; 
+        }
 
 #if UNITY_EDITOR
         private void OnValidate()

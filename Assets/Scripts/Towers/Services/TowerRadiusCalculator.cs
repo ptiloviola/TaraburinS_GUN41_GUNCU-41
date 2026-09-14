@@ -13,7 +13,9 @@ namespace Gameplay.Towers.Services
             if (levelData == null) return 0f;
             
             if (levelData.Attack != null && levelData.Attack.Range > 0) return levelData.Attack.Range;
-            if (levelData.Aura != null && levelData.Aura.Radius > 0) return levelData.Aura.Radius;
+            
+            // ИСПРАВЛЕНО: Теперь используем TriggerRadius
+            if (levelData.Aura != null && levelData.Aura.TriggerRadius > 0) return levelData.Aura.TriggerRadius;
             
             return 0f;
         }
