@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using Zenject;
 using Gameplay.Towers.Behaviors.Aiming;
-using Gameplay.Projectiles.Factories; // Подключаем пространство имен нашей фабрики
+using Gameplay.Projectiles.Factories;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -20,12 +20,11 @@ namespace Gameplay.Towers.Behaviors
 
         public Transform LogicalRotator => _logicalRotator;
         public Transform FirePoint => _firePoint;
-        public Transform ElevationPivot; // Для зенитки. У обычных башен оставляем None!
+        public Transform ElevationPivot;
         public LayerMask EnemyMask => _enemyLayerMask;
         public float TurnSpeed => _turnSpeed;
         public LayerMask EnvironmentMask => _environmentLayerMask;
 
-        // 1. УБИРАЕМ IInstantiator, ДОБАВЛЯЕМ ProjectileFactory
         private ProjectileFactory _projectileFactory;
         
         public AttackController ActiveController { get; private set; }
@@ -33,13 +32,11 @@ namespace Gameplay.Towers.Behaviors
         [Inject]
         public void Construct(ProjectileFactory projectileFactory)
         {
-            // 2. Zenject прокинет сюда нашу глобальную фабрику снарядов при спавне башни
             _projectileFactory = projectileFactory;
         }
 
         public ITowerBehavior CreateBehavior()
         {
-            // 3. Передаем фабрику в контроллер
             ActiveController = new AttackController(this, _projectileFactory);
             return ActiveController;
         }

@@ -26,7 +26,7 @@ namespace Gameplay.Towers.Installers
 
             // Фабрики
             Container.Bind<TowerFactory>().AsSingle();
-            Container.Bind<DefenderFactory>().AsSingle(); // Дефендеры относятся к башням (Казармы)
+            Container.Bind<DefenderFactory>().AsSingle();
 
             Debug.Log("<color=green>[Zenject] TowerDefenseInstaller: Системы башен зарегистрированы.</color>");
         }

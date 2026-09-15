@@ -35,6 +35,13 @@ namespace Gameplay.Enemies
         public SignalBus SignalBus => _signalBus; // Чтобы стейты могли кидать сигналы
         public IMovementStrategy MovementStrategy => _movementStrategy;
         public EnemyStatusController StatusController { get; private set; }
+
+        public bool IsDead => _stateMachine != null && 
+                     (_stateMachine.CurrentStateType == EnemyStateType.Death || 
+                      _stateMachine.CurrentStateType == EnemyStateType.ReachedBase);
+
+
+
         // --- СОБЫТИЯ ДЛЯ ВИЗУАЛА ---
         public event Action<EnemyStateType> OnStateChanged;
 

@@ -24,6 +24,8 @@ MonoBehaviour:
     PhysicalMultiplier: 1
     EnergyMultiplier: 2
     ExplosiveMultiplier: 1
-  Resistances: []
+  Resistances:
+  - Type: 2
+    Multiplier: 0
   Movement: {fileID: 11400000, guid: 99da81030d2920646b342bef716a7945, type: 2}
   DeathBehavior: {fileID: 0}

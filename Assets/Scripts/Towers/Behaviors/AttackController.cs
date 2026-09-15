@@ -7,7 +7,7 @@ using Gameplay.Projectiles.Contracts;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Towers.Behaviors.Targeting;
 using Gameplay.Towers.Behaviors.Weapons;
-using Gameplay.Projectiles.Factories; // Подключаем твой новый неймспейс фабрики
+using Gameplay.Projectiles.Factories;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -15,7 +15,6 @@ namespace Gameplay.Towers.Behaviors
     {
         private readonly WeaponAdapter _adapter;
         
-        // 1. ИНЖЕКТИМ ФАБРИКУ вместо Инстанциатора
         private readonly ProjectileFactory _projectileFactory; 
         
         private TowerFacade _facade;
@@ -29,7 +28,6 @@ namespace Gameplay.Towers.Behaviors
         
         private IAttackExecutor _executor;
 
-        // 2. Обновляем конструктор
         public AttackController(WeaponAdapter adapter, ProjectileFactory projectileFactory)
         {
             _adapter = adapter;
@@ -65,7 +63,6 @@ namespace Gameplay.Towers.Behaviors
                 _ => new OmniAimStrategy(_adapter.transform, _adapter.FirePoint, _adapter.EnvironmentMask, -10f, 80f, 360f, false)
             };
 
-            // 3. ПЕРЕДАЕМ ФАБРИКУ В ЭКЗЕКУТОР
             _executor = _currentStats.Executor switch
             {
                 ExecutorType.Hitscan => new HitscanExecutor(),
