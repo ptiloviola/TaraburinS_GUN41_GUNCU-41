@@ -71,7 +71,37 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 4147862346019639292}
+    - targetCorrespondingSourceObject: {fileID: 7793571413058847935, guid: 15bc2145a92619346b69a33cd4800f80,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2146310966357514580}
   m_SourcePrefab: {fileID: 100100000, guid: 15bc2145a92619346b69a33cd4800f80, type: 3}
+--- !u!1 &1178965669688452066 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7793571413058847935, guid: 15bc2145a92619346b69a33cd4800f80,
+    type: 3}
+  m_PrefabInstance: {fileID: 8968026884439418717}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2146310966357514580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178965669688452066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e90adc59076cd49b34aa6f17df3e10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _setup: {fileID: 0}
+  _logicalRotator: {fileID: 0}
+  _baseTransform: {fileID: 0}
+  _turretTransform: {fileID: 0}
+  _elevationPivot: {fileID: 0}
+  _barrelTransforms: []
+  _muzzleFlashes: []
+  _radiusVisualizer: {fileID: 5839460073284550692}
 --- !u!1 &1888843129160223111 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7368540168776740570, guid: 15bc2145a92619346b69a33cd4800f80,
@@ -100,3 +130,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   ElevationPivot: {fileID: 0}
+--- !u!114 &5839460073284550692 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3277838847816886137, guid: 15bc2145a92619346b69a33cd4800f80,
+    type: 3}
+  m_PrefabInstance: {fileID: 8968026884439418717}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888843129160223111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 345a248a238f8fe4692a72f5987d3695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

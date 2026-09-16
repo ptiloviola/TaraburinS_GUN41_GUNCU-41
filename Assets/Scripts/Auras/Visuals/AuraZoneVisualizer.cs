@@ -8,6 +8,7 @@ namespace Gameplay.Auras.Visuals
     {
         [Header("Настройки анимации")]
         [SerializeField] private float _animationTime = 0.4f;
+        [SerializeField] private ParticleSystem _particles; 
         
         private Transform _visualRoot; 
         private Coroutine _animCoroutine;
@@ -31,6 +32,15 @@ namespace Gameplay.Auras.Visuals
             if (_animCoroutine != null) StopCoroutine(_animCoroutine);
             
             _visualRoot.gameObject.SetActive(true);
+            
+            // ЖЕЛЕЗОБЕТОН: Передаем радиус лужи напрямую в форму частиц!
+            if (_particles != null) 
+            {
+                var shape = _particles.shape;
+                shape.radius = targetRadius; // Снежинки будут рождаться ровно по границе сферы
+                _particles.Play();
+            }
+
             float targetScale = targetRadius * 2f;
             
             if (_animationTime <= 0f)
@@ -46,6 +56,8 @@ namespace Gameplay.Auras.Visuals
         {
             EnsureVisualRoot();
             if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+            
+            if (_particles != null) _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             
             if (_animationTime <= 0f)
             {
@@ -67,11 +79,10 @@ namespace Gameplay.Auras.Visuals
 
             while (elapsed < _animationTime)
             {
-                // unscaledDeltaTime игнорирует паузу игры (timeScale = 0)
                 elapsed += Time.unscaledDeltaTime; 
                 float t = Mathf.Clamp01(elapsed / _animationTime);
                 
-                float easeT = 1f - Mathf.Pow(1 - t, 3); // Красивое замедление
+                float easeT = 1f - Mathf.Pow(1 - t, 3);
                 float current = Mathf.Lerp(fromScale, toScale, easeT);
                 
                 _visualRoot.localScale = new Vector3(current, current, current);

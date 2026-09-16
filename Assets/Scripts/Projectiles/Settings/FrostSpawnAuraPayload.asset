@@ -17,8 +17,8 @@ MonoBehaviour:
   EnemyMask:
     serializedVersion: 2
     m_Bits: 512
-  Radius: 4
-  Duration: 5
+  Radius: 3
+  Duration: 7
   TickRate: 0.5
   StatusEffects:
   - rid: 7999629163705401345
@@ -28,5 +28,5 @@ MonoBehaviour:
     - rid: 7999629163705401345
       type: {class: FreezeStatusConfig, ns: Gameplay.Core.Statuses.Data, asm: Assembly-CSharp}
       data:
-        _baseDuration: 3
-        _slowPercent: 1
+        _baseDuration: 6
+        _slowPercent: 0.174
