@@ -8,6 +8,7 @@ using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Towers.Behaviors.Targeting;
 using Gameplay.Towers.Behaviors.Weapons;
 using Gameplay.Projectiles.Factories;
+using Gameplay.Auras.Factories;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -16,6 +17,7 @@ namespace Gameplay.Towers.Behaviors
         private readonly WeaponAdapter _adapter;
         
         private readonly ProjectileFactory _projectileFactory; 
+        private readonly AuraZoneFactory _auraFactory;
         
         private TowerFacade _facade;
         private Transform _currentTarget;
@@ -28,10 +30,11 @@ namespace Gameplay.Towers.Behaviors
         
         private IAttackExecutor _executor;
 
-        public AttackController(WeaponAdapter adapter, ProjectileFactory projectileFactory)
+        public AttackController(WeaponAdapter adapter, ProjectileFactory projectileFactory, AuraZoneFactory auraFactory)
         {
             _adapter = adapter;
             _projectileFactory = projectileFactory;
+            _auraFactory = auraFactory;
         }
 
         public void Initialize(TowerFacade facade)
@@ -104,6 +107,11 @@ namespace Gameplay.Towers.Behaviors
 
             DamagePayload damagePayload = new DamagePayload(_currentStats.Damage, _currentStats.Type);
             IProjectilePayload payload = _currentStats.PayloadStrategy.CreatePayload(damagePayload);
+            
+            if (payload is IRequireAuraFactory auraPayload)
+            {
+                auraPayload.SetFactory(_auraFactory);
+            }
             
             _executor?.ExecuteAttack(_currentTarget, payload, _adapter.FirePoint);
             

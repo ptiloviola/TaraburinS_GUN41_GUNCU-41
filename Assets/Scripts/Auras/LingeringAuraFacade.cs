@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Auras
 {
-    public class LingeringAuraFacade : MonoBehaviour, IPoolable<AuraSetup, LayerMask, IMemoryPool>, IDisposable
+    public class LingeringAuraFacade : MonoBehaviour, IPoolable<AuraSetup, Vector3, LayerMask, IMemoryPool>, IDisposable
     {
         [SerializeField] private AuraZoneVisualizer _visualizer;
         
@@ -34,16 +34,16 @@ namespace Gameplay.Auras
             _core.StopAura();
         }
 
-        public void OnSpawned(AuraSetup setup, LayerMask enemyMask, IMemoryPool pool)
+        public void OnSpawned(AuraSetup setup, Vector3 position, LayerMask enemyMask, IMemoryPool pool)
         {
             _pool = pool;
             _isDespawning = false;
             
-            // 1. Запускаем красивое появление
-            _visualizer.PlayAppearAsync(setup.Radius, this.GetCancellationTokenOnDestroy()).Forget();
+            // Перемещаем объект в точку попадания снаряда!
+            transform.position = position;
             
-            // 2. Запускаем математику (тики урона/статусов)
-            _core.StartAura(setup, transform.position, enemyMask);
+            _visualizer.PlayAppearAsync(setup.Radius, this.GetCancellationTokenOnDestroy()).Forget();
+            _core.StartAura(setup, position, enemyMask); // Передаем position
         }
 
         public void OnDespawned()
@@ -79,6 +79,6 @@ namespace Gameplay.Auras
             _core?.StopAura();
         }
 
-        public class Pool : MonoMemoryPool<AuraSetup, LayerMask, LingeringAuraFacade> { }
+        public class Pool : MonoMemoryPool<AuraSetup, Vector3, LayerMask, LingeringAuraFacade> { }
     }
 }

@@ -6,6 +6,7 @@ using Gameplay.Towers.Services;
 using Gameplay.Towers.Factories;
 using Gameplay.Interaction;
 using Gameplay.Projectiles.Factories;
+using Gameplay.Auras.Factories;
 
 namespace Gameplay.Towers.Installers
 {
@@ -21,6 +22,7 @@ namespace Gameplay.Towers.Installers
             Container.BindInstance(_towerRegistry).AsSingle();
 
             Container.Bind<ProjectileFactory>().AsSingle();
+            Container.Bind<AuraZoneFactory>().AsSingle();
 
             Container.Bind<TowerLifecycleService>().AsSingle();
 

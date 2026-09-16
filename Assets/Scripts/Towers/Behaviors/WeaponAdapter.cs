@@ -3,6 +3,7 @@ using System;
 using Zenject;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Projectiles.Factories;
+using Gameplay.Auras.Factories;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -26,18 +27,20 @@ namespace Gameplay.Towers.Behaviors
         public LayerMask EnvironmentMask => _environmentLayerMask;
 
         private ProjectileFactory _projectileFactory;
+        private AuraZoneFactory _auraFactory;
         
         public AttackController ActiveController { get; private set; }
 
         [Inject]
-        public void Construct(ProjectileFactory projectileFactory)
+        public void Construct(ProjectileFactory projectileFactory, AuraZoneFactory auraFactory)
         {
             _projectileFactory = projectileFactory;
+            _auraFactory = auraFactory;
         }
 
         public ITowerBehavior CreateBehavior()
         {
-            ActiveController = new AttackController(this, _projectileFactory);
+            ActiveController = new AttackController(this, _projectileFactory, _auraFactory);
             return ActiveController;
         }
 

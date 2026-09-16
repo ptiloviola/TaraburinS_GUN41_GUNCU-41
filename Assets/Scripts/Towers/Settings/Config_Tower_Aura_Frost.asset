@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adcdef347df95d84c8f123578d9d3d57, type: 3}
+  m_Name: Config_Tower_Aura_Frost
+  m_EditorClassIdentifier: 
+  TowerId: Tower_Aura_Frost
+  DisplayName: "\u0411\u0430\u0448\u043D\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0437\u043A\u0438"
+  BaseCost: 33
+  SellRefundMultiplier: 0.5
+  Icon: {fileID: 0}
+  Prefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a, type: 3}
+  Levels:
+  - UpgradeCost: 0
+    VisualPrefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a,
+      type: 3}
+    Attack:
+      Damage: 0
+      Type: 0
+      MinRange: 0
+      Range: 0
+      Cooldown: 0
+      FieldOfView: 0
+      MinPitch: 0
+      MaxPitch: 0
+      CheckLineOfSight: 0
+      Targeting: 0
+      Aiming: 0
+      Executor: 0
+      ProjectilePrefab: {fileID: 0}
+      PayloadStrategy: {fileID: 0}
+    Aura:
+      TriggerRadius: 7
+      Cooldown: 2
+      ZoneDuration: 5
+      ZoneRadius: 4
+      TickRate: 1
+      ZonePrefab: {fileID: 3429033664946136748, guid: 55b2c4dc3008cb54aa4858a89142c278,
+        type: 3}
+      StatusEffects:
+      - rid: 7999629163705401344
+    Barracks:
+      DefenderData: {fileID: 0}
+      MaxDefenders: 0
+      RespawnCooldown: 0
+      RallyPointRadius: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 7999629163705401344
+      type: {class: FreezeStatusConfig, ns: Gameplay.Core.Statuses.Data, asm: Assembly-CSharp}
+      data:
+        _baseDuration: 3
+        _slowPercent: 1
