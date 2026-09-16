@@ -4,6 +4,7 @@ using Zenject;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Projectiles.Factories;
 using Gameplay.Auras.Factories;
+using Gameplay.Towers.Data.Modules;
 
 namespace Gameplay.Towers.Behaviors
 {
@@ -53,7 +54,8 @@ namespace Gameplay.Towers.Behaviors
             var facade = GetComponentInParent<TowerFacade>();
             if (Application.isPlaying && facade != null && facade.Config != null)
             {
-                drawRange = facade.GetCurrentStats().Attack.Range;
+                var attack = facade.GetCurrentStats().GetModule<AttackStats>();
+                if (attack != null) drawRange = attack.Range;
             }
 
             Vector3 center = _logicalRotator != null ? _logicalRotator.position : transform.position;

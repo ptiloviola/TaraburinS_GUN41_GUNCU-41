@@ -1,4 +1,5 @@
 using Gameplay.Towers.Data;
+using Gameplay.Towers.Data.Modules;
 using UnityEngine;
 
 namespace Gameplay.Towers.Visuals
@@ -12,7 +13,7 @@ namespace Gameplay.Towers.Visuals
         private readonly float _heightOffset;
 
         private GameObject _currentActiveCursor;
-        private float _currentMinRange; // НОВОЕ: Запоминаем мертвую зону текущей выбранной башни
+        private float _currentMinRange; 
 
         public PlacementVisualizer(GameObject validCursor, GameObject invalidCursor, GameObject radiusIndicator, GameObject minRadiusIndicator, float heightOffset)
         {
@@ -28,11 +29,14 @@ namespace Gameplay.Towers.Visuals
             if (config == null || config.Levels == null || config.Levels.Count == 0) return;
 
             TowerLevelData baseLevel = config.Levels[0];
-            float range = baseLevel.Attack != null ? baseLevel.Attack.Range : 
-                          baseLevel.Barracks != null ? baseLevel.Barracks.RallyPointRadius : 0f;
             
-            // Кешируем значение мертвой зоны для дальнейших проверок
-            _currentMinRange = baseLevel.Attack != null ? baseLevel.Attack.MinRange : 0f;
+            var attack = baseLevel.GetModule<AttackStats>();
+            var barracks = baseLevel.GetModule<BarracksModuleDescriptor>();
+
+            float range = attack != null ? attack.Range : 
+                          barracks != null ? barracks.RallyPointRadius : 0f;
+            
+            _currentMinRange = attack != null ? attack.MinRange : 0f;
             
             float targetDiameter = range * 2f;
             _radiusIndicator.transform.localScale = new Vector3(targetDiameter, 0.01f, targetDiameter);
@@ -66,7 +70,6 @@ namespace Gameplay.Towers.Visuals
             if (!_radiusIndicator.activeSelf) _radiusIndicator.SetActive(true);
             _radiusIndicator.transform.position = targetPosition + Vector3.down * (_heightOffset * 0.5f);
             
-            // ИСПРАВЛЕНО: Включаем обратно после Hide(), если мертвая зона > 0
             if (_currentMinRange > 0)
             {
                 if (!_minRadiusIndicator.activeSelf) _minRadiusIndicator.SetActive(true);

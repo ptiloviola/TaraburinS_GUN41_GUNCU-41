@@ -3,82 +3,78 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Auras.Data;
 using Gameplay.Auras.Visuals;
-using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Auras
 {
-    public class LingeringAuraFacade : MonoBehaviour, IPoolable<AuraSetup, Vector3, LayerMask, IMemoryPool>, IDisposable
+    public class LingeringAuraFacade : MonoBehaviour, IDisposable
     {
-        [SerializeField] private AuraZoneVisualizer _visualizer;
+        private AuraZoneVisualizer _visualizer; 
+        public AuraCore Core { get; private set; }
         
-        private AuraCore _core;
         private IMemoryPool _pool;
-        private bool _isDespawning;
-
-        public AuraCore Core => _core;
 
         [Inject]
-        public void Construct()
+        public void Construct(IMemoryPool pool)
         {
-            _core = new AuraCore();
+            Core = new AuraCore();
+            _pool = pool;
         }
 
         private void OnEnable()
         {
-            _core.OnAuraFinished += HandleAuraFinished;
+            if (Core != null) Core.OnAuraFinished += Despawn;
         }
 
         private void OnDisable()
         {
-            _core.OnAuraFinished -= HandleAuraFinished;
-            _core.StopAura();
+            if (Core != null)
+            {
+                Core.OnAuraFinished -= Despawn;
+                Core.StopAura();
+            }
         }
 
-        public void OnSpawned(AuraSetup setup, Vector3 position, LayerMask enemyMask, IMemoryPool pool)
+        public void InitializeAura(AuraSetup setup, Vector3 position, LayerMask enemyMask)
         {
-            _pool = pool;
-            _isDespawning = false;
-            
-            // Перемещаем объект в точку попадания снаряда!
             transform.position = position;
+
+            if (_visualizer == null) _visualizer = GetComponent<AuraZoneVisualizer>();
             
-            _visualizer.PlayAppearAsync(setup.Radius, this.GetCancellationTokenOnDestroy()).Forget();
-            _core.StartAura(setup, position, enemyMask); // Передаем position
+            if (_visualizer != null) 
+            {
+                _visualizer.PlayAppear(setup.Radius);
+            }
+                
+            Core.StartAura(setup, position, enemyMask);
         }
 
-        public void OnDespawned()
+        private void Despawn()
         {
-            _pool = null;
-            _core.StopAura();
-        }
-
-        private void HandleAuraFinished()
-        {
-            // Защита от двойного вызова (например, если ауру отменили извне и одновременно вышло время)
-            if (_isDespawning) return;
-            
-            DespawnRoutineAsync().Forget();
-        }
-
-        private async UniTaskVoid DespawnRoutineAsync()
-        {
-            _isDespawning = true;
-            
             if (_visualizer != null)
             {
-                // Сначала ждем, пока полусфера плавно сожмется
-                await _visualizer.PlayDisappearAsync(this.GetCancellationTokenOnDestroy());
+                _visualizer.PlayDisappear(() => _pool?.Despawn(this));
             }
-            
-            // Только после окончания анимации возвращаем объект в пул
-            _pool?.Despawn(this);
+            else
+            {
+                _pool?.Despawn(this);
+            }
         }
 
         public void Dispose()
         {
-            _core?.StopAura();
+            Core?.StopAura();
         }
 
-        public class Pool : MonoMemoryPool<AuraSetup, Vector3, LayerMask, LingeringAuraFacade> { }
+        public class Pool : MonoMemoryPool<AuraSetup, Vector3, LayerMask, LingeringAuraFacade> 
+        {
+            protected override void Reinitialize(AuraSetup setup, Vector3 position, LayerMask mask, LingeringAuraFacade item)
+            {
+                // Отрабатывает базовая логика Zenject (достает из пула, включает объект)
+                base.Reinitialize(setup, position, mask, item);
+                
+                // Передаем данные напрямую без рефлексии
+                item.InitializeAura(setup, position, mask);
+            }
+        }
     }
 }

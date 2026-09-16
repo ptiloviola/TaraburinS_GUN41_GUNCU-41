@@ -3,8 +3,6 @@ using Gameplay.Core.Statuses.Data;
 
 namespace Gameplay.Auras.Data
 {
-    // Чистая структура данных, отвязанная от башен и врагов.
-    // Описывает, как именно должна работать конкретная лужа.
     public struct AuraSetup
     {
         public float Radius;

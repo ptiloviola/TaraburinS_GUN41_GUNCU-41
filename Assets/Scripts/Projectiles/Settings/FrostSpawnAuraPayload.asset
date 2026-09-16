@@ -17,8 +17,8 @@ MonoBehaviour:
   EnemyMask:
     serializedVersion: 2
     m_Bits: 512
-  Radius: 2
-  Duration: 3
+  Radius: 4
+  Duration: 5
   TickRate: 0.5
   StatusEffects:
   - rid: 7999629163705401345

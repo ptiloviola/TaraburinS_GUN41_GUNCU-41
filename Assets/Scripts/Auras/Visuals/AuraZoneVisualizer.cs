@@ -1,55 +1,85 @@
 using UnityEngine;
-using DG.Tweening;
-using Cysharp.Threading.Tasks;
-using System.Threading;
+using System.Collections;
 using System;
 
 namespace Gameplay.Auras.Visuals
 {
     public class AuraZoneVisualizer : MonoBehaviour
     {
-        [Header("Ссылки")]
-        [SerializeField] private Transform _visualRoot; 
-        [SerializeField] private ParticleSystem _particles;
-
         [Header("Настройки анимации")]
         [SerializeField] private float _animationTime = 0.4f;
-        [SerializeField] private Ease _appearEase = Ease.OutBack;
-        [SerializeField] private Ease _disappearEase = Ease.InBack;
+        
+        private Transform _visualRoot; 
+        private Coroutine _animCoroutine;
 
-        public async UniTask PlayAppearAsync(float targetRadius, CancellationToken token)
+        private void EnsureVisualRoot()
         {
-            _visualRoot.DOKill(); 
-            
-            _visualRoot.localScale = Vector3.zero;
-            _visualRoot.gameObject.SetActive(true);
-            
-            if (_particles != null) _particles.Play();
-
-            float targetScale = targetRadius * 2f;
-
-            // 1. Запускаем твин и жестко связываем его с жизнью этого GameObject
-            _visualRoot.DOScale(targetScale, _animationTime)
-                .SetEase(_appearEase)
-                .SetLink(gameObject);
-
-            // 2. Ждем ровно столько, сколько длится анимация, с поддержкой токена отмены
-            await UniTask.Delay(TimeSpan.FromSeconds(_animationTime), cancellationToken: token);
+            if (_visualRoot == null)
+            {
+                _visualRoot = transform.Find("Visuals");
+                if (_visualRoot == null)
+                {
+                    if (transform.childCount > 0) _visualRoot = transform.GetChild(0);
+                    else _visualRoot = transform;
+                }
+            }
         }
 
-        public async UniTask PlayDisappearAsync(CancellationToken token)
+        public void PlayAppear(float targetRadius)
         {
-            _visualRoot.DOKill();
+            EnsureVisualRoot();
+            if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+            
+            _visualRoot.gameObject.SetActive(true);
+            float targetScale = targetRadius * 2f;
+            
+            if (_animationTime <= 0f)
+            {
+                _visualRoot.localScale = new Vector3(targetScale, targetScale, targetScale);
+                return;
+            }
+            
+            _animCoroutine = StartCoroutine(AnimateScaleRoutine(_visualRoot.localScale.x, targetScale, null));
+        }
 
-            if (_particles != null) _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        public void PlayDisappear(Action onComplete)
+        {
+            EnsureVisualRoot();
+            if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+            
+            if (_animationTime <= 0f)
+            {
+                _visualRoot.gameObject.SetActive(false);
+                onComplete?.Invoke();
+                return;
+            }
 
-            _visualRoot.DOScale(0f, _animationTime)
-                .SetEase(_disappearEase)
-                .SetLink(gameObject);
+            _animCoroutine = StartCoroutine(AnimateScaleRoutine(_visualRoot.localScale.x, 0f, () => 
+            {
+                _visualRoot.gameObject.SetActive(false);
+                onComplete?.Invoke();
+            }));
+        }
 
-            await UniTask.Delay(TimeSpan.FromSeconds(_animationTime), cancellationToken: token);
+        private IEnumerator AnimateScaleRoutine(float fromScale, float toScale, Action onComplete)
+        {
+            float elapsed = 0f;
+
+            while (elapsed < _animationTime)
+            {
+                // unscaledDeltaTime игнорирует паузу игры (timeScale = 0)
+                elapsed += Time.unscaledDeltaTime; 
+                float t = Mathf.Clamp01(elapsed / _animationTime);
                 
-            _visualRoot.gameObject.SetActive(false);
+                float easeT = 1f - Mathf.Pow(1 - t, 3); // Красивое замедление
+                float current = Mathf.Lerp(fromScale, toScale, easeT);
+                
+                _visualRoot.localScale = new Vector3(current, current, current);
+                yield return null;
+            }
+
+            _visualRoot.localScale = new Vector3(toScale, toScale, toScale);
+            onComplete?.Invoke();
         }
     }
 }

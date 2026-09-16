@@ -22,29 +22,27 @@ MonoBehaviour:
   - UpgradeCost: 0
     VisualPrefab: {fileID: 4086577057838217579, guid: 0e964029c620af840ac0b9b664caa9f0,
       type: 3}
-    Attack:
-      Damage: 40
-      Type: 2
-      MinRange: 3
-      Range: 8
-      Cooldown: 4
-      FieldOfView: 360
-      MinPitch: -15
-      MaxPitch: 80
-      CheckLineOfSight: 1
-      Targeting: 0
-      Aiming: 1
-      Executor: 1
-      ProjectilePrefab: {fileID: -8929246832689151488, guid: bb6f888a57ed29b4dbe80a1bab81a0fa,
-        type: 3}
-      PayloadStrategy: {fileID: 11400000, guid: 7d3eca2f9350e9c4f8ce98c85233337a,
-        type: 2}
-    Aura:
-      Radius: 0
-      TickRate: 0
-      SlowdownMultiplier: 0
-    Barracks:
-      DefenderData: {fileID: 0}
-      MaxDefenders: 0
-      RespawnCooldown: 0
-      RallyPointRadius: 0
+    Modules:
+    - rid: 7999629163705401350
+  references:
+    version: 2
+    RefIds:
+    - rid: 7999629163705401350
+      type: {class: AttackStats, ns: Gameplay.Towers.Data.Modules, asm: Assembly-CSharp}
+      data:
+        Damage: 25
+        Type: 2
+        MinRange: 3
+        Range: 9
+        Cooldown: 1.2
+        FieldOfView: 360
+        MinPitch: -10
+        MaxPitch: 30
+        CheckLineOfSight: 1
+        Targeting: 0
+        Aiming: 1
+        Executor: 1
+        ProjectilePrefab: {fileID: -8929246832689151488, guid: bb6f888a57ed29b4dbe80a1bab81a0fa,
+          type: 3}
+        PayloadStrategy: {fileID: 11400000, guid: 7d3eca2f9350e9c4f8ce98c85233337a,
+          type: 2}

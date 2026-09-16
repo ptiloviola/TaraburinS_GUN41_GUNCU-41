@@ -41,7 +41,8 @@ namespace Gameplay.Towers.Behaviors
         {
             _facade = facade;
             _cooldownTimer = 0f;
-            _currentStats = _facade.GetCurrentStats().Attack;
+            _currentStats = _facade.GetCurrentStats().GetModule<AttackStats>();
+            if (_currentStats == null) return;
             
             _targetingStrategy = _currentStats.Targeting switch
             {

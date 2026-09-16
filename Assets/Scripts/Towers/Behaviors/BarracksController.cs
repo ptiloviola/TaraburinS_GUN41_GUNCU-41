@@ -23,7 +23,9 @@ namespace Gameplay.Towers.Behaviors
         public void Initialize(TowerFacade facade)
         {
             _facade = facade;
-            _module = _facade.GetCurrentStats().Barracks;
+            
+            // ИСПРАВЛЕНО: Запрашиваем модуль казармы
+            _module = _facade.GetCurrentStats().GetModule<BarracksModuleDescriptor>();
             
             if (_module == null || _module.DefenderData == null) return;
 
@@ -84,8 +86,6 @@ namespace Gameplay.Towers.Behaviors
             _activeDefenders.Remove(defender);
         }
 
-        // Вместо OnDestroy теперь используем метод для очистки, 
-        // который можно будет вызывать при удалении башни.
         public void Cleanup()
         {
             for (int i = _activeDefenders.Count - 1; i >= 0; i--)

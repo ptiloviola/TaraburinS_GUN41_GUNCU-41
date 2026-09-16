@@ -51,14 +51,28 @@ namespace Gameplay.Projectiles.Data
         public void SetFactory(AuraZoneFactory factory)
         {
             _factory = factory;
+            Debug.Log("<color=yellow>[Payload] Фабрика успешно внедрена в снаряд!</color>");
         }
 
         public void Apply(Transform target, Vector3 hitPoint)
         {
-            if (_factory == null || _prefab == null) return;
+            Debug.Log($"<color=orange>[Payload] Попытка спавна лужи в координатах: {hitPoint}</color>");
+            
+            if (_factory == null)
+            {
+                Debug.LogError("[Payload] ОШИБКА: AuraZoneFactory = null. Внедрение не сработало!");
+                return;
+            }
+            if (_prefab == null)
+            {
+                Debug.LogError("[Payload] ОШИБКА: AuraPrefab = null. Проверь SpawnAuraPayloadConfig!");
+                return;
+            }
 
             var pool = _factory.GetPool(_prefab);
             pool.Spawn(_setup, hitPoint, _enemyMask);
+            
+            Debug.Log("<color=green>[Payload] Лужа успешно заспавнена из пула!</color>");
         }
     }
 }

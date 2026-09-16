@@ -18,7 +18,7 @@ MonoBehaviour:
     _delayBeforeWave: 7
     _squads:
     - _enemyId: gyro
-      _count: 3
+      _count: 0
       _spawnInterval: 1
       _spawnPointId: Spawn_2_1
       _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E

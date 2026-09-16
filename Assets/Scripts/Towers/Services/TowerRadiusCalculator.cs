@@ -1,21 +1,20 @@
 using Gameplay.Towers.Data;
+using Gameplay.Towers.Data.Modules;
 
 namespace Gameplay.Towers.Services
 {
-    /// <summary>
-    /// Чистый калькулятор без состояния.
-    /// Единственная ответственность: извлечение радиусов из конфигурации башни.
-    /// </summary>
     public static class TowerRadiusCalculator
     {
         public static float GetMaxRadius(TowerLevelData levelData)
         {
             if (levelData == null) return 0f;
             
-            if (levelData.Attack != null && levelData.Attack.Range > 0) return levelData.Attack.Range;
+            var attack = levelData.GetModule<AttackStats>();
+            if (attack != null && attack.Range > 0) return attack.Range;
             
-            // ИСПРАВЛЕНО: Теперь используем TriggerRadius
-            if (levelData.Aura != null && levelData.Aura.TriggerRadius > 0) return levelData.Aura.TriggerRadius;
+
+            var barracks = levelData.GetModule<BarracksModuleDescriptor>();
+            if (barracks != null && barracks.RallyPointRadius > 0) return barracks.RallyPointRadius;
             
             return 0f;
         }
@@ -24,7 +23,8 @@ namespace Gameplay.Towers.Services
         {
             if (levelData == null) return 0f;
             
-            if (levelData.Attack != null && levelData.Attack.MinRange > 0) return levelData.Attack.MinRange;
+            var attack = levelData.GetModule<AttackStats>();
+            if (attack != null && attack.MinRange > 0) return attack.MinRange;
             
             return 0f;
         }
