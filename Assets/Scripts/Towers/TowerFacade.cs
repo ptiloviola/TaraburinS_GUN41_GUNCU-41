@@ -17,8 +17,7 @@ namespace Gameplay.Towers
         public Vector2Int GridPosition { get; private set; }
 
         private readonly List<ITowerBehavior> _behaviors = new List<ITowerBehavior>();
-        private ITowerVisuals _visuals; // НОВОЕ: Сохраняем ссылку на визуал
-        
+        private ITowerVisuals _visuals;
         public event Action OnLevelChanged;
 
         private void Start()
@@ -50,7 +49,6 @@ namespace Gameplay.Towers
                 }
             }
 
-            // НОВОЕ: Ищем визуал и сохраняем ссылку на него в поле
             _visuals = GetComponentInChildren<ITowerVisuals>(true);
             if (_visuals != null)
             {
@@ -89,7 +87,6 @@ namespace Gameplay.Towers
             OnLevelChanged?.Invoke();
         }
 
-        // --- НОВОЕ ПУБЛИЧНОЕ API ДЛЯ УПРАВЛЕНИЯ ВИЗУАЛОМ ---
 
         public void ShowRadiusPreview()
         {

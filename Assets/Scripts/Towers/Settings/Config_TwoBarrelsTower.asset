@@ -20,12 +20,11 @@ MonoBehaviour:
   Prefab: {fileID: 3929638890925405715, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7, type: 3}
   Levels:
   - UpgradeCost: 0
-    VisualPrefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
-      type: 3}
+    VisualPrefab: {fileID: 0}
     Modules:
     - rid: 7999629163705401353
   - UpgradeCost: 8
-    VisualPrefab: {fileID: 1206027748422666790, guid: 5b64f459f9cc49d47a8e2a3006c493a8,
+    VisualPrefab: {fileID: 5630816600719798732, guid: d5203654f867ddd46b11f171e2350a42,
       type: 3}
     Modules:
     - rid: 7999629163705401354

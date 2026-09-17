@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: "\u0411\u0430\u0448\u043D\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0437\u043A\u0438"
   BaseCost: 33
   SellRefundMultiplier: 0.5
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: b3226c605767b3f4e9b6caf51865a6e9, type: 3}
   Prefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a, type: 3}
   Levels:
   - UpgradeCost: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
         Type: 1
         MinRange: 0
         Range: 6
-        Cooldown: 8
+        Cooldown: 10
         FieldOfView: 360
         MinPitch: -10
         MaxPitch: 60
