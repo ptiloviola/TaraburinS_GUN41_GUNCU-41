@@ -17,7 +17,6 @@ namespace Gameplay.Towers.Installers
 
         public override void InstallBindings()
         {
-            // Данные и настройки
             Container.BindInstance(_placementSettings).IfNotBound();
             Container.BindInstance(_towerRegistry).AsSingle();
 
@@ -26,7 +25,8 @@ namespace Gameplay.Towers.Installers
 
             Container.Bind<TowerLifecycleService>().AsSingle();
 
-            // Фабрики
+            Container.Bind<TowerUpgradeService>().AsSingle();
+            
             Container.Bind<TowerFactory>().AsSingle();
             Container.Bind<DefenderFactory>().AsSingle();
 

@@ -10,7 +10,9 @@ namespace Gameplay.Towers.Data
     public class TowerLevelData
     {
         public int UpgradeCost;
-        public GameObject VisualPrefab;
+        
+        [Tooltip("Полноценный префаб башни со всеми скриптами, коллайдерами и логикой")]
+        public GameObject TowerPrefab; 
 
         [Header("Модули поведения")]
         [SerializeReference, SubclassSelector]
@@ -21,7 +23,6 @@ namespace Gameplay.Towers.Data
             return Modules;
         }
 
-        // Удобный метод для контроллеров, чтобы они могли сами достать свой модуль
         public T GetModule<T>() where T : class, IModuleDescriptor
         {
             return Modules.FirstOrDefault(m => m is T) as T;

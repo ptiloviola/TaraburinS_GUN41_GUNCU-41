@@ -7,7 +7,6 @@ namespace Gameplay.Grid
     {
         private GridNode[,] _nodes;
 
-        // Кешируем физические размеры для перевода координат
         private float _spacing;
         private float _elevationStep;
         
@@ -49,8 +48,6 @@ namespace Gameplay.Grid
             return null;
         }
 
-        // --- НОВЫЙ ФУНКЦИОНАЛ ДЛЯ СПАВНЕРА И БАЗЫ ---
-        // 1. Поиск всех узлов определенного типа (например, всех Спавнов)
         public List<GridNode> GetNodesByType(NodeType type)
         {
             List<GridNode> result = new List<GridNode>();
@@ -66,17 +63,13 @@ namespace Gameplay.Grid
             }
             return result;
         }
-        // 2. Перевод сеточных координат (x, z) в мировые (Vector3) с учетом высоты рельефа!
+
         public Vector3 GetWorldPosition(GridNode node)
         {
             float addedHeight = node.Elevation * _elevationStep;
-            // Возвращаем точку ровно на поверхности ячейки (центр + половина высоты)
             return new Vector3(node.Position.x * _spacing, addedHeight + 0.1f, node.Position.y * _spacing);
         }
         
-
-
-
 
 
         public bool CanBuildAt(Vector2Int position)
@@ -85,11 +78,9 @@ namespace Gameplay.Grid
 
             GridNode node = _nodes[position.x, position.y];
             
-            // Строить можно только на типе Ground и если ячейка еще не занята другой башней
             return node.Type == NodeType.Ground && !node.IsOccupied;
         }
 
-        // Внутренний метод проверки, что координаты не выходят за рамки массива
         private bool IsPositionValid(Vector2Int position)
         {
             return position.x >= 0 && position.x < Width && position.y >= 0 && position.y < Height;

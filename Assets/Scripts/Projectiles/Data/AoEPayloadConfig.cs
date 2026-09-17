@@ -5,7 +5,7 @@ using Gameplay.Projectiles.Payloads;
 
 namespace Gameplay.Projectiles.Data
 {
-    [CreateAssetMenu(fileName = "AoEPayloadConfig", menuName = "TD/Projectiles/AoE Payload")]
+    [CreateAssetMenu(fileName = "AoEPayloadConfig", menuName = "TD/Projectiles/Payloads/AoE Payload")]
     public class AoEPayloadConfig : PayloadConfig
     {
         [Header("Настройки AoE")]

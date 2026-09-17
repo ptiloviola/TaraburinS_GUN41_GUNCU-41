@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adcdef347df95d84c8f123578d9d3d57, type: 3}
-  m_Name: Config_AniAirTower
+  m_Name: Config_Tower_Shooting_AntiAir
   m_EditorClassIdentifier: 
   TowerId: AniAirTower
   DisplayName: AniAirTower
   BaseCost: 27
   SellRefundMultiplier: 0.5
   Icon: {fileID: 21300000, guid: a6da51e8dfe562f48844e820dd107251, type: 3}
-  Prefab: {fileID: 5181870763824373380, guid: 64bab2eedf655874696bf641f6a783b8, type: 3}
   Levels:
   - UpgradeCost: 0
-    VisualPrefab: {fileID: 5181870763824373380, guid: 64bab2eedf655874696bf641f6a783b8,
+    TowerPrefab: {fileID: 5181870763824373380, guid: 64bab2eedf655874696bf641f6a783b8,
       type: 3}
     Modules:
     - rid: 7999629163705401346
   - UpgradeCost: 15
-    VisualPrefab: {fileID: 5181870763824373380, guid: 64bab2eedf655874696bf641f6a783b8,
+    TowerPrefab: {fileID: 5181870763824373380, guid: 64bab2eedf655874696bf641f6a783b8,
       type: 3}
     Modules:
     - rid: 7999629163705401346

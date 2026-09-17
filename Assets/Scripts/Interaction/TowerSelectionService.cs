@@ -9,7 +9,7 @@ namespace Gameplay.Interaction
 {
     public class TowerSelectionService : ITickable
     {
-        private const float MaxRaycastDistance = 100f; // Избавляемся от магических чисел
+        private const float MaxRaycastDistance = 100f;
 
         private readonly Camera _mainCamera;
         private readonly LayerMask _towerLayerMask;
@@ -36,16 +36,13 @@ namespace Gameplay.Interaction
 
         public void Tick()
         {
-            // 1. ИДЕАЛЬНАЯ РАЗВЯЗКА: Мы проверяем только стейт модели, не трогая систему постройки
             if (_interactionState.CurrentMode == InteractionMode.Building) return;
 
-            // 2. Отмена выбора (ПКМ/Esc)
             if (_inputService.IsCancelActionDown)
             {
                 Deselect();
             }
 
-            // 3. Выделение (ЛКМ/Тап)
             if (_inputService.IsPrimaryActionDown)
             {
                 if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
@@ -61,7 +58,6 @@ namespace Gameplay.Interaction
             
             if (Physics.Raycast(ray, out RaycastHit hit, MaxRaycastDistance, _towerLayerMask))
             {
-                // ОПТИМИЗАЦИЯ: GetComponentInParent проверяет и сам объект, и всех родителей за один вызов
                 TowerFacade clickedTower = hit.collider.GetComponentInParent<TowerFacade>();
                 
                 if (clickedTower != null)
@@ -103,6 +99,11 @@ namespace Gameplay.Interaction
                 Debug.Log("<color=orange>[SelectionService] Башня снята с выделения.</color>");
 #endif
             }
+        }
+
+        public void ForceSelect(TowerFacade tower)
+        {
+            CurrentSelectedTower = tower;
         }
     }
 }

@@ -10,35 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adcdef347df95d84c8f123578d9d3d57, type: 3}
-  m_Name: Config_TwoBarrelsTower
+  m_Name: Config_Tower_Shooting_OneBarrel
   m_EditorClassIdentifier: 
-  TowerId: 2barrels_tower
-  DisplayName: "\u0414\u0432\u0443\u0441\u0442\u0432\u043E\u043B\u043A\u0430"
-  BaseCost: 20
+  TowerId: 1barrel_tower
+  DisplayName: "\u043E\u0434\u043D\u043E\u0441\u0442\u0432\u043E\u043B\u043A\u0430"
+  BaseCost: 12
   SellRefundMultiplier: 0.5
-  Icon: {fileID: 21300000, guid: 76b2b3623875b22488d7152125b46e71, type: 3}
-  Prefab: {fileID: 3929638890925405715, guid: c8d6b9ba52e39fd459d8dc4e3a4758f7, type: 3}
+  Icon: {fileID: 21300000, guid: 91184e91047616342982a2313e5a7bec, type: 3}
   Levels:
-  - UpgradeCost: 0
-    VisualPrefab: {fileID: 0}
-    Modules:
-    - rid: 7999629163705401353
-  - UpgradeCost: 8
-    VisualPrefab: {fileID: 5630816600719798732, guid: d5203654f867ddd46b11f171e2350a42,
+  - UpgradeCost: 3
+    TowerPrefab: {fileID: 5630816600719798732, guid: d5203654f867ddd46b11f171e2350a42,
       type: 3}
     Modules:
-    - rid: 7999629163705401354
+    - rid: 7999629163705401351
+  - UpgradeCost: 6
+    TowerPrefab: {fileID: 5630816600719798732, guid: d5203654f867ddd46b11f171e2350a42,
+      type: 3}
+    Modules:
+    - rid: 7999629163705401352
   references:
     version: 2
     RefIds:
-    - rid: 7999629163705401353
+    - rid: 7999629163705401351
       type: {class: AttackStats, ns: Gameplay.Towers.Data.Modules, asm: Assembly-CSharp}
       data:
-        Damage: 8
+        Damage: 10
         Type: 1
         MinRange: 0
-        Range: 12
-        Cooldown: 0.4
+        Range: 10
+        Cooldown: 0.5
         FieldOfView: 360
         MinPitch: -10
         MaxPitch: 30
@@ -49,20 +49,20 @@ MonoBehaviour:
         ProjectilePrefab: {fileID: 0}
         PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,
           type: 2}
-    - rid: 7999629163705401354
+    - rid: 7999629163705401352
       type: {class: AttackStats, ns: Gameplay.Towers.Data.Modules, asm: Assembly-CSharp}
       data:
         Damage: 12
         Type: 1
         MinRange: 0
-        Range: 15
-        Cooldown: 0.25
+        Range: 12
+        Cooldown: 0.4
         FieldOfView: 360
         MinPitch: -10
-        MaxPitch: 40
+        MaxPitch: 30
         CheckLineOfSight: 1
         Targeting: 0
-        Aiming: 0
+        Aiming: 1
         Executor: 0
         ProjectilePrefab: {fileID: 0}
         PayloadStrategy: {fileID: 11400000, guid: eae4f855394c9be409e8c656393f2964,

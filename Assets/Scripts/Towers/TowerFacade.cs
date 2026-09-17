@@ -1,6 +1,5 @@
 using Gameplay.Towers.Data;
 using UnityEngine;
-using System;
 using System.Collections.Generic;
 using Gameplay.Towers.Behaviors;
 using Gameplay.Towers.Visuals;
@@ -18,22 +17,22 @@ namespace Gameplay.Towers
 
         private readonly List<ITowerBehavior> _behaviors = new List<ITowerBehavior>();
         private ITowerVisuals _visuals;
-        public event Action OnLevelChanged;
 
         private void Start()
         {
             if (_behaviors.Count == 0)
             {
-                if (_config != null) Initialize(_config, Vector2Int.zero);
+                if (_config != null) Initialize(_config, 0, Vector2Int.zero);
 #if UNITY_EDITOR
                 else Debug.LogError($"[TowerFacade] На объекте {name} нет TowerConfig!");
 #endif
             }
         }
 
-        public void Initialize(TowerConfig config, Vector2Int gridPos)
+        public void Initialize(TowerConfig config, int level, Vector2Int gridPos)
         {
             _config = config;
+            CurrentLevel = level;
             GridPosition = gridPos;
             
             _behaviors.Clear();
@@ -43,10 +42,7 @@ namespace Gameplay.Towers
 
             foreach (var adapter in adapters)
             {
-                if (adapter is WeaponAdapter wa) 
-                {
-                    foundWeaponAdapter = wa;
-                }
+                if (adapter is WeaponAdapter wa) foundWeaponAdapter = wa;
             }
 
             _visuals = GetComponentInChildren<ITowerVisuals>(true);
@@ -73,20 +69,6 @@ namespace Gameplay.Towers
 
         public TowerLevelData GetCurrentStats() => _config.Levels[CurrentLevel];
         public bool CanUpgrade() => CurrentLevel < _config.MaxLevel;
-
-        public void Upgrade()
-        {
-            if (!CanUpgrade()) return;
-            CurrentLevel++;
-            
-            for (int i = 0; i < _behaviors.Count; i++)
-            {
-                _behaviors[i].Initialize(this); 
-            }
-
-            OnLevelChanged?.Invoke();
-        }
-
 
         public void ShowRadiusPreview()
         {

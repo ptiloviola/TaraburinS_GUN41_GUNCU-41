@@ -19,7 +19,6 @@ namespace Gameplay.Towers.Factories
             _gridService = gridService;
         }
 
-        // ИЗМЕНЕНО: Принимаем TowerConfig
         public bool TryBuildTower(TowerConfig config, Vector2Int gridPos, Vector3 spawnPosition)
         {
             if (!_gridService.CanBuildAt(gridPos) || _bankService.CurrentBalance < config.BaseCost)
@@ -32,17 +31,28 @@ namespace Gameplay.Towers.Factories
             GridNode node = _gridService.GetNode(gridPos);
             node.IsOccupied = true;
 
-            // Спавним башню из конфига
-            GameObject towerGo = _instantiator.InstantiatePrefab(config.Prefab, spawnPosition, Quaternion.identity, null);
+            ForceSpawnTower(config, 0, gridPos, spawnPosition);
+            
+            Debug.Log($"<color=green>[TowerFactory] Успешно создана {config.DisplayName} на {gridPos}</color>");
+            return true;
+        }
+
+        public TowerFacade ForceSpawnTower(TowerConfig config, int level, Vector2Int gridPos, Vector3 spawnPosition)
+        {
+            GameObject prefab = config.Levels[level].TowerPrefab;
+            
+            GameObject towerGo = _instantiator.InstantiatePrefab(prefab, spawnPosition, Quaternion.identity, null);
             
             if (towerGo.TryGetComponent(out TowerFacade towerFacade))
             {
-                // Передаем сам конфиг
-                towerFacade.Initialize(config, gridPos);
+                towerFacade.Initialize(config, level, gridPos);
+            }
+            else
+            {
+                Debug.LogError($"[TowerFactory] На префабе {prefab.name} отсутствует TowerFacade!");
             }
 
-            Debug.Log($"<color=green>[TowerFactory] Успешно создана {config.DisplayName} на {gridPos}</color>");
-            return true;
+            return towerFacade;
         }
     }
 }

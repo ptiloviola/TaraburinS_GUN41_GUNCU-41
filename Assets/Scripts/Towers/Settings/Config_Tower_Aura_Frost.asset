@@ -17,15 +17,14 @@ MonoBehaviour:
   BaseCost: 33
   SellRefundMultiplier: 0.5
   Icon: {fileID: 21300000, guid: b3226c605767b3f4e9b6caf51865a6e9, type: 3}
-  Prefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a, type: 3}
   Levels:
   - UpgradeCost: 0
-    VisualPrefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a,
+    TowerPrefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a,
       type: 3}
     Modules:
     - rid: 7999629163705401355
   - UpgradeCost: 25
-    VisualPrefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a,
+    TowerPrefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a,
       type: 3}
     Modules:
     - rid: 7999629163705401355

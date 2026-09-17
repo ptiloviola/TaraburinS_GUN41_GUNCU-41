@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 8282581552577450488}
   - component: {fileID: 2525560976609767543}
   m_Layer: 7
-  m_Name: RangeTower2barrels
+  m_Name: Tower_Shooting_TwoBarrels
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

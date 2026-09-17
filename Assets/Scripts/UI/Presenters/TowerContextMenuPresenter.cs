@@ -17,9 +17,8 @@ namespace Gameplay.UI.Presenters
     {
         private readonly TowerContextMenuView _view;
         private readonly TowerSelectionService _selectionService;
-        private readonly BankService _bankService;
         private readonly TowerLifecycleService _lifecycleService;
-
+        private readonly TowerUpgradeService _upgradeService;
         private readonly SignalBus _signalBus;
 
         private TowerFacade _currentTower;
@@ -27,14 +26,14 @@ namespace Gameplay.UI.Presenters
         public TowerContextMenuPresenter(
             TowerContextMenuView view,
             TowerSelectionService selectionService,
-            BankService bankService,
             TowerLifecycleService lifecycleService,
+            TowerUpgradeService upgradeService,
             SignalBus signalBus)
         {
             _view = view;
             _selectionService = selectionService;
-            _bankService = bankService;
             _lifecycleService = lifecycleService;
+            _upgradeService = upgradeService;
             _signalBus = signalBus;
         }
 
@@ -49,6 +48,9 @@ namespace Gameplay.UI.Presenters
             _view.OnSellClicked += HandleSellClicked;
             _view.OnUpgradeHoverEntered += HandleUpgradeHoverEnter;
             _view.OnUpgradeHoverExited += HandleUpgradeHoverExit;
+            
+
+            _upgradeService.OnTowerUpgraded += HandleTowerUpgraded;
 
             _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
         }
@@ -65,6 +67,11 @@ namespace Gameplay.UI.Presenters
             _view.OnSellClicked -= HandleSellClicked;
             _view.OnUpgradeHoverEntered -= HandleUpgradeHoverEnter;
             _view.OnUpgradeHoverExited -= HandleUpgradeHoverExit;
+            
+            if (_upgradeService != null)
+            {
+                _upgradeService.OnTowerUpgraded -= HandleTowerUpgraded;
+            }
 
             _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
         }
@@ -125,12 +132,18 @@ namespace Gameplay.UI.Presenters
         {
             if (_currentTower == null || !_currentTower.CanUpgrade()) return;
 
-            int cost = TowerEconomyCalculator.GetUpgradeCost(_currentTower.Config, _currentTower.CurrentLevel);
-            if (_bankService.SpendMoney(cost))
+            _upgradeService.TryUpgradeTower(_currentTower); 
+        }
+
+        private void HandleTowerUpgraded(TowerFacade oldTower, TowerFacade newTower)
+        {
+            if (_currentTower == oldTower)
             {
-                _currentTower.Upgrade();
-                UpdateViewData();
+                _currentTower = newTower;
                 
+                _selectionService.ForceSelect(newTower); 
+                
+                UpdateViewData();
                 _currentTower.ShowRadiusPreview();
             }
         }
@@ -146,14 +159,12 @@ namespace Gameplay.UI.Presenters
         private void HandleUpgradeHoverEnter()
         {
             if (_currentTower == null || !_currentTower.CanUpgrade()) return;
-            
             _currentTower.ShowUpgradePreview();
         }
 
         private void HandleUpgradeHoverExit()
         {
             if (_currentTower == null) return;
-        
             _currentTower.ShowRadiusPreview();
         }
 

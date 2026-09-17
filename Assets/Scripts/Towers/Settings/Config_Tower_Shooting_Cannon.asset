@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adcdef347df95d84c8f123578d9d3d57, type: 3}
-  m_Name: Config_CannonTower
+  m_Name: Config_Tower_Shooting_Cannon
   m_EditorClassIdentifier: 
   TowerId: CannonTower
   DisplayName: "\u041F\u0443\u0448\u043A\u0430"
   BaseCost: 30
   SellRefundMultiplier: 0.5
   Icon: {fileID: 21300000, guid: b857fcf2c0acd1e42a6c5536cfe0251d, type: 3}
-  Prefab: {fileID: 7426963894534716728, guid: a27190fc7638bc44f8b3012e0f8c4ee2, type: 3}
   Levels:
   - UpgradeCost: 15
-    VisualPrefab: {fileID: 7426963894534716728, guid: a27190fc7638bc44f8b3012e0f8c4ee2,
+    TowerPrefab: {fileID: 7426963894534716728, guid: a27190fc7638bc44f8b3012e0f8c4ee2,
       type: 3}
     Modules:
     - rid: 7999629163705401349
   - UpgradeCost: 15
-    VisualPrefab: {fileID: 7426963894534716728, guid: a27190fc7638bc44f8b3012e0f8c4ee2,
+    TowerPrefab: {fileID: 7426963894534716728, guid: a27190fc7638bc44f8b3012e0f8c4ee2,
       type: 3}
     Modules:
     - rid: 7999629163705401349

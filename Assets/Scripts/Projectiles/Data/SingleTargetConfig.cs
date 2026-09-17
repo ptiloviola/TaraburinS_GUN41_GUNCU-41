@@ -5,7 +5,7 @@ using Gameplay.Projectiles.Payloads;
 
 namespace Gameplay.Projectiles.Data
 {
-    [CreateAssetMenu(fileName = "SingleTargetConfig", menuName = "TD/Projectiles/Single Target Payload")]
+    [CreateAssetMenu(fileName = "SingleTargetConfig", menuName = "TD/Projectiles/Payloads/Single Target Payload")]
     public class SingleTargetConfig : PayloadConfig
     {
         public override IProjectilePayload CreatePayload(DamagePayload payload)

@@ -10,7 +10,7 @@ using Gameplay.Auras.Factories;
 
 namespace Gameplay.Projectiles.Data
 {
-    [CreateAssetMenu(fileName = "NewSpawnAuraPayload", menuName = "TD/Projectiles/Payloads/Spawn Aura")]
+    [CreateAssetMenu(fileName = "SpawnAuraPayload", menuName = "TD/Projectiles/Payloads/Spawn Aura")]
     public class SpawnAuraPayloadConfig : PayloadConfig
     {
         [Header("Префаб Ауры")]
