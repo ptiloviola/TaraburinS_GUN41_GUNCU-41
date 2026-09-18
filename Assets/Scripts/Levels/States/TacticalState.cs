@@ -1,7 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Gameplay.Infrastructure.Signals;
-using Gameplay.Interaction; // НОВОЕ
+using Gameplay.Interaction;
 using Zenject;
 
 namespace Gameplay.Levels.States
@@ -9,25 +9,29 @@ namespace Gameplay.Levels.States
     public class TacticalState : ILevelState
     {
         private readonly SignalBus _signalBus;
-        private readonly InteractionStateModel _interactionState; // НОВОЕ
-        
+        private readonly InteractionStateModel _interactionState;
+        private readonly TacticalClaimSystem _claimSystem;
         private LevelStateMachine _cachedStateMachine; 
 
-        public TacticalState(SignalBus signalBus, InteractionStateModel interactionState)
+        public TacticalState(SignalBus signalBus, InteractionStateModel interactionState, TacticalClaimSystem claimSystem)
         {
             _signalBus = signalBus;
             _interactionState = interactionState;
+            _claimSystem = claimSystem;
         }
 
         public UniTask EnterAsync(LevelStateMachine stateMachine, CancellationToken ct)
         {
             _cachedStateMachine = stateMachine;
-            
-            // Включаем режим разметки и выдаем 5 фундаментов для теста!
             _interactionState.CurrentMode = InteractionMode.TacticalClaim;
             _interactionState.AvailableClaims = 5;
             
+            _claimSystem.SetMaxClaims(5); // Передаем данные для UI
+            
+            // Включаем нужные экраны
+            _signalBus.Fire(new SignalInteractionModeChanged { Mode = InteractionMode.TacticalClaim });
             _signalBus.Subscribe<SignalStartCombat>(OnCombatStarted);
+            
             return UniTask.CompletedTask;
         }
 

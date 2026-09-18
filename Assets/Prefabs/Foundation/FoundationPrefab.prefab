@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2091023037178109926}
   - component: {fileID: 6126537793987609902}
   - component: {fileID: 5399353553428642343}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FoundationPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}

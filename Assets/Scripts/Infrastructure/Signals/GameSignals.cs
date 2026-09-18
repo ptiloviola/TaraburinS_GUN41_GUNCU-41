@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Gameplay.Interaction;
+
 namespace Gameplay.Infrastructure.Signals
 {
     // Сигнал вызывается, когда база получает урон
@@ -73,6 +75,9 @@ namespace Gameplay.Infrastructure.Signals
     }
 
     public class SignalStartCombat { }
+
+    public class SignalInteractionModeChanged { public Gameplay.Interaction.InteractionMode Mode; }
+    public class SignalTacticalClaimsUpdated { public int Available; public int Max; }
 
     
 

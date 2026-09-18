@@ -27,7 +27,7 @@ MonoBehaviour:
     TowerPrefab: {fileID: 5227928281813871179, guid: ee53c668611e0b145bca9a5fc51f5a3a,
       type: 3}
     Modules:
-    - rid: 7999629163705401355
+    - rid: 7999629210330071041
   references:
     version: 2
     RefIds:
@@ -37,10 +37,28 @@ MonoBehaviour:
         Damage: 2
         Type: 1
         MinRange: 0
-        Range: 6
+        Range: 8
         Cooldown: 10
         FieldOfView: 360
-        MinPitch: -10
+        MinPitch: -30
+        MaxPitch: 60
+        CheckLineOfSight: 1
+        Targeting: 0
+        Aiming: 1
+        Executor: 0
+        ProjectilePrefab: {fileID: 0}
+        PayloadStrategy: {fileID: 11400000, guid: 58e6b7a3e3f6e4645874290059587e46,
+          type: 2}
+    - rid: 7999629210330071041
+      type: {class: AttackStats, ns: Gameplay.Towers.Data.Modules, asm: Assembly-CSharp}
+      data:
+        Damage: 10
+        Type: 1
+        MinRange: 0
+        Range: 10
+        Cooldown: 12
+        FieldOfView: 360
+        MinPitch: -30
         MaxPitch: 60
         CheckLineOfSight: 1
         Targeting: 0

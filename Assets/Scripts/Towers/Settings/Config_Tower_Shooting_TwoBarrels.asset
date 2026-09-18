@@ -54,7 +54,7 @@ MonoBehaviour:
       data:
         Damage: 12
         Type: 1
-        MinRange: 0
+        MinRange: 1
         Range: 15
         Cooldown: 0.25
         FieldOfView: 360

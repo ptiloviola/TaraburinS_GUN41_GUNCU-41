@@ -29,6 +29,9 @@ namespace Gameplay.Infrastructure.Installers
 
             Container.DeclareSignal<SignalStartCombat>();
 
+            Container.DeclareSignal<SignalInteractionModeChanged>();
+            Container.DeclareSignal<SignalTacticalClaimsUpdated>();
+
 
             Debug.Log("<color=green>[Zenject] CoreSignalsInstaller: Локальные сигналы успешно зарегистрированы.</color>");
         }

@@ -24,6 +24,8 @@ namespace Gameplay.UI.Installers
 
         [SerializeField] private PauseMenuView _pauseMenuView;
 
+        [SerializeField] private TacticalUIView _tacticalView;
+
         public override void InstallBindings()
         {
             // 1. Биндим View (глупый интерфейс на сцене)
@@ -57,6 +59,9 @@ namespace Gameplay.UI.Installers
 
             Container.BindInstance(_pauseMenuView).AsSingle();
             Container.BindInterfacesTo<PauseMenuPresenter>().AsSingle();
+
+            Container.BindInstance(_tacticalView).IfNotBound();
+            Container.BindInterfacesTo<TacticalUIPresenter>().AsSingle();
 
         }
     }

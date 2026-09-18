@@ -22,6 +22,7 @@ namespace Gameplay.UI.Presenters
 
         private readonly List<TowerButtonView> _activeButtons = new List<TowerButtonView>();
         private string _currentSelectedId = null;
+        
 
         // 2. ОБЯЗАТЕЛЬНО запрашиваем SignalBus в конструкторе!
         public TowerShopPresenter(
@@ -51,6 +52,8 @@ namespace Gameplay.UI.Presenters
 
             // 3. Теперь _signalBus не null, и мы можем безопасно подписаться!
             _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
+            _signalBus.Subscribe<SignalInteractionModeChanged>(OnModeChanged);
+            
         }
 
         public void Dispose()
@@ -66,6 +69,7 @@ namespace Gameplay.UI.Presenters
 
             // Отписываемся от паузы
             _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
+            _signalBus.Unsubscribe<SignalInteractionModeChanged>(OnModeChanged);
 
             foreach (var button in _activeButtons)
             {
@@ -145,6 +149,13 @@ namespace Gameplay.UI.Presenters
         private void HandleHoverExited()
         {
             _view.HideTooltip();
+        }
+
+        private void OnModeChanged(SignalInteractionModeChanged signal)
+        {
+            // Магазин скрыт, если идет фаза разметки
+            if (signal.Mode == InteractionMode.TacticalClaim) _view.gameObject.SetActive(false);
+            else _view.gameObject.SetActive(true);
         }
     }
 }

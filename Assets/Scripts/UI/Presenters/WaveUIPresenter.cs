@@ -5,6 +5,8 @@ using Zenject;
 using Gameplay.Infrastructure.Signals;
 using Gameplay.UI.Views;
 using Gameplay.Enemies.Data;
+using Gameplay.Interaction;
+
 
 
 namespace Gameplay.UI.Presenters
@@ -40,6 +42,7 @@ namespace Gameplay.UI.Presenters
             _signalBus.Subscribe<SignalWaveForecastUpdated>(OnForecastUpdated);
 
             _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
+            _signalBus.Subscribe<SignalInteractionModeChanged>(OnModeChanged);
         }
 
         public void Dispose()
@@ -51,6 +54,7 @@ namespace Gameplay.UI.Presenters
             _signalBus.Unsubscribe<SignalWaveForecastUpdated>(OnForecastUpdated);
 
             _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
+            _signalBus.Unsubscribe<SignalInteractionModeChanged>(OnModeChanged);
             
             ClearIcons();
         }
@@ -108,6 +112,20 @@ namespace Gameplay.UI.Presenters
         private void OnPauseStateChanged(SignalPauseStateChanged signal)
         {
             _view.SetInteractable(!signal.IsPaused);
+        }
+
+        private void OnModeChanged(SignalInteractionModeChanged signal)
+        {
+            if (signal.Mode == InteractionMode.TacticalClaim)
+            {
+                // Прячем UI волн в тактической фазе
+                _view.gameObject.SetActive(false); 
+            }
+            else
+            {
+                // Показываем обратно в бою
+                _view.gameObject.SetActive(true); 
+            }
         }
     }
 }

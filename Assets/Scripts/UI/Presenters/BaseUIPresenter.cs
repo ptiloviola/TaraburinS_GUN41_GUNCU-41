@@ -4,6 +4,7 @@ using Gameplay.Infrastructure.Signals;
 using Gameplay.UI.Views;
 using Gameplay.Economy;
 using Gameplay.Base;
+using Gameplay.Interaction;
 
 namespace Gameplay.UI.Presenters
 {
@@ -35,12 +36,14 @@ namespace Gameplay.UI.Presenters
             // 2. Подписываемся на обновления
             _signalBus.Subscribe<SignalBalanceChanged>(OnBalanceChanged);
             _signalBus.Subscribe<SignalBaseDamaged>(OnBaseDamaged);
+            _signalBus.Subscribe<SignalInteractionModeChanged>(OnModeChanged);
         }
 
         public void Dispose()
         {
             _signalBus.Unsubscribe<SignalBalanceChanged>(OnBalanceChanged);
             _signalBus.Unsubscribe<SignalBaseDamaged>(OnBaseDamaged);
+            _signalBus.Unsubscribe<SignalInteractionModeChanged>(OnModeChanged);
         }
 
         private void OnBalanceChanged(SignalBalanceChanged signal)
@@ -52,5 +55,19 @@ namespace Gameplay.UI.Presenters
         {
             _view.SetLives(signal.CurrentLives);
         }
+
+        private void OnModeChanged(SignalInteractionModeChanged signal)
+        {
+            if (signal.Mode == InteractionMode.TacticalClaim)
+            {
+                // Прячем UI волн в тактической фазе
+                _view.gameObject.SetActive(false); 
+            }
+            else
+            {
+                // Показываем обратно в бою
+                _view.gameObject.SetActive(true); 
+            }
+}
     }
 }
