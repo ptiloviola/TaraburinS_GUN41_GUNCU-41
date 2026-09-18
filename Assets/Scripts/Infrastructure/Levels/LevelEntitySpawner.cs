@@ -7,7 +7,7 @@ using Zenject;
 
 namespace Infrastructure.Levels
 {
-    public class LevelEntitySpawner : IInitializable
+    public class LevelEntitySpawner
     {
         private readonly IGridService _gridService;
         private readonly GridSceneReferences _references;

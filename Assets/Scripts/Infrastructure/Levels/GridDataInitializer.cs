@@ -4,7 +4,7 @@ using Zenject;
 
 namespace Infrastructure.Levels
 {
-    public class GridDataInitializer : IInitializable
+    public class GridDataInitializer
     {
         private readonly IGridService _gridService;
         private readonly GridConfig _gridConfig;

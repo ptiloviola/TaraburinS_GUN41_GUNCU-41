@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Infrastructure.Levels
 {
-    public class GridVisualBuilder : IInitializable
+    public class GridVisualBuilder
     {
         private readonly IGridService _gridService;
         private readonly GridSceneReferences _references;

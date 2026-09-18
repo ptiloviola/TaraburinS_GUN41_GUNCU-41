@@ -72,6 +72,8 @@ namespace Gameplay.Infrastructure.Signals
         public Dictionary<string, int> EnemyCounts; 
     }
 
+    public class SignalStartCombat { }
+
     
 
 }

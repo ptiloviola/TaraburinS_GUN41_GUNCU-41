@@ -5,7 +5,7 @@ using Gameplay.Grid;
 
 namespace Infrastructure.Levels
 {
-    public class NavMeshBakeService : IInitializable
+    public class NavMeshBakeService
     {
         private readonly GridSceneReferences _references;
 

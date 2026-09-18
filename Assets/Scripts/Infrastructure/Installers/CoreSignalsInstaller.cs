@@ -11,10 +11,10 @@ namespace Gameplay.Infrastructure.Installers
             // УДАЛЕНО: SignalBusInstaller.Install(Container); <-- Шина уже есть в ProjectContext
 
             // Декларируем только локальные геймплейные сигналы уровня
-            Container.DeclareSignal<SignalBaseDamaged>();
+            Container.DeclareSignal<SignalBaseDamaged>().OptionalSubscriber();;
             Container.DeclareSignal<SignalEnemyKilled>();
             Container.DeclareSignal<SignalGameOver>();
-            Container.DeclareSignal<SignalBalanceChanged>();
+            Container.DeclareSignal<SignalBalanceChanged>().OptionalSubscriber();;
             Container.DeclareSignal<SignalWaveStarted>();
             Container.DeclareSignal<SignalWaveTimerUpdated>();
             Container.DeclareSignal<SignalForceStartWave>().OptionalSubscriber();
@@ -26,6 +26,9 @@ namespace Gameplay.Infrastructure.Installers
             Container.DeclareSignal<SignalWaveForecastUpdated>();
 
             Container.DeclareSignal<SignalSpawnEnemyRequest>();
+
+            Container.DeclareSignal<SignalStartCombat>();
+
 
             Debug.Log("<color=green>[Zenject] CoreSignalsInstaller: Локальные сигналы успешно зарегистрированы.</color>");
         }

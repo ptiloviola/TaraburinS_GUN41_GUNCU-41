@@ -18,7 +18,7 @@ namespace Gameplay.Spawning.Services
     /// Дирижер. Знает о фазах игры, награждает за скипы, двигает UI.
     /// Автоматически создается и уничтожается контейнером Zenject.
     /// </summary>
-    public class WaveStateController : IInitializable, IDisposable
+    public class WaveStateController : IDisposable
     {
         private readonly IWaveProvider _waveProvider;
         private readonly WaveTimerService _timerService;
@@ -53,13 +53,6 @@ namespace Gameplay.Spawning.Services
         }
 
         // Вызывается автоматически при старте сцены (аналог Start)
-        public void Initialize()
-        {
-            _cts = new CancellationTokenSource();
-            
-            // Запускаем асинхронный луп и "забываем" (он работает в фоне)
-            RunWavesLoopAsync(_cts.Token).Forget();
-        }
 
         // Вызывается автоматически при выгрузке сцены или Game Over (аналог OnDestroy)
         public void Dispose()
@@ -68,7 +61,7 @@ namespace Gameplay.Spawning.Services
             _cts?.Dispose();
         }
 
-        private async UniTaskVoid RunWavesLoopAsync(CancellationToken ct)
+        public async UniTaskVoid RunWavesLoopAsync(CancellationToken ct)
         {
             try
             {

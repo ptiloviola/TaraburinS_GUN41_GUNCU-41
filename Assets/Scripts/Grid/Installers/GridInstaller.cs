@@ -18,16 +18,13 @@ namespace Gameplay.Grid.Installers
             Container.Bind<GridConfig>().FromInstance(_gridConfig).AsSingle();
 
             // Конвейер инициализации уровня
-            Container.BindInterfacesTo<GridDataInitializer>().AsSingle();
-            Container.BindInterfacesTo<GridVisualBuilder>().AsSingle();
-            Container.BindInterfacesTo<LevelEntitySpawner>().AsSingle();
-            Container.BindInterfacesTo<NavMeshBakeService>().AsSingle();
+            Container.Bind<GridDataInitializer>().AsSingle();
+            Container.Bind<GridVisualBuilder>().AsSingle();
+            Container.Bind<LevelEntitySpawner>().AsSingle();
+            Container.Bind<NavMeshBakeService>().AsSingle();
 
-            // Жесткий порядок инициализации
-            Container.BindExecutionOrder<GridDataInitializer>(-40);
-            Container.BindExecutionOrder<GridVisualBuilder>(-30);
-            Container.BindExecutionOrder<LevelEntitySpawner>(-20);
-            Container.BindExecutionOrder<NavMeshBakeService>(-10);
+
+            
 
             Debug.Log("<color=green>[Zenject] GridInstaller: Сетка и конвейер загрузки зарегистрированы.</color>");
         }

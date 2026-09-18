@@ -21,7 +21,7 @@ namespace Gameplay.Infrastructure.Services
             if (_isPaused) return;
 
             _isPaused = true;
-            Time.timeScale = 0f; // Останавливаем физику и Update
+            Time.timeScale = 0f;
             
             _signalBus.Fire(new SignalPauseStateChanged(true));
             Debug.Log("<color=cyan>[PauseService] Игра поставлена на паузу.</color>");
@@ -32,7 +32,7 @@ namespace Gameplay.Infrastructure.Services
             if (!_isPaused) return;
 
             _isPaused = false;
-            Time.timeScale = 1f; // Возвращаем нормальный ход времени
+            Time.timeScale = 1f;
             
             _signalBus.Fire(new SignalPauseStateChanged(false));
             Debug.Log("<color=cyan>[PauseService] Игра снята с паузы.</color>");
