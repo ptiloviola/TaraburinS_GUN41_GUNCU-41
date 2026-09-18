@@ -7,7 +7,9 @@ using Gameplay.Towers.Factories;
 using Gameplay.Towers.Visuals;
 using System;
 using UnityEngine.EventSystems;
-using Gameplay.Infrastructure.Input; // НОВОЕ: Подключаем наш инпут
+using Gameplay.Infrastructure.Input;
+using Gameplay.Grid.Services;
+
 
 namespace Gameplay.Interaction
 {
@@ -23,6 +25,7 @@ namespace Gameplay.Interaction
         private readonly BankService _bankService;
         private readonly TowerRegistry _towerRegistry;
         private readonly TowerFactory _towerFactory;
+        private readonly GridValidationService _validationService;
         
         // НОВОЕ: Внедряем сервисы взаимодействия
         private readonly IInputService _inputService;
@@ -52,6 +55,7 @@ namespace Gameplay.Interaction
             BankService bankService,
             TowerRegistry towerRegistry,
             TowerFactory towerFactory,
+            GridValidationService validationService,
             IInputService inputService,
             InteractionStateModel interactionState)
         {
@@ -62,6 +66,7 @@ namespace Gameplay.Interaction
             _bankService = bankService;
             _towerRegistry = towerRegistry;
             _towerFactory = towerFactory;
+            _validationService = validationService;
             _inputService = inputService;
             _interactionState = interactionState;
             _mainCamera = Camera.main;
@@ -105,6 +110,12 @@ namespace Gameplay.Interaction
 
         public void Tick()
         {
+            // Система строительства работает ТОЛЬКО в режиме стройки!
+            if (_interactionState.CurrentMode != InteractionMode.Building)
+            {
+                _visualizer?.Hide();
+                return;
+            }
             // Отменяем стройку по ПКМ или Esc через абстракцию
             if (_inputService.IsCancelActionDown)
             {
@@ -133,7 +144,8 @@ namespace Gameplay.Interaction
                 int gridZ = Mathf.RoundToInt(hit.transform.position.z / _sceneReferences.Spacing);
                 Vector2Int gridPos = new Vector2Int(gridX, gridZ);
 
-                bool isCellFree = _gridService.CanBuildAt(gridPos);
+                //bool isCellFree = _gridService.CanBuildAt(gridPos);
+                bool isCellFree = _validationService.CanBuildTower(gridPos);
                 bool hasEnoughMoney = _bankService.CurrentBalance >= _selectedTowerConfig.BaseCost;
                 bool canBuild = isCellFree && hasEnoughMoney;
 

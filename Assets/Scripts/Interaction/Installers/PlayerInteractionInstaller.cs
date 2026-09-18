@@ -3,6 +3,8 @@ using Zenject;
 using Gameplay.Interaction;
 using Gameplay.Cameras.Data;
 using Gameplay.Cameras.Controllers;
+using Gameplay.Grid.Services;
+using Gameplay.Grid.Data;
 
 namespace Infrastructure.Installers
 {
@@ -13,25 +15,36 @@ namespace Infrastructure.Installers
         [SerializeField] private Camera _mainCamera; 
         
         [Header("Настройки взаимодействия")]
-        [SerializeField] private LayerMask _towerLayerMask; // Добавили маску для кликов по башням
+        [SerializeField] private LayerMask _towerLayerMask;
+
+        [Header("Тактическая разметка (Новое)")]
+        [SerializeField] private GridPlacementRulesConfig _placementRulesConfig;
+        [SerializeField] private TacticalClaimSystem.Settings _tacticalSettings;
 
         public override void InstallBindings()
         {
-            // 1. Модель состояний (Общая шина)
+
             Container.Bind<InteractionStateModel>().AsSingle();
 
-            // 2. Исполнительные системы взаимодействия
             Container.BindInterfacesAndSelfTo<TowerPlacementSystem>().AsSingle();
             
-            // Прокидываем маску слоев точечно, только в этот сервис!
             Container.BindInterfacesAndSelfTo<TowerSelectionService>()
                      .AsSingle()
                      .WithArguments(_towerLayerMask);
 
-            // 3. Контроллер камеры
+
             Container.BindInstance(_cameraSettings).IfNotBound();
             Container.BindInstance(_mainCamera).IfNotBound();
             Container.BindInterfacesTo<RTSCameraController>().AsSingle();
+
+            Container.BindInstance(_placementRulesConfig).IfNotBound(); 
+            
+
+            Container.Bind<GridValidationService>().AsSingle();
+            
+            Container.BindInstance(_tacticalSettings).IfNotBound();
+
+            Container.BindInterfacesAndSelfTo<TacticalClaimSystem>().AsSingle();
         }
     }
 }

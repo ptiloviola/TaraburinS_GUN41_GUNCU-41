@@ -1356,6 +1356,19 @@ MonoBehaviour:
   _towerLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  _placementRulesConfig: {fileID: 11400000, guid: df6d51c80b45f1643ab4fef234744a62,
+    type: 2}
+  _tacticalSettings:
+    GridLayerMask:
+      serializedVersion: 2
+      m_Bits: 256
+    ValidCursorPrefab: {fileID: 1942206327739906697, guid: 59388c14773c2af43a3497b035350af3,
+      type: 3}
+    InvalidCursorPrefab: {fileID: 1942206327739906697, guid: abfa30ab36b2f6d4c8b323bdf5dc99d8,
+      type: 3}
+    FoundationPrefab: {fileID: 704600444217423774, guid: 533b2f7fd35bbde49b689799e6bf3cec,
+      type: 3}
+    HeightOffset: 0.05
 --- !u!1 &528655432
 GameObject:
   m_ObjectHideFlags: 0

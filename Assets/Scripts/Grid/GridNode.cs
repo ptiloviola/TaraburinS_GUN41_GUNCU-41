@@ -25,6 +25,9 @@ namespace Gameplay.Grid
         // Флаг: занята ли уже ячейка башней
         public bool IsOccupied { get; set; }
 
+        // Флаг: забронирована ли ячейка в тактической фазе
+        public bool IsClaimed { get; set; }
+
         // Конструктор для создания ячейки
         public GridNode(Vector2Int position, NodeType type, int elevation)
         {
