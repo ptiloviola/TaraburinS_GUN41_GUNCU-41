@@ -18,7 +18,6 @@ namespace Gameplay.UI.Presenters
         private readonly EnemyRegistry _registry;
         private readonly ForecastIconView.Pool _iconPool;
         
-        // Храним активные иконки, чтобы вернуть их в пул перед новой волной
         private readonly List<ForecastIconView> _activeIcons = new List<ForecastIconView>();
 
         public WaveUIPresenter(
@@ -91,7 +90,6 @@ namespace Gameplay.UI.Presenters
                 EnemyConfig config = _registry.GetEnemyById(kvp.Key);
                 Sprite iconSprite = config != null ? config.UIIcon : null;
 
-                // Запрашиваем готовую иконку из пула
                 var icon = _iconPool.Spawn(kvp.Key, kvp.Value, iconSprite);
                 _activeIcons.Add(icon);
             }
@@ -118,12 +116,10 @@ namespace Gameplay.UI.Presenters
         {
             if (signal.Mode == InteractionMode.TacticalClaim)
             {
-                // Прячем UI волн в тактической фазе
                 _view.gameObject.SetActive(false); 
             }
             else
             {
-                // Показываем обратно в бою
                 _view.gameObject.SetActive(true); 
             }
         }

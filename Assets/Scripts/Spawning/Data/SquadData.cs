@@ -8,7 +8,7 @@ namespace Gameplay.Spawning.Data
     [Serializable]
     public class SquadData
     {
-        [EnemyId] // НОВОЕ: Добавили наш атрибут
+        [EnemyId]
         [Tooltip("ID врага из реестра (выбирается из списка)")]
         [FormerlySerializedAs("EnemyId")]
         [SerializeField] private string _enemyId;
@@ -29,7 +29,7 @@ namespace Gameplay.Spawning.Data
 
         
 
-        // 1. Пустой конструктор для сериализации Unity Инспектора
+
         public SquadData() { }
 
         // 2. Конструктор для процедурной генерации рогалика
@@ -42,7 +42,7 @@ namespace Gameplay.Spawning.Data
             _targetBaseId = targetBaseId;
         }
 
-        // Публичные свойства только для чтения
+
         public string EnemyId => _enemyId;
         public int Count => _count;
         public float SpawnInterval => _spawnInterval;

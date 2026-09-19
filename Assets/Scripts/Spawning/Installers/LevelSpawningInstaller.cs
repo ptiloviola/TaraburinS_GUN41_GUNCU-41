@@ -8,15 +8,16 @@ using Gameplay.Spawning;
 using Gameplay.Base;
 using Gameplay.Spawning.Factories;
 using Gameplay.Spawning.Services;
-using Gameplay.Spawning.Data; // Добавлено для LevelWavesConfig
+using Gameplay.Spawning.Data;
 using Gameplay.Infrastructure.Signals;
+using Gameplay.Levels.Services;
 
 namespace Gameplay.Spawning.Installers
 {
     public class LevelSpawningInstaller : MonoInstaller
     {
         [Header("Конфиги уровня")]
-        [SerializeField] private LevelWavesConfig _levelWavesConfig; // НОВОЕ ПОЛЕ ДЛЯ ИНСПЕКТОРА
+        [SerializeField] private LevelWavesConfig _levelWavesConfig;
 
         [Header("Реестры")]
         [SerializeField] private EnemyRegistry _enemyRegistry;
@@ -31,33 +32,30 @@ namespace Gameplay.Spawning.Installers
             Container.BindInstance(_enemyRegistry).AsSingle();
             Container.BindInterfacesAndSelfTo<EnemyTrackerService>().AsSingle();
 
-            // Реестры сущностей уровня
+
             Container.Bind<BaseRegistry>().AsSingle();
             Container.Bind<SpawnRegistry>().AsSingle();
             Container.Bind<BaseLocatorService>().AsSingle();
 
-            // === НОВЫЙ БЛОК: СИСТЕМА ВОЛН ===
-            // 1. Отдаем конфиг волн в контейнер (взяв его из инспектора)
+
             Container.BindInstance(_levelWavesConfig).AsSingle();
             
-            // 2. Биндим Провайдер волн. Когда кто-то попросит IWaveProvider, Zenject выдаст StaticWaveProvider
+  
             Container.Bind<IWaveProvider>().To<StaticWaveProvider>().AsSingle();
 
-            // 3. Регистрируем наши новые сервисы
+
             Container.Bind<WaveTimerService>().AsSingle();
             Container.Bind<WaveSpawnerService>().AsSingle();
 
-            // 4. Биндим Дирижера к интерфейсам IInitializable и IDisposable
-            Container.BindInterfacesAndSelfTo<WaveStateController>().AsSingle();
-            // ================================
 
-            // Фабрики для спавна маркеров/баз на этапе генерации уровня
+            Container.BindInterfacesAndSelfTo<WaveStateController>().AsSingle();
+
             Container.BindFactory<BaseCore, BaseCore.Factory>()
                      .FromComponentInNewPrefab(_basePrefab).UnderTransformGroup("Bases");
             Container.BindFactory<EnemySpawnPoint, EnemySpawnPoint.Factory>()
                      .FromComponentInNewPrefab(_spawnMarkerPrefab).UnderTransformGroup("Spawns");
 
-            // Настройка пулов Врагов
+
             if (_enemyRegistry != null)
             {
                 foreach (var config in _enemyRegistry.Enemies)
@@ -75,12 +73,12 @@ namespace Gameplay.Spawning.Installers
 
             Container.Bind<EnemyFactory>().AsSingle();
 
-            // Привязываем сигнал к методу OnSpawnEnemyRequested фабрики EnemyFactory:
+
             Container.BindSignal<SignalSpawnEnemyRequest>()
                 .ToMethod<EnemyFactory>(x => x.OnSpawnEnemyRequested)
                 .FromResolve();
 
-            // Настройка пулов Защитников
+
             if (_defenderRegistry != null)
             {
                 foreach (var config in _defenderRegistry.Defenders)

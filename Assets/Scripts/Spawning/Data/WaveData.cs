@@ -23,10 +23,8 @@ namespace Gameplay.Spawning.Data
         [Tooltip("Награда за полную зачистку волны")]
         [SerializeField] private int _clearReward = 50;
 
-        // 1. Пустой конструктор для сериализации Unity Инспектора
         public WaveData() { }
 
-        // 2. Конструктор для процедурной генерации рогалика
         public WaveData(WaveStartMode startMode, float delay, float duration, int reward, List<SquadData> squads)
         {
             _startMode = startMode;
@@ -36,13 +34,11 @@ namespace Gameplay.Spawning.Data
             _squads = squads ?? new List<SquadData>();
         }
 
-        // Публичные свойства только для чтения
         public WaveStartMode StartMode => _startMode;
         public float ActiveWaveDuration => _activeWaveDuration;
         public float DelayBeforeWave => _delayBeforeWave;
         public int ClearReward => _clearReward;
         
-        // Защищенная коллекция отрядов
         public IReadOnlyList<SquadData> Squads => _squads;
     }
 }

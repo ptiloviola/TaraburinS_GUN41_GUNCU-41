@@ -486,6 +486,7 @@ MonoBehaviour:
   _iconImage: {fileID: 2464756845458278933}
   _nameText: {fileID: 8823163189921911858}
   _countText: {fileID: 1751342160059555547}
+  _unknownSprite: {fileID: 21300000, guid: dadf40ae7c83bd84ba8778a60dbcb207, type: 3}
 --- !u!114 &5322156889660171552
 MonoBehaviour:
   m_ObjectHideFlags: 0

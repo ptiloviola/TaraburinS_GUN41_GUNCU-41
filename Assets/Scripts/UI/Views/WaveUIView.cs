@@ -21,7 +21,6 @@ namespace Gameplay.UI.Views
         [Header("Блокировка UI")]
         [SerializeField] private CanvasGroup _canvasGroup;
 
-        // Открываем доступ к контейнеру для пула
         public Transform ForecastContainer => _forecastContainer;
         
         public event Action OnForceStartClicked;
@@ -38,7 +37,6 @@ namespace Gameplay.UI.Views
             if (_canvasGroup != null)
             {
                 _canvasGroup.interactable = isInteractable;
-                // blocksRaycasts отключает даже физические попытки кликнуть по прозрачным зонам
                 _canvasGroup.blocksRaycasts = isInteractable; 
             }
         }

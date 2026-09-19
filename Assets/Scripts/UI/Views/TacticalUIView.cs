@@ -11,6 +11,10 @@ namespace Gameplay.UI.Views
         [SerializeField] private TextMeshProUGUI _claimsText;
         [SerializeField] private Button _startCombatButton;
 
+        [Header("Прогноз")]
+        [SerializeField] private Transform _forecastContainer;
+        public Transform ForecastContainer => _forecastContainer;
+
         public event Action OnStartCombatClicked;
 
         private void Awake()

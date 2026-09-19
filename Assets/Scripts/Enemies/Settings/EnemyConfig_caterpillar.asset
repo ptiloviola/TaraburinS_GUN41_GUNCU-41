@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyId: caterpillar
   DisplayName: caterpillar
-  UIIcon: {fileID: 0}
+  UIIcon: {fileID: 21300000, guid: 61126f56195db394f89911e540556efe, type: 3}
   Prefab: {fileID: 2746841710687665809, guid: 848d03498833dfe43ba4de1369516dbf, type: 3}
   Stats:
     MaxHealth: 420
@@ -24,9 +24,6 @@ MonoBehaviour:
     PhysicalMultiplier: 1
     EnergyMultiplier: 0
     ExplosiveMultiplier: 4
-  StatusResist:
-    ControlMultiplier: 0
-    DoTMultiplier: 1
-    DebuffMultiplier: 1
+  Resistances: []
   Movement: {fileID: 11400000, guid: 64b6d32b61aebca46b69b72d746d80a7, type: 2}
   DeathBehavior: {fileID: 11400000, guid: 62a206b8c68b6dd42bda2cfd8769a4eb, type: 2}

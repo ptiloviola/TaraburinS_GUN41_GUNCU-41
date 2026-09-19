@@ -1,17 +1,15 @@
 using Gameplay.Spawning.Data;
+using System.Collections.Generic;
+
 
 namespace Gameplay.Spawning
 {
-    /// <summary>
-    /// Провайдер, который берет волны из статичного ScriptableObject.
-    /// Идеально для классических (созданных вручную) уровней.
-    /// </summary>
     public class StaticWaveProvider : IWaveProvider
     {
         private readonly LevelWavesConfig _config;
         private int _currentWaveIndex = 0;
 
-        // Реализация свойства из интерфейса
+
         public int TotalWaves => _config != null ? _config.Waves.Count : 0;
 
         public StaticWaveProvider(LevelWavesConfig config)
@@ -21,7 +19,6 @@ namespace Gameplay.Spawning
 
         public bool HasNextWave()
         {
-            // Защита от пустого конфига
             return _config != null && _currentWaveIndex < _config.Waves.Count;
         }
 
@@ -32,6 +29,23 @@ namespace Gameplay.Spawning
                 return _config.Waves[_currentWaveIndex++];
             }
             return null;
+        }
+
+        public WaveData PeekNextWave()
+        {
+            if (HasNextWave())
+            {
+                return _config.Waves[_currentWaveIndex];
+            }
+            return null;
+        }
+
+        public IEnumerable<WaveData> GetAllWaves()
+        {
+            if (_config == null || _config.Waves == null) 
+                return System.Linq.Enumerable.Empty<WaveData>();
+                
+            return _config.Waves;
         }
     }
 }

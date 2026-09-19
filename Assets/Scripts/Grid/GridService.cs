@@ -43,8 +43,6 @@ namespace Gameplay.Grid
             {
                 return _nodes[position.x, position.y];
             }
-            
-            Debug.LogError($"[GridService] Попытка получить ячейку за границами сетки: {position}");
             return null;
         }
 
