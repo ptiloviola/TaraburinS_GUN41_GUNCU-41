@@ -81,7 +81,10 @@ namespace Gameplay.Spawning.Services
 
                     if (currentWave.ActiveWaveDuration > 0)
                     {
-                        await UniTask.Delay(TimeSpan.FromSeconds(currentWave.ActiveWaveDuration), cancellationToken: ct);
+                        await UniTask.WhenAny(
+                            UniTask.Delay(TimeSpan.FromSeconds(currentWave.ActiveWaveDuration), cancellationToken: ct),
+                            UniTask.WaitUntil(() => _enemyTracker.IsMapClear, cancellationToken: ct)
+                        );
                     }
                 }
 

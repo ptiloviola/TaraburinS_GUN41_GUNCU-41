@@ -1,6 +1,6 @@
 using Zenject;
 using Gameplay.Infrastructure.Input;
-using Gameplay.Infrastructure.Services; // Добавлено
+using Gameplay.Infrastructure.Services;
 
 namespace Gameplay.Infrastructure.Installers
 {
@@ -10,9 +10,11 @@ namespace Gameplay.Infrastructure.Installers
         {
             Container.BindInterfacesTo<StandaloneInputService>().AsSingle();
             
-            // Биндим глобальные сервисы
             Container.BindInterfacesTo<PauseService>().AsSingle();
-            Container.BindInterfacesTo<SceneLoaderService>().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<SceneLoaderService>().AsSingle();
+            
+            
         }
     }
 }

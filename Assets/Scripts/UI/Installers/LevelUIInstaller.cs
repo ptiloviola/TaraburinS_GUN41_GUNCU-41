@@ -26,16 +26,17 @@ namespace Gameplay.UI.Installers
 
         [SerializeField] private TacticalUIView _tacticalView;
 
+        [SerializeField] private EndGameUIView _endGameView;
+
         public override void InstallBindings()
         {
-            // 1. Биндим View (глупый интерфейс на сцене)
+
             Container.BindInstance(_shopView).AsSingle();
 
-            // 2. Биндим Presenter (чистая логика). 
-            // Zenject сам вызовет его методы Initialize() и Dispose()
+
             Container.BindInterfacesAndSelfTo<TowerShopPresenter>().AsSingle();
 
-            // 3. Биндим пул для кнопок магазина (избавляемся от Instantiate!)
+
             Container.BindMemoryPool<TowerButtonView, TowerButtonView.Pool>()
                      .WithInitialSize(5)
                      .FromComponentInNewPrefab(_buttonPrefab)
@@ -47,11 +48,11 @@ namespace Gameplay.UI.Installers
             Container.BindInstance(_baseUIView).AsSingle();
             Container.BindInterfacesAndSelfTo<BaseUIPresenter>().AsSingle();
 
-            // 1. Биндим View и Presenter волн
+
             Container.BindInstance(_waveUIView).AsSingle();
             Container.BindInterfacesAndSelfTo<WaveUIPresenter>().AsSingle();
 
-            // 2. Создаем пул иконок и сразу кладем их в ForecastContainer
+
             Container.BindMemoryPool<ForecastIconView, ForecastIconView.Pool>()
                      .WithInitialSize(3)
                      .FromComponentInNewPrefab(_forecastIconPrefab)
@@ -62,6 +63,9 @@ namespace Gameplay.UI.Installers
 
             Container.BindInstance(_tacticalView).IfNotBound();
             Container.BindInterfacesTo<TacticalUIPresenter>().AsSingle();
+
+            Container.BindInstance(_endGameView).IfNotBound();
+            Container.BindInterfacesTo<EndGameUIPresenter>().AsSingle();
 
         }
     }
