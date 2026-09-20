@@ -3,7 +3,8 @@ using Cysharp.Threading.Tasks;
 using Gameplay.Spawning.Services;
 using Gameplay.Interaction;
 using Gameplay.Infrastructure.Signals;
-using Zenject; // Не забудь Zenject для SignalBus
+using Gameplay.Enemies;
+using Zenject;
 
 namespace Gameplay.Levels.States
 {
@@ -11,29 +12,73 @@ namespace Gameplay.Levels.States
     {
         private readonly WaveStateController _waveController;
         private readonly InteractionStateModel _interactionState;
-        private readonly SignalBus _signalBus; // ДОБАВЛЕНО
+        private readonly SignalBus _signalBus;
+        private readonly EnemyTrackerService _enemyTracker;
+        
+        private LevelStateMachine _cachedStateMachine;
+        private bool _isAllWavesSpawned;
 
         public CombatState(
             WaveStateController waveController, 
             InteractionStateModel interactionState, 
-            SignalBus signalBus) // ДОБАВЛЕНО В КОНСТРУКТОР
+            SignalBus signalBus,
+            EnemyTrackerService enemyTracker)
         {
             _waveController = waveController;
             _interactionState = interactionState;
             _signalBus = signalBus;
+            _enemyTracker = enemyTracker;
         }
 
         public UniTask EnterAsync(LevelStateMachine stateMachine, CancellationToken ct)
         {
-            _interactionState.CurrentMode = InteractionMode.Normal;
+            _cachedStateMachine = stateMachine;
+            _isAllWavesSpawned = false;
             
-            // Теперь _signalBus не null, краша не будет!
+            _interactionState.CurrentMode = InteractionMode.Normal;
             _signalBus.Fire(new SignalInteractionModeChanged { Mode = InteractionMode.Normal });
             
+            _signalBus.Subscribe<SignalGameOver>(OnGameOver);
+            _signalBus.Subscribe<SignalAllWavesSpawned>(OnAllWavesSpawned);
+            _signalBus.Subscribe<SignalAllEnemiesCleared>(OnEnemyClearedCheck);
+
             _waveController.RunWavesLoopAsync(ct).Forget();
+            
             return UniTask.CompletedTask;
         }
 
-        public UniTask ExitAsync(CancellationToken ct) => UniTask.CompletedTask;
+        public UniTask ExitAsync(CancellationToken ct)
+        {
+            _signalBus.TryUnsubscribe<SignalGameOver>(OnGameOver);
+            _signalBus.TryUnsubscribe<SignalAllWavesSpawned>(OnAllWavesSpawned);
+            _signalBus.TryUnsubscribe<SignalAllEnemiesCleared>(OnEnemyClearedCheck);
+            
+            _cachedStateMachine = null;
+            return UniTask.CompletedTask;
+        }
+
+        private void OnGameOver()
+        {
+            _cachedStateMachine?.ChangeStateAsync<LevelLoseState>().Forget();
+        }
+
+        private void OnAllWavesSpawned()
+        {
+            _isAllWavesSpawned = true;
+            CheckWinCondition();
+        }
+
+        private void OnEnemyClearedCheck()
+        {
+            CheckWinCondition();
+        }
+
+        private void CheckWinCondition()
+        {
+            if (_isAllWavesSpawned && _enemyTracker.IsMapClear)
+            {
+                _cachedStateMachine?.ChangeStateAsync<LevelWinState>().Forget();
+            }
+        }
     }
 }

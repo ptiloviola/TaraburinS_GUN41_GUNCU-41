@@ -14,10 +14,6 @@ using Gameplay.Enemies;
 
 namespace Gameplay.Spawning.Services
 {
-    /// <summary>
-    /// Дирижер. Знает о фазах игры, награждает за скипы, двигает UI.
-    /// Автоматически создается и уничтожается контейнером Zenject.
-    /// </summary>
     public class WaveStateController : IDisposable
     {
         private readonly IWaveProvider _waveProvider;
@@ -51,10 +47,6 @@ namespace Gameplay.Spawning.Services
             _bankService = bankService;
             _signalBus = signalBus;
         }
-
-        // Вызывается автоматически при старте сцены (аналог Start)
-
-        // Вызывается автоматически при выгрузке сцены или Game Over (аналог OnDestroy)
         public void Dispose()
         {
             _cts?.Cancel();
@@ -68,12 +60,8 @@ namespace Gameplay.Spawning.Services
 #if UNITY_EDITOR
                 Debug.Log("<color=cyan>[WaveStateController] Режиссер начал работу (UniTask).</color>");
 #endif
-                // --- ИСПРАВЛЕНИЕ UI ---
-                // Даем Canvas ровно 100 миллисекунд на старте сцены, чтобы он успел инициализировать 
-                // все вложенные Vertical/Horizontal Layout Group и ContentSizeFitter.
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: ct);
                 // ----------------------
-                // 1. Ждем, пока на карте появится хотя бы одна база
                 await UniTask.WaitUntil(() => _baseRegistry.ActiveBases.Any(), cancellationToken: ct);
 
                 while (_waveProvider.HasNextWave())
@@ -81,33 +69,30 @@ namespace Gameplay.Spawning.Services
                     _currentWaveNumber++;
                     WaveData currentWave = _waveProvider.GetNextWave();
                     
-                    // Обновляем UI волны и прогноз врагов
                     UpdateWaveUI(currentWave);
 
-                    // 2. Фаза ожидания перед волной (Таймер или Зачистка)
                     await HandleWaveDelayAsync(currentWave, ct);
 
-                    // 3. Фаза спавна
                     _signalBus.Fire(new SignalWaveTimerUpdated { TimeLeft = 0, Progress = 1f });
 #if UNITY_EDITOR
                     Debug.Log($"<color=green>[WaveStateController] СТАРТ ВОЛНЫ {_currentWaveNumber}!</color>");
 #endif
                     await _spawnerService.SpawnWaveAsync(currentWave, ct);
 
-                    // 4. Активная фаза (Пауза, чтобы игроки успели повоевать, прежде чем начнется новый таймер)
                     if (currentWave.ActiveWaveDuration > 0)
                     {
                         await UniTask.Delay(TimeSpan.FromSeconds(currentWave.ActiveWaveDuration), cancellationToken: ct);
                     }
                 }
 
+                _signalBus.Fire<SignalAllWavesSpawned>();
 #if UNITY_EDITOR
-                Debug.Log("<color=green>[WaveStateController] ВСЕ ВОЛНЫ ПРОЙДЕНЫ! ПОБЕДА!</color>");
+                Debug.Log("<color=green>[WaveStateController] ВСЕ ВОЛНЫ СПАВНЕРА ВЫШЛИ!</color>");
 #endif
+
             }
             catch (OperationCanceledException)
             {
-                // Если сработал Dispose (база уничтожена / вышли в меню), код безопасно выпрыгнет сюда
 #if UNITY_EDITOR
                 Debug.Log("<color=orange>[WaveStateController] Цикл волн прерван (Canceled).</color>");
 #endif
@@ -122,7 +107,6 @@ namespace Gameplay.Spawning.Services
         {
             if (wave.StartMode == WaveStartMode.TimeAfterPrevious)
             {
-                // Ждем таймер. Если вернулось больше 0, значит нажали Скип.
                 float timeLeft = await _timerService.WaitTimeOrSkipAsync(wave.DelayBeforeWave, ct);
                 
                 if (timeLeft > 0f)

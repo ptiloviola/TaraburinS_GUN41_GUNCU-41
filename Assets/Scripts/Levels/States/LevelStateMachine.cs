@@ -52,7 +52,6 @@ namespace Gameplay.Levels.States
             
             Debug.Log($"<color=yellow>[LevelStateMachine] Переход в состояние: {stateType.Name}</color>");
             
-            // ИСПРАВЛЕНИЕ: Передаем ссылку на себя (this)
             await _currentState.EnterAsync(this, _cts.Token);
         }
     }

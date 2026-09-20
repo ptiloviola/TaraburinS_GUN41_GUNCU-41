@@ -4,6 +4,7 @@ using Gameplay.Economy;
 using Gameplay.Base;
 using Gameplay.Levels.States;
 using Gameplay.Levels.Services;
+using Gameplay.Levels.Data;
 
 namespace Gameplay.Core.Installers
 {
@@ -18,13 +19,19 @@ namespace Gameplay.Core.Installers
             Container.BindInstance(_forecastSettings).IfNotBound();
             Container.Bind<TacticalForecastService>().AsSingle();
 
-            // Регистрируем стейты как список (чтобы StateMachine мог принять их в конструктор)
+            Container.Bind<LevelRuntimeModel>().AsSingle();
+
+
             Container.Bind<ILevelState>().To<LevelInitState>().AsSingle();
             Container.Bind<ILevelState>().To<TacticalState>().AsSingle();
             Container.Bind<ILevelState>().To<CombatState>().AsSingle();
+            Container.Bind<ILevelState>().To<LevelWinState>().AsSingle();
+            Container.Bind<ILevelState>().To<LevelLoseState>().AsSingle();
 
-            // Регистрируем саму машину (она единственная должна быть IInitializable)
+
             Container.BindInterfacesAndSelfTo<LevelStateMachine>().AsSingle();
+
+
 
             Debug.Log("<color=green>[Zenject] LevelStateInstaller: Экономика и База зарегистрированы.</color>");
         }

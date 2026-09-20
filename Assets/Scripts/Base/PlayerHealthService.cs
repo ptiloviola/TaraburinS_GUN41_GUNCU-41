@@ -1,26 +1,27 @@
 using UnityEngine;
 using Zenject;
 using Gameplay.Infrastructure.Signals;
+using Gameplay.Levels.Data;
 
 namespace Gameplay.Base
 {
     public class PlayerHealthService : IInitializable
     {
         private readonly SignalBus _signalBus;
+        private readonly LevelRuntimeModel _runtimeModel;
         private int _globalLives;
-
-        private const int StartingLives = 20;
         
         public int CurrentLives => _globalLives;
 
-        public PlayerHealthService(SignalBus signalBus)
+        public PlayerHealthService(SignalBus signalBus, LevelRuntimeModel runtimeModel)
         {
             _signalBus = signalBus;
+            _runtimeModel = runtimeModel;
         }
 
         public void Initialize()
         {
-            _globalLives = StartingLives;
+            _globalLives = _runtimeModel.StartingLives;
             _signalBus.Fire(new SignalBaseDamaged { CurrentLives = _globalLives });
         }
 
@@ -38,9 +39,6 @@ namespace Gameplay.Base
             if (_globalLives <= 0)
             {
                 _signalBus.Fire<SignalGameOver>();
-#if UNITY_EDITOR
-                Debug.Log("<color=red>[PlayerHealthService] ИГРА ОКОНЧЕНА (GAME OVER)!</color>");
-#endif
             }
         }
     }

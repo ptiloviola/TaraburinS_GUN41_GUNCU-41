@@ -32,6 +32,10 @@ namespace Gameplay.Infrastructure.Installers
             Container.DeclareSignal<SignalInteractionModeChanged>();
             Container.DeclareSignal<SignalTacticalClaimsUpdated>();
 
+            Container.DeclareSignal<SignalAllWavesSpawned>();
+            Container.DeclareSignal<SignalLevelWon>();
+            Container.DeclareSignal<SignalLevelLost>();
+
 
             Debug.Log("<color=green>[Zenject] CoreSignalsInstaller: Локальные сигналы успешно зарегистрированы.</color>");
         }
