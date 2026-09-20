@@ -1,6 +1,7 @@
 using Zenject;
 using Gameplay.Infrastructure.Input;
 using Gameplay.Infrastructure.Services;
+using Gameplay.Core.Data;
 
 namespace Gameplay.Infrastructure.Installers
 {
@@ -13,6 +14,8 @@ namespace Gameplay.Infrastructure.Installers
             Container.BindInterfacesTo<PauseService>().AsSingle();
 
             Container.BindInterfacesAndSelfTo<SceneLoaderService>().AsSingle();
+
+            Container.Bind<RunProgressModel>().AsSingle();
             
             
         }

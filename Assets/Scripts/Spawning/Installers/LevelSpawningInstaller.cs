@@ -17,7 +17,6 @@ namespace Gameplay.Spawning.Installers
     public class LevelSpawningInstaller : MonoInstaller
     {
         [Header("Конфиги уровня")]
-        [SerializeField] private LevelWavesConfig _levelWavesConfig;
 
         [Header("Реестры")]
         [SerializeField] private EnemyRegistry _enemyRegistry;
@@ -38,7 +37,6 @@ namespace Gameplay.Spawning.Installers
             Container.Bind<BaseLocatorService>().AsSingle();
 
 
-            Container.BindInstance(_levelWavesConfig).AsSingle();
             
   
             Container.Bind<IWaveProvider>().To<StaticWaveProvider>().AsSingle();

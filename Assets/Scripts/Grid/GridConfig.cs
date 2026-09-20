@@ -1,4 +1,4 @@
-using UnityEngine;
+    using UnityEngine;
 
 namespace Gameplay.Grid
 {
@@ -25,7 +25,7 @@ namespace Gameplay.Grid
         [Header("Карта уровня")]
         public GridRow[] rows;
 
-        // Метод для безопасного ЧТЕНИЯ (уже был)
+
         public GridCellData GetCellData(int x, int z)
         {
             if (rows != null && x < rows.Length && rows[x].columns != null && z < rows[x].columns.Length)
@@ -35,7 +35,6 @@ namespace Gameplay.Grid
             return new GridCellData { elevation = 0, type = NodeType.Ground };
         }
 
-        // НОВЫЙ Метод для безопасной ЗАПИСИ (для нашей кисточки)
         public void SetCellData(int x, int z, GridCellData data)
         {
             if (rows != null && x < rows.Length && rows[x].columns != null && z < rows[x].columns.Length)

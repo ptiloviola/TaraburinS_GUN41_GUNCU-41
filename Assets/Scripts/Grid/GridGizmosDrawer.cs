@@ -12,7 +12,7 @@ namespace Gameplay.Grid
         
         private GridSceneReferences _references;
 
-        // Константы для отрисовки (никаких магических чисел в коде)
+
         private const float BaseThickness = 0.2f;
         private const float GizmoSize = 0.9f;
         

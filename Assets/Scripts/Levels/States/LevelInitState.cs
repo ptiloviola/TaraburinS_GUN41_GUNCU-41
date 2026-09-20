@@ -25,22 +25,17 @@ namespace Gameplay.Levels.States
 
         public async UniTask EnterAsync(LevelStateMachine stateMachine, CancellationToken ct)
         {
-            // 1. Создаем математическую сетку
+
             _gridInitializer.Initialize();
             
-            // 2. Спавним 3D-модели (кубики земли/дорог)
             _visualBuilder.Initialize();
             
-            // 3. Спавним Базу и Точки появления врагов
             _entitySpawner.Initialize();
             
-            // 4. Обязательно ждем 1 кадр, чтобы Unity обновила Transform и Collider у заспавненных объектов
             await UniTask.Yield(PlayerLoopTiming.Update, ct);
             
-            // 5. Запекаем NavMesh поверх готовых физических объектов
             _navMeshBaker.Initialize();
             
-            // 6. Переходим в фазу тактической разметки
             stateMachine.ChangeStateAsync<TacticalState>().Forget();
         }
 

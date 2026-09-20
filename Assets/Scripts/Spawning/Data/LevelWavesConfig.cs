@@ -9,7 +9,6 @@ namespace Gameplay.Spawning.Data
         [Header("Сценарий классического уровня")]
         [SerializeField] private List<WaveData> _waves = new List<WaveData>();
 
-        // Отдаем только для чтения. Защита от изменения структуры волн в рантайме.
         public IReadOnlyList<WaveData> Waves => _waves;
     }
 }

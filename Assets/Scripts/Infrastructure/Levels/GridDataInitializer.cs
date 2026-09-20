@@ -24,7 +24,6 @@ namespace Infrastructure.Levels
         {
             if (_gridConfig == null)
             {
-                // Убрано #if UNITY_EDITOR. Критические ошибки должны писать в лог всегда!
                 Debug.LogError("[GridDataInitializer] Конфиг сетки не передан в контейнер!");
                 return;
             }

@@ -7,7 +7,7 @@ namespace Gameplay.Grid.Installers
 {
     public class GridInstaller : MonoInstaller
     {
-        [SerializeField] private GridConfig _gridConfig;
+
 
         public override void InstallBindings()
         {
@@ -15,7 +15,7 @@ namespace Gameplay.Grid.Installers
 
             // Ссылки на сцену и конфиг
             Container.Bind<GridSceneReferences>().FromComponentInHierarchy().AsSingle();
-            Container.Bind<GridConfig>().FromInstance(_gridConfig).AsSingle();
+
 
             // Конвейер инициализации уровня
             Container.Bind<GridDataInitializer>().AsSingle();

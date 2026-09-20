@@ -32,7 +32,6 @@ namespace Gameplay.Spawning.Data
 
         public SquadData() { }
 
-        // 2. Конструктор для процедурной генерации рогалика
         public SquadData(string enemyId, int count, float spawnInterval, string spawnPointId, string targetBaseId = "")
         {
             _enemyId = enemyId;
