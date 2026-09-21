@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 244c405ce063a844c81b8566620f4542, type: 3}
+  m_Name: Level_2_Waves
+  m_EditorClassIdentifier: 
+  _waves:
+  - _startMode: 0
+    _activeWaveDuration: 2
+    _delayBeforeWave: 3
+    _squads:
+    - _enemyId: sphere
+      _count: 10
+      _spawnInterval: 0.3
+      _spawnPointId: Spawn_1_35
+      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
+    - _enemyId: caterpillar
+      _count: 5
+      _spawnInterval: 1
+      _spawnPointId: Spawn_19_40
+      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
+    _clearReward: 50

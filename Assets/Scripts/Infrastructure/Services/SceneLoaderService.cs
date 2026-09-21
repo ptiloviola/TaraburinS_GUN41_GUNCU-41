@@ -11,9 +11,20 @@ namespace Gameplay.Infrastructure.Services
         {
             Debug.Log($"<color=yellow>[SceneLoader] Начинаю загрузку сцены: {sceneName}...</color>");
             
+
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
             
-            await SceneManager.LoadSceneAsync(sceneName).WithCancellation(ct);
+
+            if (asyncLoad == null)
+            {
+                Debug.LogError($"[SceneLoader] Ошибка: Сцена '{sceneName}' не найдена! Убедись, что она добавлена в File -> Build Settings.");
+                return; 
+            }
+
+
+            await asyncLoad.WithCancellation(ct);
             
+
             Time.timeScale = 1f; 
             
             Debug.Log($"<color=green>[SceneLoader] Сцена {sceneName} успешно загружена.</color>");

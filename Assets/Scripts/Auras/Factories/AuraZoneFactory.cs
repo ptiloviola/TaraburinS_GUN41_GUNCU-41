@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
-using Gameplay.Auras.Data;
 
 namespace Gameplay.Auras.Factories
 {
@@ -26,7 +24,6 @@ namespace Gameplay.Auras.Factories
 
             DiContainer subContainer = _container.CreateSubContainer();
             
-            // ИСПРАВЛЕНИЕ: Передаем только тип объекта и тип пула
             subContainer.BindMemoryPool<LingeringAuraFacade, LingeringAuraFacade.Pool>()
                 .WithInitialSize(5) 
                 .FromComponentInNewPrefab(prefab)

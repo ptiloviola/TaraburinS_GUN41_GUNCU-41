@@ -10,6 +10,7 @@ namespace Gameplay.Levels.Data
         [Header("Идентификация")]
         public string LevelId = "Level_01";
         public string DisplayName = "Уровень 1";
+        public int LevelIndex = 1;
 
         [Header("Стартовые ресурсы")]
         public int StartingLives = 20;

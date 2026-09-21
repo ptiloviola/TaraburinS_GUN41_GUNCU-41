@@ -1695,7 +1695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e4a705528cf7ea4c8c95247c96a72da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _editorConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}
+  _editorConfig: {fileID: 11400000, guid: 6ebb2a529bf424c44a64ea4740c5e339, type: 2}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -4065,7 +4065,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb73a9f7c77e56047987fe263b0aef8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}
 --- !u!1 &1112894943
 GameObject:
   m_ObjectHideFlags: 0
@@ -5352,6 +5351,8 @@ MonoBehaviour:
   _forecastSettings:
     HideTypeChance: 0.25
     HideCountChance: 0.35
+  _debugFallbackBlueprint: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece,
+    type: 2}
 --- !u!1 &1679892856
 GameObject:
   m_ObjectHideFlags: 0
@@ -6421,7 +6422,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2755c59f9c4a8f043a08260e44430e36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelWavesConfig: {fileID: 11400000, guid: b4fb8f3ae972e9743b676ab6d3ada3b5, type: 2}
   _enemyRegistry: {fileID: 11400000, guid: ae201c037a1ccd84d95230aa2cbcd63a, type: 2}
   _defenderRegistry: {fileID: 11400000, guid: 33f32a2d06b0a4548836867dbae9f05a, type: 2}
   _basePrefab: {fileID: 8824246545245860079, guid: 7c265b5839dc7204598b286044171e21,

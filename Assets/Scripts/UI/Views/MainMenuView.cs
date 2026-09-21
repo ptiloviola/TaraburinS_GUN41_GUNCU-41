@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Gameplay.UI.Views
 {
@@ -11,14 +12,16 @@ namespace Gameplay.UI.Views
         [SerializeField] private Button _loadSaveButton;
         [SerializeField] private Button _settingsButton;
 
-        // События, на которые подпишется Presenter
+        [Header("Тексты Статистики")]
+        [SerializeField] private TextMeshProUGUI _runsCountText;
+        [SerializeField] private TextMeshProUGUI _maxLevelText;
+
         public event Action OnPlayClicked;
         public event Action OnLoadSaveClicked;
         public event Action OnSettingsClicked;
 
         private void Awake()
         {
-            // Транслируем Unity-события в чистые C# Actions
             _playButton.onClick.AddListener(() => OnPlayClicked?.Invoke());
             _loadSaveButton.onClick.AddListener(() => OnLoadSaveClicked?.Invoke());
             _settingsButton.onClick.AddListener(() => OnSettingsClicked?.Invoke());
@@ -26,18 +29,25 @@ namespace Gameplay.UI.Views
 
         private void OnDestroy()
         {
-            // Обязательная отписка для предотвращения утечек
             _playButton.onClick.RemoveAllListeners();
             _loadSaveButton.onClick.RemoveAllListeners();
             _settingsButton.onClick.RemoveAllListeners();
         }
 
-        // Метод для блокировки интерфейса во время загрузки сцены
         public void SetInteractable(bool isInteractable)
         {
             if (_playButton != null) _playButton.interactable = isInteractable;
             if (_loadSaveButton != null) _loadSaveButton.interactable = isInteractable;
             if (_settingsButton != null) _settingsButton.interactable = isInteractable;
+        }
+
+        public void UpdateStatsDisplay(int runsPlayed, int maxLevel)
+        {
+            if (_runsCountText != null) 
+                _runsCountText.text = $"RUNS PLAYED: {runsPlayed}";
+                
+            if (_maxLevelText != null) 
+                _maxLevelText.text = $"RECORD (LEVEL): {maxLevel}";
         }
     }
 }
