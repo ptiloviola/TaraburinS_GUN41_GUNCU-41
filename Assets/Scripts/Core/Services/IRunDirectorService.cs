@@ -1,11 +1,11 @@
 using Gameplay.Core.Data;
-using Gameplay.Levels.Data;
+using Gameplay.Campaign.Data;
 
 namespace Gameplay.Core.Services
 {
     public interface IRunDirectorService
     {
-        bool HasNextLevel(RunProgressModel progress);
-        LevelBlueprintConfig GetNextLevel(RunProgressModel progress);
+        bool HasNextNode(RunProgressModel progress);
+        MapNode GetNextNode(RunProgressModel progress);
     }
 }

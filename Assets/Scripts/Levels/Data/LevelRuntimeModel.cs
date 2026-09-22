@@ -10,7 +10,7 @@ namespace Gameplay.Levels.Data
 
         public LevelRuntimeModel(RunProgressModel progressModel)
         {
-            var blueprint = progressModel.CurrentLevelBlueprint;
+            var blueprint = progressModel.CurrentNode?.CombatLevel;
             
             if (blueprint != null)
             {

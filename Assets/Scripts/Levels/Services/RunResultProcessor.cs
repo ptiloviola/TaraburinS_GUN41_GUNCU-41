@@ -44,11 +44,9 @@ namespace Gameplay.Levels.Services
             if (_isProcessed) return;
             _isProcessed = true;
 
-
             _runProgress.CurrentRunDepth++;
 
             PlayerProfileModel profile = _saveLoadService.LoadProfile();
-
 
             if (_runProgress.CurrentRunDepth > profile.MaxCompletedLevelIndex)
             {
@@ -56,8 +54,7 @@ namespace Gameplay.Levels.Services
                 Debug.Log($"<color=yellow>[RunResultProcessor] Новый рекорд! Глубина: {profile.MaxCompletedLevelIndex}</color>");
             }
 
-            
-            if (!_runDirector.HasNextLevel(_runProgress))
+            if (!_runDirector.HasNextNode(_runProgress))
             {
                 profile.TotalRunsPlayed++;
                 Debug.Log("<color=green>[RunResultProcessor] Кампания пройдена! Забег завершен.</color>");

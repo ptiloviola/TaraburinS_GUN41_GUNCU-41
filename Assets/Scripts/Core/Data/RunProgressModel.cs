@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using Gameplay.Levels.Data;
+using Gameplay.Campaign.Data;
 
 namespace Gameplay.Core.Data
 {
     public class RunProgressModel
     {
-        public LevelBlueprintConfig CurrentLevelBlueprint { get; set; }
+        public MapNode CurrentNode { get; set; }
+
         public int CurrentRunDepth { get; set; } = 0;
         
         public int CurrentRunGold { get; set; } = 0; 
@@ -14,9 +16,13 @@ namespace Gameplay.Core.Data
         public void ResetRun()
         {
             CurrentRunDepth = 0;
-            CurrentLevelBlueprint = null;
+            CurrentNode = null;
             CurrentRunGold = 0;
             ActiveRunItems.Clear();
+
+            // ВРЕМЕННЫЙ ЧИТ ДЛЯ ТЕСТОВ
+            ActiveRunItems.Add("StrongHeart"); 
+            ActiveRunItems.Add("CashMachine");
         }
     }
 }

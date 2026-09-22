@@ -1,5 +1,5 @@
 using Gameplay.Core.Data;
-using Gameplay.Levels.Data;
+using Gameplay.Campaign.Data;
 
 namespace Gameplay.Core.Services
 {
@@ -12,16 +12,16 @@ namespace Gameplay.Core.Services
             _campaignConfig = campaignConfig;
         }
 
-        public bool HasNextLevel(RunProgressModel progress)
+        public bool HasNextNode(RunProgressModel progress)
         {
-            return progress.CurrentRunDepth < _campaignConfig.Levels.Count;
+            return progress.CurrentRunDepth < _campaignConfig.Nodes.Count;
         }
 
-        public LevelBlueprintConfig GetNextLevel(RunProgressModel progress)
+        public MapNode GetNextNode(RunProgressModel progress)
         {
-            if (HasNextLevel(progress))
+            if (HasNextNode(progress))
             {
-                return _campaignConfig.Levels[progress.CurrentRunDepth];
+                return _campaignConfig.Nodes[progress.CurrentRunDepth];
             }
             return null; 
         }

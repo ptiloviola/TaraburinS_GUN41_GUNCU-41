@@ -4,7 +4,7 @@ using Gameplay.Infrastructure.Input;
 using Gameplay.Infrastructure.Services;
 using Gameplay.Core.Data;
 using Gameplay.Core.Services;
-
+using Gameplay.Campaign.Data;
 
 namespace Gameplay.Infrastructure.Installers
 {

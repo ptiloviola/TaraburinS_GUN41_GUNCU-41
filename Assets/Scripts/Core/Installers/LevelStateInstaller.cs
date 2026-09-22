@@ -23,7 +23,7 @@ namespace Gameplay.Core.Installers
 
         public override void InstallBindings()
         {
-            LevelBlueprintConfig activeBlueprint = _progressModel.CurrentLevelBlueprint ?? _debugFallbackBlueprint;
+            LevelBlueprintConfig activeBlueprint = _progressModel.CurrentNode?.CombatLevel ?? _debugFallbackBlueprint;
             
             if (activeBlueprint == null)
             {
@@ -31,7 +31,6 @@ namespace Gameplay.Core.Installers
                 return;
             }
 
-            _progressModel.CurrentLevelBlueprint = activeBlueprint;
 
             Container.BindInstance(activeBlueprint.GridConfig).AsSingle();
             Container.BindInstance(activeBlueprint.WavesConfig).AsSingle();

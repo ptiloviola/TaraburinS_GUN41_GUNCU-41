@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3804275850d1ce4b9207ed4917aa8aa, type: 3}
   m_Name: LevelBlueprint_02
   m_EditorClassIdentifier: 
-  LevelId: Level_01
-  DisplayName: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C 1"
+  LevelId: Level_02
+  DisplayName: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C 2"
   LevelIndex: 2
   StartingLives: 12
   StartingMoney: 50
   FoundationQuota: 6
+  RunCurrencyReward: 50
+  MetaCurrencyReward: 10
   GridConfig: {fileID: 11400000, guid: 6ebb2a529bf424c44a64ea4740c5e339, type: 2}
   WavesConfig: {fileID: 11400000, guid: 3d753584d08b4f74aaf19af8ad39df74, type: 2}
