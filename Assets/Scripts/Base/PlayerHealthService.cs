@@ -2,6 +2,8 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Infrastructure.Signals;
 using Gameplay.Levels.Data;
+using Gameplay.Modifiers.Services;
+using Gameplay.Modifiers.Enums;
 
 namespace Gameplay.Base
 {
@@ -9,19 +11,28 @@ namespace Gameplay.Base
     {
         private readonly SignalBus _signalBus;
         private readonly LevelRuntimeModel _runtimeModel;
+        private readonly StatsModifierService _modifierService;
         private int _globalLives;
         
         public int CurrentLives => _globalLives;
 
-        public PlayerHealthService(SignalBus signalBus, LevelRuntimeModel runtimeModel)
+        public PlayerHealthService(
+            SignalBus signalBus, 
+            LevelRuntimeModel runtimeModel,
+            StatsModifierService modifierService)
         {
             _signalBus = signalBus;
             _runtimeModel = runtimeModel;
+            _modifierService = modifierService;
         }
 
         public void Initialize()
         {
-            _globalLives = _runtimeModel.StartingLives;
+
+            float livesMultiplier = _modifierService.GetMultiplier(StatType.StartingLives);
+            
+            _globalLives = Mathf.RoundToInt(_runtimeModel.StartingLives * livesMultiplier);
+            
             _signalBus.Fire(new SignalBaseDamaged { CurrentLives = _globalLives });
         }
 

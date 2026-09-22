@@ -12,6 +12,7 @@ namespace Gameplay.Core.Services
         public SaveLoadService()
         {
             _saveFilePath = Path.Combine(Application.persistentDataPath, "player_save.json");
+            Debug.Log($"<color=magenta>[SaveLoadService] Точный путь к файлу: {_saveFilePath}</color>");
         }
 
         public PlayerProfileModel LoadProfile()

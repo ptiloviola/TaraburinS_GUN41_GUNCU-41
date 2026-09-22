@@ -4,7 +4,6 @@ using Zenject;
 using Gameplay.Infrastructure.Signals;
 using Gameplay.Core.Data;
 using Gameplay.Core.Services;
-using Gameplay.Levels.Data;
 
 namespace Gameplay.Levels.Services
 {
@@ -13,17 +12,19 @@ namespace Gameplay.Levels.Services
         private readonly SignalBus _signalBus;
         private readonly SaveLoadService _saveLoadService;
         private readonly RunProgressModel _runProgress;
-        
+        private readonly IRunDirectorService _runDirector; 
         private bool _isProcessed;
 
         public RunResultProcessor(
             SignalBus signalBus, 
             SaveLoadService saveLoadService, 
-            RunProgressModel runProgress)
+            RunProgressModel runProgress,
+            IRunDirectorService runDirector)
         {
             _signalBus = signalBus;
             _saveLoadService = saveLoadService;
             _runProgress = runProgress;
+            _runDirector = runDirector;
         }
 
         public void Initialize()
@@ -43,17 +44,23 @@ namespace Gameplay.Levels.Services
             if (_isProcessed) return;
             _isProcessed = true;
 
+
             _runProgress.CurrentRunDepth++;
 
             PlayerProfileModel profile = _saveLoadService.LoadProfile();
-            profile.TotalRunsPlayed++;
 
 
-            LevelBlueprintConfig blueprint = _runProgress.CurrentLevelBlueprint;
-            if (blueprint != null && blueprint.LevelIndex > profile.MaxCompletedLevelIndex)
+            if (_runProgress.CurrentRunDepth > profile.MaxCompletedLevelIndex)
             {
-                profile.MaxCompletedLevelIndex = blueprint.LevelIndex;
-                Debug.Log($"<color=yellow>[RunResultProcessor] Новый рекорд! Открыт уровень {profile.MaxCompletedLevelIndex + 1}</color>");
+                profile.MaxCompletedLevelIndex = _runProgress.CurrentRunDepth;
+                Debug.Log($"<color=yellow>[RunResultProcessor] Новый рекорд! Глубина: {profile.MaxCompletedLevelIndex}</color>");
+            }
+
+            
+            if (!_runDirector.HasNextLevel(_runProgress))
+            {
+                profile.TotalRunsPlayed++;
+                Debug.Log("<color=green>[RunResultProcessor] Кампания пройдена! Забег завершен.</color>");
             }
 
             _saveLoadService.SaveProfile();

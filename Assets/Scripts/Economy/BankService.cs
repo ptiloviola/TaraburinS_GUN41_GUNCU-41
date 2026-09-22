@@ -2,38 +2,46 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Infrastructure.Signals;
 using System;
+using Gameplay.Modifiers.Services;
+using Gameplay.Modifiers.Enums;
+using Gameplay.Levels.Data;
 
 namespace Gameplay.Economy
 {
-    // IInitializable и IDisposable нужны, чтобы Zenject сам вызвал Start и OnDestroy для подписок
+    
     public class BankService : IInitializable, IDisposable
     {
         private readonly SignalBus _signalBus;
+        private readonly LevelRuntimeModel _runtimeModel;
+        private readonly StatsModifierService _modifierService;
         private int _balance;
 
-        // Стартовый капитал
-        private const int StartingBalance = 100;
         public int CurrentBalance => _balance;
 
-        public BankService(SignalBus signalBus)
+        public BankService(
+            SignalBus signalBus, 
+            LevelRuntimeModel runtimeModel, 
+            StatsModifierService modifierService)
         {
             _signalBus = signalBus;
+            _runtimeModel = runtimeModel;
+            _modifierService = modifierService;
         }
 
         public void Initialize()
         {
-            _balance = StartingBalance;
+            
+            float startingMoneyMultiplier = _modifierService.GetMultiplier(StatType.StartingMoney);
+            
 
-            // Подписываемся на сигнал убийства врага
+            _balance = Mathf.RoundToInt(_runtimeModel.StartingMoney * startingMoneyMultiplier);
+
             _signalBus.Subscribe<SignalEnemyKilled>(OnEnemyKilled);
-
-            // Сразу оповещаем UI о стартовом балансе
-            _signalBus.Fire(new SignalBalanceChanged {CurrentBalance = _balance});
+            _signalBus.Fire(new SignalBalanceChanged { CurrentBalance = _balance });
         }
 
         public void Dispose()
         {
-            // Обязательно отписываемся при уничтожении, чтобы не было утечек памяти
             _signalBus.Unsubscribe<SignalEnemyKilled>(OnEnemyKilled);
         }
 
@@ -46,7 +54,6 @@ namespace Gameplay.Economy
         {
             _balance += amount;
             Debug.Log($"<color=yellow>[BankService] Получено {amount} монет. Текущий баланс: {_balance}</color>");
-            // Оповещаем UI, что баланс изменился
             _signalBus.Fire(new SignalBalanceChanged { CurrentBalance = _balance });
         }
 

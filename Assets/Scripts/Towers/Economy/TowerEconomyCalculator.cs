@@ -22,10 +22,12 @@ namespace Gameplay.Towers.Economy
             return Mathf.RoundToInt(totalInvested * config.SellRefundMultiplier);
         }
 
-        public static int GetUpgradeCost(TowerConfig config, int currentLevel)
+        public static int GetUpgradeCost(TowerConfig config, int currentLevel, float costMultiplier = 1f)
         {
             if (config == null || currentLevel + 1 >= config.Levels.Count) return 0;
-            return config.Levels[currentLevel + 1].UpgradeCost;
+            
+            float rawCost = config.Levels[currentLevel + 1].UpgradeCost;
+            return Mathf.RoundToInt(rawCost * costMultiplier);
         }
     }
 }

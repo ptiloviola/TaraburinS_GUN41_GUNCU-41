@@ -14,17 +14,21 @@ namespace Gameplay.UI.Presenters
         private readonly MainMenuView _view;
         private readonly ISceneLoaderService _sceneLoader;
         private readonly SaveLoadService _saveLoadService;
+        private readonly RunProgressModel _runProgress;
 
-        private const string GameplaySceneName = "BattleScene";
+        
+        private const string StartSceneName = "HubScene"; 
 
         public MainMenuPresenter(
             MainMenuView view, 
             ISceneLoaderService sceneLoader,
-            SaveLoadService saveLoadService)
+            SaveLoadService saveLoadService,
+            RunProgressModel runProgress)
         {
             _view = view;
             _sceneLoader = sceneLoader;
             _saveLoadService = saveLoadService;
+            _runProgress = runProgress;
         }
 
         public void Initialize()
@@ -48,7 +52,10 @@ namespace Gameplay.UI.Presenters
         {
             _view.SetInteractable(false);
             
-            _sceneLoader.LoadSceneAsync(GameplaySceneName).Forget();
+
+            _runProgress.ResetRun();
+            
+            _sceneLoader.LoadSceneAsync(StartSceneName).Forget();
         }
 
         private void HandleLoadSaveClicked()

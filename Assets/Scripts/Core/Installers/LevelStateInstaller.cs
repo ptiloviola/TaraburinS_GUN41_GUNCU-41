@@ -6,24 +6,23 @@ using Gameplay.Levels.States;
 using Gameplay.Levels.Services;
 using Gameplay.Levels.Data;
 using Gameplay.Core.Data;
-using Gameplay.Grid;
-using Gameplay.Spawning.Data;
+using Gameplay.Modifiers.Data;      
+using Gameplay.Modifiers.Services;  
 
 namespace Gameplay.Core.Installers
 {
     public class LevelStateInstaller : MonoInstaller
     {
         [SerializeField] private TacticalForecastService.Settings _forecastSettings;
+        [SerializeField] private LevelBlueprintConfig _debugFallbackBlueprint;
         
+        [Header("База данных")]
+        [SerializeField] private ItemRegistry _itemRegistry; 
 
         [Inject] private RunProgressModel _progressModel; 
 
-
-        [SerializeField] private LevelBlueprintConfig _debugFallbackBlueprint;
-
         public override void InstallBindings()
         {
-
             LevelBlueprintConfig activeBlueprint = _progressModel.CurrentLevelBlueprint ?? _debugFallbackBlueprint;
             
             if (activeBlueprint == null)
@@ -32,21 +31,28 @@ namespace Gameplay.Core.Installers
                 return;
             }
 
-
             _progressModel.CurrentLevelBlueprint = activeBlueprint;
-
 
             Container.BindInstance(activeBlueprint.GridConfig).AsSingle();
             Container.BindInstance(activeBlueprint.WavesConfig).AsSingle();
 
+            // --- РЕГИСТРАЦИЯ БАЗ ДАННЫХ И МОДИФИКАТОРОВ ---
+            Container.BindInstance(_itemRegistry).AsSingle();
+            Container.Bind<StatsModifierService>().AsSingle();
+            
+            // Регистрируем бутстраппер и ставим ему наивысший приоритет запуска
+            Container.BindInterfacesTo<RunModifiersBootstrapper>().AsSingle();
+            Container.BindExecutionOrder<RunModifiersBootstrapper>(-100);
 
+            // --- БАЗОВЫЕ СИСТЕМЫ ---
             Container.BindInterfacesAndSelfTo<BankService>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerHealthService>().AsSingle();
+            
             Container.BindInstance(_forecastSettings).IfNotBound();
             Container.Bind<TacticalForecastService>().AsSingle();
             Container.Bind<LevelRuntimeModel>().AsSingle();
 
-
+            // --- СТЕЙТ-МАШИНА ---
             Container.Bind<ILevelState>().To<LevelInitState>().AsSingle();
             Container.Bind<ILevelState>().To<TacticalState>().AsSingle();
             Container.Bind<ILevelState>().To<CombatState>().AsSingle();
@@ -55,8 +61,6 @@ namespace Gameplay.Core.Installers
             Container.BindInterfacesAndSelfTo<LevelStateMachine>().AsSingle();
 
             Container.BindInterfacesAndSelfTo<RunResultProcessor>().AsSingle();
-
-            Debug.Log($"<color=green>[Zenject] LevelStateInstaller: Уровень '{activeBlueprint.DisplayName}' успешно инициализирован из Blueprint.</color>");
         }
     }
 }

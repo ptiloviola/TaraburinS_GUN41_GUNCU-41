@@ -17,11 +17,12 @@ namespace Gameplay.Levels.Data
         public int StartingMoney = 100;
         public int FoundationQuota = 5;
 
+        [Header("Награды за прохождение")]
+        public int RunCurrencyReward = 50;
+        public int MetaCurrencyReward = 10;
+
         [Header("Данные уровня")]
-        [Tooltip("Конфиг сетки (матрица высот и типов ячеек)")]
         public GridConfig GridConfig;
-        
-        [Tooltip("Конфиг волн (кто и когда нападает)")]
         public LevelWavesConfig WavesConfig;
     }
 }

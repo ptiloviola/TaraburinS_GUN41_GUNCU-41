@@ -5353,6 +5353,7 @@ MonoBehaviour:
     HideCountChance: 0.35
   _debugFallbackBlueprint: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece,
     type: 2}
+  _itemRegistry: {fileID: 11400000, guid: e270f29d94c4b654a8dc5a6d11bca48c, type: 2}
 --- !u!1 &1679892856
 GameObject:
   m_ObjectHideFlags: 0
