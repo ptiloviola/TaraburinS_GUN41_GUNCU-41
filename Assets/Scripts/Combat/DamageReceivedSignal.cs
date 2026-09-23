@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Gameplay.Core
+namespace Gameplay.Combat
 {
     public struct DamageReceivedSignal
     {

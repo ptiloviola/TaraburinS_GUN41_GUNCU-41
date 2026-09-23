@@ -1,6 +1,6 @@
 using Gameplay.Enemies;
 
-namespace Gameplay.Core.Statuses
+namespace Gameplay.Combat.Statuses
 {
     public interface IStatusEffect
     {

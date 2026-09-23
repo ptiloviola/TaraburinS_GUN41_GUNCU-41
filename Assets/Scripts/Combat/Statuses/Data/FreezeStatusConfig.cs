@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Gameplay.Core.Statuses.Data
+namespace Gameplay.Combat.Statuses.Data
 {
     [Serializable]
     public class FreezeStatusConfig : IStatusConfig

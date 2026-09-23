@@ -1,4 +1,4 @@
-namespace Gameplay.Campaign.Data
+namespace Gameplay.Combat.Data
 {
     public enum MapNodeType
     {

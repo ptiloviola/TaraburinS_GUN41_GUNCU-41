@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Infrastructure.Levels;
 
-namespace Gameplay.Levels.States
+namespace Gameplay.Combat.States
 {
     public class LevelInitState : ILevelState
     {

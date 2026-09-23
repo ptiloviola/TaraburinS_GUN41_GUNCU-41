@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Modifiers.Data;
 
-namespace Gameplay.Campaign.Data
+namespace Gameplay.Combat.Data
 {
     [CreateAssetMenu(fileName = "NewShopConfig", menuName = "TD/Campaign/Shop Config")]
     public class ShopConfig : ScriptableObject

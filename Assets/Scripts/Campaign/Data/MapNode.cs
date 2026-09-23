@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Gameplay.Levels.Data;
+using Gameplay.Combat.Data;
 
-namespace Gameplay.Campaign.Data
+namespace Gameplay.Combat.Data
 {
     [Serializable]
     public class MapNode

@@ -1,7 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Gameplay.Infrastructure.Signals;
-using Gameplay.Levels.Data;
+using Gameplay.Combat.Data;
 using Gameplay.Modifiers.Services;
 using Gameplay.Modifiers.Enums;
 

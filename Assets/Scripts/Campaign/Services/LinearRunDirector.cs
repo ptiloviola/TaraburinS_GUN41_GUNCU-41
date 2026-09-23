@@ -1,7 +1,6 @@
-using Gameplay.Core.Data;
-using Gameplay.Campaign.Data;
+using Gameplay.Combat.Data;
 
-namespace Gameplay.Core.Services
+namespace Gameplay.Combat.Services
 {
     public class LinearRunDirector : IRunDirectorService
     {

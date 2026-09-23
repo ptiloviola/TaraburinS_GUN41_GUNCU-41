@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using Gameplay.Infrastructure.Signals;
 using Zenject;
 
-namespace Gameplay.Levels.States
+namespace Gameplay.Combat.States
 {
     public class LevelWinState : ILevelState
     {

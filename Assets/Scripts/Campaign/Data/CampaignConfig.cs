@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Gameplay.Campaign.Data;
+using Gameplay.Combat.Data;
 
-namespace Gameplay.Campaign.Data
+namespace Gameplay.Combat.Data
 {
     [CreateAssetMenu(fileName = "NewCampaignConfig", menuName = "TD/Campaign Config")]
     public class CampaignConfig : ScriptableObject

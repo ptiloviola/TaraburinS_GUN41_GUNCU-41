@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Gameplay.Core.Statuses.Data;
+using Gameplay.Combat.Statuses.Data;
 
 namespace Gameplay.Auras.Data
 {

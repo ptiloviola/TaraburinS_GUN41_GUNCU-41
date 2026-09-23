@@ -1,11 +1,10 @@
 using System;
 using Zenject;
 using Cysharp.Threading.Tasks;
-using Gameplay.Core.Services;
-using Gameplay.Core.Data;
+using Gameplay.Combat.Services;
+using Gameplay.Combat.Data;
 using Gameplay.Infrastructure.Services;
 using Gameplay.UI.Views;
-using Gameplay.Campaign.Data;
 
 namespace Gameplay.UI.Presenters
 {

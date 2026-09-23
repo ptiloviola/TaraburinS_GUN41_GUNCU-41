@@ -1,6 +1,6 @@
 using System.IO;
 using UnityEngine;
-using Gameplay.Core.Data;
+using Gameplay.Combat.Data;
 
 namespace Gameplay.Core.Services
 {

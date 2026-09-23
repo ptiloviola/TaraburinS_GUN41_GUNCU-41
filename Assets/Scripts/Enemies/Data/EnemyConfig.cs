@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Enemies.Data.Movement;
 using Gameplay.Enemies.Data.Death;
-using Gameplay.Core.Statuses;
+using Gameplay.Combat.Statuses;
 
 namespace Gameplay.Enemies.Data
 {

@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Gameplay.Core.Statuses;
+using Gameplay.Combat.Statuses;
 
-namespace Gameplay.Core.Statuses.Data
+namespace Gameplay.Combat.Statuses.Data
 {
     [Serializable]
     public class PoisonStatusConfig : IStatusConfig

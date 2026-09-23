@@ -2,9 +2,9 @@ using Zenject;
 using UnityEngine;
 using Gameplay.Infrastructure.Input;
 using Gameplay.Infrastructure.Services;
-using Gameplay.Core.Data;
+using Gameplay.Combat.Data;
+using Gameplay.Combat.Services;
 using Gameplay.Core.Services;
-using Gameplay.Campaign.Data;
 
 namespace Gameplay.Infrastructure.Installers
 {

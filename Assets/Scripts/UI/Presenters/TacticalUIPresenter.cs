@@ -8,7 +8,7 @@ using Gameplay.Interaction;
 using Gameplay.Spawning;
 using Gameplay.Spawning.Data;
 using Gameplay.Enemies.Data;
-using Gameplay.Levels.Services;
+using Gameplay.Combat.Services;
 
 namespace Gameplay.UI.Presenters
 {

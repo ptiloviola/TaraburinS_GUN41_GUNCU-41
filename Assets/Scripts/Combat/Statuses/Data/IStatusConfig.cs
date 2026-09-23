@@ -1,4 +1,4 @@
-namespace Gameplay.Core.Statuses.Data
+namespace Gameplay.Combat.Statuses.Data
 {
     public interface IStatusConfig
     {

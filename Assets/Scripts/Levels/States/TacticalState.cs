@@ -4,7 +4,7 @@ using Gameplay.Infrastructure.Signals;
 using Gameplay.Interaction;
 using Zenject;
 
-namespace Gameplay.Levels.States
+namespace Gameplay.Combat.States
 {
     public class TacticalState : ILevelState
     {

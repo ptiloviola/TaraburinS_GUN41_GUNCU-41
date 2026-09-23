@@ -21,12 +21,12 @@ MonoBehaviour:
   Duration: 7
   TickRate: 0.5
   StatusEffects:
-  - rid: 7999629163705401345
+  - rid: 7999629328347824128
   references:
     version: 2
     RefIds:
-    - rid: 7999629163705401345
-      type: {class: FreezeStatusConfig, ns: Gameplay.Core.Statuses.Data, asm: Assembly-CSharp}
+    - rid: 7999629328347824128
+      type: {class: FreezeStatusConfig, ns: Gameplay.Combat.Statuses.Data, asm: Assembly-CSharp}
       data:
-        _baseDuration: 6
-        _slowPercent: 0.174
+        _baseDuration: 3
+        _slowPercent: 0.336

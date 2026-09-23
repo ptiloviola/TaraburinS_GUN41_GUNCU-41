@@ -2,14 +2,13 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Economy;
 using Gameplay.Base;
-using Gameplay.Levels.States;
-using Gameplay.Levels.Services;
-using Gameplay.Levels.Data;
-using Gameplay.Core.Data;
+using Gameplay.Combat.States;
+using Gameplay.Combat.Services;
+using Gameplay.Combat.Data;
 using Gameplay.Modifiers.Data;      
 using Gameplay.Modifiers.Services;  
 
-namespace Gameplay.Core.Installers
+namespace Gameplay.Combat.Installers
 {
     public class LevelStateInstaller : MonoInstaller
     {

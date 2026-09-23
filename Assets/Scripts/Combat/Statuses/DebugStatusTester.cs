@@ -1,7 +1,7 @@
 using UnityEngine;
 using Gameplay.Enemies;
-using Gameplay.Core.Statuses;
-using Gameplay.Core;
+using Gameplay.Combat.Statuses;
+using Gameplay.Combat;
 
 public class DebugStatusTester : MonoBehaviour
 {

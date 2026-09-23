@@ -1,6 +1,6 @@
 using System;
 using Zenject;
-using Gameplay.Core;
+using Gameplay.Combat;
 
 namespace Gameplay.Enemies.Visuals
 {

@@ -3,9 +3,9 @@ using UnityEngine;
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Auras.Data;
 using Gameplay.Auras;
-using Gameplay.Core.Statuses.Data;
-using Gameplay.Core;
-using Gameplay.Core.Attributes;
+using Gameplay.Combat.Statuses.Data;
+using Gameplay.Combat;
+using Gameplay.Combat.Attributes;
 using Gameplay.Auras.Factories;
 
 namespace Gameplay.Projectiles.Data

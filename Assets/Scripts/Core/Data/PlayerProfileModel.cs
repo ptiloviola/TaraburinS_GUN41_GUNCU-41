@@ -1,6 +1,6 @@
 using System;
 
-namespace Gameplay.Core.Data
+namespace Gameplay.Combat.Data
 {
     [Serializable]
     public class PlayerProfileModel

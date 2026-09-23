@@ -1,6 +1,6 @@
 using UnityEngine;
 using Zenject;
-using Gameplay.Core;
+using Gameplay.Combat;
 using Gameplay.Enemies.Data;
 using System;
 

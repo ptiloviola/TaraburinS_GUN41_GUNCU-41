@@ -1,5 +1,5 @@
 using UnityEngine;
-using Gameplay.Core; 
+using Gameplay.Combat; 
 using Gameplay.Projectiles.Contracts;
 
 namespace Gameplay.Projectiles.Data

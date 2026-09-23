@@ -1,7 +1,7 @@
 using UnityEngine;
 using Gameplay.Enemies;
 
-namespace Gameplay.Core.Statuses
+namespace Gameplay.Combat.Statuses
 {
     public class PoisonStatus : IStatusEffect
     {

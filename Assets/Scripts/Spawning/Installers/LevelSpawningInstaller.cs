@@ -10,7 +10,7 @@ using Gameplay.Spawning.Factories;
 using Gameplay.Spawning.Services;
 using Gameplay.Spawning.Data;
 using Gameplay.Infrastructure.Signals;
-using Gameplay.Levels.Services;
+using Gameplay.Combat.Services;
 
 namespace Gameplay.Spawning.Installers
 {

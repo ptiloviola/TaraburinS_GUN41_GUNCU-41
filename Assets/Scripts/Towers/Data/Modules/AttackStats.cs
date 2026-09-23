@@ -1,5 +1,5 @@
 using UnityEngine;
-using Gameplay.Core; 
+using Gameplay.Combat; 
 using Gameplay.Projectiles.Data;
 using Gameplay.Projectiles; // Для ModularProjectile
 

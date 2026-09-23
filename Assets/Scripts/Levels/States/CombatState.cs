@@ -6,7 +6,7 @@ using Gameplay.Infrastructure.Signals;
 using Gameplay.Enemies;
 using Zenject;
 
-namespace Gameplay.Levels.States
+namespace Gameplay.Combat.States
 {
     public class CombatState : ILevelState
     {

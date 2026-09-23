@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Gameplay.Spawning;
 
-namespace Gameplay.Levels.Services
+namespace Gameplay.Combat.Services
 {
     public class ObfuscatedEnemyData
     {

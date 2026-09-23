@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Gameplay.Enemies.Data;
 using UnityEngine;
-using Gameplay.Core.Statuses;
+using Gameplay.Combat.Statuses;
 
 namespace Gameplay.Enemies.Statuses
 {

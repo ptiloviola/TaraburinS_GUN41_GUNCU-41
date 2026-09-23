@@ -2,7 +2,7 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Towers.Data;
 using Gameplay.Towers.Data.Modules;
-using Gameplay.Core;
+using Gameplay.Combat;
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Towers.Behaviors.Targeting;

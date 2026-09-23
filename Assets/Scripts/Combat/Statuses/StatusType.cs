@@ -1,4 +1,4 @@
-namespace Gameplay.Core.Statuses
+namespace Gameplay.Combat.Statuses
 {
     public enum StatusType
     {

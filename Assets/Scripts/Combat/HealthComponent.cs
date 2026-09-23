@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Gameplay.Core
+namespace Gameplay.Combat
 {
     public class HealthComponent : MonoBehaviour
     {

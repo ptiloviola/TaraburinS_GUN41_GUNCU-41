@@ -3,9 +3,9 @@ using Zenject;
 using Gameplay.UI.Views;
 using Gameplay.UI.Presenters;
 
-namespace Gameplay.Hub.Installers
+namespace Gameplay.MapScene.Installers
 {
-    public class HubInstaller : MonoInstaller
+    public class MapSceneInstaller : MonoInstaller
     {
         [SerializeField] private HubUIView _hubView;
         [SerializeField] private ShopUIView _shopView;

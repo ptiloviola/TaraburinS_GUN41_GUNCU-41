@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Gameplay.Core.Attributes;
+using Gameplay.Combat.Attributes;
 
 [CustomPropertyDrawer(typeof(SubclassSelectorAttribute))]
 public class SubclassSelectorDrawer : PropertyDrawer

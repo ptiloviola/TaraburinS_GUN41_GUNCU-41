@@ -1,4 +1,4 @@
-namespace Gameplay.Core
+namespace Gameplay.Combat
 {
     public struct DamagePayload
     {

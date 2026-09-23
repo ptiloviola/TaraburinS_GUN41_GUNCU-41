@@ -4,7 +4,7 @@ using Gameplay.Infrastructure.Signals;
 using System;
 using Gameplay.Modifiers.Services;
 using Gameplay.Modifiers.Enums;
-using Gameplay.Levels.Data;
+using Gameplay.Combat.Data;
 
 namespace Gameplay.Economy
 {

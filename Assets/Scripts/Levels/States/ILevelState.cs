@@ -1,7 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace Gameplay.Levels.States
+namespace Gameplay.Combat.States
 {
     public interface ILevelState
     {

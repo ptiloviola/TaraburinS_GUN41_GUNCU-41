@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Gameplay.Campaign.Data;
+using Gameplay.Combat.Data;
 using Gameplay.Modifiers.Data;
 
 namespace Gameplay.UI.Views

@@ -1,5 +1,5 @@
 using UnityEngine;
-using Gameplay.Core; 
+using Gameplay.Combat; 
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Projectiles.Payloads;
 

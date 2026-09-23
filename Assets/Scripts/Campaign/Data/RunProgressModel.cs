@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using Gameplay.Levels.Data;
-using Gameplay.Campaign.Data;
+using Gameplay.Combat.Data;
 
-namespace Gameplay.Core.Data
+namespace Gameplay.Combat.Data
 {
     public class RunProgressModel
     {

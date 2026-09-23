@@ -1,8 +1,7 @@
 using System;
 using Zenject;
 using Gameplay.UI.Views;
-using Gameplay.Core.Data;
-using Gameplay.Campaign.Data;
+using Gameplay.Combat.Data;
 using Gameplay.Modifiers.Data;
 
 namespace Gameplay.UI.Presenters

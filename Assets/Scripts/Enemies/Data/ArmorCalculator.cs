@@ -1,4 +1,4 @@
-using Gameplay.Core;
+using Gameplay.Combat;
 
 namespace Gameplay.Enemies.Data
 {

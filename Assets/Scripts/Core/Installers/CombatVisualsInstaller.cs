@@ -1,9 +1,9 @@
 using UnityEngine;
 using Zenject;
 using Gameplay.Enemies.Visuals;
-using Gameplay.Core;
+using Gameplay.Combat;
 
-namespace Gameplay.Core.Installers
+namespace Gameplay.Combat.Installers
 {
     public class CombatVisualsInstaller : MonoInstaller
     {
