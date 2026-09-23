@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: NewCampaignConfig
   m_EditorClassIdentifier: 
   _nodes:
-  - NodeType: 0
-    NodeDisplayName: Battle 1
-    CombatLevel: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
   - NodeType: 1
     NodeDisplayName: Shop 1
     CombatLevel: {fileID: 0}
+    ShopData: {fileID: 11400000, guid: 336bef7782f6fa4488194c2b9777c888, type: 2}
+  - NodeType: 0
+    NodeDisplayName: Battle 1
+    CombatLevel: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+    ShopData: {fileID: 0}
   - NodeType: 0
     NodeDisplayName: Battle 2
     CombatLevel: {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
+    ShopData: {fileID: 0}

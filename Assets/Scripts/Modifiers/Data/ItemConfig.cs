@@ -9,6 +9,9 @@ namespace Gameplay.Modifiers.Data
         public string ItemId;
         public string DisplayName;
         [TextArea] public string Description;
+
+        public int BaseCost = 50; 
+        public Sprite Icon;
         
         public List<StatModifierData> Modifiers = new List<StatModifierData>();
     }

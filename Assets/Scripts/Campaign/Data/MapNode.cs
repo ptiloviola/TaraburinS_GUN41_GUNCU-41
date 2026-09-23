@@ -13,8 +13,7 @@ namespace Gameplay.Campaign.Data
         [Header("Данные для боя (если тип Combat)")]
         public LevelBlueprintConfig CombatLevel;
 
-        // В будущем здесь появится:
-        // [Header("Данные для магазина (если тип Shop)")]
-        // public ShopConfig ShopData;
+        [Header("Данные для магазина (если тип Shop)")]
+        public ShopConfig ShopData;
     }
 }

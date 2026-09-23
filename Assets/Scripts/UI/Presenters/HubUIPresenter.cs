@@ -16,18 +16,22 @@ namespace Gameplay.UI.Presenters
         private readonly RunProgressModel _progressModel;
         private readonly ISceneLoaderService _sceneLoader;
 
+        private readonly ShopUIPresenter _shopPresenter;
+
         private MapNode _nextNode;
 
         public HubUIPresenter(
             HubUIView view,
             IRunDirectorService runDirector,
             RunProgressModel progressModel,
-            ISceneLoaderService sceneLoader)
+            ISceneLoaderService sceneLoader,
+            ShopUIPresenter shopPresenter)
         {
             _view = view;
             _runDirector = runDirector;
             _progressModel = progressModel;
             _sceneLoader = sceneLoader;
+            _shopPresenter = shopPresenter;
         }
 
         public void Initialize()
@@ -47,12 +51,14 @@ namespace Gameplay.UI.Presenters
             {
                 _view.ShowCampaignCompleted();
             }
+            _shopPresenter.OnShopClosed += HandleShopClosed;
         }
 
         public void Dispose()
         {
             _view.OnStartBattleClicked -= HandleActionClicked;
             _view.OnMainMenuClicked -= HandleMainMenu;
+            _shopPresenter.OnShopClosed -= HandleShopClosed;
         }
 
         private void HandleActionClicked()
@@ -71,9 +77,7 @@ namespace Gameplay.UI.Presenters
                 case MapNodeType.Shop:
                     
                     UnityEngine.Debug.Log("<color=cyan>[MapScene] Игрок зашел в Магазин! (UI магазина пока не реализован)</color>");
-                    
-                    _progressModel.CurrentRunDepth++;
-                    _sceneLoader.LoadSceneAsync("HubScene").Forget();
+                    _shopPresenter.OpenShop(_nextNode.ShopData);
                     break;
                 
                 case MapNodeType.Event:
@@ -86,6 +90,12 @@ namespace Gameplay.UI.Presenters
         {
             _view.SetInteractable(false);
             _sceneLoader.LoadSceneAsync("MainMenuScene").Forget();
+        }
+
+        private void HandleShopClosed()
+        {
+            _progressModel.CurrentRunDepth++; 
+            _sceneLoader.LoadSceneAsync("HubScene").Forget(); 
         }
     }
 }

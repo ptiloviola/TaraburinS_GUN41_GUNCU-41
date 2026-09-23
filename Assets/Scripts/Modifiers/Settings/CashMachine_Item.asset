@@ -17,6 +17,8 @@ MonoBehaviour:
   Description: "\u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
     \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u0441\u0442\u0430\u0440\u0442\u043E\u0432\u044B\u0445
     \u0434\u0435\u043D\u0435\u0433 \u043D\u0430 20%"
+  BaseCost: 20
+  Icon: {fileID: 21300000, guid: 57379d4f79a998f4bbe9928d510849bf, type: 3}
   Modifiers:
   - StatType: 0
     Multiplier: 1.2
