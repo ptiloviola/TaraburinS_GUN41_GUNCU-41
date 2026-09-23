@@ -35,6 +35,8 @@ namespace Gameplay.UI.Presenters
             _view.OnStartBattleClicked += HandleActionClicked;
             _view.OnMainMenuClicked += HandleMainMenu;
 
+            _view.UpdateRunInventory(_progressModel.CurrentRunGold);
+
             if (_runDirector.HasNextNode(_progressModel))
             {
                 _nextNode = _runDirector.GetNextNode(_progressModel);

@@ -8,6 +8,7 @@ namespace Gameplay.UI.Views
     public class HubUIView : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _nextLevelTitleText;
+        [SerializeField] private TextMeshProUGUI _runGoldText;
         [SerializeField] private Button _startBattleButton;
         [SerializeField] private Button _mainMenuButton;
 
@@ -42,6 +43,14 @@ namespace Gameplay.UI.Views
         {
             _startBattleButton.interactable = interactable;
             _mainMenuButton.interactable = interactable;
+        }
+
+        public void UpdateRunInventory(int currentGold)
+        {
+            if (_runGoldText != null)
+            {
+                _runGoldText.text = $"GOLD: {currentGold}";
+            }
         }
     }
 }

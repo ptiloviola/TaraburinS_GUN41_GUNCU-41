@@ -38,7 +38,8 @@ namespace Gameplay.UI.Presenters
             _view.OnSettingsClicked += HandleSettingsClicked;
 
             PlayerProfileModel profile = _saveLoadService.LoadProfile();
-            _view.UpdateStatsDisplay(profile.TotalRunsPlayed, profile.MaxCompletedLevelIndex);
+            
+            _view.UpdateStatsDisplay(profile.TotalRunsPlayed, profile.MaxCompletedLevelIndex, profile.MetaCurrency);
         }
 
         public void Dispose()

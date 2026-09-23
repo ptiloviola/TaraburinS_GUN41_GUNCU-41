@@ -4,6 +4,7 @@ using Zenject;
 using Gameplay.Infrastructure.Signals;
 using Gameplay.Core.Data;
 using Gameplay.Core.Services;
+using Gameplay.Levels.Data;
 
 namespace Gameplay.Levels.Services
 {
@@ -44,14 +45,22 @@ namespace Gameplay.Levels.Services
             if (_isProcessed) return;
             _isProcessed = true;
 
-            _runProgress.CurrentRunDepth++;
-
+            LevelBlueprintConfig wonLevel = _runProgress.CurrentNode?.CombatLevel;
             PlayerProfileModel profile = _saveLoadService.LoadProfile();
+
+            if (wonLevel != null)
+            {
+                _runProgress.CurrentRunGold += wonLevel.RunCurrencyReward;
+                profile.MetaCurrency += wonLevel.MetaCurrencyReward;
+                
+                Debug.Log($"<color=yellow>[RunResultProcessor] Награда: +{wonLevel.RunCurrencyReward} Золота забега, +{wonLevel.MetaCurrencyReward} Мета-очков.</color>");
+            }
+
+            _runProgress.CurrentRunDepth++;
 
             if (_runProgress.CurrentRunDepth > profile.MaxCompletedLevelIndex)
             {
                 profile.MaxCompletedLevelIndex = _runProgress.CurrentRunDepth;
-                Debug.Log($"<color=yellow>[RunResultProcessor] Новый рекорд! Глубина: {profile.MaxCompletedLevelIndex}</color>");
             }
 
             if (!_runDirector.HasNextNode(_runProgress))

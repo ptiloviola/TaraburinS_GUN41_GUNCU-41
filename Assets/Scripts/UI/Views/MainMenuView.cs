@@ -15,6 +15,7 @@ namespace Gameplay.UI.Views
         [Header("Тексты Статистики")]
         [SerializeField] private TextMeshProUGUI _runsCountText;
         [SerializeField] private TextMeshProUGUI _maxLevelText;
+        [SerializeField] private TextMeshProUGUI _metaCurrencyText;
 
         public event Action OnPlayClicked;
         public event Action OnLoadSaveClicked;
@@ -41,13 +42,15 @@ namespace Gameplay.UI.Views
             if (_settingsButton != null) _settingsButton.interactable = isInteractable;
         }
 
-        public void UpdateStatsDisplay(int runsPlayed, int maxLevel)
+        public void UpdateStatsDisplay(int runsPlayed, int maxLevel, int metaCurrency)
         {
             if (_runsCountText != null) 
                 _runsCountText.text = $"RUNS PLAYED: {runsPlayed}";
                 
             if (_maxLevelText != null) 
                 _maxLevelText.text = $"RECORD (LEVEL): {maxLevel}";
+            if (_metaCurrencyText != null) 
+                _metaCurrencyText.text = $"PROGRESS POINTS: {metaCurrency}";
         }
     }
 }
