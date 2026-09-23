@@ -39,21 +39,16 @@ namespace Gameplay.Spawning.Factories
                     return;
                 }
                 
-                // 1. Извлекаем врага из пула по его ID
                 EnemyFacade.Pool specificPool = _container.ResolveId<EnemyFacade.Pool>(enemyId);
                 EnemyFacade enemy = specificPool.Spawn();
                 
-                // 2. Инициализация базовых данных (связь с пулом и конфигом)
                 enemy.SetPool(specificPool);
                 enemy.InitConfig(config);
                 
-                // 3. Установка позиции через инкапсулированное свойство агента (без GetComponent!)
                 if (enemy.Agent != null)
                 {
                     enemy.Agent.enabled = false;
                     
-                    // Поднимаем точку спавна на высоту полета (Base Offset),
-                    // чтобы невидимые "ноги" агента точно попали на NavMesh
                     Vector3 finalPos = spawnPos;
                     finalPos.y += enemy.Agent.baseOffset;
                     
@@ -61,7 +56,6 @@ namespace Gameplay.Spawning.Factories
                     enemy.Agent.enabled = true;
                 }
 
-                // 4. Поиск цели
                 if (string.IsNullOrEmpty(targetBaseId))
                 {
                     targetBaseId = BaseLocatorService.NearestByPathTag; 
@@ -69,7 +63,6 @@ namespace Gameplay.Spawning.Factories
                 
                 BaseCore targetBase = _baseLocatorService.LocateTargetBase(targetBaseId, spawnPos);
                 
-                // 5. Выдача приказа на движение
                 if (targetBase != null)
                 {
                     IMovementStrategy movement = config.Movement.CreateStrategy(targetBase.transform.position);
@@ -82,7 +75,6 @@ namespace Gameplay.Spawning.Factories
 #endif
                 }
 
-                // 6. Уведомляем систему ТОЛЬКО когда враг полностью готов к бою
                 _signalBus.Fire<SignalEnemySpawned>();
             }
             catch (ZenjectException)

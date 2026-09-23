@@ -1,19 +1,29 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using Gameplay.Combat.Data;
+using Gameplay.Levels.Data;
 
-namespace Gameplay.Combat.Data
+namespace Gameplay.Campaign.Data
 {
     [Serializable]
     public class MapNode
     {
+        public string Id;
+        public int Depth;
+        
         public MapNodeType NodeType;
         public string NodeDisplayName;
 
-        [Header("Данные для боя (если тип Combat)")]
+
+        public List<string> NextNodeIds = new List<string>();
+
+
+        public Vector2 RenderPosition; 
+
+        [Header("Данные для боя (если Combat)")]
         public LevelBlueprintConfig CombatLevel;
 
-        [Header("Данные для магазина (если тип Shop)")]
+        [Header("Данные для магазина (если Shop)")]
         public ShopConfig ShopData;
     }
 }

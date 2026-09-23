@@ -4,8 +4,8 @@ namespace Gameplay.Towers.Behaviors.Aiming
 {
     public class OmniAimStrategy : IAimStrategy
     {
-        private readonly Transform _baseTransform; // Неподвижное основание башни (для расчета FOV)
-        private readonly Transform _firePoint;     // Точка, откуда пускаем Raycast
+        private readonly Transform _baseTransform;
+        private readonly Transform _firePoint;
         private readonly LayerMask _envMask;
         
         private readonly float _minPitch;
@@ -31,7 +31,6 @@ namespace Gameplay.Towers.Behaviors.Aiming
 
             Vector3 directionToTarget = target.position - rotator.position;
             
-            // 1. Проверка горизонтального сектора (Yaw / FOV)
             if (_fov < 360f)
             {
                 Vector3 flatDirection = new Vector3(directionToTarget.x, 0, directionToTarget.z);
@@ -40,17 +39,14 @@ namespace Gameplay.Towers.Behaviors.Aiming
                 if (Vector3.Angle(flatForward, flatDirection) > _fov * 0.5f) return false;
             }
 
-            // 2. Проверка вертикального угла (Pitch)
             float distanceXZ = new Vector2(directionToTarget.x, directionToTarget.z).magnitude;
             float pitchAngle = Mathf.Atan2(directionToTarget.y, distanceXZ) * Mathf.Rad2Deg;
             
             if (pitchAngle < _minPitch || pitchAngle > _maxPitch) return false;
 
-            // 3. Проверка препятствий (Line of Sight) — Самая тяжелая операция, делаем последней
             if (_checkLoS && _firePoint != null)
             {
                 Vector3 rayDirection = target.position - _firePoint.position;
-                // Пускаем луч. Если врезались в стену (Environment) — цель не видно
                 if (Physics.Raycast(_firePoint.position, rayDirection, rayDirection.magnitude, _envMask))
                 {
                     return false;
@@ -84,7 +80,6 @@ namespace Gameplay.Towers.Behaviors.Aiming
             Vector3 baseForward = new Vector3(_baseTransform.forward.x, 0, _baseTransform.forward.z).normalized;
             if (baseForward == Vector3.zero) baseForward = _baseTransform.up; 
             
-            // Отрисовка сектора FOV (Голубые линии)
             Gizmos.color = new Color(0f, 1f, 1f, 0.5f);
             if (_fov < 360f)
             {
@@ -94,9 +89,7 @@ namespace Gameplay.Towers.Behaviors.Aiming
                 Gizmos.DrawRay(pos, rightLimit * range);
             }
 
-            // Отрисовка Pitch лимитов (Пурпурные линии)
             Gizmos.color = new Color(1f, 0f, 1f, 0.8f);
-            // Рисуем наклон относительно направления ротатора (куда он сейчас смотрит)
             Vector3 flatRotatorForward = new Vector3(rotator.forward.x, 0, rotator.forward.z).normalized;
             if (flatRotatorForward != Vector3.zero)
             {
@@ -107,7 +100,6 @@ namespace Gameplay.Towers.Behaviors.Aiming
                 Gizmos.DrawRay(pos, downLimit * range);
             }
             
-            // Если включен LoS, рисуем желтый луч из дула, чтобы видеть, откуда идет проверка
             if (_checkLoS && _firePoint != null)
             {
                 Gizmos.color = new Color(1f, 0.9f, 0f, 0.4f);

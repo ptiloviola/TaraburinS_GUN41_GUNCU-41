@@ -42,18 +42,17 @@ namespace Gameplay.Cameras.Controllers
 
             if (_config.UseAbsoluteManualStart)
             {
-                // ЖЕСТКИЙ СТАРТ: Ставим камеру точно по координатам из конфига
                 _camera.transform.position = _config.AbsolutePosition;
                 _camera.transform.rotation = Quaternion.Euler(_config.AbsoluteRotation);
                 _currentZoomDistance = _config.AbsoluteZoom;
 
-                // Вычисляем точку фокуса на земле чисто для того, чтобы от нее потом летать
+                
                 _focusPoint = _camera.transform.position + (_camera.transform.forward * _currentZoomDistance);
                 _focusPoint.y = 0f;
             }
             else
             {
-                // Старый код старта от базы
+
                 _camera.transform.rotation = Quaternion.Euler(_config.AbsoluteRotation.x, _config.AbsoluteRotation.y, 0f);
                 _currentZoomDistance = Mathf.Lerp(_config.MinZoomY, _config.MaxZoomY, 0.5f);
                 
@@ -64,7 +63,7 @@ namespace Gameplay.Cameras.Controllers
                     _focusPoint = targetBase.transform.position + (yawRotation * _config.BaseFocusOffset);
                 }
                 _focusPoint.y = 0f;
-                ApplyCameraPosition(1f); // Мгновенный прыжок
+                ApplyCameraPosition(1f);
             }
         }
 

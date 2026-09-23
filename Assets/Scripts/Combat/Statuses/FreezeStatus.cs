@@ -6,7 +6,7 @@ namespace Gameplay.Combat.Statuses
     public class FreezeStatus : IStatusEffect
     {
         public string Id => "Freeze";
-        public StatusType Type => StatusType.Control; // Указываем, что это контроль
+        public StatusType Type => StatusType.Control;
         
         public float SpeedModifier { get; private set; }
         public float DamageTakenModifier => 1f;
@@ -21,7 +21,6 @@ namespace Gameplay.Combat.Statuses
             SpeedModifier = 1f - Mathf.Clamp01(slowPercent);
         }
 
-        // Применяем срезку времени
         public void ApplyResistance(float durationMultiplier)
         {
             _duration *= durationMultiplier;

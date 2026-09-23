@@ -22,16 +22,15 @@ namespace Gameplay.Towers.Behaviors.Targeting
                 Vector3 directionToTarget = hit.transform.position - center.position;
                 float sqrDistance = directionToTarget.sqrMagnitude;
                 
-                // Проверка мертвой зоны
+
                 if (sqrDistance < minRangeSqr) continue;
 
-                // НОВОЕ: Честная баллистическая проверка углов (Pitch)
-                // Считаем горизонтальную дистанцию (X и Z)
+
                 float distance2D = new Vector2(directionToTarget.x, directionToTarget.z).magnitude;
-                // Вычисляем угол возвышения в градусах (отрицательный - цель ниже, положительный - цель выше)
+
                 float pitchAngle = Mathf.Atan2(directionToTarget.y, distance2D) * Mathf.Rad2Deg;
 
-                // Отсеиваем всё, что слишком высоко или слишком низко для этой башни
+
                 if (pitchAngle < stats.MinPitch || pitchAngle > stats.MaxPitch) continue;
 
                 if (sqrDistance < closestSqrDistance)
@@ -57,12 +56,12 @@ namespace Gameplay.Towers.Behaviors.Targeting
             if (sqrDistance > (stats.Range * stats.Range) || sqrDistance < (stats.MinRange * stats.MinRange)) 
                 return false;
 
-            // НОВОЕ: Проверка угла при удержании цели
+
             float distance2D = new Vector2(directionToTarget.x, directionToTarget.z).magnitude;
             float pitchAngle = Mathf.Atan2(directionToTarget.y, distance2D) * Mathf.Rad2Deg;
 
             if (pitchAngle < stats.MinPitch || pitchAngle > stats.MaxPitch) 
-                return false; // Сбрасываем цель, если она улетела слишком высоко
+                return false;
 
             if (aimStrategy != null && !aimStrategy.CanAimAt(center, target)) return false;
 

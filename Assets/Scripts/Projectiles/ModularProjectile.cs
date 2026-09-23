@@ -30,7 +30,6 @@ namespace Gameplay.Projectiles
 
         public void Launch(Transform target, IProjectilePayload payload, IMemoryPool pool)
         {
-            // ЖЕСТКИЙ СБРОС СОСТОЯНИЯ: Очищаем "карму" снаряда перед каждым выстрелом
             _target = target;
             _payload = payload;
             _pool = pool;
@@ -64,7 +63,6 @@ namespace Gameplay.Projectiles
 
         private void Dispose()
         {
-            // Возвращаем в пул (MonoMemoryPool сам сделает SetActive(false))
             if (_pool != null) 
             {
                 _pool.Despawn(this); 
@@ -75,7 +73,6 @@ namespace Gameplay.Projectiles
             }
         }
 
-        // Чистый класс пула. Zenject сам управляет SetActive(true/false)
         public class Pool : MonoMemoryPool<ModularProjectile> {}
     }
 }

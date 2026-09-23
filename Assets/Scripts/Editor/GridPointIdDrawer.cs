@@ -9,7 +9,6 @@ namespace Gameplay.Editor
     [CustomPropertyDrawer(typeof(GridPointIdAttribute))]
     public class GridPointIdDrawer : PropertyDrawer
     {
-        // Кэшируем ссылку на компонент на сцене
         private GridGizmosDrawer _cachedDrawer;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -17,12 +16,10 @@ namespace Gameplay.Editor
 
             try
             {
-                // Если объект уже уничтожен редактором, выход
                 if (property == null || property.serializedObject == null) return;
 
                 GridPointIdAttribute pointAttr = (GridPointIdAttribute)attribute;
 
-                // Ищем объект на сцене только один раз
                 if (_cachedDrawer == null)
                 {
                     _cachedDrawer = Object.FindObjectOfType<GridGizmosDrawer>();
@@ -42,7 +39,7 @@ namespace Gameplay.Editor
 
                     GridConfig config = _cachedDrawer.EditorConfig;
                     
-                    // Проход по массиву в памяти - это быстро, в отличие от FindObjectOfType
+                    
                     for (int x = 0; x < config.width; x++)
                     {
                         for (int z = 0; z < config.height; z++)
@@ -70,7 +67,7 @@ namespace Gameplay.Editor
 
             catch (System.Exception)
             {
-                // Тихо игнорируем ошибку отрисовки во время выхода из Play Mode
+                
             }
             
 

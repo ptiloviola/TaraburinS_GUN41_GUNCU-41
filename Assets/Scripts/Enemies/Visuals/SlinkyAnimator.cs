@@ -37,7 +37,6 @@ namespace Gameplay.Enemies.Visuals
             KillSequence();
         }
 
-        // --- РЕАКЦИИ НА СМЕНУ СОСТОЯНИЙ ---
         protected override void OnMoveStart()
         {
             if (_slinkySequence != null && !_slinkySequence.IsPlaying())

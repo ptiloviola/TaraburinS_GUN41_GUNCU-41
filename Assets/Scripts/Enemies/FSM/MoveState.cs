@@ -13,7 +13,6 @@ namespace Gameplay.Enemies.FSM
 
         public override void Enter()
         {
-            // Включаем агента, если он был выключен
             if (Facade.Agent != null && !Facade.Agent.enabled)
             {
                 Facade.Agent.enabled = true;

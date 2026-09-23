@@ -41,11 +41,9 @@ namespace Gameplay.Cameras.Data
             Camera cam = Camera.main;
             if (cam == null) return;
 
-            // Просто в лоб копируем то, что видим
             AbsolutePosition = cam.transform.position;
             AbsoluteRotation = cam.transform.eulerAngles;
 
-            // Считаем дистанцию до земли для зума
             Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
             Ray ray = new Ray(cam.transform.position, cam.transform.forward);
 
@@ -56,10 +54,10 @@ namespace Gameplay.Cameras.Data
             }
             else
             {
-                AbsoluteZoom = 25f; // Заглушка, если смотрим в небо
+                AbsoluteZoom = 25f;
             }
             
-            UseAbsoluteManualStart = true; // Автоматически включаем ручной режим
+            UseAbsoluteManualStart = true;
         }
     }
 }

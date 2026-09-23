@@ -5,7 +5,8 @@ using Cysharp.Threading.Tasks;
 using Gameplay.Infrastructure.Services;
 using Gameplay.UI.Views;
 using Gameplay.Core.Services;
-using Gameplay.Combat.Data;
+using Gameplay.Campaign.Data;
+using Gameplay.Core.Data;
 
 namespace Gameplay.UI.Presenters
 {

@@ -61,7 +61,7 @@ namespace Gameplay.Spawning.Services
                 Debug.Log("<color=cyan>[WaveStateController] Режиссер начал работу (UniTask).</color>");
 #endif
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: ct);
-                // ----------------------
+
                 await UniTask.WaitUntil(() => _baseRegistry.ActiveBases.Any(), cancellationToken: ct);
 
                 while (_waveProvider.HasNextWave())

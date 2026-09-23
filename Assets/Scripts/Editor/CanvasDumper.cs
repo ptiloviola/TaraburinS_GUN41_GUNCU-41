@@ -32,7 +32,7 @@ namespace Gameplay.Tools
         {
             string indent = new string(' ', depth * 4) + (depth > 0 ? "┗ " : "");
             
-            // Оставляем только позицию и скейл (вращение в UI нужно редко)
+
             string pos = $"Pos({node.localPosition.x:F1}, {node.localPosition.y:F1}, {node.localPosition.z:F1})";
             string scale = $"Scale({node.localScale.x:F2}, {node.localScale.y:F2}, {node.localScale.z:F2})";
             
@@ -41,7 +41,7 @@ namespace Gameplay.Tools
             
             foreach (var c in components)
             {
-                // Пропускаем обычный Transform, но оставляем RectTransform
+
                 if (c == null || c.GetType() == typeof(Transform)) continue;
                 
                 string compName = c.GetType().Name;

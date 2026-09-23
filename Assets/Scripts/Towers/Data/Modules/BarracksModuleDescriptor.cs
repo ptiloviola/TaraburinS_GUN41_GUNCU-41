@@ -1,5 +1,5 @@
 using System;
-using Gameplay.Units.Data; // Путь к нашему новому DefenderConfig
+using Gameplay.Units.Data;
 using UnityEngine;
 
 namespace Gameplay.Towers.Data.Modules

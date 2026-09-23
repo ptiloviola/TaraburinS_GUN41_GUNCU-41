@@ -35,7 +35,7 @@ namespace Gameplay.Enemies.Visuals
             if (_visualRoot != null) 
             {
                 _initialVisualPos = _visualRoot.localPosition;
-                _initialVisualScale = _visualRoot.localScale; // НОВОЕ
+                _initialVisualScale = _visualRoot.localScale;
             }
         }
 
@@ -48,7 +48,7 @@ namespace Gameplay.Enemies.Visuals
             if (_visualRoot != null) 
             {
                 _visualRoot.localPosition = _initialVisualPos;
-                _visualRoot.localScale = _initialVisualScale; // НОВОЕ
+                _visualRoot.localScale = _initialVisualScale;
             }
             if (_core != null) _core.localScale = _initialCoreScale;
 
@@ -65,7 +65,7 @@ namespace Gameplay.Enemies.Visuals
 
         public override async UniTask PlayDeathAnimationAsync()
         {
-            KillAllAnimations(); // Останавливаем пульсацию и вращение
+            KillAllAnimations();
             
             if (_visualRoot != null)
             {

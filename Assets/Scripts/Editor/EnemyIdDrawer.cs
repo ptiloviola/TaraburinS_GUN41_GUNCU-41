@@ -9,14 +9,12 @@ namespace Gameplay.Spawning.Editor
     [CustomPropertyDrawer(typeof(EnemyIdAttribute))]
     public class EnemyIdDrawer : PropertyDrawer
     {
-        // Кэшируем ссылку на реестр, чтобы не "насиловать" AssetDatabase каждый кадр
         private EnemyRegistry _cachedRegistry;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             try
             {
-                // Если объект уже уничтожен редактором, выход
                 if (property == null || property.serializedObject == null) return;
 
                 if (property.propertyType != SerializedPropertyType.String)
@@ -25,7 +23,6 @@ namespace Gameplay.Spawning.Editor
                     return;
                 }
 
-                // 1. Ищем реестр только если еще не нашли
                 if (_cachedRegistry == null)
                 {
                     string[] guids = AssetDatabase.FindAssets("t:EnemyRegistry");
@@ -38,7 +35,6 @@ namespace Gameplay.Spawning.Editor
 
                 List<string> enemyIds = new List<string>();
 
-                // 2. Достаем ID (проход по списку в памяти работает мгновенно)
                 if (_cachedRegistry != null && _cachedRegistry.Enemies != null)
                 {
                     foreach (var enemy in _cachedRegistry.Enemies)
@@ -63,7 +59,7 @@ namespace Gameplay.Spawning.Editor
             }
             catch (System.Exception)
             {
-                // Тихо игнорируем ошибку отрисовки во время выхода из Play Mode
+                
             }
             
         }

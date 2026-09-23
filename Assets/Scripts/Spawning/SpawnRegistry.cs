@@ -3,20 +3,16 @@ using System.Collections.Generic;
 
 namespace Gameplay.Spawning
 {
-    /// <summary>
-    /// Реестр всех активных точек спавна на уровне.
-    /// POCO-класс, не зависящий от MonoBehaviour.
-    /// </summary>
+
     public class SpawnRegistry
     {
         private readonly Dictionary<string, EnemySpawnPoint> _spawns = new Dictionary<string, EnemySpawnPoint>();
         
         public void Register(EnemySpawnPoint spawn)
         {
-            // Защита от дурака: не регистрируем пустышки
+
             if (spawn == null || string.IsNullOrEmpty(spawn.PointId)) return;
 
-            // TryAdd безопаснее, чем ContainsKey + Add
             if (_spawns.TryAdd(spawn.PointId, spawn))
             {
 #if UNITY_EDITOR

@@ -10,7 +10,6 @@ namespace Gameplay.Enemies.FSM
 
         public EnemyStateType CurrentStateType => _currentState?.StateType ?? EnemyStateType.Spawn;
 
-        // Событие для визуализаторов (Animator, DOTween, Particles)
         public event Action<EnemyStateType> OnStateChanged;
 
         public void AddState(IEnemyState state)
@@ -22,7 +21,7 @@ namespace Gameplay.Enemies.FSM
         {
             if (_currentState != null)
             {
-                if (_currentState.StateType == stateType) return; // Защита от двойного вызова
+                if (_currentState.StateType == stateType) return;
                 _currentState.Exit();
             }
 
@@ -30,7 +29,7 @@ namespace Gameplay.Enemies.FSM
             {
                 _currentState = nextState;
                 _currentState.Enter();
-                OnStateChanged?.Invoke(stateType); // Оповещаем визуализаторы!
+                OnStateChanged?.Invoke(stateType);
             }
         }
 

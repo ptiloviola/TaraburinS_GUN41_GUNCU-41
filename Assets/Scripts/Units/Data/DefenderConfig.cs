@@ -6,7 +6,7 @@ namespace Gameplay.Units.Data
     public class DefenderConfig : ScriptableObject
     {
         [Header("Базовая информация")]
-        public string DefenderId; // НОВОЕ: Уникальный ID (например, "militia", "knight")
+        public string DefenderId;
         [Header("Визуал")]
         public GameObject Prefab;
 

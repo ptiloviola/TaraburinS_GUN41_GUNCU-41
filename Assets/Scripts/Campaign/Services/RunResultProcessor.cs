@@ -2,11 +2,13 @@ using System;
 using UnityEngine;
 using Zenject;
 using Gameplay.Infrastructure.Signals;
-using Gameplay.Combat.Data;
+using Gameplay.Campaign.Data;
 using Gameplay.Core.Services;
+using Gameplay.Levels.Data;
+using Gameplay.Core.Data;
 
 
-namespace Gameplay.Combat.Services
+namespace Gameplay.Campaign.Services
 {
     public class RunResultProcessor : IInitializable, IDisposable
     {

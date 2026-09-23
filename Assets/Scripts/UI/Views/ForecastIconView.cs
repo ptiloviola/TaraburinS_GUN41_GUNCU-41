@@ -24,18 +24,15 @@ namespace Gameplay.UI.Views
 
         public void Init(string enemyId, int count, Sprite iconSprite)
         {
-            // 1. Отрисовка количества (если < 0, значит скрыто)
             if (_countText != null)
             {
                 _countText.text = count < 0 ? "x?" : $"x{count}";
             }
             
-            // 2. Определение данных: известны они или скрыты
             bool isUnknown = string.IsNullOrEmpty(enemyId);
             Sprite finalSprite = isUnknown ? _unknownSprite : iconSprite;
             string finalName = isUnknown ? "???" : enemyId.ToUpper();
 
-            // 3. Логика отображения (Картинка приоритетнее текста)
             if (finalSprite != null && _iconImage != null)
             {
                 _iconImage.sprite = finalSprite;

@@ -1,5 +1,4 @@
 using UnityEngine;
-using Zenject;
 using Gameplay.Projectiles;
 using Gameplay.Projectiles.Contracts;
 using Gameplay.Projectiles.Factories;
@@ -11,7 +10,7 @@ namespace Gameplay.Towers.Behaviors.Weapons
         private readonly ModularProjectile _projectilePrefab;
         private readonly ModularProjectile.Pool _pool;
         
-        // ИНЖЕКТИМ ТОЛЬКО ФАБРИКУ, никакой грязи!
+
         public ProjectileExecutor(ModularProjectile projectilePrefab, ProjectileFactory factory)
         {
             _projectilePrefab = projectilePrefab;
@@ -23,7 +22,6 @@ namespace Gameplay.Towers.Behaviors.Weapons
                 return;
             }
 #endif
-            // Просим фабрику выдать нам пул для этого конкретного префаба
             _pool = factory.GetPool(_projectilePrefab);
         }
 

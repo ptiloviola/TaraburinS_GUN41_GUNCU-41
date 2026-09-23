@@ -8,7 +8,7 @@ using Gameplay.Interaction;
 using Gameplay.Spawning;
 using Gameplay.Spawning.Data;
 using Gameplay.Enemies.Data;
-using Gameplay.Combat.Services;
+using Gameplay.Levels.Services;
 
 namespace Gameplay.UI.Presenters
 {
@@ -84,13 +84,11 @@ namespace Gameplay.UI.Presenters
         {
             ClearIcons();
 
-            // 1. Получаем агрегированные и рандомизированные данные
             var forecastData = _forecastService.GetLevelForecast();
 
-            // 2. Отрисовываем
             foreach (var data in forecastData)
             {
-                string displayName = null; // Если останется null, включится режим "неизвестности"
+                string displayName = null;
                 Sprite iconSprite = null;
                 int displayCount = data.IsCountHidden ? -1 : data.TotalCount;
 
@@ -99,12 +97,11 @@ namespace Gameplay.UI.Presenters
                     EnemyConfig config = _enemyRegistry.GetEnemyById(data.EnemyId);
                     if (config != null)
                     {
-                        displayName = config.DisplayName; // Или EnemyId, смотря что хочешь выводить
+                        displayName = config.DisplayName;
                         iconSprite = config.UIIcon;
                     }
                 }
 
-                // Пул сам вызовет Init и все правильно отрисует!
                 var icon = _iconPool.Spawn(displayName, displayCount, iconSprite);
                 icon.transform.SetParent(_view.ForecastContainer, false);
                 _activeIcons.Add(icon);

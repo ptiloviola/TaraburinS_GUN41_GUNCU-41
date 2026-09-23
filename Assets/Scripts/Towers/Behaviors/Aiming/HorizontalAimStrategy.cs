@@ -86,7 +86,7 @@ public void DrawAimGizmo(Transform rotator, float range)
             Vector3 baseForward = new Vector3(_baseTransform.forward.x, 0, _baseTransform.forward.z).normalized;
             if (baseForward == Vector3.zero) baseForward = _baseTransform.up; 
             
-            // 1. Отрисовка сектора FOV
+
             if (_fov < 360f)
             {
                 Gizmos.color = new Color(0f, 1f, 1f, 0.5f);
@@ -97,11 +97,10 @@ public void DrawAimGizmo(Transform rotator, float range)
             }
 
 #if UNITY_EDITOR
-            // 2. Чистый 3D-конус прицеливания
+
             DrawCleanRadarCone(pos, range, _minPitch, _maxPitch);
 #endif
 
-            // 3. Проверка LoS
             if (_checkLoS && _firePoint != null)
             {
                 Gizmos.color = new Color(1f, 0.9f, 0f, 0.4f);
@@ -112,11 +111,10 @@ public void DrawAimGizmo(Transform rotator, float range)
 #if UNITY_EDITOR
         private void DrawCleanRadarCone(Vector3 center, float range, float minPitch, float maxPitch)
         {
-            // Бледная сфера, показывающая максимальную границу дистанции (Range)
+
             Gizmos.color = new Color(1f, 1f, 1f, 0.05f);
             Gizmos.DrawWireSphere(center, range);
 
-            // Верхнее кольцо (Зеленое) - максимальная высота
             float maxRad = maxPitch * Mathf.Deg2Rad;
             Vector3 maxCenter = center + Vector3.up * (Mathf.Sin(maxRad) * range);
             float maxRadius = Mathf.Cos(maxRad) * range;
@@ -124,7 +122,6 @@ public void DrawAimGizmo(Transform rotator, float range)
             UnityEditor.Handles.color = new Color(0f, 1f, 0f, 0.8f);
             UnityEditor.Handles.DrawWireDisc(maxCenter, Vector3.up, maxRadius);
 
-            // Нижнее кольцо (Красное) - минимальная высота
             float minRad = minPitch * Mathf.Deg2Rad;
             Vector3 minCenter = center + Vector3.up * (Mathf.Sin(minRad) * range);
             float minRadius = Mathf.Cos(minRad) * range;
@@ -132,7 +129,6 @@ public void DrawAimGizmo(Transform rotator, float range)
             UnityEditor.Handles.color = new Color(1f, 0f, 0f, 0.8f);
             UnityEditor.Handles.DrawWireDisc(minCenter, Vector3.up, minRadius);
 
-            // 4 тонкие направляющие линии для формирования каркаса конуса
             UnityEditor.Handles.color = new Color(1f, 1f, 0f, 0.2f);
             Vector3[] directions = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
             

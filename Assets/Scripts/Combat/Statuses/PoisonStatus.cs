@@ -8,8 +8,8 @@ namespace Gameplay.Combat.Statuses
         public string Id => "Poison";
         public StatusType Type => StatusType.DamageOverTime;
 
-        public float SpeedModifier => 1f; // Яд не влияет на скорость
-        public float DamageTakenModifier => 1f; // И не меняет входящий урон
+        public float SpeedModifier => 1f;
+        public float DamageTakenModifier => 1f;
         public bool IsFinished { get; private set; }
 
         private float _duration;
@@ -25,7 +25,7 @@ namespace Gameplay.Combat.Statuses
             _duration = baseDuration;
             _tickRate = tickRate;
             _damagePerTick = damagePerTick;
-            _tickTimer = tickRate; // Первый тик пройдет не сразу, а через заданное время
+            _tickTimer = tickRate; 
         }
 
         public void ApplyResistance(float durationMultiplier)

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Gameplay.Combat.Attributes;
+using Gameplay.Core.Attributes;
 
 [CustomPropertyDrawer(typeof(SubclassSelectorAttribute))]
 public class SubclassSelectorDrawer : PropertyDrawer
@@ -11,19 +11,19 @@ public class SubclassSelectorDrawer : PropertyDrawer
     {
         EditorGUI.BeginProperty(position, label, property);
 
-        // Рисуем имя поля (например, "Element 0")
+
         Rect popupPosition = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
         
-        // Получаем базовый тип из списка (например, IStatusConfig)
+
         Type fieldType = GetFieldType(property);
         if (fieldType == null) return;
 
-        // Ищем все классы, которые реализуют этот интерфейс
+
         var inheritedTypes = TypeCache.GetTypesDerivedFrom(fieldType)
             .Where(t => !t.IsAbstract && !t.IsInterface)
             .ToArray();
 
-        // Формируем список имен для выпадающего меню
+
         string[] typeNames = new string[inheritedTypes.Length + 1];
         typeNames[0] = "<Null>";
         for (int i = 0; i < inheritedTypes.Length; i++)
@@ -31,7 +31,7 @@ public class SubclassSelectorDrawer : PropertyDrawer
             typeNames[i + 1] = inheritedTypes[i].Name;
         }
 
-        // Определяем текущий выбранный тип
+
         int currentIndex = 0;
         string currentTypeName = property.managedReferenceFullTypename.Split(' ').Last();
         for (int i = 0; i < inheritedTypes.Length; i++)
@@ -43,7 +43,7 @@ public class SubclassSelectorDrawer : PropertyDrawer
             }
         }
 
-        // Рисуем выпадающий список
+
         int newIndex = EditorGUI.Popup(popupPosition, label.text, currentIndex, typeNames);
         if (newIndex != currentIndex)
         {
@@ -53,12 +53,10 @@ public class SubclassSelectorDrawer : PropertyDrawer
             }
             else
             {
-                // Создаем инстанс выбранного класса
                 property.managedReferenceValue = Activator.CreateInstance(inheritedTypes[newIndex - 1]);
             }
         }
 
-        // Отрисовываем поля самого выбранного класса
         if (property.managedReferenceValue != null)
         {
             Rect propertyRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + 2, position.width, position.height - EditorGUIUtility.singleLineHeight);

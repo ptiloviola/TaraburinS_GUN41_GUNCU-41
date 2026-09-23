@@ -1,5 +1,5 @@
 using Zenject;
-using Gameplay.Combat.Data;
+using Gameplay.Campaign.Data;
 using Gameplay.Modifiers.Data;
 
 namespace Gameplay.Modifiers.Services

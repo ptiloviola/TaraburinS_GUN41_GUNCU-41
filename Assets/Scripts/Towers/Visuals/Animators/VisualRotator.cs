@@ -8,7 +8,6 @@ namespace Gameplay.Towers.Visuals.Animators
         private readonly Transform _logicalRotator;
         private readonly Transform _visualTurret;
         
-        // НОВОЕ: Разделяем логический (математика) и визуальный (рендеринг) стволы
         private readonly Transform _logicalElevation;
         private readonly Transform _visualElevation;
         
@@ -30,21 +29,17 @@ namespace Gameplay.Towers.Visuals.Animators
         {
             if (_logicalRotator == null || _visualTurret == null) return;
 
-            // Горизонталь всегда берется с базового логического ротатора
             float targetYAngle = _logicalRotator.eulerAngles.y + _rotationOffset;
             _visualTurret.rotation = Quaternion.Slerp(_visualTurret.rotation, Quaternion.Euler(0, targetYAngle, 0), _config.Speed * deltaTime);
 
-            // Вертикаль
             if (_visualElevation != null)
             {
                 float pitch = 0f;
 
-                // Читаем чистый угол наклона из логического механизма (для зенитки)
                 if (_logicalElevation != null)
                 {
                     pitch = _logicalElevation.localEulerAngles.x;
                 }
-                // Фолбэк: если отдельного ствола нет, берем наклон из базы (для старых башен)
                 else if (_logicalRotator != null)
                 {
                     pitch = _logicalRotator.eulerAngles.x;
@@ -52,7 +47,6 @@ namespace Gameplay.Towers.Visuals.Animators
 
                 if (pitch > 180f) pitch -= 360f;
                 
-                // Плавно применяем угол к визуальной модели
                 _visualElevation.localRotation = Quaternion.Slerp(
                     _visualElevation.localRotation, 
                     Quaternion.Euler(_localPitchAxis * pitch), 

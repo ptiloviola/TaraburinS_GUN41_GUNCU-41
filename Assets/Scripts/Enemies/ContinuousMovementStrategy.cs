@@ -54,7 +54,6 @@ namespace Gameplay.Enemies
                     _agent.areaMask = (1 << pathArea) | (1 << groundArea);
                 }
                 
-                // ЗАЩИТА: Проверяем, удалось ли агенту прицепиться к сетке после Warp
                 if (_agent.isOnNavMesh)
                 {
                     _agent.SetDestination(_targetPosition);
@@ -70,7 +69,6 @@ namespace Gameplay.Enemies
         {
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) 
                 return;
-            // Динамически применяем множитель скорости из статусов
             _agent.speed = _enemy.Config.Movement.MoveSpeed * _enemy.StatusController.SpeedMultiplier;
         
         }

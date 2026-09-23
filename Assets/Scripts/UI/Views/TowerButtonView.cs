@@ -23,14 +23,12 @@ namespace Gameplay.UI.Views
 
         private TowerShopView _parentView;
 
-        // Инжектим родительский View напрямую из контейнера!
         [Inject]
         public void Construct(TowerShopView parentView)
         {
             _parentView = parentView;
         }
 
-        // Пул стал меньше и надежнее: только ID, Имя, Цена и Иконка
         public class Pool : MonoMemoryPool<string, string, int, Sprite, TowerButtonView>
         {
             protected override void Reinitialize(string id, string name, int cost, Sprite icon, TowerButtonView button)

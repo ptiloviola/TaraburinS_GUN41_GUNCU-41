@@ -19,7 +19,6 @@ namespace Gameplay.UI.Views
 
         public Transform ButtonsContainer => _buttonsContainer;
 
-        // События, через которые View общается с Презентером
         public event Action<string> OnTowerClicked;
         public event Action<string> OnTowerHoverEntered;
         public event Action OnTowerHoverExited;
@@ -46,12 +45,10 @@ namespace Gameplay.UI.Views
             if (_canvasGroup != null)
             {
                 _canvasGroup.interactable = isInteractable;
-                // blocksRaycasts отключает даже физические попытки кликнуть по прозрачным зонам
                 _canvasGroup.blocksRaycasts = isInteractable; 
             }
         }
 
-        // Проброс событий от дочерних кнопок
         public void HandleClick(string id) => OnTowerClicked?.Invoke(id);
         public void HandleHoverEnter(string id) => OnTowerHoverEntered?.Invoke(id);
         public void HandleHoverExit() => OnTowerHoverExited?.Invoke();

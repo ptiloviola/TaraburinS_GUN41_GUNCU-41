@@ -71,17 +71,14 @@ namespace Gameplay.Enemies.Visuals
 
                 if (_discreteStrategy != null)
                 {
-                    // Подписываемся на обе фазы движения
                     _discreteStrategy.OnJumpStart += PlayImpulseAnimation;
                     _discreteStrategy.OnPauseStart += PlayPreparationAnimation;
                     
-                    // При спавне стратегия сразу находится в состоянии паузы, поэтому дергаем ручку сами
                     PlayPreparationAnimation();
                 }
             }
         }
 
-        // ФАЗА 1: Сжатие (Агент стоит на месте)
         private void PlayPreparationAnimation()
         {
             KillSequence();
@@ -90,27 +87,23 @@ namespace Gameplay.Enemies.Visuals
             _crawlSequence = DOTween.Sequence();
             float duration = _config.PauseDuration;
 
-            // Начинаем с i=1, так как Голова (i=0) остается на месте
             for (int i = 1; i < _segments.Length; i++)
             {
                 if (_segments[i] == null) continue;
 
-                // Вычисляем процент от головы до хвоста (0 - голова, 1 - самый кончик хвоста)
+                
                 float progress = (float)i / (_segments.Length - 1); 
                 
                 Vector3 targetPos = _initialLocalPos[i];
                 
-                // 1. Подтягиваем сегмент вперед (по оси Z)
                 targetPos.z += _tailPullDistance * progress; 
                 
-                // 2. Формируем дугу (Парабола через синус: в центре максимум, по краям 0)
                 targetPos.y += Mathf.Sin(progress * Mathf.PI) * _archHeight;
 
                 _crawlSequence.Join(_segments[i].DOLocalMove(targetPos, duration).SetEase(Ease.InOutQuad));
             }
         }
 
-        // ФАЗА 2: Выпрямление (Агент совершает рывок вперед)
         private void PlayImpulseAnimation()
         {
             KillSequence();
@@ -119,8 +112,6 @@ namespace Gameplay.Enemies.Visuals
             _crawlSequence = DOTween.Sequence();
             float duration = _config.JumpDuration;
 
-            // Возвращаем все сегменты на их изначальные локальные места.
-            // Так как корень летит вперед, возврат хвоста назад создаст иллюзию неподвижности.
             for (int i = 1; i < _segments.Length; i++)
             {
                 if (_segments[i] == null) continue;
@@ -133,9 +124,8 @@ namespace Gameplay.Enemies.Visuals
 
         public override async UniTask PlayDeathAnimationAsync()
         {
-            KillSequence(); // Останавливаем ползание
+            KillSequence();
             
-            // Сжимаем всю гусеницу целиком
             await transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
         }
 

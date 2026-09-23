@@ -11,11 +11,10 @@ namespace Gameplay.Auras
     {
         private AuraSetup _setup;
         private Vector3 _centerPosition;
-        private LayerMask _enemyMask; // Маска слоя врагов для оптимизации физики
+        private LayerMask _enemyMask;
         private CancellationTokenSource _cts;
 
-        // События для Визуализатора (View)
-        public event Action<float> OnAuraStarted; // Передаем радиус
+        public event Action<float> OnAuraStarted;
         public event Action OnAuraFinished;
 
         public void StartAura(AuraSetup setup, Vector3 position, LayerMask enemyMask)
@@ -24,12 +23,11 @@ namespace Gameplay.Auras
             _centerPosition = position;
             _enemyMask = enemyMask;
 
-            StopAura(); // Защита от двойного запуска
+            StopAura();
             _cts = new CancellationTokenSource();
 
             OnAuraStarted?.Invoke(_setup.Radius);
             
-            // Запускаем асинхронный процесс без блокировки основного потока
             ProcessAuraLifetimeAsync(_cts.Token).Forget();
         }
 
@@ -53,7 +51,6 @@ namespace Gameplay.Auras
                 {
                     ApplyEffectsToTargetsInRadius();
 
-                    // Ждем время одного тика, учитывая timeScale (паузу)
                     await UniTask.Delay(TimeSpan.FromSeconds(_setup.TickRate), 
                         ignoreTimeScale: false, 
                         cancellationToken: token);
@@ -63,19 +60,16 @@ namespace Gameplay.Auras
             }
             catch (OperationCanceledException)
             {
-                // Тихо гасим исключение при отмене (смерть зоны до истечения таймера)
+                
             }
             finally
             {
-                // Когда время вышло или лужу уничтожили - сообщаем об этом
                 OnAuraFinished?.Invoke();
             }
         }
 
         private void ApplyEffectsToTargetsInRadius()
         {
-            // Оптимизированный поиск физики (без аллокаций, если использовать NonAlloc, 
-            // но для простоты читаемости пока берем обычный OverlapSphere)
             Collider[] hits = Physics.OverlapSphere(_centerPosition, _setup.Radius, _enemyMask);
 
             foreach (Collider hit in hits)
@@ -93,10 +87,8 @@ namespace Gameplay.Auras
 
             foreach (var statusConfig in _setup.StatusEffects)
             {
-                // Фабрика статуса создает "кубик" (FreezeStatus или PoisonStatus)
                 var effect = statusConfig.CreateEffect();
                 
-                // Враг забирает статус и сам считает свои резисты
                 enemy.StatusController.AddStatus(effect);
             }
         }

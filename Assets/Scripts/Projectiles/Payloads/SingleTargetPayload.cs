@@ -17,7 +17,6 @@ namespace Gameplay.Projectiles.Payloads
         {
             if (target == null) return;
 
-            // TryGetComponent работает быстрее и не создает мусор в памяти
             if (target.TryGetComponent(out IDamageable damageable))
             {
                 damageable.TakeDamage(_damagePayload);

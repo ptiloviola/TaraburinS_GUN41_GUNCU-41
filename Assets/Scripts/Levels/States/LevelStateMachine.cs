@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
-namespace Gameplay.Combat.States
+namespace Gameplay.Levels.States
 {
     public class LevelStateMachine : IInitializable, IDisposable
     {

@@ -3,7 +3,7 @@ using Gameplay.Grid;
 using Gameplay.Base;
 using Gameplay.Spawning;
 using UnityEngine;
-using Zenject;
+
 
 namespace Infrastructure.Levels
 {
@@ -53,7 +53,6 @@ namespace Infrastructure.Levels
                 spawnInstance.transform.position = _gridService.GetWorldPosition(node);
                 spawnInstance.transform.SetParent(_references.GridParent);
                 
-                // ИСПРАВЛЕНИЕ: Используем метод SetId для соблюдения строгой инкапсуляции
                 spawnInstance.SetId(string.Format(SpawnIdFormat, node.Position.x, node.Position.y));
                 
                 spawnInstance.gameObject.name = string.Format(SpawnNameFormat, node.Position.x, node.Position.y);

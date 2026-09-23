@@ -17,14 +17,13 @@ namespace Gameplay.UI.Presenters
         private readonly TowerPlacementSystem _placementSystem;
         private readonly TowerButtonView.Pool _buttonPool;
         
-        // 1. Объявляем поле для шины
+
         private readonly SignalBus _signalBus;
 
         private readonly List<TowerButtonView> _activeButtons = new List<TowerButtonView>();
         private string _currentSelectedId = null;
         
 
-        // 2. ОБЯЗАТЕЛЬНО запрашиваем SignalBus в конструкторе!
         public TowerShopPresenter(
             TowerShopView view, 
             TowerRegistry registry, 
@@ -36,7 +35,7 @@ namespace Gameplay.UI.Presenters
             _registry = registry;
             _placementSystem = placementSystem;
             _buttonPool = buttonPool;
-            _signalBus = signalBus; // Сохраняем переданную ссылку
+            _signalBus = signalBus;
         }
 
         public void Initialize()
@@ -50,7 +49,6 @@ namespace Gameplay.UI.Presenters
 
             _placementSystem.OnTowerDeselected += HandleDeselectedFromGrid;
 
-            // 3. Теперь _signalBus не null, и мы можем безопасно подписаться!
             _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
             _signalBus.Subscribe<SignalInteractionModeChanged>(OnModeChanged);
             
@@ -67,7 +65,6 @@ namespace Gameplay.UI.Presenters
                 _placementSystem.OnTowerDeselected -= HandleDeselectedFromGrid;
             }
 
-            // Отписываемся от паузы
             _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
             _signalBus.Unsubscribe<SignalInteractionModeChanged>(OnModeChanged);
 
@@ -81,10 +78,8 @@ namespace Gameplay.UI.Presenters
             _activeButtons.Clear();
         }
 
-        // 4. Метод реакции на паузу
         private void OnPauseStateChanged(SignalPauseStateChanged signal)
         {
-            // Блокируем магазин, если игра на паузе
             _view.SetInteractable(!signal.IsPaused);
         }
 
@@ -153,7 +148,6 @@ namespace Gameplay.UI.Presenters
 
         private void OnModeChanged(SignalInteractionModeChanged signal)
         {
-            // Магазин скрыт, если идет фаза разметки
             if (signal.Mode == InteractionMode.TacticalClaim) _view.gameObject.SetActive(false);
             else _view.gameObject.SetActive(true);
         }

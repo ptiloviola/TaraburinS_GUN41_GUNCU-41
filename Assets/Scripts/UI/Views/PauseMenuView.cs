@@ -7,7 +7,7 @@ namespace Gameplay.UI.Views
     public class PauseMenuView : MonoBehaviour
     {
         [Header("Ссылки")]
-        [SerializeField] private GameObject _panel; // Сама панель меню (чтобы отключать её целиком)
+        [SerializeField] private GameObject _panel;
         [SerializeField] private Button _resumeButton;
         [SerializeField] private Button _mainMenuButton;
 

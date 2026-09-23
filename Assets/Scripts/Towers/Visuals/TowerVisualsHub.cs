@@ -23,7 +23,7 @@ namespace Gameplay.Towers.Visuals
         [SerializeField] private Transform[] _barrelTransforms;
         [SerializeField] private ParticleSystem[] _muzzleFlashes;
 
-        // НОВОЕ: Хаб сам управляет визуализатором радиуса
+
         [Header("Визуализация радиуса")]
         [SerializeField] private TowerRadiusVisualizer _radiusVisualizer;
 
@@ -91,7 +91,6 @@ namespace Gameplay.Towers.Visuals
             OnAttackImpact?.Invoke();
         }
 
-        // НОВОЕ: Имплементация методов ITowerVisuals
         public void ShowRadius(float currentRadius, float upgradedRadius, float minRadius = 0f)
         {
             if (_radiusVisualizer != null)

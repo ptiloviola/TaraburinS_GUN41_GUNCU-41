@@ -1,6 +1,6 @@
 using System.IO;
 using UnityEngine;
-using Gameplay.Combat.Data;
+using Gameplay.Core.Data;
 
 namespace Gameplay.Core.Services
 {
@@ -47,7 +47,7 @@ namespace Gameplay.Core.Services
 
             try
             {
-                string json = JsonUtility.ToJson(_cachedProfile, true); // true для красивого форматирования (pretty print)
+                string json = JsonUtility.ToJson(_cachedProfile, true);
                 File.WriteAllText(_saveFilePath, json);
                 Debug.Log("<color=green>[SaveLoadService] Прогресс успешно сохранен.</color>");
             }

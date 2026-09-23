@@ -2,13 +2,15 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Economy;
 using Gameplay.Base;
-using Gameplay.Combat.States;
-using Gameplay.Combat.Services;
-using Gameplay.Combat.Data;
+using Gameplay.Levels.States;
+using Gameplay.Levels.Services;
+using Gameplay.Levels.Data;
 using Gameplay.Modifiers.Data;      
 using Gameplay.Modifiers.Services;  
+using Gameplay.Campaign.Services;
+using Gameplay.Campaign.Data;
 
-namespace Gameplay.Combat.Installers
+namespace Gameplay.Levels.Installers
 {
     public class LevelStateInstaller : MonoInstaller
     {
@@ -34,15 +36,15 @@ namespace Gameplay.Combat.Installers
             Container.BindInstance(activeBlueprint.GridConfig).AsSingle();
             Container.BindInstance(activeBlueprint.WavesConfig).AsSingle();
 
-            // --- РЕГИСТРАЦИЯ БАЗ ДАННЫХ И МОДИФИКАТОРОВ ---
+
             Container.BindInstance(_itemRegistry).AsSingle();
             Container.Bind<StatsModifierService>().AsSingle();
             
-            // Регистрируем бутстраппер и ставим ему наивысший приоритет запуска
+
             Container.BindInterfacesTo<RunModifiersBootstrapper>().AsSingle();
             Container.BindExecutionOrder<RunModifiersBootstrapper>(-100);
 
-            // --- БАЗОВЫЕ СИСТЕМЫ ---
+
             Container.BindInterfacesAndSelfTo<BankService>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerHealthService>().AsSingle();
             
@@ -50,7 +52,7 @@ namespace Gameplay.Combat.Installers
             Container.Bind<TacticalForecastService>().AsSingle();
             Container.Bind<LevelRuntimeModel>().AsSingle();
 
-            // --- СТЕЙТ-МАШИНА ---
+
             Container.Bind<ILevelState>().To<LevelInitState>().AsSingle();
             Container.Bind<ILevelState>().To<TacticalState>().AsSingle();
             Container.Bind<ILevelState>().To<CombatState>().AsSingle();

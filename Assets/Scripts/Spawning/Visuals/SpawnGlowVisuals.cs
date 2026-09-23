@@ -45,11 +45,9 @@ namespace Gameplay.Spawning.Visuals
 
         public void PlayWarningEffect(float duration)
         {
-            // Отменяем предыдущий эффект, если он еще играет
             _effectCts?.Cancel();
             _effectCts?.Dispose();
             
-            // Создаем новый токен, привязанный к жизни этого GameObject
             _effectCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
             
             WarningRoutineAsync(duration, _effectCts.Token).Forget();
@@ -69,20 +67,17 @@ namespace Gameplay.Spawning.Visuals
                 {
                     elapsed += Time.deltaTime;
                     
-                    // 1. Логика Fade In / Fade Out
                     float fadeMultiplier = 1f;
                     if (elapsed < _fadeInDuration) 
                         fadeMultiplier = elapsed / _fadeInDuration;
                     else if (duration - elapsed < _fadeOutDuration) 
                         fadeMultiplier = Mathf.Max(0f, (duration - elapsed) / _fadeOutDuration);
 
-                    // 2. Логика шума Перлина
                     float flicker = Mathf.PerlinNoise(randomOffset, Time.time * _flickerSpeed);
                     flicker = Mathf.Lerp(0.3f, 1f, flicker); 
 
                     float currentIntensity = flicker * fadeMultiplier;
 
-                    // 3. Обновляем свет и прозрачность через PropertyBlock (Zero Allocation!)
                     if (_groundLight != null) _groundLight.intensity = _maxLightIntensity * currentIntensity;
                     if (_glowPillar != null) SetPillarAlpha(_fireColor.a * currentIntensity);
 
@@ -91,7 +86,6 @@ namespace Gameplay.Spawning.Visuals
             }
             finally
             {
-                // Блок finally гарантирует, что визуализатор выключится, даже если сцену закрыли
                 if (_glowPillar != null) _glowPillar.gameObject.SetActive(false);
                 if (_groundLight != null) _groundLight.gameObject.SetActive(false);
             }

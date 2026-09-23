@@ -24,7 +24,6 @@ namespace Gameplay.Towers.Behaviors
         {
             _facade = facade;
             
-            // ИСПРАВЛЕНО: Запрашиваем модуль казармы
             _module = _facade.GetCurrentStats().GetModule<BarracksModuleDescriptor>();
             
             if (_module == null || _module.DefenderData == null) return;

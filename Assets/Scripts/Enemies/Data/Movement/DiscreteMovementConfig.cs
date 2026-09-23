@@ -6,7 +6,7 @@ namespace Gameplay.Enemies.Data.Movement
     public class DiscreteMovementConfig : MovementConfig
     {
         [Header("Настройки NavMesh")]
-        public MovementType PathingType = MovementType.PathOnly; // <-- ДОБАВИЛИ ЭТО
+        public MovementType PathingType = MovementType.PathOnly;
 
         [Header("Тайминги прыжка (Геймплей)")]
         public float JumpDuration = 0.6f;

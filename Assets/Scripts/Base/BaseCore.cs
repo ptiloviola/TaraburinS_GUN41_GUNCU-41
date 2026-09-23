@@ -51,26 +51,6 @@ namespace Gameplay.Base
             _baseRegistry?.Unregister(this);
         }
 
-//         private void OnTriggerEnter(Collider other)
-//         {
-//             EnemyFacade enemy = other.GetComponentInParent<EnemyFacade>();
-
-//             if (enemy != null)
-//             {
-// #if UNITY_EDITOR
-//                 Debug.Log($"<color=green>[BaseCore] Враг {enemy.gameObject.name} достиг базы. Уничтожаем.</color>");
-// #endif
-//                 ProcessDamage(DefaultEnemyDamage);
-//                 _signalBus.Fire<SignalEnemyReachedBase>();
-//                 enemy.ForceDespawn();
-//             }
-//             else
-//             {
-// #if UNITY_EDITOR
-//                 Debug.LogWarning($"<color=red>[BaseCore] В базу врезалось что-то без EnemyFacade: {other.gameObject.name}!</color>");
-// #endif
-//             }
-//         }
 
         public void TakeDamage(int amount)
         {

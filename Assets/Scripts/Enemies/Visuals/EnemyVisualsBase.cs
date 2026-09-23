@@ -34,15 +34,11 @@ namespace Gameplay.Enemies.Visuals
             }
         }
 
-        // Виртуальные методы для наследников
         protected virtual void OnMoveStart() { }
         protected virtual void OnStunned() { }
         protected virtual void OnReachedBase() { }
         public virtual async UniTask PlayDeathAnimationAsync()
         {
-            // Базовая реализация: просто ждем 0 секунд.
-            // В наследниках (например, JumperAnimator) ты переопределишь этот метод,
-            // запустишь анимацию рассыпания и напишешь: await UniTask.Delay(1000);
             await UniTask.Yield(); 
         }
     }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Gameplay.Enemies.FSM
 {
-    // Перечисление для удобной подписки визуала
     public enum EnemyStateType
     {
         Spawn,

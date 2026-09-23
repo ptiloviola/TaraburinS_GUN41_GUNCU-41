@@ -3,7 +3,7 @@ using System;
 using UnityEngine.EventSystems;
 using Zenject;
 using Gameplay.Towers;
-using Gameplay.Infrastructure.Input; // НОВОЕ
+using Gameplay.Infrastructure.Input;
 
 namespace Gameplay.Interaction
 {

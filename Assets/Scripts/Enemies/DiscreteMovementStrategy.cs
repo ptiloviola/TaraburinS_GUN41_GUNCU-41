@@ -15,7 +15,7 @@ namespace Gameplay.Enemies
         private bool _isJumping;
 
         public event Action OnJumpStart;
-        public event Action OnPauseStart; // НОВОЕ СОБЫТИЕ: Начало "Сжатия"
+        public event Action OnPauseStart;
 
         private const string CustomPathArea = "CustomPath";
         private const string CustomGroundArea = "CustomGround";
@@ -69,8 +69,6 @@ namespace Gameplay.Enemies
         {
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) return;
 
-            // Динамически применяем множитель скорости и для прыгунов!
-            // Важно: чтобы получить доступ к Фасаду здесь, тебе нужно сохранить его в локальную переменную _enemy внутри метода Initialize, как это сделано в ContinuousMovementStrategy
             float totalCycleTime = _config.JumpDuration + _config.PauseDuration;
             float baseSpeedMultiplier = totalCycleTime / _config.JumpDuration;
             _agent.speed = _enemy.Config.Movement.MoveSpeed * baseSpeedMultiplier * _enemy.StatusController.SpeedMultiplier;
@@ -85,7 +83,7 @@ namespace Gameplay.Enemies
                     _agent.velocity = Vector3.zero; 
                     _timer = _config.PauseDuration;
                     
-                    OnPauseStart?.Invoke(); // Оповещаем: "Начинай сжиматься!"
+                    OnPauseStart?.Invoke();
                 }
             }
             else
@@ -96,7 +94,7 @@ namespace Gameplay.Enemies
                     _agent.isStopped = false; 
                     _timer = _config.JumpDuration;
                     
-                    OnJumpStart?.Invoke(); // Оповещаем: "Растягивайся и прыгай!"
+                    OnJumpStart?.Invoke();
                 }
             }
         }

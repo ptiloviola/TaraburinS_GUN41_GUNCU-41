@@ -10,7 +10,7 @@ namespace Gameplay.Spawning.Services
     public class WaveTimerService
     {
         private readonly SignalBus _signalBus;
-        private bool _isSkipped; // Простой и надежный флаг
+        private bool _isSkipped;
 
         public WaveTimerService(SignalBus signalBus)
         {
@@ -20,13 +20,11 @@ namespace Gameplay.Spawning.Services
         public async UniTask<float> WaitTimeOrSkipAsync(float duration, CancellationToken ct)
         {
             _isSkipped = false;
-            // Подписываемся на кнопку интерфейса
             _signalBus.Subscribe<SignalForceStartWave>(OnSkipSignalReceived);
 
             float timeLeft = duration;
             try
             {
-                // Крутим цикл, пока есть время И пока игрок не нажал скип
                 while (timeLeft > 0f && !_isSkipped)
                 {
                     timeLeft -= Time.deltaTime;
@@ -37,7 +35,6 @@ namespace Gameplay.Spawning.Services
                         Progress = 1f - (timeLeft / duration)
                     });
                     
-                    // Ждем 1 кадр, прерываемся если база уничтожена (ct)
                     await UniTask.Yield(PlayerLoopTiming.Update, ct);
                 }
 
@@ -45,7 +42,6 @@ namespace Gameplay.Spawning.Services
             }
             finally
             {
-                // Гарантированно отписываемся и обнуляем UI
                 _signalBus.Unsubscribe<SignalForceStartWave>(OnSkipSignalReceived);
                 _signalBus.Fire(new SignalWaveTimerUpdated { TimeLeft = 0f, Progress = 1f });
             }
@@ -72,7 +68,6 @@ namespace Gameplay.Spawning.Services
 
         private void OnSkipSignalReceived()
         {
-            // Сигнал от UI меняет флаг, и цикл while мягко завершается на следующем кадре
             _isSkipped = true;
         }
     }

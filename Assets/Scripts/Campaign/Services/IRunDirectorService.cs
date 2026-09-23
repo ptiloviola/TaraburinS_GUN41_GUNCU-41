@@ -1,6 +1,6 @@
-using Gameplay.Combat.Data;
+using Gameplay.Campaign.Data;
 
-namespace Gameplay.Combat.Services
+namespace Gameplay.Campaign.Services
 {
     public interface IRunDirectorService
     {

@@ -5,7 +5,7 @@ namespace Gameplay.Infrastructure.Input
 {
     public interface IInputService
     {
-        // Существующие свойства для взаимодействия
+
         Vector2 PointerPosition { get; }
         event Action OnPrimaryAction;
         event Action OnCancelAction;
@@ -14,11 +14,11 @@ namespace Gameplay.Infrastructure.Input
         bool IsCancelActionDown { get; }
         
 
-        // НОВЫЕ СВОЙСТВА ДЛЯ КАМЕРЫ
-        Vector2 PanDelta { get; } // Вектор движения (WASD/Стрелки)
-        float ZoomDelta { get; }  // Прокрутка колесика (Scroll)
 
-        bool IsDragPanning { get; } // Зажато ли колесико
-        Vector2 PointerDelta { get; } // Смещение мыши за кадр
+        Vector2 PanDelta { get; }
+        float ZoomDelta { get; }
+
+        bool IsDragPanning { get; }
+        Vector2 PointerDelta { get; }
     }
 }

@@ -4,7 +4,6 @@ using Gameplay.Towers.Data.Visuals;
 
 namespace Gameplay.Towers.Visuals.Animators
 {
-    // Никакого MonoBehaviour!
     public class TowerBuildAnimator
     {
         private readonly Transform _base;

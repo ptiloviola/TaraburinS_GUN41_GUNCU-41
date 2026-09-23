@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq; // Используем LINQ, как в башнях
+using System.Linq;
 
 namespace Gameplay.Enemies.Data
 {
@@ -10,13 +10,11 @@ namespace Gameplay.Enemies.Data
         [Header("Каталог всех врагов")]
         public List<EnemyConfig> Enemies = new List<EnemyConfig>();
 
-        // Метод-помощник: Позволяет быстро найти конфиг врага по его ID
         public EnemyConfig GetEnemyById(string enemyId)
         {
             return Enemies.FirstOrDefault(e => e != null && e.EnemyId == enemyId);
         }
 
-        // Безопасный поиск по ссылке на сам конфиг
         public EnemyConfig GetEnemyByConfig(EnemyConfig configToFind)
         {
             return Enemies.FirstOrDefault(e => e == configToFind);

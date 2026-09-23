@@ -21,14 +21,11 @@ namespace Gameplay.Units
 
         public DefenderState CurrentState { get; private set; }
 
-        // Добавляем событие. Передаем самих себя, чтобы казарма знала, кого именно вычеркивать.
         public event Action<DefenderFacade> OnDespawned;
 
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
-            // Изначально отключаем агента, чтобы он не пытался искать NavMesh 
-            // пока болтается где-то в пуле.
             _agent.enabled = false; 
         }
 
@@ -37,12 +34,11 @@ namespace Gameplay.Units
             _pool = pool;
         }
 
-        // НОВОЕ: Бронебойный метод телепортации для пулов!
         public void WarpTo(Vector3 position)
         {
-            _agent.enabled = false;       // 1. Усыпляем агента
-            transform.position = position; // 2. Мгновенно переносим
-            _agent.enabled = true;        // 3. Будим. При включении он жестко привязывается к NavMesh!
+            _agent.enabled = false; 
+            transform.position = position; 
+            _agent.enabled = true; 
         }
 
         public void InitConfig(DefenderConfig config)
@@ -57,7 +53,6 @@ namespace Gameplay.Units
 
         public void SendToRallyPoint(Vector3 destination)
         {
-            // Жесткая проверка: агент должен быть включен и стоять на сетке
             if (_agent.isActiveAndEnabled && _agent.isOnNavMesh)
             {
                 _agent.SetDestination(destination);
@@ -77,7 +72,6 @@ namespace Gameplay.Units
                     break;
                     
                 case DefenderState.MovingToRallyPoint:
-                    // Проверяем, добежали ли мы
                     if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
                     {
                         SetState(DefenderState.Idle);
@@ -95,9 +89,8 @@ namespace Gameplay.Units
         {
             if (_pool != null)
             {
-                _agent.enabled = false; // Обязательно выключаем агента перед возвратом в пул!
+                _agent.enabled = false;
                 _pool.Despawn(this);
-                // Оповещаем всех подписчиков (казарму), что мы выбыли
                 OnDespawned?.Invoke(this);
             }
             else

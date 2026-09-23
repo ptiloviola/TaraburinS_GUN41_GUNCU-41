@@ -11,10 +11,8 @@ namespace Gameplay.UI.Installers
 
         public override void InstallBindings()
         {
-            // Биндим View как инстанс, так как он уже висит на сцене
             Container.BindInstance(_mainMenuView).AsSingle();
 
-            // Биндим Presenter, заставляя Zenject управлять его Initialize() и Dispose()
             Container.BindInterfacesTo<MainMenuPresenter>().AsSingle();
             
             Debug.Log("<color=green>[Zenject] MainMenuInstaller: Главное меню успешно собрано.</color>");

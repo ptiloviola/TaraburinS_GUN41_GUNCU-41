@@ -6,14 +6,13 @@ namespace Gameplay.Towers.Visuals
     {
         [SerializeField] private GameObject _currentRadiusObj; 
         [SerializeField] private GameObject _upgradedRadiusObj; 
-        [SerializeField] private GameObject _minRadiusObj; // НОВОЕ: Объект для мертвой зоны
+        [SerializeField] private GameObject _minRadiusObj;
 
         private void Start()
         {
             HidePreview();
         }
 
-        // minRadius сделан опциональным, чтобы не переписывать вызовы в UI там, где он не нужен
         public void ShowPreview(float currentRadius, float upgradedRadius, float minRadius = 0f)
         {
             if (_currentRadiusObj != null)
@@ -32,14 +31,12 @@ namespace Gameplay.Towers.Visuals
                     _upgradedRadiusObj.transform.localScale = new Vector3(upgradedRadius * 2, 0.01f, upgradedRadius * 2);
             }
 
-            // Управляем мертвой зоной (включается только если MinRange > 0)
             if (_minRadiusObj != null)
             {
                 bool showMin = minRadius > 0;
                 _minRadiusObj.SetActive(showMin);
                 if (showMin)
                 {
-                    // Делаем чуть выше (0.015f вместо 0.01f), чтобы не было Z-Fighting (мерцания текстур) с основным кругом
                     _minRadiusObj.transform.localScale = new Vector3(minRadius * 2, 0.015f, minRadius * 2);
                 }
             }

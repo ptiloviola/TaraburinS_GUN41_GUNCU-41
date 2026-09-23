@@ -6,7 +6,6 @@ namespace Gameplay.Projectiles.Payloads
 {
     public class AoEPayload : IProjectilePayload
     {
-        // Единый статический буфер для всех взрывов в игре (Zero Allocation)
         private static readonly Collider[] HitBuffer = new Collider[32];
         
         private readonly DamagePayload _damagePayload;
@@ -22,7 +21,6 @@ namespace Gameplay.Projectiles.Payloads
 
         public void Apply(Transform target, Vector3 hitPoint)
         {
-            // Используем NonAlloc версию, чтобы не создавать новые массивы
             int hitCount = Physics.OverlapSphereNonAlloc(hitPoint, _radius, HitBuffer, _enemyMask);
             
             for (int i = 0; i < hitCount; i++)

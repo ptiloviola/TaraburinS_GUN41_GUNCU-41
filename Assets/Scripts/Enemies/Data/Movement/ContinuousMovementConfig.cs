@@ -14,7 +14,6 @@ namespace Gameplay.Enemies.Data.Movement
 
         public override IMovementStrategy CreateStrategy(Vector3 targetPosition)
         {
-            // Передаем настройки слоев прямо в стратегию
             return new ContinuousMovementStrategy(targetPosition, PathingType, PathAreaName, GroundAreaName);
         }
     }

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems; // Важно для мыши
+using UnityEngine.EventSystems;
 using TMPro;
 using Gameplay.Modifiers.Data;
 

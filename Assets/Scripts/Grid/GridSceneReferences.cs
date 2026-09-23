@@ -16,14 +16,12 @@ namespace Gameplay.Grid
         [Header("Навигация")]
         [SerializeField] private NavMeshSurface _navMeshSurface;
 
-        // Строгая инкапсуляция: только чтение
         public GridTheme Theme => _theme;
         public GameObject CubePrefab => _cubePrefab;
         public float Spacing => _spacing;
         public float ElevationStep => _elevationStep;
         public NavMeshSurface NavMeshSurface => _navMeshSurface;
         
-        // Отдаем трансформ этого объекта, чтобы он был родителем для кубиков
         public Transform GridParent => transform; 
     }
 }

@@ -3,7 +3,6 @@ using Gameplay.Projectiles.Contracts;
 
 namespace Gameplay.Towers.Behaviors.Weapons
 {
-    // Никакого MonoBehaviour! Чистая стратегия.
     public class HitscanExecutor : IAttackExecutor
     {
         public void ExecuteAttack(Transform target, IProjectilePayload payload, Transform firePoint)

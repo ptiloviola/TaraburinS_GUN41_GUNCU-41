@@ -27,7 +27,6 @@ namespace Gameplay.Combat
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
         }
 
-        // Больше не является частью интерфейса IDamageable
         public void TakeRawDamage(float amount)
         {
             if (IsDead) return;

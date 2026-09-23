@@ -8,7 +8,6 @@ namespace Gameplay.Towers.Behaviors
     {
         private DefenderFactory _defenderFactory;
 
-        // Открываем доступ для чистого контроллера
         public DefenderFactory DefenderFactory => _defenderFactory;
         public Vector3 SpawnPoint => transform.position + transform.forward * 2f;
         public Vector3 Center => transform.position;
@@ -22,7 +21,6 @@ namespace Gameplay.Towers.Behaviors
 
         public ITowerBehavior CreateBehavior()
         {
-            // Передаем адаптер внутрь чистого класса
             return new BarracksController(this);
         }
 

@@ -16,7 +16,6 @@ namespace Gameplay.UI.Views
         {
             if (_health == null) _health = GetComponentInParent<HealthComponent>();
             
-            // Кэшируем камеру один раз при создании объекта!
             _cachedCamera = Camera.main;
         }
 
@@ -47,7 +46,6 @@ namespace Gameplay.UI.Views
 
         private void LateUpdate()
         {
-            // Используем закэшированную ссылку. Никаких поисков объектов каждый кадр!
             if (_cachedCamera != null)
             {
                 transform.forward = _cachedCamera.transform.forward;

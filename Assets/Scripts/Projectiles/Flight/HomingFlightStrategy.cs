@@ -19,7 +19,7 @@ namespace Gameplay.Projectiles.Flight
             projectile.LookAt(aimPosition);
 
             float sqrDistance = (projectile.position - aimPosition).sqrMagnitude;
-            return sqrDistance <= (hitDistance * hitDistance); // Если долетели — возвращаем true
+            return sqrDistance <= (hitDistance * hitDistance); 
         }
     }
 }

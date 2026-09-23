@@ -43,7 +43,7 @@ namespace Gameplay.Enemies.Visuals
             Vector3 startPos = transform.position;
             Color startColor = _text.color;
 
-            // Оборачиваем в try-catch для чистоты, хотя UniTask сам глушит OperationCanceledException
+            
             try
             {
                 while (elapsed < _duration)
@@ -63,7 +63,6 @@ namespace Gameplay.Enemies.Visuals
                     startColor.a = 1f - progress;
                     _text.color = startColor;
 
-                    // Если токен отменится во время Yield, вылетит OperationCanceledException
                     await UniTask.Yield(PlayerLoopTiming.Update, token);
                 }
 
@@ -71,7 +70,7 @@ namespace Gameplay.Enemies.Visuals
             }
             catch (System.OperationCanceledException)
             {
-                // Задача была прервана (вышли из Play Mode или переиспользовали объект) - это нормально
+                
             }
         }
 
@@ -83,7 +82,6 @@ namespace Gameplay.Enemies.Visuals
             _pool?.Despawn(this);
         }
 
-        // НОВОЕ: Спасительный метод при выходе из Play Mode
         private void OnDestroy()
         {
             _cts?.Cancel();

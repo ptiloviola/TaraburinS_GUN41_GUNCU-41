@@ -80,8 +80,6 @@ namespace Gameplay.UI.Presenters
 
         private void HandleMainMenuClicked()
         {
-            // КРИТИЧНО: Всегда снимаем игру с паузы перед выходом в меню, 
-            // иначе анимации и загрузки сломаются (Time.timeScale останется 0)
             _pauseService.ResumeGame(); 
             _sceneLoader.LoadSceneAsync(MainMenuSceneName).Forget();
         }

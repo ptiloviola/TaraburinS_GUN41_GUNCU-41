@@ -1,6 +1,5 @@
 namespace Gameplay.Infrastructure.Signals
 {
-    // Глобальный сигнал изменения состояния паузы
     public struct SignalPauseStateChanged
     {
         public bool IsPaused;

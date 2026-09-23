@@ -4,7 +4,7 @@ using Gameplay.Infrastructure.Signals;
 using Gameplay.Interaction;
 using Zenject;
 
-namespace Gameplay.Combat.States
+namespace Gameplay.Levels.States
 {
     public class TacticalState : ILevelState
     {
@@ -26,9 +26,8 @@ namespace Gameplay.Combat.States
             _interactionState.CurrentMode = InteractionMode.TacticalClaim;
             _interactionState.AvailableClaims = 5;
             
-            _claimSystem.SetMaxClaims(5); // Передаем данные для UI
+            _claimSystem.SetMaxClaims(5);
             
-            // Включаем нужные экраны
             _signalBus.Fire(new SignalInteractionModeChanged { Mode = InteractionMode.TacticalClaim });
             _signalBus.Subscribe<SignalStartCombat>(OnCombatStarted);
             

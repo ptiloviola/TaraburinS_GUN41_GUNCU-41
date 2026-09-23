@@ -4,15 +4,12 @@ using Gameplay.Combat;
 
 namespace Gameplay.Enemies.Visuals
 {
-    // IInitializable и IDisposable - это интерфейсы Zenject, 
-    // заменяющие Start() и OnDestroy()
     public class GlobalDamageVisualizer : IInitializable, IDisposable
     {
         private readonly SignalBus _signalBus;
         private readonly FloatingText.Pool _textPool;
         private readonly DamageVisualSettings _settings;
 
-        // Zenject сам подставит все три зависимости
         public GlobalDamageVisualizer(SignalBus signalBus, FloatingText.Pool textPool, DamageVisualSettings settings)
         {
             _signalBus = signalBus;
@@ -22,13 +19,11 @@ namespace Gameplay.Enemies.Visuals
 
         public void Initialize()
         {
-            // Подписываемся на сигнал при старте уровня
             _signalBus.Subscribe<DamageReceivedSignal>(OnDamageReceived);
         }
 
         public void Dispose()
         {
-            // Отписываемся при выходе, чтобы не было утечек памяти
             _signalBus.Unsubscribe<DamageReceivedSignal>(OnDamageReceived);
         }
 

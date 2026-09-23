@@ -56,7 +56,6 @@ namespace Gameplay.Enemies.Visuals
 
         private void PlayFlash(DamagePayload payload)
         {
-            // МАГИЯ ООП: Мы просто просим конфиг дать нужный цвет!
             _currentFlashColor = _settings != null ? _settings.GetColor(payload.Type) : Color.white;
             _currentFlashTimer = _settings != null ? _settings.FlashDuration : 0.15f;
             _isFlashing = true;

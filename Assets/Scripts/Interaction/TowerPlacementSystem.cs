@@ -15,7 +15,7 @@ namespace Gameplay.Interaction
 {
     public class TowerPlacementSystem : ITickable, IInitializable 
     {
-        private const float MaxRaycastDistance = 100f; // Избавляемся от магических чисел
+        private const float MaxRaycastDistance = 100f;
 
         private readonly IGridService _gridService;
         private readonly GridSceneReferences _sceneReferences;
@@ -27,7 +27,6 @@ namespace Gameplay.Interaction
         private readonly TowerFactory _towerFactory;
         private readonly GridValidationService _validationService;
         
-        // НОВОЕ: Внедряем сервисы взаимодействия
         private readonly IInputService _inputService;
         private readonly InteractionStateModel _interactionState;
 
@@ -92,7 +91,6 @@ namespace Gameplay.Interaction
             _selectedTowerConfig = _towerRegistry.GetTowerById(towerId);
             if (_selectedTowerConfig != null)
             {
-                // Переключаем глобальный стейт, чтобы другие системы заблокировались
                 _interactionState.CurrentMode = InteractionMode.Building;
                 _visualizer.SetSelectedTower(_selectedTowerConfig);
             }
@@ -101,7 +99,6 @@ namespace Gameplay.Interaction
         public void DeselectTower()
         {
             _selectedTowerConfig = null;
-            // Возвращаем обычный стейт
             _interactionState.CurrentMode = InteractionMode.Normal;
             
             _visualizer.Hide();
@@ -110,13 +107,11 @@ namespace Gameplay.Interaction
 
         public void Tick()
         {
-            // Система строительства работает ТОЛЬКО в режиме стройки!
             if (_interactionState.CurrentMode != InteractionMode.Building)
             {
                 _visualizer?.Hide();
                 return;
             }
-            // Отменяем стройку по ПКМ или Esc через абстракцию
             if (_inputService.IsCancelActionDown)
             {
                 if (_selectedTowerConfig != null) DeselectTower();
@@ -135,7 +130,6 @@ namespace Gameplay.Interaction
 
         private void HandleMouseInteraction()
         {
-            // Берем координаты мыши/пальца из нового инпута
             Ray ray = _mainCamera.ScreenPointToRay(_inputService.PointerPosition);
 
             if (Physics.Raycast(ray, out RaycastHit hit, MaxRaycastDistance, _settings.GridLayerMask))
@@ -144,14 +138,12 @@ namespace Gameplay.Interaction
                 int gridZ = Mathf.RoundToInt(hit.transform.position.z / _sceneReferences.Spacing);
                 Vector2Int gridPos = new Vector2Int(gridX, gridZ);
 
-                //bool isCellFree = _gridService.CanBuildAt(gridPos);
                 bool isCellFree = _validationService.CanBuildTower(gridPos);
                 bool hasEnoughMoney = _bankService.CurrentBalance >= _selectedTowerConfig.BaseCost;
                 bool canBuild = isCellFree && hasEnoughMoney;
 
                 _visualizer.UpdateVisuals(hit.collider.transform.position, hit.collider.bounds.max.y, canBuild);
 
-                // Слушаем клик ЛКМ или тап
                 if (_inputService.IsPrimaryActionDown && canBuild)
                 {
                     Vector3 spawnPosition = new Vector3(hit.collider.transform.position.x, hit.collider.bounds.max.y, hit.collider.transform.position.z);

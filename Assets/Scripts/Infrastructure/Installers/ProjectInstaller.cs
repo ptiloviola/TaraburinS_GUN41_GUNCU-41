@@ -2,8 +2,8 @@ using Zenject;
 using UnityEngine;
 using Gameplay.Infrastructure.Input;
 using Gameplay.Infrastructure.Services;
-using Gameplay.Combat.Data;
-using Gameplay.Combat.Services;
+using Gameplay.Campaign.Data;
+using Gameplay.Campaign.Services;
 using Gameplay.Core.Services;
 
 namespace Gameplay.Infrastructure.Installers

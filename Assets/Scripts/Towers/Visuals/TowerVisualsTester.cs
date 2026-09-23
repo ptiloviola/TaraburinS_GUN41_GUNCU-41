@@ -10,6 +10,5 @@ namespace Gameplay.Towers.Visuals
         {
             _hub = GetComponent<TowerVisualsHub>();
         }
-        // Пока оставляем пустым, чтобы ушла ошибка компиляции.
     }
 }

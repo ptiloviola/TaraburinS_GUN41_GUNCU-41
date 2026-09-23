@@ -1,6 +1,6 @@
 using UnityEngine;
 using Gameplay.Towers.Behaviors.Aiming;
-using Gameplay.Towers.Data.Modules; // Нужен для AttackStats
+using Gameplay.Towers.Data.Modules;
 
 namespace Gameplay.Towers.Behaviors.Targeting
 {

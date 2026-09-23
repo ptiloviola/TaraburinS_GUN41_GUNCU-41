@@ -13,19 +13,16 @@ public class DebugStatusTester : MonoBehaviour
 
     private void Update()
     {
-        // По нажатию на Пробел имитируем попадание ледяного снаряда
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            // Находим первого попавшегося врага на сцене
             EnemyFacade enemy = FindObjectOfType<EnemyFacade>();
             
             if (enemy != null && enemy.StatusController != null)
             {
-                // Накладываем статус
                 var freeze = new FreezeStatus(FreezeDuration, SlowAmount);
                 enemy.StatusController.AddStatus(freeze);
                 
-                // Для красоты нанесем 1 единицу взрывного урона, чтобы увидеть мигание
                 enemy.GetComponent<DamageReceiver>()?.TakeDamage(new DamagePayload(1f, DamageType.Explosive));
             }
         }

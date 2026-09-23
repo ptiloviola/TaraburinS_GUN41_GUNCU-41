@@ -5,7 +5,7 @@ using Gameplay.Auras.Data;
 using Gameplay.Auras;
 using Gameplay.Combat.Statuses.Data;
 using Gameplay.Combat;
-using Gameplay.Combat.Attributes;
+using Gameplay.Core.Attributes;
 using Gameplay.Auras.Factories;
 
 namespace Gameplay.Projectiles.Data

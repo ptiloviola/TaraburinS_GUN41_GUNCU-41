@@ -8,9 +8,7 @@ namespace Gameplay.Infrastructure.Installers
     {
         public override void InstallBindings()
         {
-            // УДАЛЕНО: SignalBusInstaller.Install(Container); <-- Шина уже есть в ProjectContext
 
-            // Декларируем только локальные геймплейные сигналы уровня
             Container.DeclareSignal<SignalBaseDamaged>().OptionalSubscriber();;
             Container.DeclareSignal<SignalEnemyKilled>();
             Container.DeclareSignal<SignalGameOver>();

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Gameplay.Spawning;
 
-namespace Gameplay.Combat.Services
+namespace Gameplay.Levels.Services
 {
     public class ObfuscatedEnemyData
     {
@@ -15,7 +15,7 @@ namespace Gameplay.Combat.Services
 
     public class TacticalForecastService
     {
-        // Конфиг для DI, который позже можно будет менять динамически
+
         [System.Serializable]
         public class Settings
         {
@@ -51,7 +51,7 @@ namespace Gameplay.Combat.Services
             var forecast = new List<ObfuscatedEnemyData>();
             foreach (var kvp in totals)
             {
-                // Используем значения из настроек
+
                 bool hideType = Random.value < _settings.HideTypeChance;
                 bool hideCount = Random.value < _settings.HideCountChance;
 

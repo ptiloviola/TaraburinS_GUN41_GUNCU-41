@@ -32,7 +32,7 @@ namespace Gameplay.Enemies
         public EnemyConfig Config { get; private set; }
         public NavMeshAgent Agent => _agent;
         public HealthComponent Health => _health;
-        public SignalBus SignalBus => _signalBus; // Чтобы стейты могли кидать сигналы
+        public SignalBus SignalBus => _signalBus;
         public IMovementStrategy MovementStrategy => _movementStrategy;
         public EnemyStatusController StatusController { get; private set; }
 
@@ -42,7 +42,6 @@ namespace Gameplay.Enemies
 
 
 
-        // --- СОБЫТИЯ ДЛЯ ВИЗУАЛА ---
         public event Action<EnemyStateType> OnStateChanged;
 
         [Inject]
@@ -69,7 +68,6 @@ namespace Gameplay.Enemies
             _spawnCounter++;
             gameObject.name = $"Enemy_{_spawnCounter}";
             
-            // Включаем физику при спавне
             _collider.enabled = true;
             _agent.enabled = true;
 
@@ -88,11 +86,8 @@ namespace Gameplay.Enemies
 
             StatusController?.Cleanup();
             
-            // ОБЯЗАТЕЛЬНО ставим знак вопроса ?. 
-            // Zenject вызовет OnDisable при добавлении в пул ДО того, как вызовется InitializeMovement
             _stateMachine?.Cleanup(); 
             
-            // Защита от утечек
             OnStateChanged = null;
         }
 
@@ -100,7 +95,6 @@ namespace Gameplay.Enemies
         {
             Config = config;
             
-            // Создаем чистую бизнес-логику
             _armorCalculator = new ArmorCalculator(config.Armor);
             
             if (_health != null)
@@ -108,7 +102,6 @@ namespace Gameplay.Enemies
                 _health.Initialize(config.Stats.MaxHealth);
             }
             
-            // Передаем зависимости в ресивер урона
             if (_damageReceiver != null)
             {
                 _damageReceiver.Initialize(_health, _armorCalculator);
@@ -122,22 +115,17 @@ namespace Gameplay.Enemies
             _movementStrategy = movementStrategy;
             _movementStrategy.Initialize(this);
 
-            // 1. Создаем чистую машину при каждом доставании из пула
             _stateMachine = new EnemyStateMachine();
             
-            // 2. ПЕРЕНЕСЛИ СЮДА: Подписываемся на события только когда машина уже существует
             _stateMachine.OnStateChanged += state => OnStateChanged?.Invoke(state);
 
-            //
             StatusController = new EnemyStatusController(this);
 
-            // 3. Добавляем стейты
             _stateMachine.AddState(new MoveState(this, _movementStrategy));
             _stateMachine.AddState(new DeathState(this));
             _stateMachine.AddState(new ReachedBaseState(this));
             
             
-            // 4. Стартуем
             _stateMachine.ChangeState(EnemyStateType.Move);
         }
 
@@ -149,8 +137,6 @@ namespace Gameplay.Enemies
 
         private void HandleDeath()
         {
-            // Теперь Фасад не удаляет себя сам, он просто говорит машине: "Я умер"
-            // А DeathState отыграет анимацию и вызовет Despawn
             _stateMachine.ChangeState(EnemyStateType.Death);
         }
 

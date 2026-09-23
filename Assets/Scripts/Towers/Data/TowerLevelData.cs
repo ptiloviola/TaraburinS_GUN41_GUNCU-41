@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Gameplay.Towers.Data.Modules;
-using Gameplay.Combat.Attributes; 
+using Gameplay.Core.Attributes; 
 
 namespace Gameplay.Towers.Data
 {

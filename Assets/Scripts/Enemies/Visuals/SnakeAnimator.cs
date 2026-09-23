@@ -10,8 +10,8 @@ namespace Gameplay.Enemies.Visuals
         [SerializeField] private Transform _visualMesh;
         
         [Header("Настройки Змейки")]
-        [SerializeField] private float _wiggleDistance = 0.5f; // Насколько сильно отклоняется в стороны
-        [SerializeField] private float _wiggleSpeed = 0.3f; // Скорость одного колебания
+        [SerializeField] private float _wiggleDistance = 0.5f;
+        [SerializeField] private float _wiggleSpeed = 0.3f;
 
         private Sequence _snakeSequence;
         private Vector3 _initialLocalPos;
@@ -24,7 +24,7 @@ namespace Gameplay.Enemies.Visuals
             if (_visualMesh != null)
             {
                 _initialLocalPos = _visualMesh.localPosition;
-                _initialScale = _visualMesh.localScale; // НОВОЕ
+                _initialScale = _visualMesh.localScale;
             }
         }
 
@@ -34,7 +34,7 @@ namespace Gameplay.Enemies.Visuals
             if (_visualMesh != null)
             {
                 _visualMesh.localPosition = _initialLocalPos;
-                _visualMesh.localScale = _initialScale; // НОВОЕ
+                _visualMesh.localScale = _initialScale;
             }
         }
 
@@ -52,7 +52,6 @@ namespace Gameplay.Enemies.Visuals
             {
                 _snakeSequence = DOTween.Sequence();
                 
-                // Двигаем меш по локальной оси X влево, затем вправо
                 _snakeSequence.Append(_visualMesh.DOLocalMoveX(_initialLocalPos.x + _wiggleDistance, _wiggleSpeed).SetEase(Ease.InOutSine));
                 _snakeSequence.Append(_visualMesh.DOLocalMoveX(_initialLocalPos.x - _wiggleDistance, _wiggleSpeed).SetEase(Ease.InOutSine));
                 

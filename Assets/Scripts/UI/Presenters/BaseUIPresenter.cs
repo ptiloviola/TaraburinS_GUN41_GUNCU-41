@@ -29,11 +29,9 @@ namespace Gameplay.UI.Presenters
 
         public void Initialize()
         {
-            // 1. Сразу пушим актуальное состояние при загрузке
             _view.SetBalance(_bankService.CurrentBalance);
             _view.SetLives(_healthService.CurrentLives);
 
-            // 2. Подписываемся на обновления
             _signalBus.Subscribe<SignalBalanceChanged>(OnBalanceChanged);
             _signalBus.Subscribe<SignalBaseDamaged>(OnBaseDamaged);
             _signalBus.Subscribe<SignalInteractionModeChanged>(OnModeChanged);
@@ -60,12 +58,10 @@ namespace Gameplay.UI.Presenters
         {
             if (signal.Mode == InteractionMode.TacticalClaim)
             {
-                // Прячем UI волн в тактической фазе
                 _view.gameObject.SetActive(false); 
             }
             else
             {
-                // Показываем обратно в бою
                 _view.gameObject.SetActive(true); 
             }
 }

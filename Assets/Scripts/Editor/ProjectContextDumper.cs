@@ -9,32 +9,29 @@ namespace Gameplay.Tools
 {
     public class ProjectContextDumper : UnityEditor.Editor
     {
-        [MenuItem("Tools/TD/Скопировать контекст проекта для ИИ (NEW CHAT)")]
+        [MenuItem("Tools/TD/Скопировать контекст проекта")]
         public static void CopyProjectContext()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("=== КОНТЕКСТ ПРОЕКТА TOWER DEFENSE ===");
 
-            // 1. СКРИПТЫ
+
             sb.AppendLine("\n--- 1. СТРУКТУРА СКРИПТОВ (Assets/Scripts) ---");
             string scriptsPath = Application.dataPath + "/Scripts";
             if (Directory.Exists(scriptsPath)) DumpDirectory(scriptsPath, sb, 0, "*.cs", "📄");
             else sb.AppendLine("Папка Assets/Scripts не найдена!");
 
-            // 2. СЦЕНА
             sb.AppendLine("\n--- 2. ИЕРАРХИЯ СЦЕНЫ ---");
             foreach (GameObject root in SceneManager.GetActiveScene().GetRootGameObjects())
             {
                 DumpGameObject(root.transform, sb, 0);
             }
 
-            // 3. ПРЕФАБЫ
             sb.AppendLine("\n--- 3. ПРЕФАБЫ (Assets/Prefabs) ---");
             string prefabsPath = Application.dataPath + "/Prefabs";
             if (Directory.Exists(prefabsPath)) DumpPrefabsDirectory(prefabsPath, sb, 0);
             else sb.AppendLine("Папка Assets/Prefabs не найдена!");
 
-            // Копируем в буфер
             GUIUtility.systemCopyBuffer = sb.ToString();
             
             Debug.Log($"<color=green>[TD Tools] Контекст скопирован!</color> Длина текста: {sb.Length} символов.");
@@ -44,7 +41,6 @@ namespace Gameplay.Tools
             }
         }
 
-        // Рекурсивный обход обычных папок
         private static void DumpDirectory(string path, StringBuilder sb, int depth, string extension, string icon)
         {
             string indent = new string(' ', depth * 2);
@@ -62,12 +58,10 @@ namespace Gameplay.Tools
             }
         }
 
-        // Рекурсивный обход иерархии сцены
         private static void DumpGameObject(Transform node, StringBuilder sb, int depth)
         {
             string indent = new string(' ', depth * 2);
             
-            // Собираем компоненты, игнорируем Transform для экономии места
             var components = node.GetComponents<Component>()
                 .Where(c => c != null && c.GetType() != typeof(Transform))
                 .Select(c => c.GetType().Name);
@@ -83,7 +77,6 @@ namespace Gameplay.Tools
             }
         }
 
-        // Рекурсивный обход папки префабов и чтение их внутренностей
         private static void DumpPrefabsDirectory(string path, StringBuilder sb, int depth)
         {
             string indent = new string(' ', depth * 2);
@@ -92,14 +85,12 @@ namespace Gameplay.Tools
 
             foreach (FileInfo file in dir.GetFiles("*.prefab"))
             {
-                // Конвертируем абсолютный путь Windows/Mac в локальный путь Unity (Assets/...)
+                
                 string assetPath = "Assets" + file.FullName.Substring(Application.dataPath.Length).Replace('\\', '/');
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
                 
                 if (prefab != null)
                 {
-                    // Для префаба собираем ВСЕ компоненты со всех вложенных объектов
-                    // и берем только уникальные названия, чтобы не спамить 20 текстами
                     var components = prefab.GetComponentsInChildren<Component>(true)
                         .Where(c => c != null && c.GetType() != typeof(Transform))
                         .Select(c => c.GetType().Name)

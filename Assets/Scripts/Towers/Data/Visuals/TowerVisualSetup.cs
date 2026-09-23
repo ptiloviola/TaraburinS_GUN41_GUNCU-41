@@ -12,8 +12,6 @@ namespace Gameplay.Towers.Data.Visuals
         public RotationVisualData Rotation;
         public RecoilVisualData Recoil;
         public PulseVisualData Pulse;
-        // В будущем сюда легко добавятся:
-        // public LaserVisualData Laser;
-        // public BarracksVisualData BarracksFlags;
+
     }
 }

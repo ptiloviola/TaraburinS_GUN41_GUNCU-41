@@ -69,10 +69,8 @@ namespace Gameplay.Auras
         {
             protected override void Reinitialize(AuraSetup setup, Vector3 position, LayerMask mask, LingeringAuraFacade item)
             {
-                // Отрабатывает базовая логика Zenject (достает из пула, включает объект)
                 base.Reinitialize(setup, position, mask, item);
                 
-                // Передаем данные напрямую без рефлексии
                 item.InitializeAura(setup, position, mask);
             }
         }

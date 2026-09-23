@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.AI.Navigation;
-using Zenject;
 using Gameplay.Grid;
 
 namespace Infrastructure.Levels
@@ -18,13 +17,11 @@ namespace Infrastructure.Levels
         {
             if (_references.NavMeshSurface != null)
             {
-                // Ищем компоненты напрямую по строгому типу, никаких строк и GetType()
                 var allSurfaces = _references.NavMeshSurface.gameObject.GetComponents<NavMeshSurface>();
                 
                 int bakedCount = 0;
                 foreach (var surface in allSurfaces)
                 {
-                    // Прямой, быстрый и безопасный вызов метода
                     surface.BuildNavMesh();
                     bakedCount++;
                 }
@@ -35,7 +32,6 @@ namespace Infrastructure.Levels
             }
             else
             {
-                // Убрано #if UNITY_EDITOR, критическая ошибка должна быть видна в логах билда
                 Debug.LogError("[NavMeshBakeService] Ссылка на NavMeshSurface отсутствует!");
             }
         }

@@ -33,11 +33,10 @@ namespace Gameplay.Auras.Visuals
             
             _visualRoot.gameObject.SetActive(true);
             
-            // ЖЕЛЕЗОБЕТОН: Передаем радиус лужи напрямую в форму частиц!
             if (_particles != null) 
             {
                 var shape = _particles.shape;
-                shape.radius = targetRadius; // Снежинки будут рождаться ровно по границе сферы
+                shape.radius = targetRadius;
                 _particles.Play();
             }
 

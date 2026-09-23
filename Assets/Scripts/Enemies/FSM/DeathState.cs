@@ -1,6 +1,6 @@
 using Gameplay.Infrastructure.Signals;
 using UnityEngine;
-using Cysharp.Threading.Tasks; // Требуется UniTask
+using Cysharp.Threading.Tasks;
 using Gameplay.Enemies.Visuals;
 
 namespace Gameplay.Enemies.FSM
@@ -13,11 +13,11 @@ namespace Gameplay.Enemies.FSM
 
         public override void Enter()
         {
-            // Останавливаем физику и движение
+
             if (Facade.Agent != null && Facade.Agent.isActiveAndEnabled)
             {
                 Facade.Agent.isStopped = true;
-                Facade.Agent.enabled = false; // Лучше вообще выключить агента, чтобы его не толкали
+                Facade.Agent.enabled = false; 
             }
             
             Collider col = Facade.GetComponent<Collider>();
@@ -31,21 +31,17 @@ namespace Gameplay.Enemies.FSM
                 Facade.Config.DeathBehavior.Execute(Facade);
             }
 
-            // Запускаем асинхронный процесс без блокировки основного потока
             ProcessDeathAsync().Forget();
         }
 
         private async UniTaskVoid ProcessDeathAsync()
         {
-            // 1. Ищем визуализатор
             var visuals = Facade.GetComponent<EnemyVisualsBase>();
             if (visuals != null)
             {
-                // 2. Ждем, пока проиграется красивая анимация смерти
                 await visuals.PlayDeathAnimationAsync();
             }
 
-            // 3. Только после этого убираем труп в пул
             Facade.ForceDespawn();
         }
     }

@@ -65,7 +65,6 @@ namespace Gameplay.Editor
             GridGizmosDrawer drawer = (GridGizmosDrawer)target;
             GridConfig config = drawer.EditorConfig;
             
-            // Получаем ссылки на сцену для расчета рейкаста
             GridSceneReferences refs = drawer.GetComponent<GridSceneReferences>();
 
             if (config == null || config.rows == null || config.rows.Length == 0 || refs == null) return;

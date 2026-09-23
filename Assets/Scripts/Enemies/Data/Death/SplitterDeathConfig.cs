@@ -15,16 +15,15 @@ namespace Gameplay.Enemies.Data.Death
         {
             for (int i = 0; i < SegmentCount; i++)
             {
-                // Генерируем случайную точку вокруг умирающего босса
+
                 Vector2 randomCircle = Random.insideUnitCircle * SpawnRadius;
                 Vector3 spawnPos = facade.transform.position + new Vector3(randomCircle.x, 0, randomCircle.y);
 
-                // Кричим Режиссеру: "Срочно заспавни сегмент вот тут!"
                 facade.SignalBus.Fire(new SignalSpawnEnemyRequest
                 {
                     EnemyId = SegmentEnemyId,
                     Position = spawnPos,
-                    TargetBaseId = "" // Режиссер сам направит их на ближайшую базу
+                    TargetBaseId = ""
                 });
             }
         }

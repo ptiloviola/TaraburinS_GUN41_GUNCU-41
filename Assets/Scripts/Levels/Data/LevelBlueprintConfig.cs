@@ -2,7 +2,7 @@ using UnityEngine;
 using Gameplay.Grid;
 using Gameplay.Spawning.Data;
 
-namespace Gameplay.Combat.Data
+namespace Gameplay.Levels.Data
 {
     [CreateAssetMenu(fileName = "NewLevelBlueprint", menuName = "TD/Level Blueprint Config")]
     public class LevelBlueprintConfig : ScriptableObject

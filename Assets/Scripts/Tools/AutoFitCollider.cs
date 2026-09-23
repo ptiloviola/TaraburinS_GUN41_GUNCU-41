@@ -30,7 +30,6 @@ public class AutoFitCollider : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        // Записываем состояние для системы отмены (Ctrl+Z)
         Undo.RecordObject(boxCollider, "Fit BoxCollider");
 #endif
 
@@ -43,7 +42,6 @@ public class AutoFitCollider : MonoBehaviour
         );
 
 #if UNITY_EDITOR
-        // ЖЕСТКО приказываем Unity сохранить эти изменения в префабе!
         EditorUtility.SetDirty(boxCollider);
         PrefabUtility.RecordPrefabInstancePropertyModifications(boxCollider);
 #endif

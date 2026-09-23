@@ -7,7 +7,7 @@ namespace Gameplay.Tools
 {
     public class PrefabDumper : UnityEditor.Editor
     {
-        [MenuItem("Tools/TD/Скопировать структуру префаба для ИИ")]
+        [MenuItem("Tools/TD/Скопировать структуру префаба")]
         public static void CopyStructureToClipboard()
         {
             GameObject selected = Selection.activeGameObject;
@@ -43,7 +43,7 @@ namespace Gameplay.Tools
                 if (c == null || c is Transform) continue;
                 
                 string compName = c.GetType().Name;
-                string details = GetComponentDetails(c); // Достаем важные параметры
+                string details = GetComponentDetails(c);
                 
                 compBuilder.Append($"[{compName}{details}] ");
             }
@@ -58,12 +58,12 @@ namespace Gameplay.Tools
             }
         }
 
-        // --- НОВЫЙ МЕТОД: Извлекаем суть из компонентов ---
+
         private static string GetComponentDetails(Component c)
         {
             switch (c)
             {
-                // 1. Физика: Коллайдеры
+
                 case Collider col:
                     string triggerStr = col.isTrigger ? "(TRIGGER)" : "";
                     string sizeStr = "";
@@ -72,25 +72,24 @@ namespace Gameplay.Tools
                     else if (col is BoxCollider bc) sizeStr = $"size:{bc.size.x:F1}x{bc.size.y:F1}x{bc.size.z:F1}";
                     else if (col is CapsuleCollider cc) sizeStr = $"r:{cc.radius:F2},h:{cc.height:F2}";
 
-                    // Если параметров нет, скобки не выводим
+
                     if (string.IsNullOrEmpty(triggerStr) && string.IsNullOrEmpty(sizeStr)) return "";
                     return $" {triggerStr} {sizeStr}".TrimEnd();
 
-                // 2. Физика: Тела
+
                 case Rigidbody rb:
                     string kinStr = rb.isKinematic ? "Kinematic" : "Dynamic";
                     string gravStr = rb.useGravity ? "+Grav" : "-Grav";
                     return $" ({kinStr}, {gravStr})";
 
-                // 3. Навигация
+
                 case NavMeshAgent agent:
                     return $" (Offset:{agent.baseOffset:F2}, Speed:{agent.speed:F1})";
 
-                // 4. Интерфейс (чтобы сразу видеть, если полоска ХП отвалилась в Screen Space)
+                
                 case Canvas canvas:
                     return $" ({canvas.renderMode})";
 
-                // Сюда в будущем можно легко дописывать новые типы компонентов!
                 default:
                     return "";
             }

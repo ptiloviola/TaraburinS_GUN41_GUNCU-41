@@ -1,6 +1,6 @@
-using Gameplay.Combat.Data;
+using Gameplay.Campaign.Data;
 
-namespace Gameplay.Combat.Data
+namespace Gameplay.Levels.Data
 {
     public class LevelRuntimeModel
     {

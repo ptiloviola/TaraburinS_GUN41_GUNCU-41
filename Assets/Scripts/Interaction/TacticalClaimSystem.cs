@@ -20,12 +20,12 @@ namespace Gameplay.Interaction
         private readonly IInstantiator _instantiator;
         private readonly IInputService _inputService;
         private readonly InteractionStateModel _interactionState;
-        private readonly SignalBus _signalBus; // НОВОЕ: Для общения с UI
+        private readonly SignalBus _signalBus;
 
         private GameObject _validCursor;
         private GameObject _invalidCursor;
         
-        private int _maxClaims; // Запоминаем максимум для UI
+        private int _maxClaims;
 
         [System.Serializable]
         public class Settings
@@ -82,7 +82,7 @@ namespace Gameplay.Interaction
             }
 
             HandleClaiming();
-            HandleCanceling(); // Вызов отмены
+            HandleCanceling();
         }
 
         private void HandleClaiming()
@@ -91,7 +91,6 @@ namespace Gameplay.Interaction
 
             if (Physics.Raycast(ray, out RaycastHit hit, MaxRaycastDistance, _settings.GridLayerMask))
             {
-                // ИСПРАВЛЕНО: Берем позицию строго по центру коллайдера
                 Vector2Int gridPos = GetGridPosition(hit.collider.transform.position);
                 
                 bool canClaim = _validationService.CanClaimFoundation(gridPos) && _interactionState.AvailableClaims > 0;
@@ -115,13 +114,11 @@ namespace Gameplay.Interaction
 
         private void HandleCanceling()
         {
-            // Отменяем либо через инпут, либо жестко по ПКМ
             if (_inputService.IsCancelActionDown || Input.GetMouseButtonDown(1))
             {
                 Ray ray = _mainCamera.ScreenPointToRay(_inputService.PointerPosition);
                 if (Physics.Raycast(ray, out RaycastHit hit, MaxRaycastDistance, _settings.GridLayerMask))
                 {
-                    // ИСПРАВЛЕНО: Берем позицию строго по центру коллайдера
                     Vector2Int gridPos = GetGridPosition(hit.collider.transform.position);
                     GridNode node = _gridService.GetNode(gridPos);
 
@@ -141,7 +138,6 @@ namespace Gameplay.Interaction
             }
         }
 
-        // Вызывается из стейта при старте фазы
         public void SetMaxClaims(int max)
         {
             _maxClaims = max;

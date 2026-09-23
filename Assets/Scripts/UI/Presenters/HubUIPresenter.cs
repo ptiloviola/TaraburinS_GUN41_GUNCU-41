@@ -1,8 +1,8 @@
 using System;
 using Zenject;
 using Cysharp.Threading.Tasks;
-using Gameplay.Combat.Services;
-using Gameplay.Combat.Data;
+using Gameplay.Campaign.Services;
+using Gameplay.Campaign.Data;
 using Gameplay.Infrastructure.Services;
 using Gameplay.UI.Views;
 

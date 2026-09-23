@@ -27,7 +27,7 @@ namespace Gameplay.Infrastructure.Input
         {
             _gameInput = new GameInput();
 
-            // Подписываемся именованными методами
+
             _gameInput.Gameplay.PrimaryAction.performed += HandlePrimaryAction;
             _gameInput.Gameplay.CancelAction.performed += HandleCancelAction;
             _gameInput.Gameplay.PauseAction.performed += HandlePauseAction;
@@ -39,7 +39,7 @@ namespace Gameplay.Infrastructure.Input
         {
             if (_gameInput != null)
             {
-                // Честно отписываемся перед уничтожением
+
                 _gameInput.Gameplay.PrimaryAction.performed -= HandlePrimaryAction;
                 _gameInput.Gameplay.CancelAction.performed -= HandleCancelAction;
                 _gameInput.Gameplay.PauseAction.performed -= HandlePauseAction;
@@ -50,7 +50,6 @@ namespace Gameplay.Infrastructure.Input
             }
         }
 
-        // Именованные обработчики
         private void HandlePrimaryAction(InputAction.CallbackContext context) => OnPrimaryAction?.Invoke();
         private void HandleCancelAction(InputAction.CallbackContext context) => OnCancelAction?.Invoke();
         private void HandlePauseAction(InputAction.CallbackContext context) => OnPauseAction?.Invoke();

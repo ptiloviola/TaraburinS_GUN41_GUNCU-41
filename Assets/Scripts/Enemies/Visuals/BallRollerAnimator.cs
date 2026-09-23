@@ -18,7 +18,7 @@ namespace Gameplay.Enemies.Visuals
 
         protected override void Awake()
         {
-            base.Awake(); // Обязательно вызываем метод базы для поиска Facade
+            base.Awake();
             
             if (_visualMesh == null) 
             {
@@ -32,7 +32,7 @@ namespace Gameplay.Enemies.Visuals
 
         protected override void OnEnable()
         {
-            base.OnEnable(); // Подписка на FSM происходит здесь
+            base.OnEnable();
             
             _lastPosition = transform.position;
             _isMoving = false;
@@ -44,18 +44,17 @@ namespace Gameplay.Enemies.Visuals
             }
         }
 
-        // --- РЕАКЦИИ НА СМЕНУ СОСТОЯНИЙ ---
+
         protected override void OnMoveStart() => _isMoving = true;
         protected override void OnStunned() => _isMoving = false;
         protected override void OnReachedBase() => _isMoving = false;
 
         public override async UniTask PlayDeathAnimationAsync()
 {
-        _isMoving = false; // Останавливаем логику качения
+        _isMoving = false;
         
         if (_visualMesh != null)
         {
-            // Анимируем сжатие в 0 и ждем окончания!
             await _visualMesh.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
         }
     }

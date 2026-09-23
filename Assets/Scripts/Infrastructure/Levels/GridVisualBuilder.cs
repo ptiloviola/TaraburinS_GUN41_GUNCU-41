@@ -1,7 +1,7 @@
 using Gameplay.Grid;
 using UnityEngine;
 using Unity.AI.Navigation;
-using Zenject;
+
 
 namespace Infrastructure.Levels
 {
@@ -60,13 +60,12 @@ namespace Infrastructure.Levels
 
         private void SetupBlockVisuals(GameObject block, GridNode node, int pathAreaIndex, int groundAreaIndex)
         {
-            // Оптимизация: ищем компонент, а не требуем выделения памяти. 
+
             if (!block.TryGetComponent(out Renderer blockRenderer))
             {
                 blockRenderer = block.GetComponentInChildren<Renderer>();
             }
             
-            // Если NavMeshModifier уже висит на префабе, мы сэкономим тысячи вызовов AddComponent!
             if (!block.TryGetComponent(out NavMeshModifier modifier))
             {
                 modifier = block.AddComponent<NavMeshModifier>();
