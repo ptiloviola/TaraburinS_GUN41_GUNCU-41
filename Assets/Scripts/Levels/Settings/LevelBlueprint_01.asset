@@ -17,7 +17,7 @@ MonoBehaviour:
   LevelIndex: 1
   StartingLives: 20
   StartingMoney: 99
-  FoundationQuota: 5
+  FoundationQuota: 4
   RunCurrencyReward: 50
   MetaCurrencyReward: 10
   GridConfig: {fileID: 11400000, guid: 42434c552c9589845b22ad717f91f853, type: 2}

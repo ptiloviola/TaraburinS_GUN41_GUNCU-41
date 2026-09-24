@@ -16,7 +16,7 @@ MonoBehaviour:
   BossLevel: {fileID: 11400000, guid: 2bffcc3ad685be1458cbb04866fdc01d, type: 2}
   Tiers:
   - MinDepth: 0
-    MaxDepth: 4
+    MaxDepth: 3
     CombatWeight: 60
     ShopWeight: 20
     EventWeight: 20

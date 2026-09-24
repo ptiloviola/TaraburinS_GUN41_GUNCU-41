@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelId: Level_Boss
   DisplayName: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C \u0411\u043E\u0441\u0441"
-  LevelIndex: 1
+  LevelIndex: 3
   StartingLives: 20
   StartingMoney: 70
-  FoundationQuota: 4
+  FoundationQuota: 3
   RunCurrencyReward: 50
   MetaCurrencyReward: 10
   GridConfig: {fileID: 11400000, guid: 80ffca8f70ae5a34286a3b81f461ecb2, type: 2}
