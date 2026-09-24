@@ -8,7 +8,7 @@ namespace Gameplay.Tools
 {
     public class CanvasDumper : UnityEditor.Editor
     {
-        [MenuItem("Tools/TD/Скопировать структуру Canvas для ИИ")]
+        [MenuItem("Tools/TD/Скопировать структуру Canvas")]
         public static void CopyCanvasStructureToClipboard()
         {
             GameObject selected = Selection.activeGameObject;
@@ -33,7 +33,7 @@ namespace Gameplay.Tools
             string indent = new string(' ', depth * 4) + (depth > 0 ? "┗ " : "");
             
 
-            string pos = $"Pos({node.localPosition.x:F1}, {node.localPosition.y:F1}, {node.localPosition.z:F1})";
+            string pos = node is RectTransform rt ? $"Pos({rt.anchoredPosition.x:F1}, {rt.anchoredPosition.y:F1})" : $"Pos({node.localPosition.x:F1}, {node.localPosition.y:F1}, {node.localPosition.z:F1})";
             string scale = $"Scale({node.localScale.x:F2}, {node.localScale.y:F2}, {node.localScale.z:F2})";
             
             Component[] components = node.GetComponents<Component>();
