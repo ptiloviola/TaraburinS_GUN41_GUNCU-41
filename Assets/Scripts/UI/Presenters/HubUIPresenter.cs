@@ -40,16 +40,23 @@ namespace Gameplay.UI.Presenters
 
             _view.UpdateRunInventory(_progressModel.CurrentRunGold);
 
-            if (_runDirector.HasNextNode(_progressModel))
+            if (_progressModel.CurrentMap == null)
             {
-                _nextNode = _runDirector.GetNextNode(_progressModel);
-                
+                _runDirector.GenerateRunMap(_progressModel);
+            }
+
+            var choices = _runDirector.GetAvailableChoices(_progressModel);
+
+            if (choices.Count > 0)
+            {
+                _nextNode = choices[0];
                 _view.ShowNextLevelInfo(_nextNode.NodeDisplayName);
             }
             else
             {
                 _view.ShowCampaignCompleted();
             }
+
             _shopPresenter.OnShopClosed += HandleShopClosed;
         }
 
@@ -65,22 +72,20 @@ namespace Gameplay.UI.Presenters
             if (_nextNode == null) return;
             _view.SetInteractable(false);
             
-            _progressModel.CurrentNode = _nextNode;
+            _runDirector.AdvanceToNode(_progressModel, _nextNode.Id);
 
             switch (_nextNode.NodeType)
             {
                 case MapNodeType.Combat:
                     _sceneLoader.LoadSceneAsync("BattleScene").Forget();
                     break;
-                
                 case MapNodeType.Shop:
-                    
-                    UnityEngine.Debug.Log("<color=cyan>[MapScene] Игрок зашел в Магазин! (UI магазина пока не реализован)</color>");
                     _shopPresenter.OpenShop(_nextNode.ShopData);
                     break;
-                
                 case MapNodeType.Event:
-                    UnityEngine.Debug.Log("Событие пока не реализовано.");
+                    // ВРЕМЕННЫЙ ПРОПУСК: Имитируем прохождение события и перезагружаем Хаб
+                    UnityEngine.Debug.Log("<color=cyan>[MapScene] Событие пропущено (UI в разработке).</color>");
+                    _sceneLoader.LoadSceneAsync("HubScene").Forget();
                     break;
             }
         }

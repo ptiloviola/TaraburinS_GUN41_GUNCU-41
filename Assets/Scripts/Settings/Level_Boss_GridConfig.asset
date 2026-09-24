@@ -1,0 +1,317 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd572816c8004e64ca65726d5732e3dd, type: 3}
+  m_Name: Level_Boss_GridConfig
+  m_EditorClassIdentifier: 
+  width: 12
+  height: 12
+  rows:
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 1
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 4
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 1
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 1
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 1
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 1
+    - elevation: 0
+      type: 3
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+  - columns:
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 1
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 1
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0
+    - elevation: 0
+      type: 0

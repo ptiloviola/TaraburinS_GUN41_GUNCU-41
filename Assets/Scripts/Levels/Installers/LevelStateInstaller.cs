@@ -24,6 +24,15 @@ namespace Gameplay.Levels.Installers
 
         public override void InstallBindings()
         {
+            if (_progressModel.CurrentNode == null)
+            {
+                Debug.LogError("[LevelStateInstaller] КРИТИЧЕСКАЯ ОШИБКА: CurrentNode равен NULL! Либо ProjectInstaller перезатер прогресс, либо мы пришли не из Хаба.");
+            }
+            else if (_progressModel.CurrentNode.CombatLevel == null)
+            {
+                Debug.LogError($"[LevelStateInstaller] КРИТИЧЕСКАЯ ОШИБКА: У узла '{_progressModel.CurrentNode.Id}' пустой CombatLevel!");
+            }
+
             LevelBlueprintConfig activeBlueprint = _progressModel.CurrentNode?.CombatLevel ?? _debugFallbackBlueprint;
             
             if (activeBlueprint == null)
@@ -50,7 +59,7 @@ namespace Gameplay.Levels.Installers
             
             Container.BindInstance(_forecastSettings).IfNotBound();
             Container.Bind<TacticalForecastService>().AsSingle();
-            Container.Bind<LevelRuntimeModel>().AsSingle();
+            Container.Bind<LevelRuntimeModel>().AsSingle().WithArguments(activeBlueprint);
 
 
             Container.Bind<ILevelState>().To<LevelInitState>().AsSingle();

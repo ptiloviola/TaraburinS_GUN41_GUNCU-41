@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3804275850d1ce4b9207ed4917aa8aa, type: 3}
-  m_Name: LevelBlueprint_02
+  m_Name: LevelBlueprint_Boss
   m_EditorClassIdentifier: 
-  LevelId: Level_02
-  DisplayName: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C 2"
-  LevelIndex: 2
-  StartingLives: 15
-  StartingMoney: 75
-  FoundationQuota: 6
+  LevelId: Level_Boss
+  DisplayName: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C \u0411\u043E\u0441\u0441"
+  LevelIndex: 1
+  StartingLives: 20
+  StartingMoney: 70
+  FoundationQuota: 4
   RunCurrencyReward: 50
   MetaCurrencyReward: 10
-  GridConfig: {fileID: 11400000, guid: 6ebb2a529bf424c44a64ea4740c5e339, type: 2}
-  WavesConfig: {fileID: 11400000, guid: 3d753584d08b4f74aaf19af8ad39df74, type: 2}
+  GridConfig: {fileID: 11400000, guid: 80ffca8f70ae5a34286a3b81f461ecb2, type: 2}
+  WavesConfig: {fileID: 11400000, guid: 7abb71a52eab2784885fc5a827d20480, type: 2}

@@ -1,4 +1,3 @@
-using Gameplay.Campaign.Data;
 
 namespace Gameplay.Levels.Data
 {
@@ -8,15 +7,20 @@ namespace Gameplay.Levels.Data
         public int StartingMoney { get; private set; }
         public int FoundationQuota { get; private set; }
 
-        public LevelRuntimeModel(RunProgressModel progressModel)
+
+        public LevelRuntimeModel(LevelBlueprintConfig blueprint)
         {
-            var blueprint = progressModel.CurrentNode?.CombatLevel;
-            
             if (blueprint != null)
             {
                 StartingLives = blueprint.StartingLives;
                 StartingMoney = blueprint.StartingMoney;
                 FoundationQuota = blueprint.FoundationQuota;
+                
+                UnityEngine.Debug.Log($"<color=orange>[LevelRuntimeModel] Загружен {blueprint.name}. Базовые жизни: {StartingLives}, Базовые деньги: {StartingMoney}</color>");
+            }
+            else
+            {
+                UnityEngine.Debug.LogError("[LevelRuntimeModel] Блюпринт равен NULL!");
             }
         }
     }

@@ -65,7 +65,7 @@ namespace Gameplay.Campaign.Services
                 profile.MaxCompletedLevelIndex = _runProgress.CurrentRunDepth;
             }
 
-            if (!_runDirector.HasNextNode(_runProgress))
+            if (_runDirector.IsCampaignCompleted(_runProgress))
             {
                 profile.TotalRunsPlayed++;
                 Debug.Log("<color=green>[RunResultProcessor] Кампания пройдена! Забег завершен.</color>");

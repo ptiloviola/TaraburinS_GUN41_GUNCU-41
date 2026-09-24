@@ -13,8 +13,6 @@ namespace Gameplay.Combat.Statuses
         
         void ApplyResistance(float durationMultiplier);
         
-        // Пока оставляю привязку к EnemyFacade. 
-        // В будущем, если захотим вешать статусы на башни, заменю на интерфейс IStatusReceiver.
         void OnApply(EnemyFacade enemy); 
         void Tick(float deltaTime);
         void OnRemove();

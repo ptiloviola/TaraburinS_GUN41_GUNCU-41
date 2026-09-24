@@ -17,7 +17,6 @@ namespace Gameplay.Campaign.Data
 
         public List<string> NextNodeIds = new List<string>();
 
-
         public Vector2 RenderPosition; 
 
         [Header("Данные для боя (если Combat)")]
@@ -25,5 +24,8 @@ namespace Gameplay.Campaign.Data
 
         [Header("Данные для магазина (если Shop)")]
         public ShopConfig ShopData;
+
+        [Header("Данные для события (если Event)")]
+        public EventConfig EventData;
     }
 }

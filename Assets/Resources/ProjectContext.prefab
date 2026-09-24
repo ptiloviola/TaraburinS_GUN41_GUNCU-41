@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d5e939a57c4afc489bd56dbc058fa18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainCampaign: {fileID: 11400000, guid: afc2782c6543220469ac23fdd92eee5d, type: 2}
+  _activeRunMode: {fileID: 11400000, guid: 726cfc621fea2784cb13d7d72b9b524f, type: 2}
 --- !u!114 &8611359352833738259
 MonoBehaviour:
   m_ObjectHideFlags: 0
