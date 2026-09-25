@@ -10,6 +10,7 @@ namespace Gameplay.Campaign.Data
         public int CurrentRunDepth { get; set; } = 0;
         public int CurrentRunGold { get; set; } = 0; 
         public List<string> ActiveRunItems { get; set; } = new List<string>();
+        public List<string> PathHistory { get; set; } = new List<string>();
 
         public void ResetRun()
         {

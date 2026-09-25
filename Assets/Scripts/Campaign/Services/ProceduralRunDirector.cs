@@ -70,7 +70,13 @@ namespace Gameplay.Campaign.Services
                 }
             }
 
-            progress.CurrentMap.StartingNodeIds.Add(layers[0][0].Id);
+            string startNodeId = layers[0][0].Id;
+            progress.CurrentMap.StartingNodeIds.Add(startNodeId);
+            
+            if (progress.CurrentNode == null)
+            {
+                AdvanceToNode(progress, startNodeId);
+            }
         }
 
         private MapNode CreateRandomNode(int depth, int indexInLayer, HashSet<LevelBlueprintConfig> usedLevels)
@@ -169,6 +175,11 @@ namespace Gameplay.Campaign.Services
             {
                 progress.CurrentNode = nextNode;
                 progress.CurrentRunDepth = nextNode.Depth;
+                
+                if (!progress.PathHistory.Contains(nodeId))
+                {
+                    progress.PathHistory.Add(nodeId);
+                }
             }
         }
 

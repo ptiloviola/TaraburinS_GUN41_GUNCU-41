@@ -15,6 +15,10 @@ namespace Gameplay.MapScene.Services
         private readonly float _minY = -2f;
         private readonly float _maxY = 15f; 
 
+        private readonly float _minZoom = 2f;
+        private readonly float _maxZoom = 15f;
+        private readonly float _zoomSpeed = 0.5f;
+
         private MapNodeView _hoveredNode;
 
         public MapInteractionController()
@@ -25,6 +29,13 @@ namespace Gameplay.MapScene.Services
         public void Tick()
         {
             if (Mouse.current == null) return;
+
+            Vector2 scroll = Mouse.current.scroll.ReadValue();
+            if (scroll.y != 0)
+            {
+                float zoomDelta = scroll.y > 0 ? -_zoomSpeed : _zoomSpeed;
+                _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize + zoomDelta, _minZoom, _maxZoom);
+            }
 
             Vector2 mousePos = Mouse.current.position.ReadValue();
             bool isPressed = Mouse.current.leftButton.isPressed;

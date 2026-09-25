@@ -10,31 +10,48 @@ namespace Gameplay.MapScene.Views
         [SerializeField] private SpriteRenderer _iconRenderer;
         [SerializeField] private TextMeshPro _nameText;
         
-        [Header("Настройки цветов")]
+        [Header("Настройки цветов иконки")]
         [SerializeField] private Color _lockedColor = Color.gray;
         [SerializeField] private Color _availableColor = Color.white;
         [SerializeField] private Color _completedColor = Color.green;
         [SerializeField] private Color _hoverColor = Color.yellow;
 
+        [Header("Свечение (Outline)")]
+        [SerializeField] private SpriteRenderer _outlineRenderer;
+        
         private string _nodeId;
         private NodeVisualState _currentState;
+        private bool _isStartNode;
 
         public string NodeId => _nodeId;
         public event Action<string> OnNodeClicked;
 
-        public void Setup(string id, string displayName, Vector2 worldPosition, Sprite icon)
+        public void Setup(string id, string displayName, Vector2 worldPosition, Sprite icon, bool isStartNode)
         {
             _nodeId = id;
             _nameText.text = displayName;
             transform.position = worldPosition;
+            _isStartNode = isStartNode;
             
-            if (icon != null) _iconRenderer.sprite = icon;
+            if (icon != null) 
+            {
+                _iconRenderer.sprite = icon;
+                
+                if (_outlineRenderer != null)
+                {
+                    _outlineRenderer.sprite = icon; 
+                    _outlineRenderer.transform.localScale = Vector3.one;
+                    _outlineRenderer.enabled = false; 
+                }
+            }
         }
 
         public void SetState(NodeVisualState state)
         {
             _currentState = state;
-            _nameText.fontStyle = FontStyles.Normal;
+            _nameText.fontStyle = FontStyles.Normal; 
+
+            if (_outlineRenderer != null) _outlineRenderer.enabled = false;
 
             switch (state)
             {
@@ -46,7 +63,12 @@ namespace Gameplay.MapScene.Views
                     break;
                 case NodeVisualState.Completed:
                     _iconRenderer.color = _completedColor;
-                    _nameText.fontStyle = FontStyles.Strikethrough;
+                    
+
+                    if (!_isStartNode) _nameText.fontStyle = FontStyles.Strikethrough; 
+                    
+                    // Если раскомментируешь эту строку, пройденные узлы будут светиться всегда
+                    if (_outlineRenderer != null) _outlineRenderer.enabled = true;
                     break;
             }
         }
@@ -54,12 +76,15 @@ namespace Gameplay.MapScene.Views
         public void OnPointerEnter()
         {
             if (_currentState == NodeVisualState.Available)
+            {
                 _iconRenderer.color = _hoverColor;
+                if (_outlineRenderer != null) _outlineRenderer.enabled = true;
+            }
         }
 
         public void OnPointerExit()
         {
-            SetState(_currentState);
+            SetState(_currentState); 
         }
 
         public void OnPointerClick()
@@ -68,10 +93,5 @@ namespace Gameplay.MapScene.Views
         }
     }
 
-    public enum NodeVisualState
-    {
-        Locked,
-        Available,
-        Completed
-    }
+    public enum NodeVisualState { Locked, Available, Completed }
 }

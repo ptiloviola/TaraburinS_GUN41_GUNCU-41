@@ -35,8 +35,10 @@ namespace Gameplay.UI.Views
 
         public void ShowCampaignCompleted()
         {
+            gameObject.SetActive(true);
             _nextLevelTitleText.text = "CAMPAIGN COMPLETED!";
             _startBattleButton.gameObject.SetActive(false);
+            _mainMenuButton.gameObject.SetActive(true);
         }
 
         public void SetInteractable(bool interactable)

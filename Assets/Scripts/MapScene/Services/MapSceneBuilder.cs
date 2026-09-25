@@ -83,7 +83,7 @@ namespace Gameplay.MapScene.Services
                     MapNodeView view = _instantiator.InstantiatePrefabForComponent<MapNodeView>(
                         _config.NodePrefab, worldPos, Quaternion.identity, _mapRoot);
                     
-                    view.Setup(nodeData.Id, nodeData.NodeDisplayName, worldPos, nodeData.NodeIcon);
+                    view.Setup(nodeData.Id, nodeData.NodeDisplayName, worldPos, nodeData.NodeIcon, nodeData.Depth == 0);
                     view.OnNodeClicked += HandleNodeClicked;
 
                     _spawnedNodes.Add(nodeData.Id, view);
@@ -117,20 +117,20 @@ namespace Gameplay.MapScene.Services
                 view.SetState(NodeVisualState.Locked);
             }
 
+            foreach (string historyId in _progressModel.PathHistory)
+            {
+                if (_spawnedNodes.TryGetValue(historyId, out MapNodeView historyView))
+                {
+                    historyView.SetState(NodeVisualState.Completed);
+                }
+            }
+
             var availableChoices = _runDirector.GetAvailableChoices(_progressModel);
             foreach (var choice in availableChoices)
             {
                 if (_spawnedNodes.TryGetValue(choice.Id, out MapNodeView view))
                 {
                     view.SetState(NodeVisualState.Available);
-                }
-            }
-
-            if (_progressModel.CurrentNode != null)
-            {
-                if (_spawnedNodes.TryGetValue(_progressModel.CurrentNode.Id, out MapNodeView currentView))
-                {
-                    currentView.SetState(NodeVisualState.Completed);
                 }
             }
         }
