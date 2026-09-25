@@ -5,6 +5,7 @@ using Gameplay.Campaign.Services;
 using Gameplay.Campaign.Data;
 using Gameplay.Infrastructure.Services;
 using Gameplay.UI.Views;
+using Gameplay.MapScene.Services;
 
 namespace Gameplay.UI.Presenters
 {
@@ -14,76 +15,63 @@ namespace Gameplay.UI.Presenters
         private readonly IRunDirectorService _runDirector;
         private readonly RunProgressModel _progressModel;
         private readonly ISceneLoaderService _sceneLoader;
-
         private readonly ShopUIPresenter _shopPresenter;
-
-        private MapNode _nextNode;
+        private readonly MapSceneBuilder _mapBuilder;
 
         public HubUIPresenter(
             HubUIView view,
             IRunDirectorService runDirector,
             RunProgressModel progressModel,
             ISceneLoaderService sceneLoader,
-            ShopUIPresenter shopPresenter)
+            ShopUIPresenter shopPresenter,
+            MapSceneBuilder mapBuilder)
         {
             _view = view;
             _runDirector = runDirector;
             _progressModel = progressModel;
             _sceneLoader = sceneLoader;
             _shopPresenter = shopPresenter;
+            _mapBuilder = mapBuilder;
         }
 
         public void Initialize()
         {
-            _view.OnStartBattleClicked += HandleActionClicked;
             _view.OnMainMenuClicked += HandleMainMenu;
-
             _view.UpdateRunInventory(_progressModel.CurrentRunGold);
 
-            if (_progressModel.CurrentMap == null)
-            {
-                _runDirector.GenerateRunMap(_progressModel);
-            }
 
-            var choices = _runDirector.GetAvailableChoices(_progressModel);
-
-            if (choices.Count > 0)
-            {
-                _nextNode = choices[0];
-                _view.ShowNextLevelInfo(_nextNode.NodeDisplayName);
-            }
-            else
+            if (_runDirector.IsCampaignCompleted(_progressModel))
             {
                 _view.ShowCampaignCompleted();
+                return;
             }
 
+            _mapBuilder.OnNodeSelected += HandleNodeSelected;
             _shopPresenter.OnShopClosed += HandleShopClosed;
         }
 
         public void Dispose()
         {
-            _view.OnStartBattleClicked -= HandleActionClicked;
             _view.OnMainMenuClicked -= HandleMainMenu;
+            _mapBuilder.OnNodeSelected -= HandleNodeSelected;
             _shopPresenter.OnShopClosed -= HandleShopClosed;
         }
 
-        private void HandleActionClicked()
+        private void HandleNodeSelected(MapNode nextNode)
         {
-            if (_nextNode == null) return;
             _view.SetInteractable(false);
             
-            _runDirector.AdvanceToNode(_progressModel, _nextNode.Id);
+            _runDirector.AdvanceToNode(_progressModel, nextNode.Id);
 
-            switch (_nextNode.NodeType)
+            switch (nextNode.NodeType)
             {
                 case MapNodeType.Combat:
                     _sceneLoader.LoadSceneAsync("BattleScene").Forget();
                     break;
                 case MapNodeType.Shop:
-                    _shopPresenter.OpenShop(_nextNode.ShopData);
+                    _shopPresenter.OpenShop(nextNode.ShopData);
                     break;
                 case MapNodeType.Event:
-                    // ВРЕМЕННЫЙ ПРОПУСК: Имитируем прохождение события и перезагружаем Хаб
                     UnityEngine.Debug.Log("<color=cyan>[MapScene] Событие пропущено (UI в разработке).</color>");
                     _sceneLoader.LoadSceneAsync("HubScene").Forget();
                     break;
@@ -98,7 +86,6 @@ namespace Gameplay.UI.Presenters
 
         private void HandleShopClosed()
         {
-            _progressModel.CurrentRunDepth++; 
             _sceneLoader.LoadSceneAsync("HubScene").Forget(); 
         }
     }

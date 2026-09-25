@@ -22,6 +22,19 @@ namespace Gameplay.Campaign.Services
                 MapNode node = _campaignConfig.Nodes[i];
                 node.Id = $"linear_node_{i}";
                 node.Depth = i;
+                
+                switch (node.NodeType)
+                {
+                    case MapNodeType.Combat:
+                        node.NodeIcon = node.CombatLevel != null ? node.CombatLevel.MapIcon : null;
+                        break;
+                    case MapNodeType.Shop:
+                        node.NodeIcon = node.ShopData != null ? node.ShopData.MapIcon : null;
+                        break;
+                    case MapNodeType.Event:
+                        node.NodeIcon = node.EventData != null ? node.EventData.MapIcon : null;
+                        break;
+                }
 
                 node.NextNodeIds.Clear();
                 if (i < _campaignConfig.Nodes.Count - 1)

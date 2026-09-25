@@ -15,6 +15,9 @@ namespace Gameplay.Campaign.Data
     [CreateAssetMenu(fileName = "NewEventConfig", menuName = "TD/Campaign/Event Config")]
     public class EventConfig : ScriptableObject
     {
+        [Header("Визуал на Карте")]
+        public Sprite MapIcon;
+
         public string EventName;
         [TextArea] public string EventDescription;
         public List<EventChoice> Choices = new List<EventChoice>();

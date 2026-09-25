@@ -20,6 +20,8 @@ namespace Gameplay.Campaign.Data
         public float ShopWeight = 20f;
         public float EventWeight = 20f;
 
+
+
         [Header("Пулы контента")]
         public List<LevelBlueprintConfig> CombatPool;
         public List<ShopConfig> ShopPool;
@@ -32,7 +34,11 @@ namespace Gameplay.Campaign.Data
         public int MaxDepth = 5; 
         public LevelBlueprintConfig BossLevel; 
         
+        [Header("Визуал стартового узла")]
+        public Sprite StartNodeIcon;
+        
         public List<TierConfig> Tiers = new List<TierConfig>();
+        
         public override void InstallModeBindings(DiContainer container)
         {
             container.BindInstance(this).AsSingle();

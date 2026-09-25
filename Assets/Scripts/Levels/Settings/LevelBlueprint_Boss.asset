@@ -15,6 +15,7 @@ MonoBehaviour:
   LevelId: Level_Boss
   DisplayName: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C \u0411\u043E\u0441\u0441"
   LevelIndex: 3
+  MapIcon: {fileID: 21300000, guid: 5537df6d74f8ba14fb00c4f53c9309a4, type: 3}
   StartingLives: 20
   StartingMoney: 70
   FoundationQuota: 3

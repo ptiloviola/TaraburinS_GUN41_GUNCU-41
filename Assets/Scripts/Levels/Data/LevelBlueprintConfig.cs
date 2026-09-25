@@ -12,6 +12,9 @@ namespace Gameplay.Levels.Data
         public string DisplayName = "Уровень 1";
         public int LevelIndex = 1;
 
+        [Header("Визуал на Карте")]
+        public Sprite MapIcon;
+
         [Header("Стартовые ресурсы")]
         public int StartingLives = 20;
         public int StartingMoney = 100;

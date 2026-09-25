@@ -13,7 +13,9 @@ namespace Gameplay.Campaign.Data
         
         public MapNodeType NodeType;
         public string NodeDisplayName;
-
+        
+        [HideInInspector]
+        public Sprite NodeIcon;
 
         public List<string> NextNodeIds = new List<string>();
 

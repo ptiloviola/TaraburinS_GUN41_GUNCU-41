@@ -18,14 +18,14 @@ namespace Gameplay.Campaign.Services
         public void GenerateRunMap(RunProgressModel progress)
         {
             progress.CurrentMap = new RunMapModel();
-            
             HashSet<LevelBlueprintConfig> usedCombatLevels = new HashSet<LevelBlueprintConfig>();
-            
             List<List<MapNode>> layers = new List<List<MapNode>>();
             
+
             for (int depth = 0; depth <= _config.MaxDepth; depth++)
             {
                 List<MapNode> layerNodes = new List<MapNode>();
+
                 int nodeCount = (depth == 0 || depth == _config.MaxDepth) ? 1 : Random.Range(2, 4);
 
                 for (int i = 0; i < nodeCount; i++)
@@ -37,65 +37,67 @@ namespace Gameplay.Campaign.Services
                 layers.Add(layerNodes);
             }
 
+
             for (int depth = 0; depth < _config.MaxDepth; depth++)
             {
                 var currentLayer = layers[depth];
                 var nextLayer = layers[depth + 1];
 
-                foreach (var node in currentLayer)
+
+                if (currentLayer.Count == 1)
                 {
-                    var target = nextLayer[Random.Range(0, nextLayer.Count)];
-                    node.NextNodeIds.Add(target.Id);
+                    foreach (var n in nextLayer) currentLayer[0].NextNodeIds.Add(n.Id);
+                    continue;
                 }
 
-                foreach (var nextNode in nextLayer)
+                if (nextLayer.Count == 1)
                 {
-                    bool hasIncoming = currentLayer.Any(n => n.NextNodeIds.Contains(nextNode.Id));
-                    if (!hasIncoming)
+                    foreach (var c in currentLayer) c.NextNodeIds.Add(nextLayer[0].Id);
+                    continue;
+                }
+
+
+                for (int i = 0; i < currentLayer.Count; i++)
+                {
+                    int targetIndex = Mathf.Min(i, nextLayer.Count - 1);
+                    currentLayer[i].NextNodeIds.Add(nextLayer[targetIndex].Id);
+
+
+                    if (i + 1 < nextLayer.Count && Random.value > 0.5f)
                     {
-                        var source = currentLayer[Random.Range(0, currentLayer.Count)];
-                        if (!source.NextNodeIds.Contains(nextNode.Id))
-                        {
-                            source.NextNodeIds.Add(nextNode.Id);
-                        }
+                        currentLayer[i].NextNodeIds.Add(nextLayer[i + 1].Id);
                     }
                 }
             }
 
-            foreach (var node in layers[0])
-            {
-                progress.CurrentMap.StartingNodeIds.Add(node.Id);
-            }
+            progress.CurrentMap.StartingNodeIds.Add(layers[0][0].Id);
         }
 
         private MapNode CreateRandomNode(int depth, int indexInLayer, HashSet<LevelBlueprintConfig> usedLevels)
         {
-            MapNode node = new MapNode
+            MapNode node = new MapNode { Id = $"proc_node_{depth}_{indexInLayer}", Depth = depth };
+
+
+            if (depth == 0)
             {
-                Id = $"proc_node_{depth}_{indexInLayer}",
-                Depth = depth,
-                RenderPosition = new Vector2(depth * 200, indexInLayer * 150)
-            };
+                node.NodeType = MapNodeType.Event;
+                node.NodeDisplayName = "Start";
+                node.NodeIcon = _config.StartNodeIcon;
+                return node;
+            }
+
 
             if (depth == _config.MaxDepth)
             {
                 node.NodeType = MapNodeType.Combat;
                 node.NodeDisplayName = "BOSS";
                 node.CombatLevel = _config.BossLevel;
+                node.NodeIcon = _config.BossLevel != null ? _config.BossLevel.MapIcon : null;
                 return node;
             }
 
             TierConfig tier = _config.Tiers.FirstOrDefault(t => depth >= t.MinDepth && depth <= t.MaxDepth);
-            
-
-            if (tier == null)
-            {
-                Debug.LogError($"[ProceduralRunDirector] ДЫРА В ТИРАХ! Для глубины {depth} не настроен Tier. Настройте Min/Max Depth!");
-                node.NodeType = MapNodeType.Combat;
-                node.NodeDisplayName = "Tier Error";
-                node.CombatLevel = _config.BossLevel;
-                return node;
-            }
+            if (tier == null) return node;
 
             float totalWeight = tier.CombatWeight + tier.ShopWeight + tier.EventWeight;
             float roll = Random.Range(0, totalWeight);
@@ -104,22 +106,20 @@ namespace Gameplay.Campaign.Services
             {
                 node.NodeType = MapNodeType.Combat;
                 node.NodeDisplayName = "Battle";
-                
-                var availableLevels = tier.CombatPool
-                    .Where(lvl => lvl != null && !usedLevels.Contains(lvl))
-                    .ToList();
+                var availableLevels = tier.CombatPool.Where(lvl => lvl != null && !usedLevels.Contains(lvl)).ToList();
 
                 if (availableLevels.Count > 0)
                 {
                     LevelBlueprintConfig chosenLevel = availableLevels[Random.Range(0, availableLevels.Count)];
                     node.CombatLevel = chosenLevel;
+                    node.NodeIcon = chosenLevel.MapIcon;
                     usedLevels.Add(chosenLevel);
                 }
                 else
                 {
-                    Debug.LogWarning($"[ProceduralRunDirector] На глубине {depth} закончились уникальные уровни в пуле!");
                     var anyValid = tier.CombatPool.Where(lvl => lvl != null).ToList();
                     node.CombatLevel = anyValid.Count > 0 ? anyValid[Random.Range(0, anyValid.Count)] : _config.BossLevel;
+                    node.NodeIcon = node.CombatLevel?.MapIcon;
                 }
             }
             else if (roll < tier.CombatWeight + tier.ShopWeight)
@@ -127,14 +127,22 @@ namespace Gameplay.Campaign.Services
                 node.NodeType = MapNodeType.Shop;
                 node.NodeDisplayName = "Shop";
                 var validShops = tier.ShopPool.Where(s => s != null).ToList();
-                node.ShopData = validShops.Count > 0 ? validShops[Random.Range(0, validShops.Count)] : null;
+                if (validShops.Count > 0)
+                {
+                    node.ShopData = validShops[Random.Range(0, validShops.Count)];
+                    node.NodeIcon = node.ShopData.MapIcon;
+                }
             }
             else
             {
                 node.NodeType = MapNodeType.Event;
                 node.NodeDisplayName = "Event";
                 var validEvents = tier.EventPool.Where(e => e != null).ToList();
-                node.EventData = validEvents.Count > 0 ? validEvents[Random.Range(0, validEvents.Count)] : null;
+                if (validEvents.Count > 0)
+                {
+                    node.EventData = validEvents[Random.Range(0, validEvents.Count)];
+                    node.NodeIcon = node.EventData.MapIcon;
+                }
             }
 
             return node;

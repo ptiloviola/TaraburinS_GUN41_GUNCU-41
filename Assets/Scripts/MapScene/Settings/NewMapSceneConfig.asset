@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 548c5eed48843f74fbe53f24819595e9, type: 3}
+  m_Name: NewMapSceneConfig
+  m_EditorClassIdentifier: 
+  NodePrefab: {fileID: 4373660953144422085, guid: 93b0b31177f352840af756e5cc6b5483,
+    type: 3}
+  LinePrefab: {fileID: 3486973348842691397, guid: 3a91229273599eb46b96e269bc8cd78f,
+    type: 3}
+  LayerYSpacing: 3
+  NodeXSpacing: 2.5
+  StartYOffset: -4
