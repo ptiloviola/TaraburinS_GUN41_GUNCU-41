@@ -12,6 +12,13 @@ namespace Gameplay.MapScene.Services
 {
     public class MapSceneBuilder : IInitializable
     {
+        private struct NodeConnection
+        {
+            public string StartId;
+            public string EndId;
+            public MapLineView LineView;
+        }
+
         private readonly RunProgressModel _progressModel;
         private readonly IRunDirectorService _runDirector;
         private readonly MapSceneConfig _config;
@@ -19,6 +26,7 @@ namespace Gameplay.MapScene.Services
         private readonly IInstantiator _instantiator;
 
         private readonly Dictionary<string, MapNodeView> _spawnedNodes = new Dictionary<string, MapNodeView>();
+        private readonly List<NodeConnection> _spawnedLines = new List<NodeConnection>();
 
         public event Action<MapNode> OnNodeSelected;
 
@@ -40,17 +48,14 @@ namespace Gameplay.MapScene.Services
         {
             if (_progressModel.CurrentMap == null || _progressModel.CurrentMap.Nodes.Count == 0)
             {
-                Debug.LogWarning("[MapSceneBuilder] Карта пуста. Генерация...");
                 _runDirector.GenerateRunMap(_progressModel);
             }
-
             BuildVisualMap();
         }
 
         private void BuildVisualMap()
         {
             var nodes = _progressModel.CurrentMap.Nodes;
-            
             CalculatePositions(nodes.Values);
             DrawConnections(nodes.Values);
             UpdateNodeStates();
@@ -66,6 +71,9 @@ namespace Gameplay.MapScene.Services
                 nodesByLayer[node.Depth].Add(node);
             }
 
+
+            UnityEngine.Random.InitState(_progressModel.CurrentMap.Nodes.Count);
+
             foreach (var layer in nodesByLayer)
             {
                 int depth = layer.Key;
@@ -78,14 +86,32 @@ namespace Gameplay.MapScene.Services
                 for (int i = 0; i < nodeCount; i++)
                 {
                     MapNode nodeData = layerNodes[i];
-                    Vector3 worldPos = new Vector3(startX + (i * _config.NodeXSpacing), currentY, 0f);
+
+                    if (nodeData.RenderPosition == Vector2.zero)
+                    {
+                        float jitterX = UnityEngine.Random.Range(-_config.PositionJitter.x, _config.PositionJitter.x);
+                        float jitterY = UnityEngine.Random.Range(-_config.PositionJitter.y, _config.PositionJitter.y);
+                        
+                        // Старт и Босс не сдвигаем по горизонтали
+                        if (depth == 0 || depth == nodesByLayer.Count - 1) jitterX = 0;
+
+                        nodeData.RenderPosition = new Vector2(startX + (i * _config.NodeXSpacing) + jitterX, currentY + jitterY);
+                    }
 
                     MapNodeView view = _instantiator.InstantiatePrefabForComponent<MapNodeView>(
-                        _config.NodePrefab, worldPos, Quaternion.identity, _mapRoot);
+                        _config.NodePrefab, nodeData.RenderPosition, Quaternion.identity, _mapRoot);
                     
-                    view.Setup(nodeData.Id, nodeData.NodeDisplayName, worldPos, nodeData.NodeIcon, nodeData.Depth == 0);
+                    // БЕРЕМ ДАННЫЕ ИЗ СТРАТЕГИИ!
+                    view.Setup(
+                        nodeData.Id, 
+                        nodeData.Encounter.DisplayName, 
+                        nodeData.RenderPosition, 
+                        nodeData.Encounter.Icon, 
+                        nodeData.Encounter.GlowColor, 
+                        nodeData.Depth == 0
+                    );
+                    
                     view.OnNodeClicked += HandleNodeClicked;
-
                     _spawnedNodes.Add(nodeData.Id, view);
                 }
             }
@@ -105,6 +131,7 @@ namespace Gameplay.MapScene.Services
                             _config.LinePrefab, Vector3.zero, Quaternion.identity, _mapRoot);
                         
                         line.Setup(startView.transform.position, endView.transform.position);
+                        _spawnedLines.Add(new NodeConnection { StartId = node.Id, EndId = nextId, LineView = line });
                     }
                 }
             }
@@ -112,26 +139,34 @@ namespace Gameplay.MapScene.Services
 
         private void UpdateNodeStates()
         {
-            foreach (var view in _spawnedNodes.Values)
-            {
-                view.SetState(NodeVisualState.Locked);
-            }
+            foreach (var view in _spawnedNodes.Values) view.SetState(NodeVisualState.Locked);
 
             foreach (string historyId in _progressModel.PathHistory)
             {
                 if (_spawnedNodes.TryGetValue(historyId, out MapNodeView historyView))
-                {
                     historyView.SetState(NodeVisualState.Completed);
-                }
             }
 
             var availableChoices = _runDirector.GetAvailableChoices(_progressModel);
             foreach (var choice in availableChoices)
             {
                 if (_spawnedNodes.TryGetValue(choice.Id, out MapNodeView view))
-                {
                     view.SetState(NodeVisualState.Available);
-                }
+            }
+
+
+            foreach (var connection in _spawnedLines)
+            {
+                bool startCompleted = _progressModel.PathHistory.Contains(connection.StartId);
+                bool endCompleted = _progressModel.PathHistory.Contains(connection.EndId);
+                bool endAvailable = availableChoices.Any(c => c.Id == connection.EndId);
+
+                if (startCompleted && endCompleted)
+                    connection.LineView.SetState(NodeVisualState.Completed);
+                else if (startCompleted && endAvailable)
+                    connection.LineView.SetState(NodeVisualState.Available);
+                else
+                    connection.LineView.SetState(NodeVisualState.Locked);
             }
         }
 
@@ -140,14 +175,7 @@ namespace Gameplay.MapScene.Services
             var availableChoices = _runDirector.GetAvailableChoices(_progressModel);
             var choice = availableChoices.FirstOrDefault(c => c.Id == nodeId);
 
-            if (choice != null)
-            {
-                OnNodeSelected?.Invoke(choice);
-            }
-            else
-            {
-                Debug.Log($"<color=yellow>[MapSceneBuilder] Узел {nodeId} недоступен для перехода!</color>");
-            }
+            if (choice != null) OnNodeSelected?.Invoke(choice);
         }
     }
 }

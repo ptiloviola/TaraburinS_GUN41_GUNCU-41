@@ -3,13 +3,14 @@ using Zenject;
 using Cysharp.Threading.Tasks;
 using Gameplay.Campaign.Services;
 using Gameplay.Campaign.Data;
+using Gameplay.Levels.Data;
 using Gameplay.Infrastructure.Services;
 using Gameplay.UI.Views;
 using Gameplay.MapScene.Services;
 
 namespace Gameplay.UI.Presenters
 {
-    public class HubUIPresenter : IInitializable, IDisposable
+    public class HubUIPresenter : IInitializable, IDisposable, IEncounterVisitor
     {
         private readonly HubUIView _view;
         private readonly IRunDirectorService _runDirector;
@@ -39,7 +40,6 @@ namespace Gameplay.UI.Presenters
             _view.OnMainMenuClicked += HandleMainMenu;
             _view.UpdateRunInventory(_progressModel.CurrentRunGold);
 
-
             if (_runDirector.IsCampaignCompleted(_progressModel))
             {
                 _view.ShowCampaignCompleted();
@@ -63,18 +63,14 @@ namespace Gameplay.UI.Presenters
             
             _runDirector.AdvanceToNode(_progressModel, nextNode.Id);
 
-            switch (nextNode.NodeType)
+            if (nextNode.Encounter != null)
             {
-                case MapNodeType.Combat:
-                    _sceneLoader.LoadSceneAsync("BattleScene").Forget();
-                    break;
-                case MapNodeType.Shop:
-                    _shopPresenter.OpenShop(nextNode.ShopData);
-                    break;
-                case MapNodeType.Event:
-                    UnityEngine.Debug.Log("<color=cyan>[MapScene] Событие пропущено (UI в разработке).</color>");
-                    _sceneLoader.LoadSceneAsync("HubScene").Forget();
-                    break;
+                nextNode.Encounter.Accept(this);
+            }
+            else
+            {
+                UnityEngine.Debug.LogError($"[HubUIPresenter] Ошибка: Узел {nextNode.Id} не имеет настроенной Стратегии (Encounter)!");
+                _view.SetInteractable(true);
             }
         }
 
@@ -87,6 +83,29 @@ namespace Gameplay.UI.Presenters
         private void HandleShopClosed()
         {
             _sceneLoader.LoadSceneAsync("HubScene").Forget(); 
+        }
+
+
+        public void VisitCombat(LevelBlueprintConfig config)
+        {
+
+            _sceneLoader.LoadSceneAsync("BattleScene").Forget();
+        }
+
+        public void VisitShop(ShopConfig config)
+        {
+            _shopPresenter.OpenShop(config);
+        }
+
+        public void VisitEvent(EventConfig config)
+        {
+            UnityEngine.Debug.Log($"<color=cyan>[MapScene] Событие {config?.EventName} пропущено (UI в разработке).</color>");
+            _sceneLoader.LoadSceneAsync("HubScene").Forget();
+        }
+
+        public void VisitStart()
+        {
+            _view.SetInteractable(true);
         }
     }
 }

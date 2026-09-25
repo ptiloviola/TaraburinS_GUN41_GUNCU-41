@@ -17,6 +17,7 @@ namespace Gameplay.Campaign.Data
     {
         [Header("Визуал на Карте")]
         public Sprite MapIcon;
+        public Color MapGlowColor = Color.cyan;
 
         public string EventName;
         [TextArea] public string EventDescription;

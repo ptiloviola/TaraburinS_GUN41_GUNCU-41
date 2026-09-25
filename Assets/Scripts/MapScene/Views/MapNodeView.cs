@@ -26,7 +26,7 @@ namespace Gameplay.MapScene.Views
         public string NodeId => _nodeId;
         public event Action<string> OnNodeClicked;
 
-        public void Setup(string id, string displayName, Vector2 worldPosition, Sprite icon, bool isStartNode)
+        public void Setup(string id, string displayName, Vector2 worldPosition, Sprite icon, Color glowColor, bool isStartNode)
         {
             _nodeId = id;
             _nameText.text = displayName;
@@ -41,6 +41,12 @@ namespace Gameplay.MapScene.Views
                 {
                     _outlineRenderer.sprite = icon; 
                     _outlineRenderer.transform.localScale = Vector3.one;
+                    
+                    MaterialPropertyBlock mpb = new MaterialPropertyBlock();
+                    _outlineRenderer.GetPropertyBlock(mpb);
+                    mpb.SetColor("_GlowColor", glowColor);
+                    _outlineRenderer.SetPropertyBlock(mpb);
+
                     _outlineRenderer.enabled = false; 
                 }
             }

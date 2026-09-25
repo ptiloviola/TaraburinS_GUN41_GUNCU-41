@@ -7,7 +7,6 @@ using Gameplay.Core.Services;
 using Gameplay.Levels.Data;
 using Gameplay.Core.Data;
 
-
 namespace Gameplay.Campaign.Services
 {
     public class RunResultProcessor : IInitializable, IDisposable
@@ -47,7 +46,12 @@ namespace Gameplay.Campaign.Services
             if (_isProcessed) return;
             _isProcessed = true;
 
-            LevelBlueprintConfig wonLevel = _runProgress.CurrentNode?.CombatLevel;
+            LevelBlueprintConfig wonLevel = null;
+            if (_runProgress.CurrentNode?.Encounter is CombatEncounter combat)
+            {
+                wonLevel = combat.Config;
+            }
+
             PlayerProfileModel profile = _saveLoadService.LoadProfile();
 
             if (wonLevel != null)

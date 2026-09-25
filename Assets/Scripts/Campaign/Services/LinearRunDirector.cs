@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Gameplay.Campaign.Data;
 
-
 namespace Gameplay.Campaign.Services
 {
     public class LinearRunDirector : IRunDirectorService
@@ -22,19 +21,7 @@ namespace Gameplay.Campaign.Services
                 MapNode node = _campaignConfig.Nodes[i];
                 node.Id = $"linear_node_{i}";
                 node.Depth = i;
-                
-                switch (node.NodeType)
-                {
-                    case MapNodeType.Combat:
-                        node.NodeIcon = node.CombatLevel != null ? node.CombatLevel.MapIcon : null;
-                        break;
-                    case MapNodeType.Shop:
-                        node.NodeIcon = node.ShopData != null ? node.ShopData.MapIcon : null;
-                        break;
-                    case MapNodeType.Event:
-                        node.NodeIcon = node.EventData != null ? node.EventData.MapIcon : null;
-                        break;
-                }
+
 
                 node.NextNodeIds.Clear();
                 if (i < _campaignConfig.Nodes.Count - 1)
@@ -54,21 +41,15 @@ namespace Gameplay.Campaign.Services
         public IReadOnlyList<MapNode> GetAvailableChoices(RunProgressModel progress)
         {
             List<MapNode> choices = new List<MapNode>();
-
             if (progress.CurrentNode == null)
             {
                 foreach (string id in progress.CurrentMap.StartingNodeIds)
-                {
                     choices.Add(progress.CurrentMap.Nodes[id]);
-                }
                 return choices;
             }
 
             foreach (string nextId in progress.CurrentNode.NextNodeIds)
-            {
                 choices.Add(progress.CurrentMap.Nodes[nextId]);
-            }
-
             return choices;
         }
 

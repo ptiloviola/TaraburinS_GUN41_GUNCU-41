@@ -14,7 +14,8 @@ namespace Gameplay.Levels.Data
 
         [Header("Визуал на Карте")]
         public Sprite MapIcon;
-
+        public Color MapGlowColor = Color.cyan;
+        
         [Header("Стартовые ресурсы")]
         public int StartingLives = 20;
         public int StartingMoney = 100;
@@ -27,5 +28,7 @@ namespace Gameplay.Levels.Data
         [Header("Данные уровня")]
         public GridConfig GridConfig;
         public LevelWavesConfig WavesConfig;
+
+        
     }
 }

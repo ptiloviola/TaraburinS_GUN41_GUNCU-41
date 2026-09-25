@@ -24,35 +24,43 @@ namespace Gameplay.Levels.Installers
 
         public override void InstallBindings()
         {
+            LevelBlueprintConfig activeBlueprint = null;
+
             if (_progressModel.CurrentNode == null)
             {
                 Debug.LogError("[LevelStateInstaller] КРИТИЧЕСКАЯ ОШИБКА: CurrentNode равен NULL! Либо ProjectInstaller перезатер прогресс, либо мы пришли не из Хаба.");
             }
-            else if (_progressModel.CurrentNode.CombatLevel == null)
+            // Достаем конфигурацию из Стратегии узла
+            else if (_progressModel.CurrentNode.Encounter is CombatEncounter combat)
             {
-                Debug.LogError($"[LevelStateInstaller] КРИТИЧЕСКАЯ ОШИБКА: У узла '{_progressModel.CurrentNode.Id}' пустой CombatLevel!");
+                activeBlueprint = combat.Config;
+                if (activeBlueprint == null)
+                {
+                    Debug.LogError($"[LevelStateInstaller] КРИТИЧЕСКАЯ ОШИБКА: У узла '{_progressModel.CurrentNode.Id}' пустой конфиг боя!");
+                }
+            }
+            else
+            {
+                Debug.LogError($"[LevelStateInstaller] ОШИБКА: Узел '{_progressModel.CurrentNode.Id}' не является боевым узлом (CombatEncounter)!");
             }
 
-            LevelBlueprintConfig activeBlueprint = _progressModel.CurrentNode?.CombatLevel ?? _debugFallbackBlueprint;
+            // Фоллбэк, если конфиг так и не найден
+            activeBlueprint ??= _debugFallbackBlueprint;
             
             if (activeBlueprint == null)
             {
-                Debug.LogError("[LevelStateInstaller] Критическая ошибка: Не передан LevelBlueprintConfig!");
+                Debug.LogError("[LevelStateInstaller] Критическая ошибка: Не передан LevelBlueprintConfig и нет Fallback-конфига!");
                 return;
             }
-
 
             Container.BindInstance(activeBlueprint.GridConfig).AsSingle();
             Container.BindInstance(activeBlueprint.WavesConfig).AsSingle();
 
-
             Container.BindInstance(_itemRegistry).AsSingle();
             Container.Bind<StatsModifierService>().AsSingle();
             
-
             Container.BindInterfacesTo<RunModifiersBootstrapper>().AsSingle();
             Container.BindExecutionOrder<RunModifiersBootstrapper>(-100);
-
 
             Container.BindInterfacesAndSelfTo<BankService>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerHealthService>().AsSingle();
@@ -60,7 +68,6 @@ namespace Gameplay.Levels.Installers
             Container.BindInstance(_forecastSettings).IfNotBound();
             Container.Bind<TacticalForecastService>().AsSingle();
             Container.Bind<LevelRuntimeModel>().AsSingle().WithArguments(activeBlueprint);
-
 
             Container.Bind<ILevelState>().To<LevelInitState>().AsSingle();
             Container.Bind<ILevelState>().To<TacticalState>().AsSingle();

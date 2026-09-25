@@ -14,5 +14,8 @@ namespace Gameplay.MapScene.Data
         public float LayerYSpacing = 3f;
         public float NodeXSpacing = 2.5f;
         public float StartYOffset = -4f;
+        
+        [Header("Шум (смещение узлов)")]
+        public Vector2 PositionJitter = new Vector2(0.4f, 0.4f);
     }
 }

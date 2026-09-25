@@ -16,6 +16,7 @@ MonoBehaviour:
     type: 3}
   LinePrefab: {fileID: 3486973348842691397, guid: 3a91229273599eb46b96e269bc8cd78f,
     type: 3}
-  LayerYSpacing: 3
-  NodeXSpacing: 2.5
+  LayerYSpacing: 5
+  NodeXSpacing: 3
   StartYOffset: -4
+  PositionJitter: {x: 2, y: 1.5}

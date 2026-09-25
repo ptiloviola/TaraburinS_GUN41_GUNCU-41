@@ -9,6 +9,7 @@ namespace Gameplay.Campaign.Data
     {
         [Header("Визуал на Карте")]
         public Sprite MapIcon;
+        public Color MapGlowColor = Color.cyan;
 
         [Header("Ассортимент магазина")]
         public List<ItemConfig> AvailableItems = new List<ItemConfig>();
