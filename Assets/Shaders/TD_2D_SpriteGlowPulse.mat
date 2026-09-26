@@ -30,7 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _OutlineScale: 1.15
-    - _OutlineSpread: 0.015
+    - _OutlineSpread: 0.0463
     - _OutlineThickness: 7.63
     - _PulseMax: 1.5
     - _PulseMin: 0.3

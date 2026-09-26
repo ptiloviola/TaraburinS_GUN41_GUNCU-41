@@ -18,6 +18,11 @@ namespace Gameplay.Campaign.Services
         public void GenerateRunMap(RunProgressModel progress)
         {
             progress.CurrentMap = new RunMapModel();
+            
+            progress.PathHistory.Clear();
+            progress.CurrentRunDepth = 0;
+            progress.CurrentNode = null;
+
             HashSet<LevelBlueprintConfig> usedCombatLevels = new HashSet<LevelBlueprintConfig>();
             List<List<MapNode>> layers = new List<List<MapNode>>();
 

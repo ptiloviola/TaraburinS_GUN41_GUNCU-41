@@ -17,6 +17,7 @@ namespace Gameplay.MapScene.Services
             public string StartId;
             public string EndId;
             public MapLineView LineView;
+            public Color TargetColor;
         }
 
         private readonly RunProgressModel _progressModel;
@@ -92,7 +93,7 @@ namespace Gameplay.MapScene.Services
                         float jitterX = UnityEngine.Random.Range(-_config.PositionJitter.x, _config.PositionJitter.x);
                         float jitterY = UnityEngine.Random.Range(-_config.PositionJitter.y, _config.PositionJitter.y);
                         
-                        // Старт и Босс не сдвигаем по горизонтали
+
                         if (depth == 0 || depth == nodesByLayer.Count - 1) jitterX = 0;
 
                         nodeData.RenderPosition = new Vector2(startX + (i * _config.NodeXSpacing) + jitterX, currentY + jitterY);
@@ -101,7 +102,7 @@ namespace Gameplay.MapScene.Services
                     MapNodeView view = _instantiator.InstantiatePrefabForComponent<MapNodeView>(
                         _config.NodePrefab, nodeData.RenderPosition, Quaternion.identity, _mapRoot);
                     
-                    // БЕРЕМ ДАННЫЕ ИЗ СТРАТЕГИИ!
+
                     view.Setup(
                         nodeData.Id, 
                         nodeData.Encounter.DisplayName, 
@@ -127,11 +128,20 @@ namespace Gameplay.MapScene.Services
                 {
                     if (_spawnedNodes.TryGetValue(nextId, out MapNodeView endView))
                     {
+                        var targetNode = _progressModel.CurrentMap.Nodes[nextId];
+
                         MapLineView line = _instantiator.InstantiatePrefabForComponent<MapLineView>(
                             _config.LinePrefab, Vector3.zero, Quaternion.identity, _mapRoot);
                         
                         line.Setup(startView.transform.position, endView.transform.position);
-                        _spawnedLines.Add(new NodeConnection { StartId = node.Id, EndId = nextId, LineView = line });
+                        
+                        _spawnedLines.Add(new NodeConnection 
+                        { 
+                            StartId = node.Id, 
+                            EndId = nextId, 
+                            LineView = line,
+                            TargetColor = targetNode.Encounter.GlowColor // Кэшируем цвет
+                        });
                     }
                 }
             }
@@ -162,11 +172,11 @@ namespace Gameplay.MapScene.Services
                 bool endAvailable = availableChoices.Any(c => c.Id == connection.EndId);
 
                 if (startCompleted && endCompleted)
-                    connection.LineView.SetState(NodeVisualState.Completed);
+                    connection.LineView.SetState(NodeVisualState.Completed, connection.TargetColor);
                 else if (startCompleted && endAvailable)
-                    connection.LineView.SetState(NodeVisualState.Available);
+                    connection.LineView.SetState(NodeVisualState.Available, connection.TargetColor);
                 else
-                    connection.LineView.SetState(NodeVisualState.Locked);
+                    connection.LineView.SetState(NodeVisualState.Locked, connection.TargetColor);
             }
         }
 

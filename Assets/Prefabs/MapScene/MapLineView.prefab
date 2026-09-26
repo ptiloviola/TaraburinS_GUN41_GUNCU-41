@@ -151,5 +151,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _lineRenderer: {fileID: 7714641016103998811}
   _lockedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
-  _availableColor: {r: 1, g: 1, b: 1, a: 1}
-  _completedColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.8}
+  _availableColor: {r: 0.81698185, g: 0.9150943, b: 0.78991634, a: 1}
+  _hdrIntensity: 2.5

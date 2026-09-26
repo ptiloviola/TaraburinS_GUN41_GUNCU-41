@@ -69,11 +69,8 @@ namespace Gameplay.MapScene.Views
                     break;
                 case NodeVisualState.Completed:
                     _iconRenderer.color = _completedColor;
-                    
-
                     if (!_isStartNode) _nameText.fontStyle = FontStyles.Strikethrough; 
                     
-                    // Если раскомментируешь эту строку, пройденные узлы будут светиться всегда
                     if (_outlineRenderer != null) _outlineRenderer.enabled = true;
                     break;
             }
@@ -98,6 +95,4 @@ namespace Gameplay.MapScene.Views
             OnNodeClicked?.Invoke(_nodeId);
         }
     }
-
-    public enum NodeVisualState { Locked, Available, Completed }
 }

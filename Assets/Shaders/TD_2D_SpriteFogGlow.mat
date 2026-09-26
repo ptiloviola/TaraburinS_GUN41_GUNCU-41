@@ -29,12 +29,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlurSpread: 0.01
-    - _FogOpacity: 0.7
+    - _BlurSpread: 0.00501
+    - _FogOpacity: 0.762
     - _OutlineSpread: 0.1
+    - _OutlineThickness: 0.052
     - _PulseMax: 1.5
     - _PulseMin: 0.5
-    - _PulseSpeed: 3
+    - _PulseSpeed: 5.52
     m_Colors:
     - _GlowColor: {r: 0, g: 0.8, b: 1, a: 1}
   m_BuildTextureStacks: []
