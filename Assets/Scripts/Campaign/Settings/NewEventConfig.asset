@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: NewEventConfig
   m_EditorClassIdentifier: 
   MapIcon: {fileID: 21300000, guid: 6bf10c7da0b5c144c8d1ee35b0b80aa4, type: 3}
+  MapGlowColor: {r: 1, g: 1, b: 1, a: 0}
   EventName: "\u0418\u0432\u0435\u043D\u0442 \u0442\u0435\u0441\u0442"
   EventDescription: "\u0442\u0435\u0441\u0442\u043E\u0432\u043E\u0435 \u0441\u043E\u0431\u044B\u0442\u0438\u0435"
   Choices:

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TD_2D_SpriteFogGlow
-  m_Shader: {fileID: 4800000, guid: 271b49b2233832447a773104bd8da18d, type: 3}
+  m_Name: TD_2D_NodeFrostFire
+  m_Shader: {fileID: 4800000, guid: eb4fae91c9395524a934571f07c72e26, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -29,13 +29,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlurSpread: 0.00501
-    - _FogOpacity: 0.762
-    - _OutlineSpread: 0.1
-    - _OutlineThickness: 0.052
-    - _PulseMax: 1.5
-    - _PulseMin: 0.5
-    - _PulseSpeed: 5.52
+    - _BlurSpread: 0.01
+    - _InnerOpacity: 0.7
+    - _OutlineThickness: 0.02
+    - _WobbleAmount: 0.01
+    - _WobbleFreq: 15
+    - _WobbleSpeed: 5
     m_Colors:
-    - _GlowColor: {r: 0, g: 0.8, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

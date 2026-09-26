@@ -17,7 +17,7 @@ namespace Gameplay.MapScene.Services
             public string StartId;
             public string EndId;
             public MapLineView LineView;
-            public Color TargetColor;
+
         }
 
         private readonly RunProgressModel _progressModel;
@@ -128,20 +128,12 @@ namespace Gameplay.MapScene.Services
                 {
                     if (_spawnedNodes.TryGetValue(nextId, out MapNodeView endView))
                     {
-                        var targetNode = _progressModel.CurrentMap.Nodes[nextId];
-
                         MapLineView line = _instantiator.InstantiatePrefabForComponent<MapLineView>(
                             _config.LinePrefab, Vector3.zero, Quaternion.identity, _mapRoot);
                         
                         line.Setup(startView.transform.position, endView.transform.position);
                         
-                        _spawnedLines.Add(new NodeConnection 
-                        { 
-                            StartId = node.Id, 
-                            EndId = nextId, 
-                            LineView = line,
-                            TargetColor = targetNode.Encounter.GlowColor // Кэшируем цвет
-                        });
+                        _spawnedLines.Add(new NodeConnection { StartId = node.Id, EndId = nextId, LineView = line });
                     }
                 }
             }
@@ -172,11 +164,11 @@ namespace Gameplay.MapScene.Services
                 bool endAvailable = availableChoices.Any(c => c.Id == connection.EndId);
 
                 if (startCompleted && endCompleted)
-                    connection.LineView.SetState(NodeVisualState.Completed, connection.TargetColor);
+                    connection.LineView.SetState(NodeVisualState.Completed);
                 else if (startCompleted && endAvailable)
-                    connection.LineView.SetState(NodeVisualState.Available, connection.TargetColor);
+                    connection.LineView.SetState(NodeVisualState.Available);
                 else
-                    connection.LineView.SetState(NodeVisualState.Locked, connection.TargetColor);
+                    connection.LineView.SetState(NodeVisualState.Locked);
             }
         }
 

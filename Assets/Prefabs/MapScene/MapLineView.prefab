@@ -54,7 +54,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bcfc80a8ded4a8245acb552c458e885b, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -152,4 +152,3 @@ MonoBehaviour:
   _lineRenderer: {fileID: 7714641016103998811}
   _lockedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   _availableColor: {r: 0.81698185, g: 0.9150943, b: 0.78991634, a: 1}
-  _hdrIntensity: 2.5

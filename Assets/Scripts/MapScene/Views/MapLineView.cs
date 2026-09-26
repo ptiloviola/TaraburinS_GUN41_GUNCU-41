@@ -10,9 +10,7 @@ namespace Gameplay.MapScene.Views
         [Header("Базовые цвета")]
         [SerializeField] private Color _lockedColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
         [SerializeField] private Color _availableColor = new Color(1f, 1f, 1f, 0.8f);
-        
-        [Header("Настройки свечения пройденного пути")]
-        [SerializeField] private float _hdrIntensity = 2.5f;
+        [SerializeField] private Color _completedColor = new Color(0.2f, 0.8f, 0.2f, 1f);
 
         private void Awake()
         {
@@ -20,8 +18,6 @@ namespace Gameplay.MapScene.Views
             
             _lineRenderer.numCapVertices = 5;
             _lineRenderer.numCornerVertices = 5;
-            
-
             _lineRenderer.sortingOrder = -10;
         }
 
@@ -32,7 +28,7 @@ namespace Gameplay.MapScene.Views
             _lineRenderer.SetPosition(1, endPoint);
         }
 
-        public void SetState(NodeVisualState state, Color targetGlowColor)
+        public void SetState(NodeVisualState state)
         {
             Color finalColor = _lockedColor;
 
@@ -46,11 +42,7 @@ namespace Gameplay.MapScene.Views
                     break;
                 case NodeVisualState.Completed:
 
-                    finalColor = new Color(
-                        targetGlowColor.r * _hdrIntensity, 
-                        targetGlowColor.g * _hdrIntensity, 
-                        targetGlowColor.b * _hdrIntensity, 
-                        1f);
+                    finalColor = new Color(_completedColor.r * 2f, _completedColor.g * 2f, _completedColor.b * 2f, 1f);
                     break;
             }
 

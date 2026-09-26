@@ -32,7 +32,7 @@ namespace Gameplay.MapScene.Views
             _nameText.text = displayName;
             transform.position = worldPosition;
             _isStartNode = isStartNode;
-            
+
             if (icon != null) 
             {
                 _iconRenderer.sprite = icon;
@@ -42,9 +42,12 @@ namespace Gameplay.MapScene.Views
                     _outlineRenderer.sprite = icon; 
                     _outlineRenderer.transform.localScale = Vector3.one;
                     
+
+                    Color mpbColor = glowColor.a > 0.01f ? glowColor : Color.white;
+
                     MaterialPropertyBlock mpb = new MaterialPropertyBlock();
                     _outlineRenderer.GetPropertyBlock(mpb);
-                    mpb.SetColor("_GlowColor", glowColor);
+                    mpb.SetColor("_Color", mpbColor);
                     _outlineRenderer.SetPropertyBlock(mpb);
 
                     _outlineRenderer.enabled = false; 
@@ -59,21 +62,27 @@ namespace Gameplay.MapScene.Views
 
             if (_outlineRenderer != null) _outlineRenderer.enabled = false;
 
+            Color targetColor = _lockedColor;
+
             switch (state)
             {
                 case NodeVisualState.Locked:
-                    _iconRenderer.color = _lockedColor;
+                    targetColor = _lockedColor;
                     break;
                 case NodeVisualState.Available:
-                    _iconRenderer.color = _availableColor;
+                    targetColor = _availableColor;
                     break;
                 case NodeVisualState.Completed:
-                    _iconRenderer.color = _completedColor;
+                    targetColor = _completedColor;
                     if (!_isStartNode) _nameText.fontStyle = FontStyles.Strikethrough; 
-                    
                     if (_outlineRenderer != null) _outlineRenderer.enabled = true;
                     break;
             }
+
+            _iconRenderer.color = targetColor;
+            
+            
+            if (_outlineRenderer != null) _outlineRenderer.color = targetColor; 
         }
 
         public void OnPointerEnter()
@@ -81,7 +90,13 @@ namespace Gameplay.MapScene.Views
             if (_currentState == NodeVisualState.Available)
             {
                 _iconRenderer.color = _hoverColor;
-                if (_outlineRenderer != null) _outlineRenderer.enabled = true;
+                
+                if (_outlineRenderer != null) 
+                {
+
+                    _outlineRenderer.color = _hoverColor; 
+                    _outlineRenderer.enabled = true;
+                }
             }
         }
 
