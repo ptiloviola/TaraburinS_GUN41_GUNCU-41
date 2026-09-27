@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47ae75206a707ad48bfbdeb421fdf642, type: 3}
+  m_Name: NewDeckConfig
+  m_EditorClassIdentifier: 
+  MaxDepth: 5
+  MinNodesPerLayer: 2
+  MaxNodesPerLayer: 3
+  StartIcon: {fileID: 21300000, guid: 68a97896098bc75479cfb63e7b5b5932, type: 3}
+  BossLevel: {fileID: 11400000, guid: 2bffcc3ad685be1458cbb04866fdc01d, type: 2}
+  ExactCombats: 4
+  ExactShops: 2
+  ExactEvents: 2
+  _rules:
+  - {fileID: 11400000, guid: 80ae088ec8f95bb47a92ee4ee38e79ed, type: 2}
+  - {fileID: 11400000, guid: dccd4386b4d74394d9b24cfecdbf2180, type: 2}
+  CombatPool:
+  - {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+  - {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
+  ShopPool:
+  - {fileID: 11400000, guid: 336bef7782f6fa4488194c2b9777c888, type: 2}
+  EventPool:
+  - {fileID: 11400000, guid: ac0120ef120796243961d59fbf39759e, type: 2}

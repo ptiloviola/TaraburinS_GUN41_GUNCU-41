@@ -88,6 +88,12 @@ namespace Gameplay.MapScene.Services
                 {
                     MapNode nodeData = layerNodes[i];
 
+                    if (nodeData.Encounter == null)
+                    {
+                        Debug.LogError($"<color=red>[MapSceneBuilder] Узел {nodeData.Id} поврежден (Encounter == null)! Пропускаем отрисовку.</color>");
+                        continue;
+                    }
+
                     if (nodeData.RenderPosition == Vector2.zero)
                     {
                         float jitterX = UnityEngine.Random.Range(-_config.PositionJitter.x, _config.PositionJitter.x);

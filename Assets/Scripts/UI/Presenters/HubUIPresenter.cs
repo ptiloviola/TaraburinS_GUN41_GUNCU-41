@@ -3,10 +3,10 @@ using Zenject;
 using Cysharp.Threading.Tasks;
 using Gameplay.Campaign.Services;
 using Gameplay.Campaign.Data;
-using Gameplay.Levels.Data;
 using Gameplay.Infrastructure.Services;
 using Gameplay.UI.Views;
 using Gameplay.MapScene.Services;
+using Gameplay.Levels.Data;
 
 namespace Gameplay.UI.Presenters
 {
@@ -63,32 +63,12 @@ namespace Gameplay.UI.Presenters
             
             _runDirector.AdvanceToNode(_progressModel, nextNode.Id);
 
-            if (nextNode.Encounter != null)
-            {
-                nextNode.Encounter.Accept(this);
-            }
-            else
-            {
-                UnityEngine.Debug.LogError($"[HubUIPresenter] Ошибка: Узел {nextNode.Id} не имеет настроенной Стратегии (Encounter)!");
-                _view.SetInteractable(true);
-            }
-        }
-
-        private void HandleMainMenu()
-        {
-            _view.SetInteractable(false);
-            _sceneLoader.LoadSceneAsync("MainMenuScene").Forget();
-        }
-
-        private void HandleShopClosed()
-        {
-            _sceneLoader.LoadSceneAsync("HubScene").Forget(); 
+            nextNode.Encounter.Accept(this);
         }
 
 
         public void VisitCombat(LevelBlueprintConfig config)
         {
-
             _sceneLoader.LoadSceneAsync("BattleScene").Forget();
         }
 
@@ -99,13 +79,25 @@ namespace Gameplay.UI.Presenters
 
         public void VisitEvent(EventConfig config)
         {
-            UnityEngine.Debug.Log($"<color=cyan>[MapScene] Событие {config?.EventName} пропущено (UI в разработке).</color>");
+            UnityEngine.Debug.Log("<color=cyan>[MapScene] Событие пропущено (UI в разработке).</color>");
             _sceneLoader.LoadSceneAsync("HubScene").Forget();
         }
 
         public void VisitStart()
         {
-            _view.SetInteractable(true);
+            _sceneLoader.LoadSceneAsync("HubScene").Forget();
+        }
+
+
+        private void HandleMainMenu()
+        {
+            _view.SetInteractable(false);
+            _sceneLoader.LoadSceneAsync("MainMenuScene").Forget();
+        }
+
+        private void HandleShopClosed()
+        {
+            _sceneLoader.LoadSceneAsync("HubScene").Forget(); 
         }
     }
 }
