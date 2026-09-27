@@ -18,7 +18,7 @@ MonoBehaviour:
   MapIcon: {fileID: 21300000, guid: 10d1e2a9f475dd843813dcb42207af78, type: 3}
   MapGlowColor: {r: 1, g: 0.23113209, b: 0.43094555, a: 1}
   StartingLives: 20
-  StartingMoney: 99
+  StartingMoney: 100
   FoundationQuota: 4
   RunCurrencyReward: 50
   MetaCurrencyReward: 10
