@@ -22,36 +22,36 @@ MonoBehaviour:
     - node_1_1
     - node_1_2
     Encounter:
-      rid: 7999629412704714868
+      rid: 7999629412704714893
   - Id: node_1_0
     Depth: 1
     RenderPosition: {x: -2.5, y: -1}
     NextNodeIds:
     - node_2_0
-    - node_2_1
     Encounter:
-      rid: 7999629412704714869
+      rid: 7999629412704714894
   - Id: node_1_1
     Depth: 1
     RenderPosition: {x: 0, y: -1}
     NextNodeIds:
     - node_2_1
     Encounter:
-      rid: 7999629412704714870
+      rid: 7999629412704714895
   - Id: node_1_2
     Depth: 1
     RenderPosition: {x: 2.5, y: -1}
     NextNodeIds:
     - node_2_1
     Encounter:
-      rid: 7999629412704714871
+      rid: 7999629412704714896
   - Id: node_2_0
     Depth: 2
     RenderPosition: {x: -1.25, y: 2}
     NextNodeIds:
     - node_3_0
+    - node_3_1
     Encounter:
-      rid: 7999629412704714872
+      rid: 7999629412704714897
   - Id: node_2_1
     Depth: 2
     RenderPosition: {x: 1.25, y: 2}
@@ -59,7 +59,7 @@ MonoBehaviour:
     - node_3_1
     - node_3_2
     Encounter:
-      rid: 7999629412704714873
+      rid: 7999629412704714898
   - Id: node_3_0
     Depth: 3
     RenderPosition: {x: -2.5, y: 5}
@@ -67,102 +67,102 @@ MonoBehaviour:
     - node_4_0
     - node_4_1
     Encounter:
-      rid: 7999629412704714874
+      rid: 7999629412704714899
   - Id: node_3_1
     Depth: 3
     RenderPosition: {x: 0, y: 5}
     NextNodeIds:
     - node_4_1
     Encounter:
-      rid: 7999629412704714875
+      rid: 7999629412704714900
   - Id: node_3_2
     Depth: 3
     RenderPosition: {x: 2.5, y: 5}
     NextNodeIds:
     - node_4_2
     Encounter:
-      rid: 7999629412704714876
+      rid: 7999629412704714901
   - Id: node_4_0
     Depth: 4
     RenderPosition: {x: -2.5, y: 8}
     NextNodeIds:
     - node_5_0
     Encounter:
-      rid: 7999629412704714877
+      rid: 7999629412704714902
   - Id: node_4_1
     Depth: 4
     RenderPosition: {x: 0, y: 8}
     NextNodeIds:
     - node_5_0
     Encounter:
-      rid: 7999629412704714878
+      rid: 7999629412704714903
   - Id: node_4_2
     Depth: 4
     RenderPosition: {x: 2.5, y: 8}
     NextNodeIds:
     - node_5_0
     Encounter:
-      rid: 7999629412704714879
+      rid: 7999629412704714904
   - Id: node_5_0
     Depth: 5
     RenderPosition: {x: 0, y: 11}
     NextNodeIds: []
     Encounter:
-      rid: 7999629412704714880
+      rid: 7999629412704714905
   StartingNodeIds:
   - node_0_0
   references:
     version: 2
     RefIds:
-    - rid: 7999629412704714868
+    - rid: 7999629412704714893
       type: {class: StartEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:
         _startIcon: {fileID: 21300000, guid: 68a97896098bc75479cfb63e7b5b5932, type: 3}
-    - rid: 7999629412704714869
-      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
-      data:
-        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
-    - rid: 7999629412704714870
-      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
-      data:
-        _config: {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
-    - rid: 7999629412704714871
+    - rid: 7999629412704714894
       type: {class: ShopEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:
         _config: {fileID: 11400000, guid: 336bef7782f6fa4488194c2b9777c888, type: 2}
-    - rid: 7999629412704714872
+    - rid: 7999629412704714895
       type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:
         _config: {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
-    - rid: 7999629412704714873
-      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
-      data:
-        _config: {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
-    - rid: 7999629412704714874
-      type: {class: ShopEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
-      data:
-        _config: {fileID: 11400000, guid: 336bef7782f6fa4488194c2b9777c888, type: 2}
-    - rid: 7999629412704714875
-      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
-      data:
-        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
-    - rid: 7999629412704714876
+    - rid: 7999629412704714896
       type: {class: EventEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:
         _config: {fileID: 11400000, guid: ac0120ef120796243961d59fbf39759e, type: 2}
-    - rid: 7999629412704714877
-      type: {class: EventEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
-      data:
-        _config: {fileID: 11400000, guid: ac0120ef120796243961d59fbf39759e, type: 2}
-    - rid: 7999629412704714878
-      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
-      data:
-        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
-    - rid: 7999629412704714879
+    - rid: 7999629412704714897
       type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:
         _config: {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
-    - rid: 7999629412704714880
+    - rid: 7999629412704714898
+      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
+      data:
+        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+    - rid: 7999629412704714899
+      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
+      data:
+        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+    - rid: 7999629412704714900
+      type: {class: EventEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
+      data:
+        _config: {fileID: 11400000, guid: ac0120ef120796243961d59fbf39759e, type: 2}
+    - rid: 7999629412704714901
+      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
+      data:
+        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+    - rid: 7999629412704714902
+      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
+      data:
+        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+    - rid: 7999629412704714903
+      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
+      data:
+        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+    - rid: 7999629412704714904
+      type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
+      data:
+        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+    - rid: 7999629412704714905
       type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:
         _config: {fileID: 11400000, guid: 2bffcc3ad685be1458cbb04866fdc01d, type: 2}

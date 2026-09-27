@@ -18,7 +18,7 @@ MonoBehaviour:
   StartIcon: {fileID: 21300000, guid: 68a97896098bc75479cfb63e7b5b5932, type: 3}
   BossLevel: {fileID: 11400000, guid: 2bffcc3ad685be1458cbb04866fdc01d, type: 2}
   ExactCombats: 4
-  ExactShops: 2
+  ExactShops: 1
   ExactEvents: 2
   _rules:
   - {fileID: 11400000, guid: 80ae088ec8f95bb47a92ee4ee38e79ed, type: 2}

@@ -27,7 +27,7 @@ namespace Gameplay.Campaign.Editor
             {
                 if (asset.GeneratorConfig == null)
                 {
-                    Debug.LogError("[Editor] Назначьте GeneratorConfig в CampaignGraphAsset!");
+                    Debug.LogError("[Editor] Назначьте GeneratorConfig!");
                     return;
                 }
                 GenerateDeckMapWithRetries(asset);
@@ -60,23 +60,24 @@ namespace Gameplay.Campaign.Editor
             }
 
             Debug.LogError($"<color=red>[Editor] Не удалось сгенерировать карту за {maxAttempts} попыток. " +
-                           "Проверьте правила генерации: возможно, они противоречат размеру колоды или топологии графа!</color>");
+                           "Правила конфликтуют с размером колоды или топологией!</color>");
         }
 
-        private bool TryGenerateDeckMap(CampaignGraphAsset realAsset)
+        private bool TryGenerateDeckMap(CampaignGraphAsset asset)
         {
-            var config = realAsset.GeneratorConfig;
+            var config = asset.GeneratorConfig;
 
-            CampaignGraphAsset tempAsset = ScriptableObject.CreateInstance<CampaignGraphAsset>();
+            var backupNodes = new List<MapNode>(asset.Nodes);
+            var backupStarts = new List<string>(asset.StartingNodeIds);
+            
+            asset.Clear();
             
             List<List<MapNode>> layers = new List<List<MapNode>>();
             int totalIntermediateNodes = 0;
-
             float nodeXSpacing = 2.5f;
             float layerYSpacing = 3f;
             float startYOffset = -4f;
 
-            // 1. СТРОИМ СКЕЛЕТ И СВЯЗИ
             for (int depth = 0; depth <= config.MaxDepth; depth++)
             {
                 List<MapNode> layerNodes = new List<MapNode>();
@@ -94,8 +95,7 @@ namespace Gameplay.Campaign.Editor
                         RenderPosition = new Vector2(startX + (i * nodeXSpacing), currentY)
                     };
                     layerNodes.Add(node);
-                    
-                    tempAsset.Nodes.Add(node);
+                    asset.Nodes.Add(node);
                     
                     if (depth > 0 && depth < config.MaxDepth) totalIntermediateNodes++;
                 }
@@ -106,7 +106,6 @@ namespace Gameplay.Campaign.Editor
             {
                 var currentLayer = layers[depth];
                 var nextLayer = layers[depth + 1];
-
                 List<Vector2Int> edges = new List<Vector2Int>();
                 int currentCount = currentLayer.Count;
                 int nextCount = nextLayer.Count;
@@ -133,17 +132,12 @@ namespace Gameplay.Campaign.Editor
                             if (edge.x > candidate.x && edge.y < candidate.y) crosses = true;
                         }
 
-                        if (!crosses && Random.value > 0.7f) 
-                        {
-                            edges.Add(candidate);
-                        }
+                        if (!crosses && Random.value > 0.7f) edges.Add(candidate);
                     }
                 }
 
                 foreach (var edge in edges)
-                {
                     currentLayer[edge.x].NextNodeIds.Add(nextLayer[edge.y].Id);
-                }
             }
 
             List<INodeEncounter> deck = new List<INodeEncounter>();
@@ -157,7 +151,7 @@ namespace Gameplay.Campaign.Editor
             deck = deck.OrderBy(x => rng.Next()).ToList();
 
             Dictionary<string, List<string>> parentsMap = new Dictionary<string, List<string>>();
-            foreach (var n in tempAsset.Nodes)
+            foreach (var n in asset.Nodes)
             {
                 foreach (var childId in n.NextNodeIds)
                 {
@@ -166,12 +160,12 @@ namespace Gameplay.Campaign.Editor
                 }
             }
 
-            foreach (var node in tempAsset.Nodes)
+            foreach (var node in asset.Nodes)
             {
                 if (node.Depth == 0)
                 {
                     node.Encounter = new StartEncounter(config.StartIcon);
-                    tempAsset.StartingNodeIds.Add(node.Id);
+                    asset.StartingNodeIds.Add(node.Id);
                     continue;
                 }
                 if (node.Depth == config.MaxDepth)
@@ -190,7 +184,7 @@ namespace Gameplay.Campaign.Editor
 
                     foreach (IGraphRule rule in config.Rules)
                     {
-                        if (!rule.Validate(node, candidate, parentsMap, tempAsset))
+                        if (!rule.Validate(node, candidate, parentsMap, asset))
                         {
                             isValid = false;
                             break;
@@ -207,8 +201,8 @@ namespace Gameplay.Campaign.Editor
 
                 if (chosenCard == null)
                 {
-
-                    DestroyImmediate(tempAsset);
+                    asset.Nodes = backupNodes;
+                    asset.StartingNodeIds = backupStarts;
                     return false; 
                 }
 
@@ -216,14 +210,6 @@ namespace Gameplay.Campaign.Editor
                 deck.RemoveAt(chosenIndex);
             }
 
-
-            realAsset.Clear();
-            realAsset.Nodes.AddRange(tempAsset.Nodes);
-            realAsset.StartingNodeIds.AddRange(tempAsset.StartingNodeIds);
-            
-
-            DestroyImmediate(tempAsset);
-            
             return true;
         }
 
