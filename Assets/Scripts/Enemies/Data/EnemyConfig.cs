@@ -4,6 +4,7 @@ using UnityEngine;
 using Gameplay.Enemies.Data.Movement;
 using Gameplay.Enemies.Data.Death;
 using Gameplay.Combat.Statuses;
+using Gameplay.Combat;
 
 namespace Gameplay.Enemies.Data
 {
@@ -36,7 +37,8 @@ namespace Gameplay.Enemies.Data
     {
         [Header("Идентификация")]
         public string EnemyId;        
-        public string DisplayName;    
+        public string DisplayName;
+        public TargetType Type = TargetType.Ground; 
 
         [Header("Визуал и UI")]
         public Sprite UIIcon;         

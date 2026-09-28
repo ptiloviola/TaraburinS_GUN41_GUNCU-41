@@ -17,6 +17,7 @@ namespace Gameplay.Towers.Data.Modules
 
 
         [Header("Ограничения прицеливания")]
+        public TargetType AllowedTargets = TargetType.Ground | TargetType.Air;
         [Range(0f, 360f)] 
         [Tooltip("Сектор обстрела по горизонтали (360 - круговой)")]
         public float FieldOfView = 360f; 

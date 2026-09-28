@@ -4,6 +4,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Gameplay.Auras.Data;
 using Gameplay.Enemies;
+using Gameplay.Combat;
 
 namespace Gameplay.Auras
 {
@@ -12,16 +13,18 @@ namespace Gameplay.Auras
         private AuraSetup _setup;
         private Vector3 _centerPosition;
         private LayerMask _enemyMask;
+        private TargetType _allowedTargets;
         private CancellationTokenSource _cts;
 
         public event Action<float> OnAuraStarted;
         public event Action OnAuraFinished;
 
-        public void StartAura(AuraSetup setup, Vector3 position, LayerMask enemyMask)
+        public void StartAura(AuraSetup setup, Vector3 position, LayerMask enemyMask, TargetType allowedTargets)
         {
             _setup = setup;
             _centerPosition = position;
             _enemyMask = enemyMask;
+            _allowedTargets = allowedTargets;
 
             StopAura();
             _cts = new CancellationTokenSource();
@@ -76,7 +79,10 @@ namespace Gameplay.Auras
             {
                 if (hit.TryGetComponent(out EnemyFacade enemy) && !enemy.IsDead)
                 {
-                    ApplyStatusesToEnemy(enemy);
+                    if ((_allowedTargets & enemy.TargetType) != 0) 
+                    {
+                        ApplyStatusesToEnemy(enemy);
+                    }
                 }
             }
         }

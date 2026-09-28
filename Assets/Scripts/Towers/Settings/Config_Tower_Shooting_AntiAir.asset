@@ -39,6 +39,7 @@ MonoBehaviour:
         MinRange: 0
         Range: 8
         Cooldown: 0.12
+        AllowedTargets: 2
         FieldOfView: 360
         MinPitch: -10
         MaxPitch: 80

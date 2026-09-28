@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyId: gyro
   DisplayName: gyro
+  Type: 2
   UIIcon: {fileID: 21300000, guid: ebde0c3be9fefe34784289044efe9219, type: 3}
   Prefab: {fileID: 6421098652743678490, guid: 65c3614e836d8494b86c7f34067439f5, type: 3}
   Stats:

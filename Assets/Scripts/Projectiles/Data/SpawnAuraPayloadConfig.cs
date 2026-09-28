@@ -16,6 +16,9 @@ namespace Gameplay.Projectiles.Data
         [Header("Префаб Ауры")]
         public LingeringAuraFacade AuraPrefab;
         public LayerMask EnemyMask;
+        
+        [Header("Ограничения целей (Аура)")]
+        public TargetType AllowedTargets = TargetType.Ground | TargetType.Air;
 
         [Header("Настройки Ауры")]
         public float Radius = 2f;
@@ -29,7 +32,7 @@ namespace Gameplay.Projectiles.Data
         public override IProjectilePayload CreatePayload(DamagePayload payload)
         {
             AuraSetup setup = new AuraSetup(Radius, Duration, TickRate, StatusEffects);
-            return new SpawnAuraPayload(setup, AuraPrefab, EnemyMask);
+            return new SpawnAuraPayload(setup, AuraPrefab, EnemyMask, AllowedTargets); 
         }
     }
 
@@ -38,14 +41,16 @@ namespace Gameplay.Projectiles.Data
         private readonly AuraSetup _setup;
         private readonly LingeringAuraFacade _prefab;
         private readonly LayerMask _enemyMask;
+        private readonly TargetType _allowedTargets;
         
         private AuraZoneFactory _factory;
 
-        public SpawnAuraPayload(AuraSetup setup, LingeringAuraFacade prefab, LayerMask enemyMask)
+        public SpawnAuraPayload(AuraSetup setup, LingeringAuraFacade prefab, LayerMask enemyMask, TargetType allowedTargets)
         {
             _setup = setup;
             _prefab = prefab;
             _enemyMask = enemyMask;
+            _allowedTargets = allowedTargets;
         }
 
         public void SetFactory(AuraZoneFactory factory)
@@ -70,7 +75,8 @@ namespace Gameplay.Projectiles.Data
             }
 
             var pool = _factory.GetPool(_prefab);
-            pool.Spawn(_setup, hitPoint, _enemyMask);
+            
+            pool.Spawn(_setup, hitPoint, _enemyMask, _allowedTargets);
             
             Debug.Log("<color=green>[Payload] Лужа успешно заспавнена из пула!</color>");
         }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Gameplay.Towers.Behaviors.Aiming;
 using Gameplay.Towers.Data.Modules;
+using Gameplay.Enemies;
 
 namespace Gameplay.Towers.Behaviors.Targeting
 {
@@ -19,17 +20,17 @@ namespace Gameplay.Towers.Behaviors.Targeting
             for (int i = 0; i < hitsCount; i++)
             {
                 Collider hit = _targetColliders[i];
+                
+                if (!hit.TryGetComponent(out EnemyFacade enemy)) continue;
+                if ((stats.AllowedTargets & enemy.TargetType) == 0) continue; // Если типы не пересекаются - пропускаем!
+
                 Vector3 directionToTarget = hit.transform.position - center.position;
                 float sqrDistance = directionToTarget.sqrMagnitude;
                 
-
                 if (sqrDistance < minRangeSqr) continue;
 
-
                 float distance2D = new Vector2(directionToTarget.x, directionToTarget.z).magnitude;
-
                 float pitchAngle = Mathf.Atan2(directionToTarget.y, distance2D) * Mathf.Rad2Deg;
-
 
                 if (pitchAngle < stats.MinPitch || pitchAngle > stats.MaxPitch) continue;
 
@@ -50,12 +51,14 @@ namespace Gameplay.Towers.Behaviors.Targeting
         {
             if (target == null || !target.gameObject.activeInHierarchy) return false;
             
+            if (!target.TryGetComponent(out EnemyFacade enemy)) return false;
+            if ((stats.AllowedTargets & enemy.TargetType) == 0) return false;
+
             Vector3 directionToTarget = target.position - center.position;
             float sqrDistance = directionToTarget.sqrMagnitude;
             
             if (sqrDistance > (stats.Range * stats.Range) || sqrDistance < (stats.MinRange * stats.MinRange)) 
                 return false;
-
 
             float distance2D = new Vector2(directionToTarget.x, directionToTarget.z).magnitude;
             float pitchAngle = Mathf.Atan2(directionToTarget.y, distance2D) * Mathf.Rad2Deg;

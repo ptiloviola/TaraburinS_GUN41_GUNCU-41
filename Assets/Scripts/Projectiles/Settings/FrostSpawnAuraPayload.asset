@@ -17,6 +17,7 @@ MonoBehaviour:
   EnemyMask:
     serializedVersion: 2
     m_Bits: 512
+  AllowedTargets: 1
   Radius: 3
   Duration: 7
   TickRate: 0.5

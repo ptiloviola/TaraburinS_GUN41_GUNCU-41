@@ -30,6 +30,7 @@ namespace Gameplay.Enemies
         private static int _spawnCounter = 0;
 
         public EnemyConfig Config { get; private set; }
+        public TargetType TargetType => Config.Type;
         public NavMeshAgent Agent => _agent;
         public HealthComponent Health => _health;
         public SignalBus SignalBus => _signalBus;
@@ -158,7 +159,7 @@ namespace Gameplay.Enemies
             if (_stateMachine.CurrentStateType == EnemyStateType.ReachedBase || 
                 _stateMachine.CurrentStateType == EnemyStateType.Death) return;
 
-            Gameplay.Base.BaseCore baseCore = other.GetComponentInParent<Gameplay.Base.BaseCore>();
+            BaseCore baseCore = other.GetComponentInParent<BaseCore>();
 
             if (baseCore != null)
             {

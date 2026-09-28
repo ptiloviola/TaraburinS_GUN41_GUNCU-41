@@ -3,6 +3,7 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Auras.Data;
 using Gameplay.Auras.Visuals;
+using Gameplay.Combat;
 
 namespace Gameplay.Auras
 {
@@ -34,7 +35,7 @@ namespace Gameplay.Auras
             }
         }
 
-        public void InitializeAura(AuraSetup setup, Vector3 position, LayerMask enemyMask)
+        public void InitializeAura(AuraSetup setup, Vector3 position, LayerMask enemyMask, TargetType allowedTargets)
         {
             transform.position = position;
 
@@ -45,7 +46,7 @@ namespace Gameplay.Auras
                 _visualizer.PlayAppear(setup.Radius);
             }
                 
-            Core.StartAura(setup, position, enemyMask);
+            Core.StartAura(setup, position, enemyMask, allowedTargets);
         }
 
         private void Despawn()
@@ -65,13 +66,13 @@ namespace Gameplay.Auras
             Core?.StopAura();
         }
 
-        public class Pool : MonoMemoryPool<AuraSetup, Vector3, LayerMask, LingeringAuraFacade> 
+        public class Pool : MonoMemoryPool<AuraSetup, Vector3, LayerMask, TargetType, LingeringAuraFacade> 
         {
-            protected override void Reinitialize(AuraSetup setup, Vector3 position, LayerMask mask, LingeringAuraFacade item)
+            protected override void Reinitialize(AuraSetup setup, Vector3 position, LayerMask mask, TargetType allowedTargets, LingeringAuraFacade item)
             {
-                base.Reinitialize(setup, position, mask, item);
+                base.Reinitialize(setup, position, mask, allowedTargets, item);
                 
-                item.InitializeAura(setup, position, mask);
+                item.InitializeAura(setup, position, mask, allowedTargets);
             }
         }
     }
