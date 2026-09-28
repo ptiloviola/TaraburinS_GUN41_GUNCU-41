@@ -19,8 +19,6 @@ namespace Gameplay.Campaign.Services
         {
             progress.CurrentMap = new RunMapModel();
             
-            progress.PathHistory.Clear();
-            progress.CurrentRunDepth = 0;
             progress.CurrentNode = null;
 
             HashSet<LevelBlueprintConfig> usedCombatLevels = new HashSet<LevelBlueprintConfig>();
@@ -72,10 +70,10 @@ namespace Gameplay.Campaign.Services
             string startNodeId = layers[0][0].Id;
             progress.CurrentMap.StartingNodeIds.Add(startNodeId);
             
-            if (progress.CurrentNode == null)
-            {
-                AdvanceToNode(progress, startNodeId);
-            }
+            // if (progress.CurrentNode == null)
+            // {
+            //     AdvanceToNode(progress, startNodeId);
+            // }
         }
 
         private MapNode CreateRandomNode(int depth, int indexInLayer, HashSet<LevelBlueprintConfig> usedLevels)
@@ -162,13 +160,7 @@ namespace Gameplay.Campaign.Services
         {
             if (progress.CurrentMap.Nodes.TryGetValue(nodeId, out MapNode nextNode))
             {
-                progress.CurrentNode = nextNode;
-                progress.CurrentRunDepth = nextNode.Depth;
-                
-                if (!progress.PathHistory.Contains(nodeId))
-                {
-                    progress.PathHistory.Add(nodeId);
-                }
+                progress.MoveToNode(nextNode); 
             }
         }
 

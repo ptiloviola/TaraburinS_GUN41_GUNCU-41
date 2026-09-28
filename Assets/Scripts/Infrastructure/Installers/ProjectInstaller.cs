@@ -30,6 +30,8 @@ namespace Gameplay.Infrastructure.Installers
             {
                 Debug.LogError("[ProjectInstaller] Не назначен конфиг режима игры (_activeRunMode)!");
             }
+
+            Container.Bind<RunSaveService>().AsSingle();
         }
     }
 }

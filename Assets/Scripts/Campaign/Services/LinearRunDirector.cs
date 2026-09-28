@@ -58,7 +58,7 @@ namespace Gameplay.Campaign.Services
             if (progress.CurrentMap.Nodes.TryGetValue(nodeId, out MapNode nextNode))
             {
                 progress.CurrentNode = nextNode;
-                progress.CurrentRunDepth = nextNode.Depth;
+
             }
         }
 

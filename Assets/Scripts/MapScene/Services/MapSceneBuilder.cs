@@ -47,10 +47,33 @@ namespace Gameplay.MapScene.Services
 
         public void Initialize()
         {
+            _progressModel.LoadOrCreateData();
+
+            bool isNewGame = false;
+            
             if (_progressModel.CurrentMap == null || _progressModel.CurrentMap.Nodes.Count == 0)
             {
                 _runDirector.GenerateRunMap(_progressModel);
+                isNewGame = true;
             }
+
+            if (!string.IsNullOrEmpty(_progressModel.CurrentNodeId))
+            {
+                if (_progressModel.CurrentMap.Nodes.TryGetValue(_progressModel.CurrentNodeId, out var savedNode))
+                {
+                    _progressModel.CurrentNode = savedNode;
+                }
+            }
+
+            if (isNewGame && _progressModel.CurrentNode == null && _progressModel.CurrentMap.StartingNodeIds.Count > 0)
+            {
+                string startId = _progressModel.CurrentMap.StartingNodeIds[0];
+                if (_progressModel.CurrentMap.Nodes.TryGetValue(startId, out var startNode))
+                {
+                    _progressModel.MoveToNode(startNode);
+                }
+            }
+
             BuildVisualMap();
         }
 

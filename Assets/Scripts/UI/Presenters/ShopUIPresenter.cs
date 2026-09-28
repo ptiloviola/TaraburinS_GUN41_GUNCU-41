@@ -44,8 +44,8 @@ namespace Gameplay.UI.Presenters
         {
             if (_progressModel.CurrentRunGold >= item.BaseCost)
             {
-                _progressModel.CurrentRunGold -= item.BaseCost;
-                _progressModel.ActiveRunItems.Add(item.ItemId);
+                _progressModel.AddGold(-item.BaseCost); 
+                _progressModel.AddItem(item.ItemId);
 
                 UnityEngine.Debug.Log($"<color=green>[Shop] Куплен предмет: {item.DisplayName}</color>");
 

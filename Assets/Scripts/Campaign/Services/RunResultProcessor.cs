@@ -15,18 +15,21 @@ namespace Gameplay.Campaign.Services
         private readonly SaveLoadService _saveLoadService;
         private readonly RunProgressModel _runProgress;
         private readonly IRunDirectorService _runDirector; 
+        private readonly RunSaveService _runSaveService;
         private bool _isProcessed;
 
         public RunResultProcessor(
             SignalBus signalBus, 
             SaveLoadService saveLoadService, 
             RunProgressModel runProgress,
-            IRunDirectorService runDirector)
+            IRunDirectorService runDirector,
+            RunSaveService runSaveService)
         {
             _signalBus = signalBus;
             _saveLoadService = saveLoadService;
             _runProgress = runProgress;
             _runDirector = runDirector;
+            _runSaveService = runSaveService;
         }
 
         public void Initialize()
@@ -56,13 +59,10 @@ namespace Gameplay.Campaign.Services
 
             if (wonLevel != null)
             {
-                _runProgress.CurrentRunGold += wonLevel.RunCurrencyReward;
+                _runProgress.AddGold(wonLevel.RunCurrencyReward);
                 profile.MetaCurrency += wonLevel.MetaCurrencyReward;
-                
                 Debug.Log($"<color=yellow>[RunResultProcessor] Награда: +{wonLevel.RunCurrencyReward} Золота забега, +{wonLevel.MetaCurrencyReward} Мета-очков.</color>");
             }
-
-            _runProgress.CurrentRunDepth++;
 
             if (_runProgress.CurrentRunDepth > profile.MaxCompletedLevelIndex)
             {
@@ -73,6 +73,7 @@ namespace Gameplay.Campaign.Services
             {
                 profile.TotalRunsPlayed++;
                 Debug.Log("<color=green>[RunResultProcessor] Кампания пройдена! Забег завершен.</color>");
+                
             }
 
             _saveLoadService.SaveProfile();
@@ -85,8 +86,9 @@ namespace Gameplay.Campaign.Services
 
             PlayerProfileModel profile = _saveLoadService.LoadProfile();
             profile.TotalRunsPlayed++;
-
             _saveLoadService.SaveProfile();
+
+            _runSaveService.DeleteSave();
         }
     }
 }

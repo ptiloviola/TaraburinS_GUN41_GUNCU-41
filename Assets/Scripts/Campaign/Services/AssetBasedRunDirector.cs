@@ -16,8 +16,7 @@ namespace Gameplay.Campaign.Services
         public void GenerateRunMap(RunProgressModel progress)
         {
             progress.CurrentMap = new RunMapModel();
-            progress.PathHistory.Clear();
-            progress.CurrentRunDepth = 0;
+
             progress.CurrentNode = null;
 
             if (_graphAsset == null || _graphAsset.Nodes.Count == 0)
@@ -42,10 +41,10 @@ namespace Gameplay.Campaign.Services
 
             progress.CurrentMap.StartingNodeIds = new List<string>(_graphAsset.StartingNodeIds);
 
-            if (progress.CurrentNode == null && progress.CurrentMap.StartingNodeIds.Count > 0)
-            {
-                AdvanceToNode(progress, progress.CurrentMap.StartingNodeIds[0]);
-            }
+            // if (progress.CurrentNode == null && progress.CurrentMap.StartingNodeIds.Count > 0)
+            // {
+            //     AdvanceToNode(progress, progress.CurrentMap.StartingNodeIds[0]);
+            // }
         }
 
         public IReadOnlyList<MapNode> GetAvailableChoices(RunProgressModel progress)
@@ -67,13 +66,7 @@ namespace Gameplay.Campaign.Services
         {
             if (progress.CurrentMap.Nodes.TryGetValue(nodeId, out MapNode nextNode))
             {
-                progress.CurrentNode = nextNode;
-                progress.CurrentRunDepth = nextNode.Depth;
-                
-                if (!progress.PathHistory.Contains(nodeId))
-                {
-                    progress.PathHistory.Add(nodeId);
-                }
+                progress.MoveToNode(nextNode); 
             }
         }
 

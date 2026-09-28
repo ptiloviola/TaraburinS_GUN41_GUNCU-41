@@ -52,5 +52,10 @@ namespace Gameplay.UI.Views
             if (_metaCurrencyText != null) 
                 _metaCurrencyText.text = $"PROGRESS POINTS: {metaCurrency}";
         }
+
+        public void SetLoadButtonInteractable(bool isInteractable)
+        {
+            if (_loadSaveButton != null) _loadSaveButton.interactable = isInteractable;
+        }
     }
 }
