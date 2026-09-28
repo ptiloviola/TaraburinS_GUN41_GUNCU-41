@@ -56,7 +56,7 @@ namespace Gameplay.Enemies
 
                 float totalCycleTime = _config.JumpDuration + _config.PauseDuration;
                 float speedMultiplier = totalCycleTime / _config.JumpDuration;
-                _agent.speed = enemy.Config.Movement.MoveSpeed * speedMultiplier;
+                _agent.speed = enemy.Config.Stats.MoveSpeed * speedMultiplier;
 
                 _isJumping = false;
                 _agent.isStopped = true;
@@ -71,7 +71,7 @@ namespace Gameplay.Enemies
 
             float totalCycleTime = _config.JumpDuration + _config.PauseDuration;
             float baseSpeedMultiplier = totalCycleTime / _config.JumpDuration;
-            _agent.speed = _enemy.Config.Movement.MoveSpeed * baseSpeedMultiplier * _enemy.StatusController.SpeedMultiplier;
+            _agent.speed = _enemy.Config.Stats.MoveSpeed * baseSpeedMultiplier * _enemy.StatusController.SpeedMultiplier;
             _timer -= deltaTime;
 
             if (_isJumping)

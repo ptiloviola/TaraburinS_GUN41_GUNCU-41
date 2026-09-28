@@ -20,6 +20,7 @@ namespace Gameplay.Enemies.Data
     public struct EnemyStats
     {
         public float MaxHealth;
+        public float MoveSpeed;
         public int DamageToBase;
         public int RewardMoney;
     }
@@ -45,7 +46,7 @@ namespace Gameplay.Enemies.Data
         public EnemyFacade Prefab;    
 
         [Header("Модуль: Характеристики")]
-        public EnemyStats Stats = new EnemyStats { MaxHealth = 100f, DamageToBase = 1, RewardMoney = 15 };
+        public EnemyStats Stats = new EnemyStats { MaxHealth = 100f, MoveSpeed = 3.5f, DamageToBase = 1, RewardMoney = 15 };
         public ArmorStats Armor = new ArmorStats { PhysicalMultiplier = 1f, EnergyMultiplier = 1f, ExplosiveMultiplier = 1f };
         
         [Header("Модуль: Сопротивления Статусам")]

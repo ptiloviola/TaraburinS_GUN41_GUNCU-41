@@ -108,7 +108,7 @@ namespace Gameplay.Enemies
                 _damageReceiver.Initialize(_health, _armorCalculator);
             }
 
-            _agent.speed = Config.Movement.MoveSpeed;
+            _agent.speed = Config.Stats.MoveSpeed;
         }
 
         public void InitializeMovement(IMovementStrategy movementStrategy)

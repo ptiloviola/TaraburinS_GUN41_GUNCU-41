@@ -80,7 +80,7 @@ namespace Gameplay.Enemies
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) 
                 return;
             
-            _agent.speed = _enemy.Config.Movement.MoveSpeed * _enemy.StatusController.SpeedMultiplier;
+            _agent.speed = _enemy.Config.Stats.MoveSpeed * _enemy.StatusController.SpeedMultiplier;
             
             float currentWaveOffset = Mathf.Sin((Time.time + _timePhaseOffset) * _frequency) * _amplitude;
             float targetHeight = _baseHeight + currentWaveOffset;
