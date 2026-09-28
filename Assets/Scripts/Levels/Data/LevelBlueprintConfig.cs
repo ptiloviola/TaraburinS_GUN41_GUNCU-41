@@ -26,9 +26,9 @@ namespace Gameplay.Levels.Data
         public int MetaCurrencyReward = 10;
 
         [Header("Данные уровня")]
-        public GridConfig GridConfig;
         public LevelWavesConfig WavesConfig;
-
         
+
+        public GridConfig GridConfig => WavesConfig != null ? WavesConfig.TargetGrid : null;
     }
 }

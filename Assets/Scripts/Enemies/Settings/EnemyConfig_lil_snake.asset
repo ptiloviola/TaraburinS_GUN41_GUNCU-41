@@ -14,11 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyId: lil_snake
   DisplayName: lil_snake
+  Type: 1
   UIIcon: {fileID: 0}
   Prefab: {fileID: 9188307815248283287, guid: f170fa41ae0e5ae42a62ebf7c2e6c763, type: 3}
   Stats:
     MaxHealth: 100
+    MoveSpeed: 25
     DamageToBase: 1
     RewardMoney: 15
+  Armor:
+    PhysicalMultiplier: 1
+    EnergyMultiplier: 1
+    ExplosiveMultiplier: 1
+  Resistances: []
   Movement: {fileID: 11400000, guid: 813e849200a732e49910dedd5d2343d4, type: 2}
   DeathBehavior: {fileID: 0}
