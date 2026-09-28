@@ -29,7 +29,7 @@ namespace Gameplay.Enemies.Statuses
             if (resistMultiplier <= 0f)
             {
 #if UNITY_EDITOR
-                Debug.Log($"<color=grey>[Status] Враг {_enemy.gameObject.name} иммунен к {effect.Type}. Статус {effect.Id} отклонен.</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=grey>[Status] Враг {_enemy.gameObject.name} иммунен к {effect.Type}. Статус {effect.Id} отклонен.</color>");
 #endif
                 return;
             }

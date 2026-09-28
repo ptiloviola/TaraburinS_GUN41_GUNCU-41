@@ -84,7 +84,7 @@ namespace Gameplay.Interaction
             OnTowerSelected?.Invoke(tower);
             
 #if UNITY_EDITOR
-            Debug.Log($"<color=orange>[SelectionService] Выделена построенная башня: {tower.Config.DisplayName} (Уровень {tower.CurrentLevel})</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=orange>[SelectionService] Выделена построенная башня: {tower.Config.DisplayName} (Уровень {tower.CurrentLevel})</color>");
 #endif
         }
 
@@ -96,7 +96,7 @@ namespace Gameplay.Interaction
                 OnTowerDeselected?.Invoke();
                 
 #if UNITY_EDITOR
-                Debug.Log("<color=orange>[SelectionService] Башня снята с выделения.</color>");
+                Gameplay.Tools.GameLogger.Log("<color=orange>[SelectionService] Башня снята с выделения.</color>");
 #endif
             }
         }

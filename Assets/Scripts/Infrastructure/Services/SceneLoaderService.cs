@@ -9,7 +9,7 @@ namespace Gameplay.Infrastructure.Services
     {
         public async UniTask LoadSceneAsync(string sceneName, CancellationToken ct = default)
         {
-            Debug.Log($"<color=yellow>[SceneLoader] Начинаю загрузку сцены: {sceneName}...</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=yellow>[SceneLoader] Начинаю загрузку сцены: {sceneName}...</color>");
             
 
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
@@ -17,7 +17,7 @@ namespace Gameplay.Infrastructure.Services
 
             if (asyncLoad == null)
             {
-                Debug.LogError($"[SceneLoader] Ошибка: Сцена '{sceneName}' не найдена! Убедись, что она добавлена в File -> Build Settings.");
+                Gameplay.Tools.GameLogger.LogError($"[SceneLoader] Ошибка: Сцена '{sceneName}' не найдена! Убедись, что она добавлена в File -> Build Settings.");
                 return; 
             }
 
@@ -27,7 +27,7 @@ namespace Gameplay.Infrastructure.Services
 
             Time.timeScale = 1f; 
             
-            Debug.Log($"<color=green>[SceneLoader] Сцена {sceneName} успешно загружена.</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=green>[SceneLoader] Сцена {sceneName} успешно загружена.</color>");
         }
     }
 }

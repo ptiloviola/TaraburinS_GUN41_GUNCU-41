@@ -13,7 +13,7 @@ namespace Gameplay.Infrastructure.Installers
 
             Container.DeclareSignal<SignalPauseStateChanged>();
 
-            Debug.Log("<color=green>[Zenject] ProjectSignalsInstaller: Глобальная шина инициализирована.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] ProjectSignalsInstaller: Глобальная шина инициализирована.</color>");
         }
     }
 }

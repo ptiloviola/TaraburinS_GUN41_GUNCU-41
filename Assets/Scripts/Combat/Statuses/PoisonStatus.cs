@@ -39,7 +39,7 @@ namespace Gameplay.Combat.Statuses
             _damageReceiver = enemy.GetComponent<IDamageReceiver>();
             
 #if UNITY_EDITOR
-            Debug.Log($"<color=green>[Status] Применен яд. Время: {_duration} сек. Урон: {_damagePerTick} раз в {_tickRate} сек.</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=green>[Status] Применен яд. Время: {_duration} сек. Урон: {_damagePerTick} раз в {_tickRate} сек.</color>");
 #endif
         }
 
@@ -72,7 +72,7 @@ namespace Gameplay.Combat.Statuses
         public void OnRemove()
         {
 #if UNITY_EDITOR
-            Debug.Log("<color=green>[Status] Яд спал.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[Status] Яд спал.</color>");
 #endif
         }
     }

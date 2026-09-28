@@ -47,7 +47,7 @@ namespace Gameplay.UI.Presenters
                 _progressModel.AddGold(-item.BaseCost); 
                 _progressModel.AddItem(item.ItemId);
 
-                UnityEngine.Debug.Log($"<color=green>[Shop] Куплен предмет: {item.DisplayName}</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=green>[Shop] Куплен предмет: {item.DisplayName}</color>");
 
                 UnityEngine.Object.Destroy(itemView.gameObject);
 

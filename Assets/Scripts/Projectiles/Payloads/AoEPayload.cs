@@ -31,7 +31,7 @@ namespace Gameplay.Projectiles.Payloads
             }
             
 #if UNITY_EDITOR
-            Debug.Log($"<color=orange>[AoE] Взрыв на {hitPoint}! Задето объектов: {hitCount}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=orange>[AoE] Взрыв на {hitPoint}! Задето объектов: {hitCount}</color>");
 #endif
         }
     }

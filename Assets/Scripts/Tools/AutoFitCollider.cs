@@ -19,7 +19,7 @@ public class AutoFitCollider : MonoBehaviour
             
         if (renderers.Length == 0)
         {
-            Debug.LogWarning("Дочерние меши не найдены!");
+            Gameplay.Tools.GameLogger.LogWarning("Дочерние меши не найдены!");
             return;
         }
 
@@ -46,6 +46,6 @@ public class AutoFitCollider : MonoBehaviour
         PrefabUtility.RecordPrefabInstancePropertyModifications(boxCollider);
 #endif
 
-        Debug.Log($"Коллайдер подогнан и СОХРАНЕН! Размер: {boxCollider.size}");
+        Gameplay.Tools.GameLogger.Log($"Коллайдер подогнан и СОХРАНЕН! Размер: {boxCollider.size}");
     }
 }

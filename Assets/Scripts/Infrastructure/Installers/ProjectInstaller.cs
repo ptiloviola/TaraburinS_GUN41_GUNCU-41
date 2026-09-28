@@ -28,7 +28,7 @@ namespace Gameplay.Infrastructure.Installers
             }
             else
             {
-                Debug.LogError("[ProjectInstaller] Не назначен конфиг режима игры (_activeRunMode)!");
+                Gameplay.Tools.GameLogger.LogError("[ProjectInstaller] Не назначен конфиг режима игры (_activeRunMode)!");
             }
 
             Container.Bind<RunSaveService>().AsSingle();

@@ -24,7 +24,7 @@ namespace Infrastructure.Levels
         {
             if (_gridConfig == null)
             {
-                Debug.LogError("[GridDataInitializer] Конфиг сетки не передан в контейнер!");
+                Gameplay.Tools.GameLogger.LogError("[GridDataInitializer] Конфиг сетки не передан в контейнер!");
                 return;
             }
 

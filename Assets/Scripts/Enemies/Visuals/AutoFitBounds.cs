@@ -14,7 +14,7 @@ namespace Gameplay.Enemies.Visuals
         {
             if (_visualRoot == null)
             {
-                Debug.LogWarning("[AutoFit] Не назначен Visual Root!");
+                Gameplay.Tools.GameLogger.LogWarning("[AutoFit] Не назначен Visual Root!");
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace Gameplay.Enemies.Visuals
             agent.radius = Mathf.Max(combinedBounds.extents.x, combinedBounds.extents.z);
             agent.height = combinedBounds.size.y;
             
-            Debug.Log($"<color=green>[AutoFit] Габариты успешно подогнаны под меш!</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=green>[AutoFit] Габариты успешно подогнаны под меш!</color>");
         }
     }
 }

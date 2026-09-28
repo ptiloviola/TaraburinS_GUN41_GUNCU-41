@@ -21,7 +21,7 @@ namespace Gameplay.Grid.Installers
             Container.Bind<NavMeshBakeService>().AsSingle();
 
 
-            Debug.Log("<color=green>[Zenject] GridInstaller: Сетка и конвейер загрузки зарегистрированы.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] GridInstaller: Сетка и конвейер загрузки зарегистрированы.</color>");
         }
     }
 }

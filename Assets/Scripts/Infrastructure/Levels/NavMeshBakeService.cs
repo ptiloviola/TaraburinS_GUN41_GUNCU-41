@@ -27,12 +27,12 @@ namespace Infrastructure.Levels
                 }
                 
 #if UNITY_EDITOR
-                Debug.Log($"<color=magenta>[NavMeshBakeService] Успешно запечено поверхностей NavMesh: {bakedCount} в Runtime!</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=magenta>[NavMeshBakeService] Успешно запечено поверхностей NavMesh: {bakedCount} в Runtime!</color>");
 #endif
             }
             else
             {
-                Debug.LogError("[NavMeshBakeService] Ссылка на NavMeshSurface отсутствует!");
+                Gameplay.Tools.GameLogger.LogError("[NavMeshBakeService] Ссылка на NavMeshSurface отсутствует!");
             }
         }
     }

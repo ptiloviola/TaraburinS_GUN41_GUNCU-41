@@ -18,7 +18,7 @@ namespace Gameplay.Towers.Behaviors.Weapons
 #if UNITY_EDITOR
             if (_projectilePrefab == null)
             {
-                Debug.LogError("[ProjectileExecutor] Префаб снаряда не назначен в AttackStats!");
+                Gameplay.Tools.GameLogger.LogError("[ProjectileExecutor] Префаб снаряда не назначен в AttackStats!");
                 return;
             }
 #endif

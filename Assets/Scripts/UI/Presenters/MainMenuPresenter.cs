@@ -65,13 +65,13 @@ namespace Gameplay.UI.Presenters
         {
             _view.SetInteractable(false);
             
-            Debug.Log("<color=green>[MainMenuPresenter] Загружаем существующий забег...</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[MainMenuPresenter] Загружаем существующий забег...</color>");
             _sceneLoader.LoadSceneAsync(StartSceneName).Forget();
         }
 
         private void HandleSettingsClicked()
         {
-            Debug.Log("<color=yellow>[MainMenuPresenter] ЗАГЛУШКА: Открытие окна настроек...</color>");
+            Gameplay.Tools.GameLogger.Log("<color=yellow>[MainMenuPresenter] ЗАГЛУШКА: Открытие окна настроек...</color>");
         }
     }
 }

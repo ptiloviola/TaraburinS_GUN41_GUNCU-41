@@ -61,7 +61,7 @@ namespace Gameplay.Campaign.Services
             {
                 _runProgress.AddGold(wonLevel.RunCurrencyReward);
                 profile.MetaCurrency += wonLevel.MetaCurrencyReward;
-                Debug.Log($"<color=yellow>[RunResultProcessor] Награда: +{wonLevel.RunCurrencyReward} Золота забега, +{wonLevel.MetaCurrencyReward} Мета-очков.</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=yellow>[RunResultProcessor] Награда: +{wonLevel.RunCurrencyReward} Золота забега, +{wonLevel.MetaCurrencyReward} Мета-очков.</color>");
             }
 
             if (_runProgress.CurrentRunDepth > profile.MaxCompletedLevelIndex)
@@ -72,7 +72,7 @@ namespace Gameplay.Campaign.Services
             if (_runDirector.IsCampaignCompleted(_runProgress))
             {
                 profile.TotalRunsPlayed++;
-                Debug.Log("<color=green>[RunResultProcessor] Кампания пройдена! Забег завершен.</color>");
+                Gameplay.Tools.GameLogger.Log("<color=green>[RunResultProcessor] Кампания пройдена! Забег завершен.</color>");
                 
             }
 

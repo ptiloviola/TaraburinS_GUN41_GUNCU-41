@@ -34,7 +34,7 @@ namespace Gameplay.Grid.Services
             if (currentClaimedCount >= _runtimeModel.FoundationQuota)
             {
 #if UNITY_EDITOR
-                Debug.Log($"<color=yellow>[GridValidationService] Лимит фундаментов исчерпан! Максимум: {_runtimeModel.FoundationQuota}</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=yellow>[GridValidationService] Лимит фундаментов исчерпан! Максимум: {_runtimeModel.FoundationQuota}</color>");
 #endif
                 return false;
             }

@@ -34,7 +34,7 @@ namespace Gameplay.Spawning.Factories
                 if (config == null)
                 {
 #if UNITY_EDITOR
-                    Debug.LogError($"[EnemyFactory] Враг '{enemyId}' не найден в EnemyRegistry!");
+                    Gameplay.Tools.GameLogger.LogError($"[EnemyFactory] Враг '{enemyId}' не найден в EnemyRegistry!");
 #endif
                     return;
                 }
@@ -71,7 +71,7 @@ namespace Gameplay.Spawning.Factories
                 else
                 {
 #if UNITY_EDITOR
-                    Debug.LogError("[EnemyFactory] Ошибка! Враг заспавнен, но в реестре BaseRegistry нет активной базы!");
+                    Gameplay.Tools.GameLogger.LogError("[EnemyFactory] Ошибка! Враг заспавнен, но в реестре BaseRegistry нет активной базы!");
 #endif
                 }
 
@@ -80,7 +80,7 @@ namespace Gameplay.Spawning.Factories
             catch (ZenjectException)
             {
 #if UNITY_EDITOR
-                Debug.LogError($"[EnemyFactory] Ошибка спавна! Пул для врага '{enemyId}' не найден. Проверь Installer!");
+                Gameplay.Tools.GameLogger.LogError($"[EnemyFactory] Ошибка спавна! Пул для врага '{enemyId}' не найден. Проверь Installer!");
 #endif
             }
         }

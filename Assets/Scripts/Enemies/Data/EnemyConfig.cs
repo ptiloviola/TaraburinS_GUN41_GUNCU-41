@@ -67,12 +67,10 @@ namespace Gameplay.Enemies.Data
             return 1f; 
         }
 
-#if UNITY_EDITOR
         private void OnValidate()
         {
-            if (Movement == null) Debug.LogWarning($"[EnemyConfig] Врагу {EnemyId} не назначен модуль Movement!", this);
-            if (Prefab == null) Debug.LogWarning($"[EnemyConfig] Врагу {EnemyId} не назначен Prefab!", this);
+            if (Movement == null) Gameplay.Tools.GameLogger.LogWarning($"[EnemyConfig] Врагу {EnemyId} не назначен модуль Movement!", this);
+            if (Prefab == null) Gameplay.Tools.GameLogger.LogWarning($"[EnemyConfig] Врагу {EnemyId} не назначен Prefab!", this);
         }
-#endif
     }
 }

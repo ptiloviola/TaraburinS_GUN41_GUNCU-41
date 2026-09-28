@@ -34,10 +34,10 @@ namespace Gameplay.Tools
 
             GUIUtility.systemCopyBuffer = sb.ToString();
             
-            Debug.Log($"<color=green>[TD Tools] Контекст скопирован!</color> Длина текста: {sb.Length} символов.");
+            Gameplay.Tools.GameLogger.Log($"<color=green>[TD Tools] Контекст скопирован!</color> Длина текста: {sb.Length} символов.");
             if (sb.Length > 50000)
             {
-                Debug.LogWarning("[TD Tools] Внимание: текст получился очень большим! Возможно, придется отправлять его в чат двумя сообщениями.");
+                Gameplay.Tools.GameLogger.LogWarning("[TD Tools] Внимание: текст получился очень большим! Возможно, придется отправлять его в чат двумя сообщениями.");
             }
         }
 

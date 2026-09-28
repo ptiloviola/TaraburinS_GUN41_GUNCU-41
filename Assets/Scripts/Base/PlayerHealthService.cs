@@ -44,7 +44,7 @@ namespace Gameplay.Base
             _signalBus.Fire(new SignalBaseDamaged { CurrentLives = _globalLives });
             
 #if UNITY_EDITOR
-            Debug.Log($"<color=orange>[PlayerHealthService] Пропущен враг! Осталось глобальных жизней: {_globalLives}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=orange>[PlayerHealthService] Пропущен враг! Осталось глобальных жизней: {_globalLives}</color>");
 #endif
 
             if (_globalLives <= 0)

@@ -21,7 +21,7 @@ namespace Gameplay.Campaign.Services
 
             if (_graphAsset == null || _graphAsset.Nodes.Count == 0)
             {
-                Debug.LogError("[AssetBasedRunDirector] CampaignGraphAsset пуст или не назначен!");
+                Gameplay.Tools.GameLogger.LogError("[AssetBasedRunDirector] CampaignGraphAsset пуст или не назначен!");
                 return;
             }
 

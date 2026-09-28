@@ -38,7 +38,7 @@ namespace Gameplay.Towers.Services
 
             TowerFacade newTower = _towerFactory.ForceSpawnTower(config, nextLevel, gridPos, worldPos);
 
-            Debug.Log($"<color=cyan>[TowerUpgradeService] Башня {config.DisplayName} улучшена до уровня {nextLevel}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=cyan>[TowerUpgradeService] Башня {config.DisplayName} улучшена до уровня {nextLevel}</color>");
             
             OnTowerUpgraded?.Invoke(oldTower, newTower);
             

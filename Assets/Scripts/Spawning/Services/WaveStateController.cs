@@ -58,7 +58,7 @@ namespace Gameplay.Spawning.Services
             try
             {
 #if UNITY_EDITOR
-                Debug.Log("<color=cyan>[WaveStateController] Режиссер начал работу (UniTask).</color>");
+                Gameplay.Tools.GameLogger.Log("<color=cyan>[WaveStateController] Режиссер начал работу (UniTask).</color>");
 #endif
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: ct);
 
@@ -75,7 +75,7 @@ namespace Gameplay.Spawning.Services
 
                     _signalBus.Fire(new SignalWaveTimerUpdated { TimeLeft = 0, Progress = 1f });
 #if UNITY_EDITOR
-                    Debug.Log($"<color=green>[WaveStateController] СТАРТ ВОЛНЫ {_currentWaveNumber}!</color>");
+                    Gameplay.Tools.GameLogger.Log($"<color=green>[WaveStateController] СТАРТ ВОЛНЫ {_currentWaveNumber}!</color>");
 #endif
                     await _spawnerService.SpawnWaveAsync(currentWave, ct);
 
@@ -90,19 +90,19 @@ namespace Gameplay.Spawning.Services
 
                 _signalBus.Fire<SignalAllWavesSpawned>();
 #if UNITY_EDITOR
-                Debug.Log("<color=green>[WaveStateController] ВСЕ ВОЛНЫ СПАВНЕРА ВЫШЛИ!</color>");
+                Gameplay.Tools.GameLogger.Log("<color=green>[WaveStateController] ВСЕ ВОЛНЫ СПАВНЕРА ВЫШЛИ!</color>");
 #endif
 
             }
             catch (OperationCanceledException)
             {
 #if UNITY_EDITOR
-                Debug.Log("<color=orange>[WaveStateController] Цикл волн прерван (Canceled).</color>");
+                Gameplay.Tools.GameLogger.Log("<color=orange>[WaveStateController] Цикл волн прерван (Canceled).</color>");
 #endif
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[WaveStateController] Ошибка: {ex.Message}\n{ex.StackTrace}");
+                Gameplay.Tools.GameLogger.LogError($"[WaveStateController] Ошибка: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
@@ -116,7 +116,7 @@ namespace Gameplay.Spawning.Services
                 {
                     int rewardMoney = Mathf.CeilToInt(timeLeft) * 5;
 #if UNITY_EDITOR
-                    Debug.Log($"<color=yellow>[WaveStateController] Досрочный старт! Выдана награда: {rewardMoney} монет.</color>");
+                    Gameplay.Tools.GameLogger.Log($"<color=yellow>[WaveStateController] Досрочный старт! Выдана награда: {rewardMoney} монет.</color>");
 #endif
                     _bankService.AddMoney(rewardMoney);
                 }
@@ -126,13 +126,13 @@ namespace Gameplay.Spawning.Services
                 if (_currentWaveNumber > 1)
                 {
 #if UNITY_EDITOR
-                    Debug.Log($"<color=cyan>[WaveStateController] Волна {_currentWaveNumber} ждет зачистки карты...</color>");
+                    Gameplay.Tools.GameLogger.Log($"<color=cyan>[WaveStateController] Волна {_currentWaveNumber} ждет зачистки карты...</color>");
 #endif
                     bool wasSkipped = await _timerService.WaitConditionOrSkipAsync(() => _enemyTracker.IsMapClear, ct);
                     if (wasSkipped)
                     {
 #if UNITY_EDITOR
-                        Debug.Log("<color=yellow>[WaveStateController] Игрок не стал ждать зачистки и вызвал волну досрочно!</color>");
+                        Gameplay.Tools.GameLogger.Log("<color=yellow>[WaveStateController] Игрок не стал ждать зачистки и вызвал волну досрочно!</color>");
 #endif
                     }
                 }

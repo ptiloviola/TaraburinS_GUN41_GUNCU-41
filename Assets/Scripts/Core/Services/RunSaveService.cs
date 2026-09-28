@@ -11,7 +11,7 @@ namespace Gameplay.Core.Services
         public RunSaveService()
         {
             _saveFilePath = Path.Combine(Application.persistentDataPath, "current_run.json");
-            Debug.Log($"<color=magenta>[RunSaveService] Путь к файлу забега: {_saveFilePath}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=magenta>[RunSaveService] Путь к файлу забега: {_saveFilePath}</color>");
         }
 
         public bool HasSave()
@@ -25,11 +25,11 @@ namespace Gameplay.Core.Services
             {
                 string json = JsonUtility.ToJson(data, true);
                 File.WriteAllText(_saveFilePath, json);
-                Debug.Log("<color=green>[RunSaveService] Прогресс забега успешно сохранен.</color>");
+                Gameplay.Tools.GameLogger.Log("<color=green>[RunSaveService] Прогресс забега успешно сохранен.</color>");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[RunSaveService] Ошибка записи забега: {ex.Message}");
+                Gameplay.Tools.GameLogger.LogError($"[RunSaveService] Ошибка записи забега: {ex.Message}");
             }
         }
 
@@ -44,7 +44,7 @@ namespace Gameplay.Core.Services
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[RunSaveService] Ошибка чтения забега: {ex.Message}. Файл поврежден.");
+                Gameplay.Tools.GameLogger.LogError($"[RunSaveService] Ошибка чтения забега: {ex.Message}. Файл поврежден.");
                 return null;
             }
         }
@@ -54,7 +54,7 @@ namespace Gameplay.Core.Services
             if (HasSave())
             {
                 File.Delete(_saveFilePath);
-                Debug.Log("<color=red>[RunSaveService] Файл сохранения забега УДАЛЕН (Permadeath / New Game).</color>");
+                Gameplay.Tools.GameLogger.Log("<color=red>[RunSaveService] Файл сохранения забега УДАЛЕН (Permadeath / New Game).</color>");
             }
         }
     }

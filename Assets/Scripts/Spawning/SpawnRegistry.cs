@@ -16,7 +16,7 @@ namespace Gameplay.Spawning
             if (_spawns.TryAdd(spawn.PointId, spawn))
             {
 #if UNITY_EDITOR
-                Debug.Log($"<color=purple>[SpawnRegistry] Зарегистрирован спавн: {spawn.PointId}</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=purple>[SpawnRegistry] Зарегистрирован спавн: {spawn.PointId}</color>");
 #endif
             }
         }

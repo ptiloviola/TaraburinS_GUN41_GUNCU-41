@@ -34,7 +34,7 @@ namespace Gameplay.Combat
             _currentHealth -= amount;
             _currentHealth = Mathf.Clamp(_currentHealth, 0f, _maxHealth); 
             
-            Debug.Log($"<color=orange>[Health] {gameObject.name} получил {amount:F1} чистого урона. Осталось: {_currentHealth:F1}/{_maxHealth}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=orange>[Health] {gameObject.name} получил {amount:F1} чистого урона. Осталось: {_currentHealth:F1}/{_maxHealth}</color>");
             
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
             OnDamaged?.Invoke();
@@ -44,7 +44,7 @@ namespace Gameplay.Combat
 
         private void Die()
         {
-            Debug.Log($"<color=red>[Health] {gameObject.name} уничтожен!</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=red>[Health] {gameObject.name} уничтожен!</color>");
             OnDied?.Invoke();
         }
     }

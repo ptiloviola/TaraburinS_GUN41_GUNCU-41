@@ -33,7 +33,7 @@ namespace Gameplay.Towers.Factories
 
             ForceSpawnTower(config, 0, gridPos, spawnPosition);
             
-            Debug.Log($"<color=green>[TowerFactory] Успешно создана {config.DisplayName} на {gridPos}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=green>[TowerFactory] Успешно создана {config.DisplayName} на {gridPos}</color>");
             return true;
         }
 
@@ -49,7 +49,7 @@ namespace Gameplay.Towers.Factories
             }
             else
             {
-                Debug.LogError($"[TowerFactory] На префабе {prefab.name} отсутствует TowerFacade!");
+                Gameplay.Tools.GameLogger.LogError($"[TowerFactory] На префабе {prefab.name} отсутствует TowerFacade!");
             }
 
             return towerFacade;

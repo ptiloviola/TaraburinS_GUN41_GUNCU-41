@@ -110,7 +110,7 @@ namespace Gameplay.Campaign.Editor
             EditorUtility.SetDirty(_currentAsset);
             AssetDatabase.SaveAssets();
             
-            Debug.Log($"<color=cyan>[Graph Editor] Граф успешно сохранен в {_currentAsset.name}!</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=cyan>[Graph Editor] Граф успешно сохранен в {_currentAsset.name}!</color>");
         }
     }
 }

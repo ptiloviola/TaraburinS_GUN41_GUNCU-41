@@ -24,7 +24,7 @@ namespace Gameplay.Combat.Installers
 
             Container.BindInterfacesTo<GlobalDamageVisualizer>().AsSingle();
             
-            Debug.Log("<color=green>[Zenject] CombatVisualsInstaller: Глобальная шина урона активна.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] CombatVisualsInstaller: Глобальная шина урона активна.</color>");
         }
     }
 }

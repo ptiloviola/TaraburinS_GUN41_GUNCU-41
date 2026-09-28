@@ -14,7 +14,7 @@ namespace Gameplay.Tools
             
             if (selected == null)
             {
-                Debug.LogWarning("[TD Tools] Сначала выдели объект в иерархии (Scene или Project)!");
+                Gameplay.Tools.GameLogger.LogWarning("[TD Tools] Сначала выдели объект в иерархии (Scene или Project)!");
                 return;
             }
 
@@ -24,7 +24,7 @@ namespace Gameplay.Tools
             DumpNode(selected.transform, sb, 0);
 
             GUIUtility.systemCopyBuffer = sb.ToString();
-            Debug.Log($"<color=cyan>[TD Tools] Структура '{selected.name}' скопирована! Можно вставлять в чат (Ctrl+V).</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=cyan>[TD Tools] Структура '{selected.name}' скопирована! Можно вставлять в чат (Ctrl+V).</color>");
         }
 
         private static void DumpNode(Transform node, StringBuilder sb, int depth)

@@ -16,11 +16,11 @@ namespace Gameplay.Levels.Data
                 StartingMoney = blueprint.StartingMoney;
                 FoundationQuota = blueprint.FoundationQuota;
                 
-                UnityEngine.Debug.Log($"<color=orange>[LevelRuntimeModel] Загружен {blueprint.name}. Базовые жизни: {StartingLives}, Базовые деньги: {StartingMoney}</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=orange>[LevelRuntimeModel] Загружен {blueprint.name}. Базовые жизни: {StartingLives}, Базовые деньги: {StartingMoney}</color>");
             }
             else
             {
-                UnityEngine.Debug.LogError("[LevelRuntimeModel] Блюпринт равен NULL!");
+                Gameplay.Tools.GameLogger.LogError("[LevelRuntimeModel] Блюпринт равен NULL!");
             }
         }
     }

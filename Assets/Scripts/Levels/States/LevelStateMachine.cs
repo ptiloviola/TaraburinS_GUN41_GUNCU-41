@@ -39,7 +39,7 @@ namespace Gameplay.Levels.States
             
             if (!_states.TryGetValue(stateType, out ILevelState nextState))
             {
-                Debug.LogError($"[LevelStateMachine] Состояние {stateType.Name} не найдено в словаре!");
+                Gameplay.Tools.GameLogger.LogError($"[LevelStateMachine] Состояние {stateType.Name} не найдено в словаре!");
                 return;
             }
 
@@ -50,7 +50,7 @@ namespace Gameplay.Levels.States
 
             _currentState = nextState;
             
-            Debug.Log($"<color=yellow>[LevelStateMachine] Переход в состояние: {stateType.Name}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=yellow>[LevelStateMachine] Переход в состояние: {stateType.Name}</color>");
             
             await _currentState.EnterAsync(this, _cts.Token);
         }

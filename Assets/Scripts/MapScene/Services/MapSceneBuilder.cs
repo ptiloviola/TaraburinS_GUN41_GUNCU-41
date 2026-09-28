@@ -113,7 +113,7 @@ namespace Gameplay.MapScene.Services
 
                     if (nodeData.Encounter == null)
                     {
-                        Debug.LogError($"<color=red>[MapSceneBuilder] Узел {nodeData.Id} поврежден (Encounter == null)! Пропускаем отрисовку.</color>");
+                        Gameplay.Tools.GameLogger.LogError($"<color=red>[MapSceneBuilder] Узел {nodeData.Id} поврежден (Encounter == null)! Пропускаем отрисовку.</color>");
                         continue;
                     }
 

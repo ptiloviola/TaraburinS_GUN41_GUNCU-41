@@ -83,7 +83,7 @@ namespace Gameplay.UI.Presenters
 
         public void VisitEvent(EventConfig config)
         {
-            UnityEngine.Debug.Log("<color=cyan>[MapScene] Событие пропущено (UI в разработке).</color>");
+            Gameplay.Tools.GameLogger.Log("<color=cyan>[MapScene] Событие пропущено (UI в разработке).</color>");
             _sceneLoader.LoadSceneAsync("HubScene").Forget();
         }
 

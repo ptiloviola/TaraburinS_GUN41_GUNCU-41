@@ -34,7 +34,7 @@ namespace Gameplay.Grid
                 }
             }
             
-            Debug.Log($"<color=cyan>[GridService] Математическая сетка {width}x{height} успешно создана!</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=cyan>[GridService] Математическая сетка {width}x{height} успешно создана!</color>");
         }
 
         public GridNode GetNode(Vector2Int position)

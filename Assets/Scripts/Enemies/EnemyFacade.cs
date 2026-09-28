@@ -164,7 +164,7 @@ namespace Gameplay.Enemies
             if (baseCore != null)
             {
                 int damage = Config.Stats.DamageToBase;
-                Debug.Log($"<color=orange>[EnemyFacade] {gameObject.name} коснулся базы! Пытаемся нанести {damage} урона.</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=orange>[EnemyFacade] {gameObject.name} коснулся базы! Пытаемся нанести {damage} урона.</color>");
                 
                 baseCore.TakeDamage(damage);
                 

@@ -34,7 +34,7 @@ namespace Gameplay.Editor
                     }
                     EditorUtility.SetDirty(config);
                     SceneView.RepaintAll();
-                    Debug.Log("<color=green>[Editor] Сетка успешно инициализирована!</color>");
+                    Gameplay.Tools.GameLogger.Log("<color=green>[Editor] Сетка успешно инициализирована!</color>");
                 }
             }
 

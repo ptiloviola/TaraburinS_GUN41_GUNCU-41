@@ -30,7 +30,7 @@ namespace Gameplay.Spawning.Services
                 await UniTask.Delay(TimeSpan.FromSeconds(WarningDurationSeconds), cancellationToken: ct);
 
 #if UNITY_EDITOR
-                Debug.Log($"<color=cyan>[SpawnerService] Выходит отряд: {squad.Count}x {squad.EnemyId} (Точка: {squad.SpawnPointId})</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=cyan>[SpawnerService] Выходит отряд: {squad.Count}x {squad.EnemyId} (Точка: {squad.SpawnPointId})</color>");
 #endif
 
                 for (int i = 0; i < squad.Count; i++)
@@ -49,7 +49,7 @@ namespace Gameplay.Spawning.Services
             if (!_spawnRegistry.TryGetSpawnPosition(squad.SpawnPointId, out Vector3 spawnPos))
             {
 #if UNITY_EDITOR
-                Debug.LogWarning($"[SpawnerService] Спавн '{squad.SpawnPointId}' не найден! Спавним в (0,0,0).");
+                Gameplay.Tools.GameLogger.LogWarning($"[SpawnerService] Спавн '{squad.SpawnPointId}' не найден! Спавним в (0,0,0).");
 #endif
                 spawnPos = Vector3.zero; 
             }

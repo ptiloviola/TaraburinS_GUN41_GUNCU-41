@@ -62,13 +62,13 @@ namespace Gameplay.Base
             {
                 _individualLives -= amount;
 #if UNITY_EDITOR
-                Debug.Log($"<color=orange>[BaseCore] База {_baseId} получила урон. Осталось личных жизней: {_individualLives}</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=orange>[BaseCore] База {_baseId} получила урон. Осталось личных жизней: {_individualLives}</color>");
 #endif
                 
                 if (_individualLives <= 0)
                 {
 #if UNITY_EDITOR
-                    Debug.Log($"<color=red>[BaseCore] База {_baseId} УНИЧТОЖЕНА!</color>");
+                    Gameplay.Tools.GameLogger.Log($"<color=red>[BaseCore] База {_baseId} УНИЧТОЖЕНА!</color>");
 #endif
                     Destroy(gameObject); 
                 }

@@ -92,7 +92,7 @@ namespace Gameplay.Spawning.Installers
                 }
             }
             
-            Debug.Log("<color=green>[Zenject] LevelSpawningInstaller: Мульти-пулы и спавн-системы зарегистрированы.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] LevelSpawningInstaller: Мульти-пулы и спавн-системы зарегистрированы.</color>");
         }
     }
 }

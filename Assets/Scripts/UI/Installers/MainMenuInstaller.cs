@@ -15,7 +15,7 @@ namespace Gameplay.UI.Installers
 
             Container.BindInterfacesTo<MainMenuPresenter>().AsSingle();
             
-            Debug.Log("<color=green>[Zenject] MainMenuInstaller: Главное меню успешно собрано.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] MainMenuInstaller: Главное меню успешно собрано.</color>");
         }
     }
 }

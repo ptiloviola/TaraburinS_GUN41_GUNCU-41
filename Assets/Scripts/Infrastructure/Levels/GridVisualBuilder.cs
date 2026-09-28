@@ -28,7 +28,7 @@ namespace Infrastructure.Levels
 
             if (pathAreaIndex == -1 || groundAreaIndex == -1)
             {
-                Debug.LogError($"[GridVisualBuilder] ОШИБКА: Зоны {CustomPathAreaName} или {CustomGroundAreaName} не найдены!");
+                Gameplay.Tools.GameLogger.LogError($"[GridVisualBuilder] ОШИБКА: Зоны {CustomPathAreaName} или {CustomGroundAreaName} не найдены!");
                 pathAreaIndex = 0;
                 groundAreaIndex = 0;
             }

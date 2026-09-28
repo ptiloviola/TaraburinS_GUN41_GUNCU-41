@@ -53,7 +53,7 @@ namespace Gameplay.Economy
         public void AddMoney(int amount)
         {
             _balance += amount;
-            Debug.Log($"<color=yellow>[BankService] Получено {amount} монет. Текущий баланс: {_balance}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=yellow>[BankService] Получено {amount} монет. Текущий баланс: {_balance}</color>");
             _signalBus.Fire(new SignalBalanceChanged { CurrentBalance = _balance });
         }
 

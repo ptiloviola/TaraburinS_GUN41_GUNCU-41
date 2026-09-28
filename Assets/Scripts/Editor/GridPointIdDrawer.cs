@@ -69,7 +69,7 @@ namespace Gameplay.Editor
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[GridPointIdDrawer] Ошибка отрисовки: {ex.Message}");
+                Gameplay.Tools.GameLogger.LogError($"[GridPointIdDrawer] Ошибка отрисовки: {ex.Message}");
                 EditorGUI.PropertyField(position, property, label);
             }
         }

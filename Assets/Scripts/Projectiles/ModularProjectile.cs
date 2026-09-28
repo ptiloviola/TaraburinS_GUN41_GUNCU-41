@@ -23,7 +23,7 @@ namespace Gameplay.Projectiles
 #if UNITY_EDITOR
             if (_flightStrategy == null)
             {
-                Debug.LogError($"[ModularProjectile] На {gameObject.name} не висит компонент IFlightStrategy!");
+                Gameplay.Tools.GameLogger.LogError($"[ModularProjectile] На {gameObject.name} не висит компонент IFlightStrategy!");
             }
 #endif
         }

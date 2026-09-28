@@ -30,7 +30,7 @@ namespace Gameplay.Towers.Installers
             Container.Bind<TowerFactory>().AsSingle();
             Container.Bind<DefenderFactory>().AsSingle();
 
-            Debug.Log("<color=green>[Zenject] TowerDefenseInstaller: Системы башен зарегистрированы.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] TowerDefenseInstaller: Системы башен зарегистрированы.</color>");
         }
     }
 }

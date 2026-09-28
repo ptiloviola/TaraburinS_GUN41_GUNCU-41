@@ -50,7 +50,7 @@ namespace Gameplay.Cameras.Data
             if (groundPlane.Raycast(ray, out float distance))
             {
                 AbsoluteZoom = distance;
-                Debug.Log($"<color=green>[Camera] СОХРАНЕНО: Позиция {AbsolutePosition}, Углы {AbsoluteRotation}. Зум: {distance}</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=green>[Camera] СОХРАНЕНО: Позиция {AbsolutePosition}, Углы {AbsoluteRotation}. Зум: {distance}</color>");
             }
             else
             {

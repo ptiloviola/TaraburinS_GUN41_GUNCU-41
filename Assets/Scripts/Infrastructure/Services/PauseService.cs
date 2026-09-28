@@ -24,7 +24,7 @@ namespace Gameplay.Infrastructure.Services
             Time.timeScale = 0f;
             
             _signalBus.Fire(new SignalPauseStateChanged(true));
-            Debug.Log("<color=cyan>[PauseService] Игра поставлена на паузу.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=cyan>[PauseService] Игра поставлена на паузу.</color>");
         }
 
         public void ResumeGame()
@@ -35,7 +35,7 @@ namespace Gameplay.Infrastructure.Services
             Time.timeScale = 1f;
             
             _signalBus.Fire(new SignalPauseStateChanged(false));
-            Debug.Log("<color=cyan>[PauseService] Игра снята с паузы.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=cyan>[PauseService] Игра снята с паузы.</color>");
         }
 
         public void TogglePause()

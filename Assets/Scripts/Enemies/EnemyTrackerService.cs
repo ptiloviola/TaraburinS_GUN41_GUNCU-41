@@ -36,18 +36,18 @@ namespace Gameplay.Enemies
         private void OnEnemySpawned()
         {
             _aliveCount ++;
-            Debug.Log($"[Tracker] Враг родился. Живых: {_aliveCount}");
+            Gameplay.Tools.GameLogger.Log($"[Tracker] Враг родился. Живых: {_aliveCount}");
         }
         private void OnEnemyKilled()
         {
             DecreaseCount();
-            Debug.Log($"[Tracker] Враг убит. Живых: {_aliveCount}");
+            Gameplay.Tools.GameLogger.Log($"[Tracker] Враг убит. Живых: {_aliveCount}");
         }
 
         private void OnEnemyReachedBase()
         {
             DecreaseCount();
-            Debug.Log($"[Tracker] Враг прошел на базу. Живых: {_aliveCount}");
+            Gameplay.Tools.GameLogger.Log($"[Tracker] Враг прошел на базу. Живых: {_aliveCount}");
         }
 
         private void DecreaseCount()
@@ -57,7 +57,7 @@ namespace Gameplay.Enemies
             if (_aliveCount == 0)
             {
                 _signalBus.Fire<SignalAllEnemiesCleared>();
-                Debug.Log("<color=cyan>[EnemyTracker] Радар чист! Все враги уничтожены.</color>");
+                Gameplay.Tools.GameLogger.Log("<color=cyan>[EnemyTracker] Радар чист! Все враги уничтожены.</color>");
             }
         }
     }

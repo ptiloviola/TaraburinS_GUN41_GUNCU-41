@@ -27,7 +27,7 @@ namespace Gameplay.Campaign.Editor
             {
                 if (asset.GeneratorConfig == null)
                 {
-                    Debug.LogError("[Editor] Назначьте GeneratorConfig!");
+                    Gameplay.Tools.GameLogger.LogError("[Editor] Назначьте GeneratorConfig!");
                     return;
                 }
                 GenerateDeckMapWithRetries(asset);
@@ -54,12 +54,12 @@ namespace Gameplay.Campaign.Editor
                 if (TryGenerateDeckMap(asset))
                 {
                     SaveAsset(asset);
-                    Debug.Log($"<color=green>[Editor] Карта успешно сгенерирована за {i + 1} попыток! Узлов: {asset.Nodes.Count}</color>");
+                    Gameplay.Tools.GameLogger.Log($"<color=green>[Editor] Карта успешно сгенерирована за {i + 1} попыток! Узлов: {asset.Nodes.Count}</color>");
                     return;
                 }
             }
 
-            Debug.LogError($"<color=red>[Editor] Не удалось сгенерировать карту за {maxAttempts} попыток. " +
+            Gameplay.Tools.GameLogger.LogError($"<color=red>[Editor] Не удалось сгенерировать карту за {maxAttempts} попыток. " +
                            "Правила конфликтуют с размером колоды или топологией!</color>");
         }
 

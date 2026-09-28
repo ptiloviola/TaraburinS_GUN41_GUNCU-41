@@ -18,7 +18,7 @@ namespace Gameplay.Base
             {
                 _activeBases.Add(baseCore.BaseId, baseCore);
 #if UNITY_EDITOR
-                Debug.Log($"<color=blue>[BaseRegistry] База зарегистрирована: {baseCore.BaseId}</color>");
+                Gameplay.Tools.GameLogger.Log($"<color=blue>[BaseRegistry] База зарегистрирована: {baseCore.BaseId}</color>");
 #endif
             }
         }

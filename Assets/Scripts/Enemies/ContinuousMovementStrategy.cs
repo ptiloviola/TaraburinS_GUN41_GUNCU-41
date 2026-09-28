@@ -60,7 +60,7 @@ namespace Gameplay.Enemies
                 }
                 else
                 {
-                    Debug.LogError($"[ContinuousMovement] Агент {_enemy.gameObject.name} не на NavMesh! Проверь запекание сетки Air/Ground.");
+                    Gameplay.Tools.GameLogger.LogError($"[ContinuousMovement] Агент {_enemy.gameObject.name} не на NavMesh! Проверь запекание сетки Air/Ground.");
                 }
             }
         }

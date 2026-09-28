@@ -60,7 +60,7 @@ namespace Gameplay.Units
             }
             else
             {
-                Debug.LogWarning($"<color=orange>[DefenderFacade] {gameObject.name} не на NavMesh! Не могу пойти на точку.</color>");
+                Gameplay.Tools.GameLogger.LogWarning($"<color=orange>[DefenderFacade] {gameObject.name} не на NavMesh! Не могу пойти на точку.</color>");
             }
         }
 

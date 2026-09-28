@@ -24,7 +24,7 @@ namespace Gameplay.Towers
             {
                 if (_config != null) Initialize(_config, 0, Vector2Int.zero);
 #if UNITY_EDITOR
-                else Debug.LogError($"[TowerFacade] На объекте {name} нет TowerConfig!");
+                else Gameplay.Tools.GameLogger.LogError($"[TowerFacade] На объекте {name} нет TowerConfig!");
 #endif
             }
         }

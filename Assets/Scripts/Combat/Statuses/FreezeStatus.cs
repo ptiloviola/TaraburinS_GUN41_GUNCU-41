@@ -29,7 +29,7 @@ namespace Gameplay.Combat.Statuses
         public void OnApply(EnemyFacade enemy)
         {
             _enemy = enemy;
-            Debug.Log($"<color=cyan>[Status] Применена заморозка. Итоговое время после резистов: {_duration} сек. Множитель скорости: {SpeedModifier}</color>");
+            Gameplay.Tools.GameLogger.Log($"<color=cyan>[Status] Применена заморозка. Итоговое время после резистов: {_duration} сек. Множитель скорости: {SpeedModifier}</color>");
         }
 
         public void Tick(float deltaTime)
@@ -42,7 +42,7 @@ namespace Gameplay.Combat.Statuses
 
         public void OnRemove()
         {
-            Debug.Log("<color=cyan>[Status] Заморозка спала.</color>");
+            Gameplay.Tools.GameLogger.Log("<color=cyan>[Status] Заморозка спала.</color>");
         }
     }
 }
