@@ -3,6 +3,8 @@ using System;
 using Gameplay.Towers.Behaviors;
 using Gameplay.Towers.Data.Visuals;
 using Gameplay.Towers.Visuals.Animators;
+using DG.Tweening;
+
 
 namespace Gameplay.Towers.Visuals
 {
@@ -104,6 +106,22 @@ namespace Gameplay.Towers.Visuals
             if (_radiusVisualizer != null)
             {
                 _radiusVisualizer.HidePreview();
+            }
+        }
+
+        public void PlayVictoryAnimation()
+        {
+
+            if (_visualRotator != null)
+            {
+                _visualRotator.Celebrate();
+            }
+
+            else if (_turretTransform != null)
+            {
+                _turretTransform.DORotate(new Vector3(0, 360f, 0), 1.2f, RotateMode.FastBeyond360)
+                                .SetRelative(true)
+                                .SetEase(Ease.OutBack);
             }
         }
     }

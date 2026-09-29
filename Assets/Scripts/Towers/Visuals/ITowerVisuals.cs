@@ -13,5 +13,7 @@ namespace Gameplay.Towers.Visuals
 
         void ShowRadius(float currentRadius, float upgradedRadius, float minRadius = 0f);
         void HideRadius();
+
+        void PlayVictoryAnimation();
     }
 }

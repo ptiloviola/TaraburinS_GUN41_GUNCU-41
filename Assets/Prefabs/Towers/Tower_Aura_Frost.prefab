@@ -5367,7 +5367,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _logicalRotator
       value: 
-      objectReference: {fileID: 8375717736536192527}
+      objectReference: {fileID: 0}
     - target: {fileID: 2146310966357514580, guid: 3169d8fd0ca3cc5448be5c0cf9b3f8a1,
         type: 3}
       propertyPath: _turretTransform

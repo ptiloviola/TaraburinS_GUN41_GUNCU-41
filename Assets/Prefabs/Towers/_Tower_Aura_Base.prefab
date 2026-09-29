@@ -61,7 +61,7 @@ PrefabInstance:
     - target: {fileID: 7368540168776740570, guid: 15bc2145a92619346b69a33cd4800f80,
         type: 3}
       propertyPath: m_Name
-      value: AuraTower_Base
+      value: _Tower_Aura_Base
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94e90adc59076cd49b34aa6f17df3e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setup: {fileID: 0}
+  _setup: {fileID: 11400000, guid: 8f89cc4da9129de438854a1c96c650c7, type: 2}
   _logicalRotator: {fileID: 0}
   _baseTransform: {fileID: 0}
   _turretTransform: {fileID: 0}

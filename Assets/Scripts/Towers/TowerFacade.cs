@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Gameplay.Towers.Behaviors;
 using Gameplay.Towers.Visuals;
 using Gameplay.Towers.Services;
+using Zenject;
+using Gameplay.Infrastructure.Signals;
 
 namespace Gameplay.Towers
 {
@@ -17,6 +19,15 @@ namespace Gameplay.Towers
 
         private readonly List<ITowerBehavior> _behaviors = new List<ITowerBehavior>();
         private ITowerVisuals _visuals;
+        
+        private SignalBus _signalBus;
+        private bool _isLevelWon = false;
+
+        [Inject]
+        public void Construct(SignalBus signalBus)
+        {
+            _signalBus = signalBus;
+        }
 
         private void Start()
         {
@@ -27,6 +38,8 @@ namespace Gameplay.Towers
                 else Gameplay.Tools.GameLogger.LogError($"[TowerFacade] На объекте {name} нет TowerConfig!");
 #endif
             }
+            
+            _signalBus?.Subscribe<SignalLevelWon>(HandleLevelWon);
         }
 
         public void Initialize(TowerConfig config, int level, Vector2Int gridPos)
@@ -61,10 +74,18 @@ namespace Gameplay.Towers
 
         private void Update()
         {
+            if (_isLevelWon) return;
+
             for (int i = 0; i < _behaviors.Count; i++)
             {
                 _behaviors[i].Tick(Time.deltaTime);
             }
+        }
+
+        private void HandleLevelWon()
+        {
+            _isLevelWon = true;
+            _visuals?.PlayVictoryAnimation();
         }
 
         public TowerLevelData GetCurrentStats() => _config.Levels[CurrentLevel];
@@ -106,6 +127,8 @@ namespace Gameplay.Towers
 
         private void OnDestroy()
         {
+            _signalBus?.TryUnsubscribe<SignalLevelWon>(HandleLevelWon);
+
             foreach (var behavior in _behaviors)
             {
                 if (behavior is BarracksController barracks)
