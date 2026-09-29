@@ -16,7 +16,7 @@ MonoBehaviour:
   _waves:
   - _startMode: 0
     _activeWaveDuration: 15
-    _delayBeforeWave: 2
+    _delayBeforeWave: 6
     _squads:
     - _enemyId: sphere
       _count: 15
@@ -25,7 +25,7 @@ MonoBehaviour:
       _targetBaseId: Base_3_0
     - _enemyId: caterpillar
       _count: 7
-      _spawnInterval: 0.5
+      _spawnInterval: 0.45
       _spawnPointId: Spawn_9_11
       _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
         \u043F\u0443\u0442\u0438]"

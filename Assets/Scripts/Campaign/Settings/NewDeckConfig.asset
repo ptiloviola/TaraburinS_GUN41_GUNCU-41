@@ -26,6 +26,7 @@ MonoBehaviour:
   CombatPool:
   - {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
   - {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
+  - {fileID: 11400000, guid: f7848efbfaa382940bba1e0c867eac53, type: 2}
   ShopPool:
   - {fileID: 11400000, guid: 336bef7782f6fa4488194c2b9777c888, type: 2}
   EventPool:

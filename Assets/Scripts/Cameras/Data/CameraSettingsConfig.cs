@@ -4,11 +4,18 @@ using Gameplay.Spawning.Data;
 
 namespace Gameplay.Cameras.Data
 {
+    public enum CameraFocusMode
+    {
+        Base,
+        GridBottomCenter,
+        GridCenter
+    }
+
     [CreateAssetMenu(fileName = "CameraSettings", menuName = "TD/Camera/Settings")]
     public class CameraSettingsConfig : ScriptableObject
     {
         [Header("Режим старта")]
-        [Tooltip("Если включено, камера стартует строго по координатам ниже, игнорируя базу.")]
+        [Tooltip("Если включено, камера стартует строго по координатам ниже, игнорируя динамический фокус.")]
         public bool UseAbsoluteManualStart = true;
         
         [Header("Жесткие координаты (Заполняется кнопкой)")]
@@ -17,9 +24,11 @@ namespace Gameplay.Cameras.Data
         public float AbsoluteZoom = 25f;
 
         [Header("Динамический старт (Если галочка выше снята)")]
+        public CameraFocusMode FocusMode = CameraFocusMode.Base;
+        
         [GridPointId(NodeType.Base)] 
         public string InitialFocusBaseId;
-        public Vector3 BaseFocusOffset = new Vector3(0f, 0f, 10f);
+        public Vector3 BaseFocusOffset = new Vector3(0f, 0f, 0f);
 
         [Header("Перемещение (Pan)")]
         public float PanSpeed = 20f;

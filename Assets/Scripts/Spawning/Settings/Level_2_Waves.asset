@@ -23,9 +23,14 @@ MonoBehaviour:
       _spawnInterval: 0.3
       _spawnPointId: Spawn_2_2
       _targetBaseId: Base_1_35
-    - _enemyId: caterpillar
-      _count: 5
+    - _enemyId: jumper
+      _count: 7
       _spawnInterval: 1
       _spawnPointId: Spawn_2_2
       _targetBaseId: Base_19_40
+    - _enemyId: gyro
+      _count: 5
+      _spawnInterval: 0.5
+      _spawnPointId: Spawn_18_2
+      _targetBaseId: Base_1_35
     _clearReward: 50

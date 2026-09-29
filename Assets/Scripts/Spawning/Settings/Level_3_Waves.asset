@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 244c405ce063a844c81b8566620f4542, type: 3}
+  m_Name: Level_3_Waves
+  m_EditorClassIdentifier: 
+  _targetGrid: {fileID: 11400000, guid: 19d8d8d88a4cd734dbf8370ac7e69ae6, type: 2}
+  _waves:
+  - _startMode: 0
+    _activeWaveDuration: 20
+    _delayBeforeWave: 7
+    _squads:
+    - _enemyId: gyro
+      _count: 7
+      _spawnInterval: 0.3
+      _spawnPointId: Spawn_2_2
+      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
+    - _enemyId: sphere
+      _count: 12
+      _spawnInterval: 0.1
+      _spawnPointId: Spawn_13_2
+      _targetBaseId: Base_21_28
+    _clearReward: 12
+  - _startMode: 1
+    _activeWaveDuration: 25
+    _delayBeforeWave: 5
+    _squads:
+    - _enemyId: sphere
+      _count: 12
+      _spawnInterval: 0.1
+      _spawnPointId: Spawn_23_2
+      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
+    - _enemyId: jumper
+      _count: 10
+      _spawnInterval: 0.3
+      _spawnPointId: Spawn_13_2
+      _targetBaseId: Base_1_27
+    _clearReward: 15
+  - _startMode: 0
+    _activeWaveDuration: 27
+    _delayBeforeWave: 7
+    _squads:
+    - _enemyId: dragonfly
+      _count: 5
+      _spawnInterval: 1
+      _spawnPointId: Spawn_13_2
+      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
+    - _enemyId: sphere
+      _count: 15
+      _spawnInterval: 1
+      _spawnPointId: Spawn_13_2
+      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
+        \u043F\u0443\u0442\u0438]"
+    - _enemyId: caterpillar
+      _count: 5
+      _spawnInterval: 1.2
+      _spawnPointId: Spawn_23_2
+      _targetBaseId: Base_12_27
+    _clearReward: 25

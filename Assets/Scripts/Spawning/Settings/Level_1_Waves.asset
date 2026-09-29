@@ -18,24 +18,13 @@ MonoBehaviour:
     _activeWaveDuration: 20
     _delayBeforeWave: 4
     _squads:
-    - _enemyId: dragonfly
-      _count: 4
-      _spawnInterval: 1
-      _spawnPointId: Spawn_2_1
-      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
-        \u043F\u0443\u0442\u0438]"
-    - _enemyId: gyro
-      _count: 5
-      _spawnInterval: 2
-      _spawnPointId: Spawn_15_1
-      _targetBaseId: Base_4_21
     - _enemyId: sphere
-      _count: 3
+      _count: 5
       _spawnInterval: 1
       _spawnPointId: Spawn_2_1
       _targetBaseId: Base_16_21
-    - _enemyId: caterpillar
-      _count: 1
+    - _enemyId: jumper
+      _count: 6
       _spawnInterval: 2
       _spawnPointId: Spawn_2_1
       _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
@@ -46,15 +35,14 @@ MonoBehaviour:
     _delayBeforeWave: 3
     _squads:
     - _enemyId: jumper
-      _count: 3
+      _count: 7
       _spawnInterval: 1
       _spawnPointId: Spawn_2_1
       _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
         \u043F\u0443\u0442\u0438]"
     - _enemyId: sphere
-      _count: 5
+      _count: 10
       _spawnInterval: 2
       _spawnPointId: Spawn_2_1
-      _targetBaseId: "[\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0430\u044F \u043F\u043E
-        \u043F\u0443\u0442\u0438]"
+      _targetBaseId: Base_16_21
     _clearReward: 10

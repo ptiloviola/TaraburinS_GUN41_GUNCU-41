@@ -45,23 +45,51 @@ namespace Gameplay.Cameras.Controllers
                 _camera.transform.position = _config.AbsolutePosition;
                 _camera.transform.rotation = Quaternion.Euler(_config.AbsoluteRotation);
                 _currentZoomDistance = _config.AbsoluteZoom;
-
                 
                 _focusPoint = _camera.transform.position + (_camera.transform.forward * _currentZoomDistance);
                 _focusPoint.y = 0f;
             }
             else
             {
-
                 _camera.transform.rotation = Quaternion.Euler(_config.AbsoluteRotation.x, _config.AbsoluteRotation.y, 0f);
-                _currentZoomDistance = Mathf.Lerp(_config.MinZoomY, _config.MaxZoomY, 0.5f);
+                _currentZoomDistance = _config.AbsoluteZoom;
                 
-                BaseCore targetBase = _baseRegistry.GetBaseById(_config.InitialFocusBaseId);
-                if (targetBase != null)
+                Quaternion yawRotation = Quaternion.Euler(0f, _config.AbsoluteRotation.y, 0f);
+
+
+                if (_config.FocusMode == CameraFocusMode.GridBottomCenter)
                 {
-                    Quaternion yawRotation = Quaternion.Euler(0f, _config.AbsoluteRotation.y, 0f);
-                    _focusPoint = targetBase.transform.position + (yawRotation * _config.BaseFocusOffset);
+
+                    float centerX = (_gridService.Width * _sceneReferences.Spacing) / 2f;
+
+                    float bottomZ = _gridService.Height * _sceneReferences.Spacing;
+                    
+                    Vector3 targetPoint = new Vector3(centerX, 0f, bottomZ);
+                    _focusPoint = targetPoint + (yawRotation * _config.BaseFocusOffset);
                 }
+                else if (_config.FocusMode == CameraFocusMode.GridCenter)
+                {
+                    float centerX = (_gridService.Width * _sceneReferences.Spacing) / 2f;
+                    float centerZ = (_gridService.Height * _sceneReferences.Spacing) / 2f;
+                    
+                    Vector3 targetPoint = new Vector3(centerX, 0f, centerZ);
+                    _focusPoint = targetPoint + (yawRotation * _config.BaseFocusOffset);
+                }
+                else
+                {
+                    BaseCore targetBase = _baseRegistry.GetBaseById(_config.InitialFocusBaseId);
+                    
+                    if (targetBase == null)
+                    {
+                        targetBase = Object.FindObjectOfType<BaseCore>();
+                    }
+
+                    if (targetBase != null)
+                    {
+                        _focusPoint = targetBase.transform.position + (yawRotation * _config.BaseFocusOffset);
+                    }
+                }
+
                 _focusPoint.y = 0f;
                 ApplyCameraPosition(1f);
             }
