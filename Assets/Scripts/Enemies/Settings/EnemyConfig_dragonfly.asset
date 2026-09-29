@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55426c75f7b57784495fa19a16c35695, type: 3}
+  m_Name: EnemyConfig_dragonfly
+  m_EditorClassIdentifier: 
+  EnemyId: dragonfly
+  DisplayName: dragonfly
+  Type: 2
+  UIIcon: {fileID: 21300000, guid: 0ef7f9fe044c02449b390f0628c759fd, type: 3}
+  Prefab: {fileID: 6421098652743678490, guid: b99b7462e45f32c49ba18e3f115dad75, type: 3}
+  Stats:
+    MaxHealth: 100
+    MoveSpeed: 7
+    DamageToBase: 2
+    RewardMoney: 20
+  Armor:
+    PhysicalMultiplier: 1
+    EnergyMultiplier: 1
+    ExplosiveMultiplier: 1
+  Resistances: []
+  Movement: {fileID: 11400000, guid: 99da81030d2920646b342bef716a7945, type: 2}
+  DeathBehavior: {fileID: 0}
