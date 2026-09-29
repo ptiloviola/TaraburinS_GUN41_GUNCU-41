@@ -153,7 +153,7 @@ MonoBehaviour:
     - rid: 7999629412704714898
       type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:
-        _config: {fileID: 11400000, guid: ff79d1f72dbf7334c9061eae1562aece, type: 2}
+        _config: {fileID: 11400000, guid: 28b394a45237da246b1d15fb23ba8153, type: 2}
     - rid: 7999629412704714899
       type: {class: CombatEncounter, ns: Gameplay.Campaign.Data, asm: Assembly-CSharp}
       data:

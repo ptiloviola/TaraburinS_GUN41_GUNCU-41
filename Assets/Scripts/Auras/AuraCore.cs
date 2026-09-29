@@ -81,6 +81,10 @@ namespace Gameplay.Auras
                 {
                     if ((_allowedTargets & enemy.TargetType) != 0) 
                     {
+                        if (hit.TryGetComponent(out IDamageable damageable))
+                        {
+                            damageable.TakeDamage(_setup.DamagePayload);
+                        }
                         ApplyStatusesToEnemy(enemy);
                     }
                 }

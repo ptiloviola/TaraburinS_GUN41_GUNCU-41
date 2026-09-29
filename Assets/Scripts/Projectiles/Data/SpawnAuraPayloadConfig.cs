@@ -31,7 +31,7 @@ namespace Gameplay.Projectiles.Data
 
         public override IProjectilePayload CreatePayload(DamagePayload payload)
         {
-            AuraSetup setup = new AuraSetup(Radius, Duration, TickRate, StatusEffects);
+            AuraSetup setup = new AuraSetup(Radius, Duration, TickRate, StatusEffects, payload);
             return new SpawnAuraPayload(setup, AuraPrefab, EnemyMask, AllowedTargets); 
         }
     }

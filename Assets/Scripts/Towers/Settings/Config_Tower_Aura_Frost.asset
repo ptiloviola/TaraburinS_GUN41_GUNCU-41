@@ -34,7 +34,7 @@ MonoBehaviour:
     - rid: 7999629163705401355
       type: {class: AttackStats, ns: Gameplay.Towers.Data.Modules, asm: Assembly-CSharp}
       data:
-        Damage: 2
+        Damage: 0
         Type: 1
         MinRange: 0
         Range: 8
@@ -53,7 +53,7 @@ MonoBehaviour:
     - rid: 7999629210330071041
       type: {class: AttackStats, ns: Gameplay.Towers.Data.Modules, asm: Assembly-CSharp}
       data:
-        Damage: 10
+        Damage: 2
         Type: 1
         MinRange: 0
         Range: 10
