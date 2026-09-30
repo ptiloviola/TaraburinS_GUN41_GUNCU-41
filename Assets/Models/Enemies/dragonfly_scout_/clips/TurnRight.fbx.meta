@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 74acff699f721ff42842fd0798088fc1
+guid: 5949a7f8e12a35141b84bcfc4aa96817
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -33,9 +33,9 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Death
-      takeName: Scene
-      internalID: -623603649343465320
+      name: TurnRight
+      takeName: TurnRight
+      internalID: 1628252986623654205
       firstFrame: 1
       lastFrame: 72
       wrapMode: 0
@@ -44,7 +44,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -60,7 +60,7 @@ ModelImporter:
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+      additiveReferencePoseFrame: 1
     isReadable: 0
   meshes:
     lODScreenPercentages: []

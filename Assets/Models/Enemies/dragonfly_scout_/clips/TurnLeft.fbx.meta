@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1cf9a9f475280b542b2e0910876038c3
+guid: 9233131b6a3b5384abb43d93b1edd3e1
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -33,9 +33,9 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: TurnRight
-      takeName: Scene
-      internalID: -623603649343465320
+      name: TurnLeft
+      takeName: TurnLeft
+      internalID: -4049585584969071195
       firstFrame: 1
       lastFrame: 72
       wrapMode: 0
