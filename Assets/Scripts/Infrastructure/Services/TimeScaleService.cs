@@ -64,5 +64,18 @@ namespace Gameplay.Infrastructure.Services
             Time.timeScale = CurrentScale;
             Time.fixedDeltaTime = BaseFixedDeltaTime * CurrentScale;
         }
+
+        public void ResetSpeed()
+        {
+            _currentIndex = 0;
+            
+            if (!_isPaused)
+            {
+                ApplyScaleToEngine();
+            }
+            
+            // Рассылаем сигнал, чтобы UI (даже только что созданный) сразу подхватил текст "x1"
+            _signalBus.Fire(new SignalTimeScaleChanged(CurrentScale));
+        }
     }
 }

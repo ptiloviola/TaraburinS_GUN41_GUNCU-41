@@ -4,5 +4,6 @@ namespace Gameplay.Infrastructure.Services
     {
         float CurrentScale { get; }
         void CycleSpeed();
+        void ResetSpeed();
     }
 }
