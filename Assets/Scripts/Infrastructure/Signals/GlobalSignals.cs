@@ -9,4 +9,13 @@ namespace Gameplay.Infrastructure.Signals
             IsPaused = isPaused;
         }
     }
+
+    public struct SignalTimeScaleChanged
+    {
+        public float TimeScale;
+        public SignalTimeScaleChanged(float timeScale)
+        {
+            TimeScale = timeScale;
+        }
+    }
 }

@@ -12,6 +12,7 @@ namespace Gameplay.Infrastructure.Installers
             SignalBusInstaller.Install(Container);
 
             Container.DeclareSignal<SignalPauseStateChanged>();
+            Container.DeclareSignal<SignalTimeScaleChanged>();
 
             Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] ProjectSignalsInstaller: Глобальная шина инициализирована.</color>");
         }

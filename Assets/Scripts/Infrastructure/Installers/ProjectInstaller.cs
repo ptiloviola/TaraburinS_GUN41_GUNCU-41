@@ -17,7 +17,9 @@ namespace Gameplay.Infrastructure.Installers
         {
             Container.BindInterfacesTo<StandaloneInputService>().AsSingle();
             Container.BindInterfacesTo<PauseService>().AsSingle();
+            Container.BindInterfacesTo<TimeScaleService>().AsSingle();
             Container.BindInterfacesAndSelfTo<SceneLoaderService>().AsSingle();
+            
 
             Container.Bind<RunProgressModel>().AsSingle();
             Container.Bind<SaveLoadService>().AsSingle();

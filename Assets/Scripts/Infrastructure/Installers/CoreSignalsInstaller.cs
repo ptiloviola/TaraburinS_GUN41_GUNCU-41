@@ -34,6 +34,8 @@ namespace Gameplay.Infrastructure.Installers
             Container.DeclareSignal<SignalLevelWon>();
             Container.DeclareSignal<SignalLevelLost>();
 
+            
+
 
             Gameplay.Tools.GameLogger.Log("<color=green>[Zenject] CoreSignalsInstaller: Локальные сигналы успешно зарегистрированы.</color>");
         }

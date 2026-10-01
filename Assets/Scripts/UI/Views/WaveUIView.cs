@@ -21,14 +21,20 @@ namespace Gameplay.UI.Views
         [Header("Блокировка UI")]
         [SerializeField] private CanvasGroup _canvasGroup;
 
+        [Header("Управление временем")]
+        [SerializeField] private Button _speedButton;
+        [SerializeField] private TextMeshProUGUI _speedText;
+
         public Transform ForecastContainer => _forecastContainer;
         
         public event Action OnForceStartClicked;
 
+        public event Action OnSpeedClicked;
+
         private void Awake()
         {
             if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
-            
+            if (_speedButton != null) _speedButton.onClick.AddListener(() => OnSpeedClicked?.Invoke());
             _forceStartButton.onClick.AddListener(() => OnForceStartClicked?.Invoke());
         }
 
@@ -56,7 +62,13 @@ namespace Gameplay.UI.Views
 
         private void OnDestroy()
         {
+            if (_speedButton != null) _speedButton.onClick.RemoveAllListeners();
             _forceStartButton.onClick.RemoveAllListeners();
+        }
+
+        public void UpdateSpeedText(string text)
+        {
+            if (_speedText != null) _speedText.text = text;
         }
     }
 }

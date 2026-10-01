@@ -6,6 +6,7 @@ using Gameplay.Infrastructure.Signals;
 using Gameplay.UI.Views;
 using Gameplay.Enemies.Data;
 using Gameplay.Interaction;
+using Gameplay.Infrastructure.Services;
 
 
 
@@ -20,16 +21,20 @@ namespace Gameplay.UI.Presenters
         
         private readonly List<ForecastIconView> _activeIcons = new List<ForecastIconView>();
 
+        private readonly ITimeScaleService _timeScaleService;
+
         public WaveUIPresenter(
             WaveUIView view, 
             SignalBus signalBus, 
             EnemyRegistry registry, 
-            ForecastIconView.Pool iconPool)
+            ForecastIconView.Pool iconPool,
+            ITimeScaleService timeScaleService)
         {
             _view = view;
             _signalBus = signalBus;
             _registry = registry;
             _iconPool = iconPool;
+            _timeScaleService = timeScaleService;
         }
 
         public void Initialize()
@@ -42,6 +47,10 @@ namespace Gameplay.UI.Presenters
 
             _signalBus.Subscribe<SignalPauseStateChanged>(OnPauseStateChanged);
             _signalBus.Subscribe<SignalInteractionModeChanged>(OnModeChanged);
+
+            _view.OnSpeedClicked += HandleSpeedClicked;
+            _signalBus.Subscribe<SignalTimeScaleChanged>(OnTimeScaleChanged);
+            _view.UpdateSpeedText($"x{_timeScaleService.CurrentScale}");
         }
 
         public void Dispose()
@@ -54,6 +63,9 @@ namespace Gameplay.UI.Presenters
 
             _signalBus.Unsubscribe<SignalPauseStateChanged>(OnPauseStateChanged);
             _signalBus.Unsubscribe<SignalInteractionModeChanged>(OnModeChanged);
+
+            _view.OnSpeedClicked -= HandleSpeedClicked;
+            _signalBus.Unsubscribe<SignalTimeScaleChanged>(OnTimeScaleChanged);
             
             ClearIcons();
         }
@@ -122,6 +134,16 @@ namespace Gameplay.UI.Presenters
             {
                 _view.gameObject.SetActive(true); 
             }
+        }
+
+        private void HandleSpeedClicked()
+        {
+            _timeScaleService.CycleSpeed();
+        }
+
+        private void OnTimeScaleChanged(SignalTimeScaleChanged signal)
+        {
+            _view.UpdateSpeedText($"x{signal.TimeScale}");
         }
     }
 }
