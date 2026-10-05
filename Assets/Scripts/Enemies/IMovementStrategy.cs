@@ -1,10 +1,10 @@
-using UnityEngine;
+using UnityEngine.AI;
 
 namespace Gameplay.Enemies
 {
     public interface IMovementStrategy
     {
-        void Initialize(EnemyFacade enemy);
+        void Initialize(NavMeshAgent agent);
         
         void Tick(float deltaTime);
     }

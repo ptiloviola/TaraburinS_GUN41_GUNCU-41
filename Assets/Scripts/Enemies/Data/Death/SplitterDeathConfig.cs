@@ -1,5 +1,6 @@
 using Gameplay.Infrastructure.Signals;
 using UnityEngine;
+using Zenject;
 
 namespace Gameplay.Enemies.Data.Death
 {
@@ -11,15 +12,14 @@ namespace Gameplay.Enemies.Data.Death
         public int SegmentCount = 4;
         public float SpawnRadius = 1.0f;
 
-        public override void Execute(EnemyFacade facade)
+        public override void Execute(EnemyFacade facade, SignalBus signalBus)
         {
             for (int i = 0; i < SegmentCount; i++)
             {
-
                 Vector2 randomCircle = Random.insideUnitCircle * SpawnRadius;
-                Vector3 spawnPos = facade.transform.position + new Vector3(randomCircle.x, 0, randomCircle.y);
+                Vector3 spawnPos = facade.Position + new Vector3(randomCircle.x, 0, randomCircle.y); // Используем facade.Position
 
-                facade.SignalBus.Fire(new SignalSpawnEnemyRequest
+                signalBus.Fire(new SignalSpawnEnemyRequest
                 {
                     EnemyId = SegmentEnemyId,
                     Position = spawnPos,

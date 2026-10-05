@@ -6,8 +6,8 @@ namespace Gameplay.Enemies
     public class DynamicFlightMovementStrategy : IMovementStrategy
     {
         private NavMeshAgent _agent;
+        private Transform _agentTransform;
         private readonly Vector3 _targetPosition;
-        private EnemyFacade _enemy;
         
         private readonly MovementType _movementType;
         private readonly string _pathAreaName;
@@ -40,18 +40,17 @@ namespace Gameplay.Enemies
             _landingDistance = landingDist;
         }
 
-        public void Initialize(EnemyFacade enemy)
+        public void Initialize(NavMeshAgent agent)
         {
-            _enemy = enemy;
-            _agent = _enemy.Agent; 
+            _agent = agent; 
+            _agentTransform = _agent.transform;
             _timePhaseOffset = Random.Range(0f, 100f);
             
-            _startPosition = _enemy.transform.position;
+            _startPosition = _agentTransform.position;
 
             if (_agent != null)
             {
                 _agent.baseOffset = 0f;
-                _agent.enabled = true;
 
                 int pathArea = NavMesh.GetAreaFromName(_pathAreaName);
                 int groundArea = NavMesh.GetAreaFromName(_groundAreaName);
@@ -65,7 +64,7 @@ namespace Gameplay.Enemies
                 
                 if (!_agent.isOnNavMesh)
                 {
-                    _agent.Warp(_enemy.transform.position);
+                    _agent.Warp(_agentTransform.position);
                 }
 
                 if (_agent.isOnNavMesh)
@@ -80,15 +79,13 @@ namespace Gameplay.Enemies
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) 
                 return;
             
-            _agent.speed = _enemy.Config.Stats.MoveSpeed * _enemy.StatusController.SpeedMultiplier;
-            
+
             float currentWaveOffset = Mathf.Sin((Time.time + _timePhaseOffset) * _frequency) * _amplitude;
             float targetHeight = _baseHeight + currentWaveOffset;
 
             float heightMultiplier = 1f;
             
-            
-            Vector2 currentPosXZ = new Vector2(_enemy.transform.position.x, _enemy.transform.position.z);
+            Vector2 currentPosXZ = new Vector2(_agentTransform.position.x, _agentTransform.position.z);
             Vector2 startPosXZ = new Vector2(_startPosition.x, _startPosition.z);
             Vector2 targetPosXZ = new Vector2(_targetPosition.x, _targetPosition.z);
 
@@ -103,6 +100,7 @@ namespace Gameplay.Enemies
             {
                 heightMultiplier = distToTarget / _landingDistance;
             }
+            
             _agent.baseOffset = targetHeight * heightMultiplier;
         }
     }

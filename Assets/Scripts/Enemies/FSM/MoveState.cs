@@ -1,3 +1,5 @@
+using Gameplay.Enemies.Data;
+
 namespace Gameplay.Enemies.FSM
 {
     public class MoveState : EnemyStateBase
@@ -13,10 +15,7 @@ namespace Gameplay.Enemies.FSM
 
         public override void Enter()
         {
-            if (Facade.Agent != null && !Facade.Agent.enabled)
-            {
-                Facade.Agent.enabled = true;
-            }
+            
         }
 
         public override void Tick(float deltaTime)

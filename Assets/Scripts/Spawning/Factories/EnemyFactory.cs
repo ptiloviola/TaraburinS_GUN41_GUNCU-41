@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Zenject;
 using Gameplay.Enemies;
@@ -28,62 +29,54 @@ namespace Gameplay.Spawning.Factories
 
         public void SpawnEnemy(string enemyId, Vector3 spawnPos, string targetBaseId)
         {
+            EnemyConfig config = _enemyRegistry.GetEnemyById(enemyId);
+            if (config == null)
+            {
+                Gameplay.Tools.GameLogger.LogError($"[EnemyFactory] Враг '{enemyId}' не найден в EnemyRegistry!");
+                return;
+            }
+
+            EnemyFacade.Pool specificPool;
             try
             {
-                EnemyConfig config = _enemyRegistry.GetEnemyById(enemyId);
-                if (config == null)
-                {
-#if UNITY_EDITOR
-                    Gameplay.Tools.GameLogger.LogError($"[EnemyFactory] Враг '{enemyId}' не найден в EnemyRegistry!");
-#endif
-                    return;
-                }
-                
-                EnemyFacade.Pool specificPool = _container.ResolveId<EnemyFacade.Pool>(enemyId);
-                EnemyFacade enemy = specificPool.Spawn();
-                
-                enemy.SetPool(specificPool);
-                enemy.InitConfig(config);
-                
-                if (enemy.Agent != null)
-                {
-                    enemy.Agent.enabled = false;
-                    
-                    Vector3 finalPos = spawnPos;
-                    finalPos.y += enemy.Agent.baseOffset;
-                    
-                    enemy.transform.position = finalPos;
-                    enemy.Agent.enabled = true;
-                }
-
-                if (string.IsNullOrEmpty(targetBaseId))
-                {
-                    targetBaseId = BaseLocatorService.NearestByPathTag; 
-                }
-                
-                BaseCore targetBase = _baseLocatorService.LocateTargetBase(targetBaseId, spawnPos);
-                
-                if (targetBase != null)
-                {
-                    IMovementStrategy movement = config.Movement.CreateStrategy(targetBase.transform.position);
-                    enemy.InitializeMovement(movement);
-                }
-                else
-                {
-#if UNITY_EDITOR
-                    Gameplay.Tools.GameLogger.LogError("[EnemyFactory] Ошибка! Враг заспавнен, но в реестре BaseRegistry нет активной базы!");
-#endif
-                }
-
-                _signalBus.Fire<SignalEnemySpawned>();
+                specificPool = _container.ResolveId<EnemyFacade.Pool>(enemyId);
             }
             catch (ZenjectException)
             {
-#if UNITY_EDITOR
-                Gameplay.Tools.GameLogger.LogError($"[EnemyFactory] Ошибка спавна! Пул для врага '{enemyId}' не найден. Проверь Installer!");
-#endif
+                Gameplay.Tools.GameLogger.LogError($"[EnemyFactory] Ошибка спавна! Пул для врага '{enemyId}' не найден.");
+                return;
             }
+
+            if (string.IsNullOrEmpty(targetBaseId))
+            {
+                targetBaseId = BaseLocatorService.NearestByPathTag; 
+            }
+            
+            BaseCore targetBase = _baseLocatorService.LocateTargetBase(targetBaseId, spawnPos);
+            
+            if (targetBase == null)
+            {
+                Gameplay.Tools.GameLogger.LogError("[EnemyFactory] Ошибка! База не найдена. Спавн отменен.");
+                return;
+            }
+
+            EnemyFacade enemy = specificPool.Spawn();
+            
+            IMovementStrategy movement = config.Movement.CreateStrategy(targetBase.transform.position);
+            
+            enemy.Initialize(config, movement, spawnPos);
+
+            Action<EnemyFacade> despawnHandler = null;
+            despawnHandler = (facade) =>
+            {
+                facade.OnDespawnRequested -= despawnHandler;
+                specificPool.Despawn(facade);
+            };
+            enemy.OnDespawnRequested += despawnHandler;
+
+            _signalBus.Fire<SignalEnemySpawned>();
         }
+
         public void OnSpawnEnemyRequested(SignalSpawnEnemyRequest request)
         {
             SpawnEnemy(request.EnemyId, request.Position, request.TargetBaseId);

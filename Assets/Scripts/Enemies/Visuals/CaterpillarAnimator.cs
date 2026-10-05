@@ -1,6 +1,5 @@
 using UnityEngine;
 using DG.Tweening;
-using Gameplay.Enemies.Data.Movement;
 using Cysharp.Threading.Tasks;
 
 namespace Gameplay.Enemies.Visuals
@@ -15,12 +14,14 @@ namespace Gameplay.Enemies.Visuals
         [SerializeField] private float _tailPullDistance = 0.8f; 
         [Tooltip("Высота 'горба' в центре тела при сжатии (по локальной оси Y)")]
         [SerializeField] private float _archHeight = 0.6f;
+        
+        [SerializeField] private float _pauseDuration = 0.6f; 
+        [SerializeField] private float _jumpDuration = 0.4f;
 
         private Sequence _crawlSequence;
         private Vector3[] _initialLocalPos;
         
-        private DiscreteMovementStrategy _discreteStrategy;
-        private DiscreteMovementConfig _config;
+        private IPhasedMovementNotifier _phasedMovement;
 
         protected override void Awake()
         {
@@ -50,54 +51,50 @@ namespace Gameplay.Enemies.Visuals
             }
         }
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            if (_discreteStrategy != null)
-            {
-                _discreteStrategy.OnJumpStart -= PlayImpulseAnimation;
-                _discreteStrategy.OnPauseStart -= PlayPreparationAnimation;
-                _discreteStrategy = null;
-            }
-            KillSequence();
-        }
-
         protected override void OnMoveStart()
         {
-            if (Facade.Config.Movement is DiscreteMovementConfig config)
+            base.OnMoveStart();
+            if (Facade != null)
             {
-                _config = config;
-                _discreteStrategy = Facade.MovementStrategy as DiscreteMovementStrategy;
-
-                if (_discreteStrategy != null)
+                _phasedMovement = Facade.GetMovementCapability<IPhasedMovementNotifier>();
+                if (_phasedMovement != null)
                 {
-                    _discreteStrategy.OnJumpStart += PlayImpulseAnimation;
-                    _discreteStrategy.OnPauseStart += PlayPreparationAnimation;
+                    _phasedMovement.OnMovementPhaseStarted += PlayImpulseAnimation;
+                    _phasedMovement.OnPausePhaseStarted += PlayPreparationAnimation;
                     
                     PlayPreparationAnimation();
                 }
             }
         }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            if (_phasedMovement != null)
+            {
+                _phasedMovement.OnMovementPhaseStarted -= PlayImpulseAnimation;
+                _phasedMovement.OnPausePhaseStarted -= PlayPreparationAnimation;
+                _phasedMovement = null;
+            }
+            KillSequence();
+        }
+
+
         private void PlayPreparationAnimation()
         {
             KillSequence();
-            if (_config == null) return;
 
             _crawlSequence = DOTween.Sequence();
-            float duration = _config.PauseDuration;
+            float duration = _pauseDuration;
 
             for (int i = 1; i < _segments.Length; i++)
             {
                 if (_segments[i] == null) continue;
-
                 
                 float progress = (float)i / (_segments.Length - 1); 
                 
                 Vector3 targetPos = _initialLocalPos[i];
-                
                 targetPos.z += _tailPullDistance * progress; 
-                
                 targetPos.y += Mathf.Sin(progress * Mathf.PI) * _archHeight;
 
                 _crawlSequence.Join(_segments[i].DOLocalMove(targetPos, duration).SetEase(Ease.InOutQuad));
@@ -107,10 +104,9 @@ namespace Gameplay.Enemies.Visuals
         private void PlayImpulseAnimation()
         {
             KillSequence();
-            if (_config == null) return;
 
             _crawlSequence = DOTween.Sequence();
-            float duration = _config.JumpDuration;
+            float duration = _jumpDuration;
 
             for (int i = 1; i < _segments.Length; i++)
             {
@@ -125,7 +121,6 @@ namespace Gameplay.Enemies.Visuals
         public override async UniTask PlayDeathAnimationAsync()
         {
             KillSequence();
-            
             await transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
         }
 

@@ -5,7 +5,7 @@ using Gameplay.Enemies.Data.Movement;
 
 namespace Gameplay.Enemies
 {
-    public class DiscreteMovementStrategy : IMovementStrategy
+    public class DiscreteMovementStrategy : IMovementStrategy, IPhasedMovementNotifier
     {
         private NavMeshAgent _agent;
         private readonly Vector3 _targetPosition;
@@ -14,12 +14,11 @@ namespace Gameplay.Enemies
         private float _timer;
         private bool _isJumping;
 
-        public event Action OnJumpStart;
-        public event Action OnPauseStart;
+        public event Action OnMovementPhaseStarted;
+        public event Action OnPausePhaseStarted;
 
         private const string CustomPathArea = "CustomPath";
         private const string CustomGroundArea = "CustomGround";
-        private EnemyFacade _enemy;
 
         public DiscreteMovementStrategy(Vector3 targetPosition, DiscreteMovementConfig config)
         {
@@ -27,14 +26,12 @@ namespace Gameplay.Enemies
             _config = config;
         }
 
-        public void Initialize(EnemyFacade enemy)
+        public void Initialize(NavMeshAgent agent)
         {
-            _agent = enemy.Agent;
-            _enemy = enemy;
+            _agent = agent;
+            
             if (_agent != null)
             {
-                _agent.enabled = true;
-
                 int pathArea = NavMesh.GetAreaFromName(CustomPathArea);
                 int groundArea = NavMesh.GetAreaFromName(CustomGroundArea);
 
@@ -54,10 +51,6 @@ namespace Gameplay.Enemies
                 _agent.angularSpeed = 1000f; 
                 _agent.autoBraking = false;
 
-                float totalCycleTime = _config.JumpDuration + _config.PauseDuration;
-                float speedMultiplier = totalCycleTime / _config.JumpDuration;
-                _agent.speed = enemy.Config.Stats.MoveSpeed * speedMultiplier;
-
                 _isJumping = false;
                 _agent.isStopped = true;
                 _agent.velocity = Vector3.zero; 
@@ -69,9 +62,6 @@ namespace Gameplay.Enemies
         {
             if (_agent == null || !_agent.isActiveAndEnabled || !_agent.isOnNavMesh) return;
 
-            float totalCycleTime = _config.JumpDuration + _config.PauseDuration;
-            float baseSpeedMultiplier = totalCycleTime / _config.JumpDuration;
-            _agent.speed = _enemy.Config.Stats.MoveSpeed * baseSpeedMultiplier * _enemy.StatusController.SpeedMultiplier;
             _timer -= deltaTime;
 
             if (_isJumping)
@@ -83,7 +73,7 @@ namespace Gameplay.Enemies
                     _agent.velocity = Vector3.zero; 
                     _timer = _config.PauseDuration;
                     
-                    OnPauseStart?.Invoke();
+                    OnPausePhaseStarted?.Invoke();
                 }
             }
             else
@@ -94,7 +84,7 @@ namespace Gameplay.Enemies
                     _agent.isStopped = false; 
                     _timer = _config.JumpDuration;
                     
-                    OnJumpStart?.Invoke();
+                    OnMovementPhaseStarted?.Invoke(); 
                 }
             }
         }

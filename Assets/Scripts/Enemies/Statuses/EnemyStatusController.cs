@@ -10,6 +10,8 @@ namespace Gameplay.Enemies.Statuses
     {
         private readonly EnemyFacade _enemy;
         private readonly List<IStatusEffect> _activeEffects = new List<IStatusEffect>();
+        
+        private Func<StatusType, float> _getResistanceMultiplier; 
 
         public float SpeedMultiplier { get; private set; } = 1f;
         public float DamageTakenMultiplier { get; private set; } = 1f;
@@ -22,22 +24,31 @@ namespace Gameplay.Enemies.Statuses
             _enemy = enemy;
         }
 
+
+        public void Initialize(Func<StatusType, float> getResistanceMultiplier)
+        {
+            _getResistanceMultiplier = getResistanceMultiplier;
+        }
+
         public void AddStatus(IStatusEffect effect)
         {
-            float resistMultiplier = _enemy.Config.GetResistMultiplier(effect.Type);
+            if (_getResistanceMultiplier == null) return;
+
+
+            float resistMultiplier = _getResistanceMultiplier(effect.Type);
 
             if (resistMultiplier <= 0f)
             {
-#if UNITY_EDITOR
                 Gameplay.Tools.GameLogger.Log($"<color=grey>[Status] Враг {_enemy.gameObject.name} иммунен к {effect.Type}. Статус {effect.Id} отклонен.</color>");
-#endif
                 return;
             }
 
             effect.ApplyResistance(resistMultiplier);
             
             _activeEffects.Add(effect);
-            effect.OnApply(_enemy);
+            
+
+            effect.OnApply(_enemy); 
             
             RecalculateMultipliers();
             OnStatusAdded?.Invoke(effect);

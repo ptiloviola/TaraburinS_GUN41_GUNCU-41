@@ -22,9 +22,7 @@ namespace Gameplay.Enemies.Visuals
         private float _lastYRotation;
         private float _currentTurnValue;
         
-        // Переменные для пулинга
         private Vector3 _initialScale;
-        private Vector3 _initialRotation;
 
         protected override void Awake()
         {
@@ -54,7 +52,7 @@ namespace Gameplay.Enemies.Visuals
 
         private void Update()
         {
-            if (_animator == null || _facade == null || _facade.IsDead) return;
+            if (_animator == null || _facade == null || !_facade.IsTargetable) return;
 
             float currentYRotation = transform.eulerAngles.y;
             float deltaY = Mathf.DeltaAngle(_lastYRotation, currentYRotation);
@@ -78,10 +76,6 @@ namespace Gameplay.Enemies.Visuals
                 _animator.CrossFadeInFixedTime(DeathStateHash, 0.15f);
             }
 
-            if (_facade.Agent != null)
-            {
-                _facade.Agent.enabled = false;
-            }
 
             float groundY = transform.position.y - 5f; 
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 20f))
@@ -108,7 +102,6 @@ namespace Gameplay.Enemies.Visuals
             await UniTask.Delay(TimeSpan.FromSeconds(1.2f));
             
             await transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
-            
         }
     }
 }
