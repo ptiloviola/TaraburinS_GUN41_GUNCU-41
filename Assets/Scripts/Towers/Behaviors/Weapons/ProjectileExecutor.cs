@@ -10,7 +10,6 @@ namespace Gameplay.Towers.Behaviors.Weapons
         private readonly ModularProjectile _projectilePrefab;
         private readonly ModularProjectile.Pool _pool;
         
-
         public ProjectileExecutor(ModularProjectile projectilePrefab, ProjectileFactory factory)
         {
             _projectilePrefab = projectilePrefab;
@@ -34,7 +33,16 @@ namespace Gameplay.Towers.Behaviors.Weapons
             projectile.transform.position = firePoint.position;
             projectile.transform.rotation = firePoint.rotation;
             
-            projectile.Launch(target, payload, _pool);
+            projectile.OnDespawnRequested += HandleProjectileDespawn;
+            
+            projectile.Launch(target, payload);
+        }
+
+        private void HandleProjectileDespawn(ModularProjectile projectile)
+        {
+            projectile.OnDespawnRequested -= HandleProjectileDespawn;
+            
+            _pool.Despawn(projectile);
         }
     }
 }

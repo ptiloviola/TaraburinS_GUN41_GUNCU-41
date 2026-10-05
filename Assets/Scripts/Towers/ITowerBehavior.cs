@@ -4,6 +4,8 @@ namespace Gameplay.Towers
     {
         void Initialize(TowerFacade facade);
         void Tick(float deltaTime);
+
+        void Cleanup();
     }
 
     public interface IBehaviorAdapter

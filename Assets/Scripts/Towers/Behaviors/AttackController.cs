@@ -102,6 +102,11 @@ namespace Gameplay.Towers.Behaviors
             }
         }
 
+        public void Cleanup()
+        {
+           
+        }
+
         private void ExecuteShot()
         {
             if (_currentStats.PayloadStrategy == null) return;

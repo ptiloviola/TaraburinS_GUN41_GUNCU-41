@@ -21,7 +21,8 @@ namespace Gameplay.Towers
         private ITowerVisuals _visuals;
         
         private SignalBus _signalBus;
-        private bool _isLevelWon = false;
+        
+        private bool _isActive = true; 
 
         [Inject]
         public void Construct(SignalBus signalBus)
@@ -40,6 +41,7 @@ namespace Gameplay.Towers
             }
             
             _signalBus?.Subscribe<SignalLevelWon>(HandleLevelWon);
+            _signalBus?.Subscribe<SignalGameOver>(HandleGameOver);
         }
 
         public void Initialize(TowerConfig config, int level, Vector2Int gridPos)
@@ -47,6 +49,7 @@ namespace Gameplay.Towers
             _config = config;
             CurrentLevel = level;
             GridPosition = gridPos;
+            _isActive = true;
             
             _behaviors.Clear();
 
@@ -74,7 +77,7 @@ namespace Gameplay.Towers
 
         private void Update()
         {
-            if (_isLevelWon) return;
+            if (!_isActive) return;
 
             for (int i = 0; i < _behaviors.Count; i++)
             {
@@ -84,8 +87,13 @@ namespace Gameplay.Towers
 
         private void HandleLevelWon()
         {
-            _isLevelWon = true;
+            _isActive = false;
             _visuals?.PlayVictoryAnimation();
+        }
+
+        private void HandleGameOver()
+        {
+            _isActive = false;
         }
 
         public TowerLevelData GetCurrentStats() => _config.Levels[CurrentLevel];
@@ -128,13 +136,11 @@ namespace Gameplay.Towers
         private void OnDestroy()
         {
             _signalBus?.TryUnsubscribe<SignalLevelWon>(HandleLevelWon);
+            _signalBus?.TryUnsubscribe<SignalGameOver>(HandleGameOver);
 
             foreach (var behavior in _behaviors)
             {
-                if (behavior is BarracksController barracks)
-                {
-                    barracks.Cleanup();
-                }
+                behavior.Cleanup();
             }
         }
     }

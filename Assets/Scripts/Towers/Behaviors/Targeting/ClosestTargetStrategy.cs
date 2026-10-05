@@ -22,7 +22,10 @@ namespace Gameplay.Towers.Behaviors.Targeting
                 Collider hit = _targetColliders[i];
                 
                 if (!hit.TryGetComponent(out EnemyFacade enemy)) continue;
-                if ((stats.AllowedTargets & enemy.TargetType) == 0) continue; // Если типы не пересекаются - пропускаем!
+                
+                if (!enemy.IsTargetable) continue; 
+                
+                if ((stats.AllowedTargets & enemy.TargetType) == 0) continue;
 
                 Vector3 directionToTarget = hit.transform.position - center.position;
                 float sqrDistance = directionToTarget.sqrMagnitude;
@@ -49,9 +52,12 @@ namespace Gameplay.Towers.Behaviors.Targeting
 
         public bool IsTargetValid(Transform target, Transform center, AttackStats stats, IAimStrategy aimStrategy)
         {
-            if (target == null || !target.gameObject.activeInHierarchy) return false;
+            if (target == null) return false;
             
             if (!target.TryGetComponent(out EnemyFacade enemy)) return false;
+            
+            if (!enemy.IsTargetable) return false; 
+            
             if ((stats.AllowedTargets & enemy.TargetType) == 0) return false;
 
             Vector3 directionToTarget = target.position - center.position;

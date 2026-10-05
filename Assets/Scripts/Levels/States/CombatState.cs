@@ -18,6 +18,8 @@ namespace Gameplay.Levels.States
         private LevelStateMachine _cachedStateMachine;
         private bool _isAllWavesSpawned;
 
+        private CancellationTokenSource _combatCts;
+
         public CombatState(
             WaveStateController waveController, 
             InteractionStateModel interactionState, 
@@ -34,6 +36,8 @@ namespace Gameplay.Levels.States
         {
             _cachedStateMachine = stateMachine;
             _isAllWavesSpawned = false;
+
+            _combatCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             
             _interactionState.CurrentMode = InteractionMode.Normal;
             _signalBus.Fire(new SignalInteractionModeChanged { Mode = InteractionMode.Normal });
@@ -42,13 +46,20 @@ namespace Gameplay.Levels.States
             _signalBus.Subscribe<SignalAllWavesSpawned>(OnAllWavesSpawned);
             _signalBus.Subscribe<SignalAllEnemiesCleared>(OnEnemyClearedCheck);
 
-            _waveController.RunWavesLoopAsync(ct).Forget();
+            _waveController.RunWavesLoopAsync(_combatCts.Token).Forget();
             
             return UniTask.CompletedTask;
         }
 
         public UniTask ExitAsync(CancellationToken ct)
         {
+            if (_combatCts != null)
+            {
+                _combatCts.Cancel();
+                _combatCts.Dispose();
+                _combatCts = null;
+            }
+            
             _signalBus.TryUnsubscribe<SignalGameOver>(OnGameOver);
             _signalBus.TryUnsubscribe<SignalAllWavesSpawned>(OnAllWavesSpawned);
             _signalBus.TryUnsubscribe<SignalAllEnemiesCleared>(OnEnemyClearedCheck);

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Zenject;
 using Gameplay.Projectiles.Contracts;
@@ -13,26 +14,21 @@ namespace Gameplay.Projectiles
         private Transform _target;
         private IProjectilePayload _payload; 
         private IFlightStrategy _flightStrategy; 
-        private IMemoryPool _pool;
         
         private bool _hasHit; 
+
+        public event Action<ModularProjectile> OnDespawnRequested;
 
         private void Awake()
         {
             _flightStrategy = GetComponent<IFlightStrategy>();
-#if UNITY_EDITOR
-            if (_flightStrategy == null)
-            {
-                Gameplay.Tools.GameLogger.LogError($"[ModularProjectile] На {gameObject.name} не висит компонент IFlightStrategy!");
-            }
-#endif
         }
 
-        public void Launch(Transform target, IProjectilePayload payload, IMemoryPool pool)
+        // Убрали IMemoryPool из параметров
+        public void Launch(Transform target, IProjectilePayload payload)
         {
             _target = target;
             _payload = payload;
-            _pool = pool;
             _hasHit = false; 
 
             _flightStrategy?.Initialize(transform, target);
@@ -42,9 +38,9 @@ namespace Gameplay.Projectiles
         {
             if (_hasHit || _flightStrategy == null) return; 
 
-            if (_target == null || !_target.gameObject.activeInHierarchy)
+            if (_target == null)
             {
-                Dispose();
+                OnDespawnRequested?.Invoke(this);
                 return;
             }
 
@@ -57,20 +53,10 @@ namespace Gameplay.Projectiles
         private void HitTarget()
         {
             _hasHit = true; 
+            
             _payload?.Apply(_target, transform.position);
-            Dispose(); 
-        }
-
-        private void Dispose()
-        {
-            if (_pool != null) 
-            {
-                _pool.Despawn(this); 
-            }
-            else 
-            {
-                Destroy(gameObject); 
-            }
+            
+            OnDespawnRequested?.Invoke(this); 
         }
 
         public class Pool : MonoMemoryPool<ModularProjectile> {}
