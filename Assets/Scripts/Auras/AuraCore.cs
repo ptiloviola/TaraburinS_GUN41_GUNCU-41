@@ -99,7 +99,7 @@ namespace Gameplay.Auras
             {
                 var effect = statusConfig.CreateEffect();
                 
-                enemy.StatusController.AddStatus(effect);
+                enemy.ApplyStatus(effect);
             }
         }
     }

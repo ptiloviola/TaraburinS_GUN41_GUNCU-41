@@ -10,6 +10,7 @@ using Gameplay.Enemies.Statuses;
 using Gameplay.Enemies.Data.Death;
 using Gameplay.Combat;
 using Gameplay.Enemies.Visuals;
+using Gameplay.Combat.Statuses;
 
 namespace Gameplay.Enemies
 {
@@ -28,14 +29,13 @@ namespace Gameplay.Enemies
         private ArmorCalculator _armorCalculator;
         private EnemyConfig _config;
         private EnemyVisualsBase _visuals;
-
-        public EnemyStatusController StatusController { get; private set; }
+        
+        private EnemyStatusController _statusController; 
 
         public TargetType TargetType => _config.Type;
-        
         public bool IsTargetable => _stateMachine != null && _stateMachine.CurrentStateType != EnemyStateType.Death && _stateMachine.CurrentStateType != EnemyStateType.ReachedBase;
-        
         public Vector3 Position => transform.position;
+        public Vector3 Velocity => _agent != null ? _agent.velocity : Vector3.zero;
 
         public event Action<EnemyStateType> OnStateChanged;
         public event Action<EnemyFacade> OnDespawnRequested;
@@ -52,21 +52,16 @@ namespace Gameplay.Enemies
             if (_health == null) _health = GetComponent<HealthComponent>();
             if (_collider == null) _collider = GetComponent<Collider>();
             if (_damageReceiver == null) _damageReceiver = GetComponent<DamageReceiver>();
-
             _visuals = GetComponent<EnemyVisualsBase>();
 
-            StatusController = new EnemyStatusController(this);
+            _statusController = new EnemyStatusController(this);
         }
 
         public void Initialize(EnemyConfig config, IMovementStrategy movementStrategy, Vector3 spawnPosition)
         {
             _config = config;
-            if (_agent.enabled) 
-            {
-                _agent.enabled = false;
-            }
-
-            StatusController.Initialize(type => _config.GetResistMultiplier(type));
+            
+            if (_agent.enabled) _agent.enabled = false;
             
             transform.position = spawnPosition + Vector3.up * _agent.baseOffset;
             gameObject.name = $"Enemy_{_config.name}"; 
@@ -78,10 +73,12 @@ namespace Gameplay.Enemies
             _health.Initialize(config.Stats.MaxHealth);
             _damageReceiver.Initialize(_health, _armorCalculator);
 
-            _movementStrategy = movementStrategy;
+            _statusController.Initialize(type => _config.GetResistMultiplier(type));
 
+            _movementStrategy = movementStrategy;
             _movementStrategy.Initialize(_agent);
             
+            _health.OnDied -= HandleDeath;
             _health.OnDied += HandleDeath;
 
             _stateMachine?.Cleanup();
@@ -89,7 +86,6 @@ namespace Gameplay.Enemies
             _stateMachine.OnStateChanged += state => OnStateChanged?.Invoke(state);
 
             _stateMachine.AddState(new MoveState(this, _movementStrategy));
-            
             _stateMachine.AddState(new DeathState(
                 facade: this, 
                 agent: _agent, 
@@ -99,7 +95,6 @@ namespace Gameplay.Enemies
                 visuals: _visuals, 
                 rewardMoney: _config.Stats.RewardMoney
             ));
-            
             _stateMachine.AddState(new ReachedBaseState(this, _collider));
             
             _stateMachine.ChangeState(EnemyStateType.Move);
@@ -107,23 +102,25 @@ namespace Gameplay.Enemies
 
         private void Update()
         {
-            if (!IsTargetable) return;
-
-            StatusController.Tick(Time.deltaTime);
-            _stateMachine.Tick(Time.deltaTime);
+            float dt = Time.deltaTime;
+            _statusController.Tick(dt);
+            _stateMachine.Tick(dt);
             
-            UpdateMovementSpeed();
+            if (IsTargetable)
+            {
+                UpdateMovementSpeed();
+            }
         }
 
         private void UpdateMovementSpeed()
         {
-            _agent.speed = _config.Stats.MoveSpeed * StatusController.SpeedMultiplier;
+            _agent.speed = _config.Stats.MoveSpeed * _statusController.SpeedMultiplier;
         }
 
         private void OnDisable()
         {
             _health.OnDied -= HandleDeath;
-            StatusController.Cleanup();
+            _statusController.Cleanup();
             _stateMachine?.Cleanup();
         }
 
@@ -135,6 +132,7 @@ namespace Gameplay.Enemies
 
         public void RequestDespawn()
         {
+            _health.OnDied -= HandleDeath;
             _collider.enabled = false;
             _agent.enabled = false;
             OnDespawnRequested?.Invoke(this);
@@ -153,8 +151,7 @@ namespace Gameplay.Enemies
             }
         }
 
-        public void SetDestination(Vector3 destination) => _agent.SetDestination(destination);
-        public DeathBehaviorConfig GetDeathBehavior() => _config.DeathBehavior;
+        public void ApplyStatus(IStatusEffect effect) => _statusController.AddStatus(effect);
 
         public T GetMovementCapability<T>() where T : class
         {
