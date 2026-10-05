@@ -52,11 +52,6 @@ namespace Gameplay.Campaign.Data
             
             _saveData.CurrentNodeId = targetNode.Id;
             _saveData.CurrentRunDepth = targetNode.Depth;
-            
-            if (!_saveData.PathHistory.Contains(targetNode.Id))
-            {
-                _saveData.PathHistory.Add(targetNode.Id);
-            }
 
             _runSaveService.SaveRun(_saveData);
             
@@ -82,6 +77,16 @@ namespace Gameplay.Campaign.Data
         public bool IsNodeVisited(string nodeId)
         {
             return _saveData != null && _saveData.PathHistory.Contains(nodeId);
+        }
+
+        public void CompleteCurrentNode()
+        {
+            if (CurrentNode != null && !_saveData.PathHistory.Contains(CurrentNode.Id))
+            {
+                _saveData.PathHistory.Add(CurrentNode.Id);
+                _runSaveService.SaveRun(_saveData);
+                Gameplay.Tools.GameLogger.Log($"<color=cyan>[RunProgress] Узел {CurrentNode.Id} успешно пройден и добавлен в историю.</color>");
+            }
         }
     }
 }

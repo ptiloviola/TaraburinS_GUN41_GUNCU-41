@@ -4,6 +4,7 @@ using Gameplay.Infrastructure.Signals;
 using Gameplay.UI.Views;
 using Gameplay.Infrastructure.Services;
 using Cysharp.Threading.Tasks;
+using Gameplay.Core.Data;
 
 namespace Gameplay.UI.Presenters
 {
@@ -60,11 +61,11 @@ namespace Gameplay.UI.Presenters
 
             if (_isWin)
             {
-                _sceneLoader.LoadSceneAsync("HubScene").Forget(); 
+                _sceneLoader.LoadSceneAsync(SceneNames.Hub).Forget(); 
             }
             else
             {
-                _sceneLoader.LoadSceneAsync("MainMenuScene").Forget(); 
+                _sceneLoader.LoadSceneAsync(SceneNames.MainMenu).Forget(); 
             }
         }
     }

@@ -5,6 +5,7 @@ using Gameplay.Infrastructure.Services;
 using Gameplay.Infrastructure.Input;
 using Gameplay.Infrastructure.Signals;
 using Cysharp.Threading.Tasks;
+using Gameplay.Core.Data;
 
 namespace Gameplay.UI.Presenters
 {
@@ -16,7 +17,6 @@ namespace Gameplay.UI.Presenters
         private readonly ISceneLoaderService _sceneLoader;
         private readonly SignalBus _signalBus;
 
-        private const string MainMenuSceneName = "MainMenu";
 
         public PauseMenuPresenter(
             PauseMenuView view,
@@ -81,7 +81,7 @@ namespace Gameplay.UI.Presenters
         private void HandleMainMenuClicked()
         {
             _pauseService.ResumeGame(); 
-            _sceneLoader.LoadSceneAsync(MainMenuSceneName).Forget();
+            _sceneLoader.LoadSceneAsync(SceneNames.MainMenu).Forget();
         }
 
     }

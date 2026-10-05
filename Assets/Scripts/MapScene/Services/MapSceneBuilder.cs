@@ -71,6 +71,7 @@ namespace Gameplay.MapScene.Services
                 if (_progressModel.CurrentMap.Nodes.TryGetValue(startId, out var startNode))
                 {
                     _progressModel.MoveToNode(startNode);
+                    _progressModel.CompleteCurrentNode(); 
                 }
             }
 

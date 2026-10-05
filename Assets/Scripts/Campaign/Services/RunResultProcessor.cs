@@ -49,6 +49,8 @@ namespace Gameplay.Campaign.Services
             if (_isProcessed) return;
             _isProcessed = true;
 
+            _runProgress.CompleteCurrentNode();
+
             LevelBlueprintConfig wonLevel = null;
             if (_runProgress.CurrentNode?.Encounter is CombatEncounter combat)
             {

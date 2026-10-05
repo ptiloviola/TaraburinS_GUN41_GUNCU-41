@@ -16,7 +16,6 @@ namespace Gameplay.UI.Presenters
         private readonly SaveLoadService _saveLoadService;
         private readonly RunSaveService _runSaveService;
 
-        private const string StartSceneName = "HubScene"; 
 
         public MainMenuPresenter(
             MainMenuView view, 
@@ -58,7 +57,7 @@ namespace Gameplay.UI.Presenters
             
             _runSaveService.DeleteSave();
             
-            _sceneLoader.LoadSceneAsync(StartSceneName).Forget();
+            _sceneLoader.LoadSceneAsync(SceneNames.Hub).Forget();
         }
 
         private void HandleLoadSaveClicked()
@@ -66,7 +65,7 @@ namespace Gameplay.UI.Presenters
             _view.SetInteractable(false);
             
             Gameplay.Tools.GameLogger.Log("<color=green>[MainMenuPresenter] Загружаем существующий забег...</color>");
-            _sceneLoader.LoadSceneAsync(StartSceneName).Forget();
+            _sceneLoader.LoadSceneAsync(SceneNames.Hub).Forget();
         }
 
         private void HandleSettingsClicked()

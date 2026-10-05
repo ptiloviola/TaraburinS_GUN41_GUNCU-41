@@ -8,6 +8,7 @@ using Gameplay.UI.Views;
 using Gameplay.MapScene.Services;
 using Gameplay.Levels.Data;
 using Gameplay.Core.Services;
+using Gameplay.Core.Data;
 
 namespace Gameplay.UI.Presenters
 {
@@ -73,7 +74,7 @@ namespace Gameplay.UI.Presenters
 
         public void VisitCombat(LevelBlueprintConfig config)
         {
-            _sceneLoader.LoadSceneAsync("BattleScene").Forget();
+            _sceneLoader.LoadSceneAsync(SceneNames.Battle).Forget();
         }
 
         public void VisitShop(ShopConfig config)
@@ -84,12 +85,14 @@ namespace Gameplay.UI.Presenters
         public void VisitEvent(EventConfig config)
         {
             Gameplay.Tools.GameLogger.Log("<color=cyan>[MapScene] Событие пропущено (UI в разработке).</color>");
-            _sceneLoader.LoadSceneAsync("HubScene").Forget();
+            _progressModel.CompleteCurrentNode();
+            _sceneLoader.LoadSceneAsync(SceneNames.Hub).Forget();
         }
 
         public void VisitStart()
         {
-            _sceneLoader.LoadSceneAsync("HubScene").Forget();
+            _progressModel.CompleteCurrentNode();
+            _sceneLoader.LoadSceneAsync(SceneNames.Hub).Forget();
         }
 
         private void HandleMainMenu()
@@ -101,19 +104,20 @@ namespace Gameplay.UI.Presenters
                 _runSaveService.DeleteSave();
             }
             
-            _sceneLoader.LoadSceneAsync("MainMenuScene").Forget();
+            _sceneLoader.LoadSceneAsync(SceneNames.MainMenu).Forget();
         }
 
         private void HandleAbandonRun()
         {
             _view.SetInteractable(false);
             _runSaveService.DeleteSave();
-            _sceneLoader.LoadSceneAsync("MainMenuScene").Forget();
+            _sceneLoader.LoadSceneAsync(SceneNames.MainMenu).Forget();
         }
 
         private void HandleShopClosed()
         {
-            _sceneLoader.LoadSceneAsync("HubScene").Forget(); 
+            _progressModel.CompleteCurrentNode();
+            _sceneLoader.LoadSceneAsync(SceneNames.Hub).Forget(); 
         }
     }
 }

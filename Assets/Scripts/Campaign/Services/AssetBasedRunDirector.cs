@@ -40,16 +40,12 @@ namespace Gameplay.Campaign.Services
             }
 
             progress.CurrentMap.StartingNodeIds = new List<string>(_graphAsset.StartingNodeIds);
-
-            // if (progress.CurrentNode == null && progress.CurrentMap.StartingNodeIds.Count > 0)
-            // {
-            //     AdvanceToNode(progress, progress.CurrentMap.StartingNodeIds[0]);
-            // }
         }
 
         public IReadOnlyList<MapNode> GetAvailableChoices(RunProgressModel progress)
         {
             List<MapNode> choices = new List<MapNode>();
+            
             if (progress.CurrentNode == null)
             {
                 foreach (string id in progress.CurrentMap.StartingNodeIds)
@@ -57,8 +53,15 @@ namespace Gameplay.Campaign.Services
                 return choices;
             }
 
+            if (!progress.IsNodeVisited(progress.CurrentNode.Id))
+            {
+                choices.Add(progress.CurrentNode);
+                return choices;
+            }
+
             foreach (string nextId in progress.CurrentNode.NextNodeIds)
                 choices.Add(progress.CurrentMap.Nodes[nextId]);
+                
             return choices;
         }
 
@@ -73,7 +76,7 @@ namespace Gameplay.Campaign.Services
         public bool IsCampaignCompleted(RunProgressModel progress)
         {
             if (progress.CurrentNode == null) return false;
-            return progress.CurrentNode.NextNodeIds.Count == 0;
+            return progress.CurrentNode.NextNodeIds.Count == 0 && progress.IsNodeVisited(progress.CurrentNode.Id);
         }
     }
 }
