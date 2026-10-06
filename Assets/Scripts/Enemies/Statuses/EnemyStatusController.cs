@@ -42,6 +42,11 @@ namespace Gameplay.Enemies.Statuses
                 Gameplay.Tools.GameLogger.Log($"<color=grey>[Status] Враг {_enemy.gameObject.name} иммунен к {effect.Type}. Статус {effect.Id} отклонен.</color>");
                 return;
             }
+            var existingEffect = _activeEffects.Find(e => e.Id == effect.Id);
+            if (existingEffect != null)
+            {
+                RemoveStatus(existingEffect);
+            }
 
             effect.ApplyResistance(resistMultiplier);
             

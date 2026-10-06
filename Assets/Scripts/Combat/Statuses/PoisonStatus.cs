@@ -1,5 +1,6 @@
 using UnityEngine;
 using Gameplay.Enemies;
+using Gameplay.Combat;
 
 namespace Gameplay.Combat.Statuses
 {
@@ -18,7 +19,7 @@ namespace Gameplay.Combat.Statuses
         private readonly int _damagePerTick;
         
         private EnemyFacade _enemy;
-        private IDamageReceiver _damageReceiver;
+        private IDamageable _damageable; 
 
         public PoisonStatus(float baseDuration, float tickRate, int damagePerTick)
         {
@@ -36,11 +37,7 @@ namespace Gameplay.Combat.Statuses
         public void OnApply(EnemyFacade enemy)
         {
             _enemy = enemy;
-            _damageReceiver = enemy.GetComponent<IDamageReceiver>();
-            
-#if UNITY_EDITOR
-            Gameplay.Tools.GameLogger.Log($"<color=green>[Status] Применен яд. Время: {_duration} сек. Урон: {_damagePerTick} раз в {_tickRate} сек.</color>");
-#endif
+            _damageable = enemy.GetComponent<IDamageable>(); 
         }
 
         public void Tick(float deltaTime)
@@ -64,16 +61,11 @@ namespace Gameplay.Combat.Statuses
 
         private void ApplyPoisonDamage()
         {
-            if (_enemy == null || _damageReceiver == null) return;
+            if (_enemy == null || _damageable == null) return;
             
-            _damageReceiver.TakeDamage(_damagePerTick);
+            _damageable.TakeDamage(new DamagePayload(_damagePerTick, DamageType.Physical));
         }
 
-        public void OnRemove()
-        {
-#if UNITY_EDITOR
-            Gameplay.Tools.GameLogger.Log("<color=green>[Status] Яд спал.</color>");
-#endif
-        }
+        public void OnRemove() { }
     }
 }

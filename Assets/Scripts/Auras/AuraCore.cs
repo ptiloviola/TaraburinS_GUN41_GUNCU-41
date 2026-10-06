@@ -77,7 +77,7 @@ namespace Gameplay.Auras
 
             foreach (Collider hit in hits)
             {
-                if (hit.TryGetComponent(out EnemyFacade enemy) && !enemy.IsTargetable)
+                if (hit.TryGetComponent(out EnemyFacade enemy) && enemy.IsTargetable)
                 {
                     if ((_allowedTargets & enemy.TargetType) != 0) 
                     {
