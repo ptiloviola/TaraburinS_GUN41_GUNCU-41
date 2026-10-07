@@ -30,7 +30,7 @@ namespace Gameplay.Levels.Installers
             {
                 Gameplay.Tools.GameLogger.LogError("[LevelStateInstaller] КРИТИЧЕСКАЯ ОШИБКА: CurrentNode равен NULL! Либо ProjectInstaller перезатер прогресс, либо мы пришли не из Хаба.");
             }
-            // Достаем конфигурацию из Стратегии узла
+
             else if (_progressModel.CurrentNode.Encounter is CombatEncounter combat)
             {
                 activeBlueprint = combat.Config;
@@ -44,7 +44,6 @@ namespace Gameplay.Levels.Installers
                 Gameplay.Tools.GameLogger.LogError($"[LevelStateInstaller] ОШИБКА: Узел '{_progressModel.CurrentNode.Id}' не является боевым узлом (CombatEncounter)!");
             }
 
-            // Фоллбэк, если конфиг так и не найден
             activeBlueprint ??= _debugFallbackBlueprint;
             
             if (activeBlueprint == null)

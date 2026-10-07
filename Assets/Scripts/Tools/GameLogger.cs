@@ -5,7 +5,7 @@ namespace Gameplay.Tools
 {
     public static class GameLogger
     {
-        // --- Базовые логи ---
+
         [Conditional("UNITY_EDITOR")]
         public static void Log(object message) => UnityEngine.Debug.Log(message);
 

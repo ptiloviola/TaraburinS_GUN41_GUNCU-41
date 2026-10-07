@@ -17,7 +17,7 @@ namespace Gameplay.Enemies.Data.Death
             for (int i = 0; i < SegmentCount; i++)
             {
                 Vector2 randomCircle = Random.insideUnitCircle * SpawnRadius;
-                Vector3 spawnPos = facade.Position + new Vector3(randomCircle.x, 0, randomCircle.y); // Используем facade.Position
+                Vector3 spawnPos = facade.Position + new Vector3(randomCircle.x, 0, randomCircle.y);
 
                 signalBus.Fire(new SignalSpawnEnemyRequest
                 {

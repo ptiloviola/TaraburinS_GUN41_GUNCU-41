@@ -97,7 +97,7 @@ namespace Gameplay.MapScene.Services
             }
 
 
-            UnityEngine.Random.InitState(_progressModel.CurrentMap.Nodes.Count);
+            System.Random localRng = new System.Random(_progressModel.CurrentMap.Nodes.Count);
 
             foreach (var layer in nodesByLayer)
             {
@@ -120,8 +120,8 @@ namespace Gameplay.MapScene.Services
 
                     if (nodeData.RenderPosition == Vector2.zero)
                     {
-                        float jitterX = UnityEngine.Random.Range(-_config.PositionJitter.x, _config.PositionJitter.x);
-                        float jitterY = UnityEngine.Random.Range(-_config.PositionJitter.y, _config.PositionJitter.y);
+                        float jitterX = (float)(localRng.NextDouble() * (_config.PositionJitter.x * 2) - _config.PositionJitter.x);
+                        float jitterY = (float)(localRng.NextDouble() * (_config.PositionJitter.y * 2) - _config.PositionJitter.y);
                         
 
                         if (depth == 0 || depth == nodesByLayer.Count - 1) jitterX = 0;

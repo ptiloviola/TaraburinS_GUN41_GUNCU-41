@@ -74,7 +74,6 @@ namespace Gameplay.Infrastructure.Services
                 ApplyScaleToEngine();
             }
             
-            // Рассылаем сигнал, чтобы UI (даже только что созданный) сразу подхватил текст "x1"
             _signalBus.Fire(new SignalTimeScaleChanged(CurrentScale));
         }
     }

@@ -36,24 +36,29 @@ namespace Gameplay.Enemies
         private void OnEnemySpawned()
         {
             _aliveCount ++;
-            Gameplay.Tools.GameLogger.Log($"[Tracker] Враг родился. Живых: {_aliveCount}");
         }
         private void OnEnemyKilled()
         {
-            DecreaseCount();
-            Gameplay.Tools.GameLogger.Log($"[Tracker] Враг убит. Живых: {_aliveCount}");
+            DecreaseCount("убит");
         }
 
         private void OnEnemyReachedBase()
         {
-            DecreaseCount();
+            DecreaseCount("прошел на базу");
             Gameplay.Tools.GameLogger.Log($"[Tracker] Враг прошел на базу. Живых: {_aliveCount}");
         }
 
-        private void DecreaseCount()
+        private void DecreaseCount(string reason)
         {
             _aliveCount--;
-            if (_aliveCount < 0) _aliveCount = 0;
+            Gameplay.Tools.GameLogger.Log($"<color=orange>[Tracker] Враг {reason}. Живых: {_aliveCount}</color>");
+
+            if (_aliveCount < 0)
+            {
+                Gameplay.Tools.GameLogger.LogError("[EnemyTracker] КРИТИЧЕСКАЯ ОШИБКА! Счетчик врагов упал ниже нуля. Кто-то заспавнился в обход EnemyFactory или умер дважды!");
+                _aliveCount = 0;
+            }
+
             if (_aliveCount == 0)
             {
                 _signalBus.Fire<SignalAllEnemiesCleared>();

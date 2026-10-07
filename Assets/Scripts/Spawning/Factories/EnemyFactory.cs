@@ -73,7 +73,6 @@ namespace Gameplay.Spawning.Factories
                 specificPool.Despawn(facade);
             };
             enemy.OnDespawnRequested += despawnHandler;
-
             _signalBus.Fire<SignalEnemySpawned>();
         }
 

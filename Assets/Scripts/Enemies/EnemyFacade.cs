@@ -7,7 +7,6 @@ using Gameplay.Enemies.Data;
 using Gameplay.Enemies.FSM;
 using Gameplay.Base;
 using Gameplay.Enemies.Statuses;
-using Gameplay.Enemies.Data.Death;
 using Gameplay.Combat;
 using Gameplay.Enemies.Visuals;
 using Gameplay.Combat.Statuses;
@@ -30,7 +29,9 @@ namespace Gameplay.Enemies
         private EnemyConfig _config;
         private EnemyVisualsBase _visuals;
         
-        private EnemyStatusController _statusController; 
+        private EnemyStatusController _statusController;
+        
+        public bool IsDespawned { get; private set; }
 
         public TargetType TargetType => _config.Type;
         public bool IsTargetable => _stateMachine != null && _stateMachine.CurrentStateType != EnemyStateType.Death && _stateMachine.CurrentStateType != EnemyStateType.ReachedBase;
@@ -60,6 +61,7 @@ namespace Gameplay.Enemies
         public void Initialize(EnemyConfig config, IMovementStrategy movementStrategy, Vector3 spawnPosition)
         {
             _config = config;
+            IsDespawned = false;
             
             if (_agent.enabled) _agent.enabled = false;
             
@@ -95,6 +97,7 @@ namespace Gameplay.Enemies
                 visuals: _visuals, 
                 rewardMoney: _config.Stats.RewardMoney
             ));
+            
             _stateMachine.AddState(new ReachedBaseState(this, _collider));
             
             _stateMachine.ChangeState(EnemyStateType.Move);
@@ -126,12 +129,13 @@ namespace Gameplay.Enemies
 
         private void HandleDeath()
         {
+            _health.OnDied -= HandleDeath;
             _stateMachine.ChangeState(EnemyStateType.Death);
-            _signalBus.Fire<SignalEnemyKilled>(); 
         }
 
         public void RequestDespawn()
         {
+            IsDespawned = true;
             _health.OnDied -= HandleDeath;
             _collider.enabled = false;
             _agent.enabled = false;

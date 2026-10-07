@@ -45,7 +45,6 @@ namespace Gameplay.Editor
                     }
                 }
 
-                // 3. Рисуем интерфейс
                 if (availableIds.Count > 0)
                 {
 

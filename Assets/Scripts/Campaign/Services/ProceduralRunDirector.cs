@@ -70,10 +70,6 @@ namespace Gameplay.Campaign.Services
             string startNodeId = layers[0][0].Id;
             progress.CurrentMap.StartingNodeIds.Add(startNodeId);
             
-            // if (progress.CurrentNode == null)
-            // {
-            //     AdvanceToNode(progress, startNodeId);
-            // }
         }
 
         private MapNode CreateRandomNode(int depth, int indexInLayer, HashSet<LevelBlueprintConfig> usedLevels)

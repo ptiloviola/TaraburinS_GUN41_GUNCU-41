@@ -20,6 +20,8 @@ namespace Gameplay.Towers.Behaviors.Targeting
             for (int i = 0; i < hitsCount; i++)
             {
                 Collider hit = _targetColliders[i];
+
+                if (!hit.gameObject.activeInHierarchy) continue;
                 
                 if (!hit.TryGetComponent(out EnemyFacade enemy)) continue;
                 
@@ -52,7 +54,7 @@ namespace Gameplay.Towers.Behaviors.Targeting
 
         public bool IsTargetValid(Transform target, Transform center, AttackStats stats, IAimStrategy aimStrategy)
         {
-            if (target == null) return false;
+            if (target == null || !target.gameObject.activeInHierarchy) return false;
             
             if (!target.TryGetComponent(out EnemyFacade enemy)) return false;
             

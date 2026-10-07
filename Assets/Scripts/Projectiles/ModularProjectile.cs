@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Zenject;
 using Gameplay.Projectiles.Contracts;
+using Gameplay.Enemies;
 
 namespace Gameplay.Projectiles 
 {
@@ -12,6 +13,7 @@ namespace Gameplay.Projectiles
         [SerializeField] private float _hitDistance = 0.2f; 
 
         private Transform _target;
+        private EnemyFacade _targetEnemy;
         private IProjectilePayload _payload; 
         private IFlightStrategy _flightStrategy; 
         
@@ -24,10 +26,10 @@ namespace Gameplay.Projectiles
             _flightStrategy = GetComponent<IFlightStrategy>();
         }
 
-        // Убрали IMemoryPool из параметров
         public void Launch(Transform target, IProjectilePayload payload)
         {
             _target = target;
+            _targetEnemy = target.GetComponent<EnemyFacade>();
             _payload = payload;
             _hasHit = false; 
 
@@ -38,7 +40,7 @@ namespace Gameplay.Projectiles
         {
             if (_hasHit || _flightStrategy == null) return; 
 
-            if (_target == null)
+            if (_target == null || (_targetEnemy != null && _targetEnemy.IsDespawned))
             {
                 OnDespawnRequested?.Invoke(this);
                 return;
