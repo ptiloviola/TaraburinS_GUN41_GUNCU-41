@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Movement.Strategies
 {
     public class DynamicFlightMovementStrategy : IMovementStrategy
     {

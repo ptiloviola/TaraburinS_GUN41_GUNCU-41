@@ -1,6 +1,6 @@
 using System;
 
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Movement
 {
     public interface IPhasedMovementNotifier
     {

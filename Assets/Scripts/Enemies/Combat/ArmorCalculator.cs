@@ -1,6 +1,7 @@
 using Gameplay.Combat;
+using Gameplay.Enemies.Data;
 
-namespace Gameplay.Enemies.Data
+namespace Gameplay.Enemies.Combat
 {
     public class ArmorCalculator
     {

@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using DG.Tweening;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.Animators
 {
     public class RiggedFlightAnimator : EnemyVisualsBase
     {

@@ -1,6 +1,5 @@
-using Gameplay.Enemies.Data;
 using UnityEngine;
-using System;
+using Gameplay.Enemies.Movement;
 
 namespace Gameplay.Enemies.FSM
 {

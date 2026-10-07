@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
-using Gameplay.Enemies.Visuals;
+using Gameplay.Enemies.Visuals.UI;
+using Gameplay.Enemies.Visuals.DamageFX;
 
 namespace Gameplay.Combat.Installers
 {

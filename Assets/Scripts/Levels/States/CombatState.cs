@@ -3,8 +3,8 @@ using Cysharp.Threading.Tasks;
 using Gameplay.Spawning.Services;
 using Gameplay.Interaction;
 using Gameplay.Infrastructure.Signals;
-using Gameplay.Enemies;
 using Zenject;
+using Gameplay.Enemies.Services;
 
 namespace Gameplay.Levels.States
 {

@@ -1,4 +1,4 @@
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Combat
 {
     public interface IDamageReceiver
     {

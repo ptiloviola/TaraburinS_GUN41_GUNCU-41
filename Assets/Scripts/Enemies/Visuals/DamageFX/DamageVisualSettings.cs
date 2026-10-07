@@ -1,7 +1,7 @@
 using UnityEngine;
 using Gameplay.Combat;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.DamageFX
 {
     [CreateAssetMenu(fileName = "DamageVisualSettings", menuName = "TD/Visuals/Damage Settings")]
     public class DamageVisualSettings : ScriptableObject

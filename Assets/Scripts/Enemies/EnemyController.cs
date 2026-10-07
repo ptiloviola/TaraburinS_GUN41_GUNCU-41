@@ -8,6 +8,10 @@ using Gameplay.Combat.Statuses;
 using Gameplay.Base;
 using Gameplay.Enemies.Visuals;
 using Gameplay.Enemies.Statuses;
+using Gameplay.Enemies.Services;
+using Gameplay.Enemies.Combat;
+using Gameplay.Enemies.Movement;
+
 
 namespace Gameplay.Enemies
 {

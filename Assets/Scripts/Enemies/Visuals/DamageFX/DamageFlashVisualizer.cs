@@ -1,7 +1,8 @@
 using UnityEngine;
 using Gameplay.Combat;
+using Gameplay.Enemies.Combat;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.DamageFX
 {
     [RequireComponent(typeof(DamageReceiver))]
     public class DamageFlashVisualizer : MonoBehaviour

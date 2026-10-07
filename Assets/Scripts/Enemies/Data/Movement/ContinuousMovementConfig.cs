@@ -1,4 +1,6 @@
 using UnityEngine;
+using Gameplay.Enemies.Movement;
+using Gameplay.Enemies.Movement.Strategies;
 
 namespace Gameplay.Enemies.Data.Movement
 {

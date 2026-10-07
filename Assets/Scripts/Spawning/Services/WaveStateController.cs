@@ -9,7 +9,7 @@ using Gameplay.Infrastructure.Signals;
 using Gameplay.Spawning.Data;
 using Gameplay.Economy;
 using Gameplay.Base;
-using Gameplay.Enemies;
+using Gameplay.Enemies.Services;
 
 
 namespace Gameplay.Spawning.Services

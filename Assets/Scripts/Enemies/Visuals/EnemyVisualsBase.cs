@@ -1,6 +1,7 @@
 using UnityEngine;
 using Gameplay.Enemies.FSM;
 using Cysharp.Threading.Tasks;
+using Gameplay.Enemies.Movement;
 
 namespace Gameplay.Enemies.Visuals
 {

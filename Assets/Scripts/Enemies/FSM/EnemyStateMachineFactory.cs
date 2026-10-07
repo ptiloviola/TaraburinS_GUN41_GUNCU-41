@@ -3,8 +3,8 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Enemies.Data;
 using Gameplay.Enemies.Visuals;
-using Gameplay.Infrastructure.Signals;
 using System;
+using Gameplay.Enemies.Movement;
 
 namespace Gameplay.Enemies.FSM
 {

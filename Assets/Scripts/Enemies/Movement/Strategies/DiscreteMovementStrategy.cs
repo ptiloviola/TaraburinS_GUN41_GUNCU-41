@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Gameplay.Enemies.Data.Movement;
 
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Movement.Strategies
 {
     public class DiscreteMovementStrategy : IMovementStrategy, IPhasedMovementNotifier
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.Utils
 {
     [RequireComponent(typeof(BoxCollider), typeof(NavMeshAgent))]
     public class AutoFitBounds : MonoBehaviour

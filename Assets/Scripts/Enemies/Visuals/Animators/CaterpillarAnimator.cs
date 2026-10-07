@@ -1,8 +1,9 @@
 using UnityEngine;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
+using Gameplay.Enemies.Movement;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.Animators
 {
     public class CaterpillarAnimator : EnemyVisualsBase
     {

@@ -2,7 +2,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.Animators
 {
     public class BallRollerAnimator : EnemyVisualsBase
     {

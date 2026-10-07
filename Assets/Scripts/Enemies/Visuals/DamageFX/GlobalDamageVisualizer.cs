@@ -1,8 +1,9 @@
 using System;
 using Zenject;
 using Gameplay.Combat;
+using Gameplay.Enemies.Visuals.UI;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.DamageFX
 {
     public class GlobalDamageVisualizer : IInitializable, IDisposable
     {

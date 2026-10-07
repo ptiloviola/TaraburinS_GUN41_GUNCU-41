@@ -5,6 +5,7 @@ using Gameplay.Enemies;
 using Gameplay.Base;
 using Gameplay.Infrastructure.Signals;
 using Gameplay.Enemies.Data;
+using Gameplay.Enemies.Movement;
 
 namespace Gameplay.Spawning.Factories
 {

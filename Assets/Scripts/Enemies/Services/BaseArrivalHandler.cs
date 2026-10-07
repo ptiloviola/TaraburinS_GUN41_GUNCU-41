@@ -3,7 +3,7 @@ using Gameplay.Enemies.Data;
 using Gameplay.Infrastructure.Signals;
 using Zenject;
 
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Services
 {
     public class BaseArrivalHandler
     {

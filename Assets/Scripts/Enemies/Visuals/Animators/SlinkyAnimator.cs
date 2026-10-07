@@ -2,7 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.Animators
 {
     public class SlinkyAnimator : EnemyVisualsBase
     {

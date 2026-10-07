@@ -4,7 +4,7 @@ using Zenject;
 using Gameplay.Infrastructure.Signals;
 
 
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Services
 {
     public class EnemyTrackerService : IInitializable, IDisposable
     {

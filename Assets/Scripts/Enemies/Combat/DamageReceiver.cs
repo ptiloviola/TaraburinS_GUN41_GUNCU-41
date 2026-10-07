@@ -1,10 +1,9 @@
 using UnityEngine;
 using Zenject;
 using Gameplay.Combat;
-using Gameplay.Enemies.Data;
 using System;
 
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Combat
 {
     [RequireComponent(typeof(Collider))]
     public class DamageReceiver : MonoBehaviour, IDamageable

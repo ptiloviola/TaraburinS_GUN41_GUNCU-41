@@ -8,6 +8,9 @@ using Gameplay.Base;
 using Gameplay.Combat;
 using Gameplay.Enemies.Visuals;
 using Gameplay.Enemies.FSM;
+using Gameplay.Enemies.Services;
+using Gameplay.Enemies.Combat;
+using Gameplay.Enemies.Movement;
 
 namespace Gameplay.Enemies
 {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Gameplay.Enemies.Movement;
 
 namespace Gameplay.Enemies.Data.Movement
 {

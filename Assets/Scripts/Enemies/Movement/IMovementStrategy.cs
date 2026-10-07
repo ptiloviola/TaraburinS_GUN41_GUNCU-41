@@ -1,6 +1,6 @@
 using UnityEngine.AI;
 
-namespace Gameplay.Enemies
+namespace Gameplay.Enemies.Movement
 {
     public interface IMovementStrategy
     {

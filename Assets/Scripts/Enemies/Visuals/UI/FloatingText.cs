@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using Zenject;
 
-namespace Gameplay.Enemies.Visuals
+namespace Gameplay.Enemies.Visuals.UI
 {
     public class FloatingText : MonoBehaviour
     {
