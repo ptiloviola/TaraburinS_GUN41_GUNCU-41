@@ -11,6 +11,7 @@ using Gameplay.Spawning.Services;
 using Gameplay.Spawning.Data;
 using Gameplay.Infrastructure.Signals;
 using Gameplay.Campaign.Services;
+using Gameplay.Enemies.FSM;
 
 namespace Gameplay.Spawning.Installers
 {
@@ -68,6 +69,9 @@ namespace Gameplay.Spawning.Installers
                     }
                 }
             }
+
+            Container.Bind<EnemyStateMachineFactory>().AsSingle();
+            Container.Bind<BaseArrivalHandler>().AsSingle();
 
             Container.Bind<EnemyFactory>().AsSingle();
 

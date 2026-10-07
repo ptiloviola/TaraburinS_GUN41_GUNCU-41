@@ -5,6 +5,7 @@ using Gameplay.Enemies.Data.Death;
 using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
+using System;
 
 namespace Gameplay.Enemies.FSM
 {
@@ -20,13 +21,14 @@ namespace Gameplay.Enemies.FSM
         public override EnemyStateType StateType => EnemyStateType.Death;
 
         public DeathState(
-            EnemyFacade facade, 
+            Transform transform,
+            Action requestDespawn,
             NavMeshAgent agent, 
             Collider collider, 
             DeathBehaviorConfig deathBehavior, 
             SignalBus signalBus, 
             EnemyVisualsBase visuals, 
-            int rewardMoney) : base(facade)
+            int rewardMoney) : base(transform, requestDespawn)
         {
             _agent = agent;
             _collider = collider;
@@ -50,7 +52,7 @@ namespace Gameplay.Enemies.FSM
 
             if (_deathBehavior != null)
             {
-                _deathBehavior.Execute(Facade, _signalBus);
+                _deathBehavior.Execute(Transform, _signalBus);
             }
 
             ProcessDeathAsync().Forget();
@@ -63,7 +65,7 @@ namespace Gameplay.Enemies.FSM
                 await _visuals.PlayDeathAnimationAsync();
             }
 
-            Facade.RequestDespawn();
+            RequestDespawn?.Invoke();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Gameplay.Combat.Statuses
         private readonly float _tickRate;
         private readonly int _damagePerTick;
         
-        private EnemyFacade _enemy;
+        private GameObject _enemy;
         private IDamageable _damageable; 
 
         public PoisonStatus(float baseDuration, float tickRate, int damagePerTick)
@@ -34,7 +34,7 @@ namespace Gameplay.Combat.Statuses
             _duration *= durationMultiplier;
         }
 
-        public void OnApply(EnemyFacade enemy)
+        public void OnApply(GameObject enemy)
         {
             _enemy = enemy;
             _damageable = enemy.GetComponent<IDamageable>(); 

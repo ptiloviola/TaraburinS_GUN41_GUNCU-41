@@ -5,6 +5,6 @@ namespace Gameplay.Enemies.Data.Death
 {
     public abstract class DeathBehaviorConfig : ScriptableObject
     {
-        public abstract void Execute(EnemyFacade facade, SignalBus signalBus); 
+        public abstract void Execute(Transform enemyTransform, SignalBus signalBus);
     }
 }

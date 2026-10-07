@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace Gameplay.Enemies.FSM
 {
@@ -8,7 +9,7 @@ namespace Gameplay.Enemies.FSM
 
         public override EnemyStateType StateType => EnemyStateType.ReachedBase;
 
-        public ReachedBaseState(EnemyFacade facade, Collider collider) : base(facade)
+        public ReachedBaseState(Transform transform, Action requestDespawn, Collider collider) : base(transform, requestDespawn)
         {
             _collider = collider;
         }
@@ -17,7 +18,7 @@ namespace Gameplay.Enemies.FSM
         {
             if (_collider != null) _collider.enabled = false;
             
-            Facade.RequestDespawn();
+            RequestDespawn?.Invoke();
         }
     }
 }

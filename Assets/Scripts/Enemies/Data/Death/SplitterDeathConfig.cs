@@ -12,12 +12,13 @@ namespace Gameplay.Enemies.Data.Death
         public int SegmentCount = 4;
         public float SpawnRadius = 1.0f;
 
-        public override void Execute(EnemyFacade facade, SignalBus signalBus)
+        public override void Execute(Transform enemyTransform, SignalBus signalBus)
         {
             for (int i = 0; i < SegmentCount; i++)
             {
                 Vector2 randomCircle = Random.insideUnitCircle * SpawnRadius;
-                Vector3 spawnPos = facade.Position + new Vector3(randomCircle.x, 0, randomCircle.y);
+                
+                Vector3 spawnPos = enemyTransform.position + new Vector3(randomCircle.x, 0, randomCircle.y); 
 
                 signalBus.Fire(new SignalSpawnEnemyRequest
                 {

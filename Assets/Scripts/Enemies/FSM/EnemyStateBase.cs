@@ -1,14 +1,19 @@
+using System;
+using UnityEngine;
+
 namespace Gameplay.Enemies.FSM
 {
     public abstract class EnemyStateBase : IEnemyState
     {
-        protected readonly EnemyFacade Facade;
-        
+        protected readonly Transform Transform;
+        protected readonly Action RequestDespawn;
+
         public abstract EnemyStateType StateType { get; }
 
-        protected EnemyStateBase(EnemyFacade facade)
+        protected EnemyStateBase(Transform transform, Action requestDespawn = null)
         {
-            Facade = facade;
+            Transform = transform;
+            RequestDespawn = requestDespawn;
         }
 
         public virtual void Enter() { }

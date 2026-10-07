@@ -13,7 +13,7 @@ namespace Gameplay.Combat.Statuses
         public bool IsFinished { get; private set; }
 
         private float _duration;
-        private EnemyFacade _enemy;
+        private GameObject _enemy;
 
         public FreezeStatus(float baseDuration, float slowPercent)
         {
@@ -26,7 +26,7 @@ namespace Gameplay.Combat.Statuses
             _duration *= durationMultiplier;
         }
 
-        public void OnApply(EnemyFacade enemy)
+        public void OnApply(GameObject enemy)
         {
             _enemy = enemy;
             Gameplay.Tools.GameLogger.Log($"<color=cyan>[Status] Применена заморозка. Итоговое время после резистов: {_duration} сек. Множитель скорости: {SpeedModifier}</color>");

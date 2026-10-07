@@ -1,4 +1,6 @@
 using Gameplay.Enemies.Data;
+using UnityEngine;
+using System;
 
 namespace Gameplay.Enemies.FSM
 {
@@ -8,15 +10,12 @@ namespace Gameplay.Enemies.FSM
 
         public override EnemyStateType StateType => EnemyStateType.Move;
 
-        public MoveState(EnemyFacade facade, IMovementStrategy movementStrategy) : base(facade)
+        public MoveState(Transform transform, IMovementStrategy movementStrategy) : base(transform)
         {
             _movementStrategy = movementStrategy;
         }
 
-        public override void Enter()
-        {
-            
-        }
+        public override void Enter() { }
 
         public override void Tick(float deltaTime)
         {

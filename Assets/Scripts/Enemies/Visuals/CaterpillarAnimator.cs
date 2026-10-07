@@ -54,16 +54,29 @@ namespace Gameplay.Enemies.Visuals
         protected override void OnMoveStart()
         {
             base.OnMoveStart();
-            if (Facade != null)
+            
+            if (_phasedMovement != null)
             {
-                _phasedMovement = Facade.GetMovementCapability<IPhasedMovementNotifier>();
-                if (_phasedMovement != null)
-                {
-                    _phasedMovement.OnMovementPhaseStarted += PlayImpulseAnimation;
-                    _phasedMovement.OnPausePhaseStarted += PlayPreparationAnimation;
-                    
-                    PlayPreparationAnimation();
-                }
+                PlayPreparationAnimation();
+            }
+        }
+
+        public override void BindMovement(IMovementStrategy movement)
+        {
+            base.BindMovement(movement);
+            
+            if (_phasedMovement != null)
+            {
+                _phasedMovement.OnMovementPhaseStarted -= PlayImpulseAnimation;
+                _phasedMovement.OnPausePhaseStarted -= PlayPreparationAnimation;
+            }
+
+            _phasedMovement = movement as IPhasedMovementNotifier;
+
+            if (_phasedMovement != null)
+            {
+                _phasedMovement.OnMovementPhaseStarted += PlayImpulseAnimation;
+                _phasedMovement.OnPausePhaseStarted += PlayPreparationAnimation;
             }
         }
 

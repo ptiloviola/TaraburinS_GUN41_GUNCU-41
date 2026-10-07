@@ -103,5 +103,13 @@ namespace Gameplay.Enemies
             
             _agent.baseOffset = targetHeight * heightMultiplier;
         }
+
+        public void UpdateSpeed(float baseSpeed, float multiplier)
+        {
+            if (_agent != null)
+            {
+                _agent.speed = baseSpeed * multiplier;
+            }
+        }
     }
 }

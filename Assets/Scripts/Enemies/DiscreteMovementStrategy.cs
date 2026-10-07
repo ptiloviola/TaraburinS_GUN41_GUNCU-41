@@ -88,5 +88,13 @@ namespace Gameplay.Enemies
                 }
             }
         }
+
+        public void UpdateSpeed(float baseSpeed, float multiplier)
+        {
+            if (_agent != null)
+            {
+                _agent.speed = baseSpeed * multiplier;
+            }
+        }
     }
 }

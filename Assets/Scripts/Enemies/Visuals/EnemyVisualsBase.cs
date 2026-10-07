@@ -41,5 +41,10 @@ namespace Gameplay.Enemies.Visuals
         {
             await UniTask.Yield(); 
         }
+
+        public virtual void BindMovement(IMovementStrategy movement)
+        {
+
+        }
     }
 }

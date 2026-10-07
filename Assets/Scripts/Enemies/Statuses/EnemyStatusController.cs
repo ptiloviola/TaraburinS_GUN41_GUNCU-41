@@ -8,7 +8,7 @@ namespace Gameplay.Enemies.Statuses
 {
     public class EnemyStatusController
     {
-        private readonly EnemyFacade _enemy;
+        private readonly GameObject _enemy;
         private readonly List<IStatusEffect> _activeEffects = new List<IStatusEffect>();
         
         private Func<StatusType, float> _getResistanceMultiplier; 
@@ -19,7 +19,7 @@ namespace Gameplay.Enemies.Statuses
         public event Action<IStatusEffect> OnStatusAdded;
         public event Action<IStatusEffect> OnStatusRemoved;
 
-        public EnemyStatusController(EnemyFacade enemy)
+        public EnemyStatusController(GameObject enemy)
         {
             _enemy = enemy;
         }

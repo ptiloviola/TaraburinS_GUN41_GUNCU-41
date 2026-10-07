@@ -45,16 +45,20 @@ namespace Gameplay.Enemies.Visuals
             }
         }
 
-        protected override void OnMoveStart()
+        public override void BindMovement(IMovementStrategy movement)
         {
-            base.OnMoveStart();
-            if (Facade != null)
+            base.BindMovement(movement);
+            
+            if (_phasedMovement != null)
             {
-                _phasedMovement = Facade.GetMovementCapability<IPhasedMovementNotifier>();
-                if (_phasedMovement != null)
-                {
-                    _phasedMovement.OnMovementPhaseStarted += PlayJumpAnimation;
-                }
+                _phasedMovement.OnMovementPhaseStarted -= PlayJumpAnimation;
+            }
+
+            _phasedMovement = movement as IPhasedMovementNotifier;
+
+            if (_phasedMovement != null)
+            {
+                _phasedMovement.OnMovementPhaseStarted += PlayJumpAnimation;
             }
         }
 
@@ -90,7 +94,6 @@ namespace Gameplay.Enemies.Visuals
             _jumpSequence.Join(_visualMesh.DOLocalMoveY(_initialLocalPos.y, halfFlight).SetEase(Ease.InQuad));
 
             _jumpSequence.Append(_visualMesh.DOScale(squashScale, impactTime).SetEase(Ease.OutQuad));
-
             _jumpSequence.Append(_visualMesh.DOScale(_initialScale, recoverTime).SetEase(Ease.OutBack));
         }
 

@@ -1,4 +1,5 @@
 using Gameplay.Enemies;
+using UnityEngine;
 
 namespace Gameplay.Combat.Statuses
 {
@@ -13,7 +14,7 @@ namespace Gameplay.Combat.Statuses
         
         void ApplyResistance(float durationMultiplier);
         
-        void OnApply(EnemyFacade enemy); 
+        void OnApply(GameObject target);
         void Tick(float deltaTime);
         void OnRemove();
     }
